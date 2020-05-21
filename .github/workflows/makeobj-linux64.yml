@@ -1,4 +1,4 @@
-name: Makeobj Linux64
+name: Makeobj Linux x64
 
 on: [push]
 
