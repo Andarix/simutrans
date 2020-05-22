@@ -15,10 +15,6 @@ jobs:
         sudo apt-get -y update
         sudo apt-get -ym install autoconf
         sudo apt-get -ym install libpng-dev
-        sudo apt-get -ym install libsdl2-dev
-        sudo apt-get -ym install libfreetype6-dev
-        sudo apt-get -ym install libminiupnpc-dev
-        sudo apt-get -ym install libzstd-dev
         sudo apt-get -ym install libbz2-dev
 
     - name: setup
@@ -45,5 +41,5 @@ jobs:
         file: makeobj/makeobj_linux-x64-nightly.zip
         asset_name: makeobj_linux-x64-nightly.zip
         tag: Nightly
-				tag_name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}
         overwrite: true

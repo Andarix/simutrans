@@ -79,7 +79,7 @@ else
   SOURCES += sys/clipboard_internal.cc
 endif
 
-LIBS += libs/libbz2.a  -lz #-lbz2
+LIBS +=  -lbz2 -lz #libs/bzip2-1.0.6/libbz2.a
 
 ifdef OPTIMISE
   ifeq ($(shell expr $(OPTIMISE) \>= 1), 1)
@@ -168,7 +168,7 @@ endif
 ifdef USE_ZSTD
   ifeq ($(shell expr $(USE_ZSTD) \>= 1), 1)
     FLAGS      += -DUSE_ZSTD
-    LDFLAGS     += libs/libzstd.a #-lzstd
+    LDFLAGS     += libs/zstd-1.4.4/lib/libzstd.a #-lzstd
   endif
 endif
 
