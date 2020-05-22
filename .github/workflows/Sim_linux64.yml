@@ -1,4 +1,4 @@
-name: sim_linux64
+name: Linux x64
 
 on: [push]
 
