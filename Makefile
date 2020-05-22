@@ -79,7 +79,7 @@ else
   SOURCES += sys/clipboard_internal.cc
 endif
 
-LIBS += -lbz2 -lz
+LIBS += ../libs/libbz2.a  -lz #-lbz2
 
 ifdef OPTIMISE
   ifeq ($(shell expr $(OPTIMISE) \>= 1), 1)
@@ -152,7 +152,7 @@ endif
 ifdef USE_UPNP
   ifeq ($(shell expr $(USE_UPNP) \>= 1), 1)
     CFLAGS      += -DUSE_UPNP
-    LDFLAGS     += -lminiupnpc
+    LDFLAGS     += ../libs/libminiupnpc21.a #-lminiupnpc
     ifeq ($(OSTYPE),mingw)
       ifeq ($(shell expr $(STATIC) \>= 1), 1)
         LDFLAGS += -Wl,-Bdynamic
@@ -168,7 +168,7 @@ endif
 ifdef USE_ZSTD
   ifeq ($(shell expr $(USE_ZSTD) \>= 1), 1)
     FLAGS      += -DUSE_ZSTD
-    LDFLAGS     += -lzstd
+    LDFLAGS     += ../libs/libzstd.a #-lzstd
   endif
 endif
 
