@@ -1,4 +1,4 @@
-name: Makeobj Linux x64
+name: sim_linux64
 
 on: [push]
 
@@ -13,37 +13,46 @@ jobs:
     - name: install_dependencies
       run: |
         sudo apt-get -y update
-        sudo apt-get -ym install autoconf
-        sudo apt-get -ym install libpng-dev
         sudo apt-get -ym install libsdl2-dev
         sudo apt-get -ym install libfreetype6-dev
         sudo apt-get -ym install libminiupnpc-dev
         sudo apt-get -ym install libzstd-dev
         sudo apt-get -ym install libbz2-dev
+        sudo apt-get -ym install autoconf
 
     - name: setup
       run: |
+        cd libs/bzip2-1.0.6
+        make
+        cd..
+        rm libbz2.a
+        cp bzip2-1.0.6/libbz2.a ./libbz2.a
         autoconf
         ./configure
+        echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
+        echo "CFLAGS += -std=c++11 " >>config.default
         echo "STATIC = 1" >>config.default
         cat config.default >>/dev/stderr
 
-    - name: make makeobj
+    - name: make
       run: |
-        cd makeobj
+        cd trunk
         make
 
-    - name: Rename result
+    - name: distribute
       run: |
-        cd makeobj
-        zip -r -9 makeobj_linux-x64-nightly.zip makeobj
+        cd trunk
+        sh ./distribute.sh
+
+    - name: Rename result
+      run:  mv trunk/simu*.zip trunk/simulinux-x64-nightly.zip
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: makeobj/makeobj_linux-x64-nightly.zip
-        asset_name: makeobj_linux-x64-nightly.zip
+        file: ./simulinux-x64-nightly.zip
+        asset_name: simulinux-x64-nightly.zip
         tag: Nightly
-				tag_name: ${{ github.ref }}
         overwrite: true
+
