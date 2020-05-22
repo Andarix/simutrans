@@ -22,11 +22,11 @@
 #include "../utils/simstring.h"
 
 #if USE_ZSTD
-#include "libs/zstd-1.4.4/zstd.h"
+#include "../libs/zstd-1.4.4/zstd.h"
 #endif
 
 #include <zlib.h>
-#include "libs/bzip2-1.0.6/bzlib.h"
+#include "../libs/bzip2-1.0.6/bzlib.h"
 
 
 #define INVALID_RDWR_ID (-1)

@@ -892,8 +892,8 @@ extern "C" {
 #define MINIUPNP_LIBSPEC extern
 
 //#define MINIUPNP_STATICLIB
-#include "libs/miniupnpc-2.1/miniupnpc.h"
-#include "libs/miniupnpc-2.1/upnpcommands.h"
+#include "../libs/miniupnpc-2.1/miniupnpc.h"
+#include "../libs/miniupnpc-2.1/upnpcommands.h"
 }
 
 #if MINIUPNPC_API_VERSION < 14
