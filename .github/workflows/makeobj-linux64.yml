@@ -1,6 +1,9 @@
 name: Makeobj Linux x64
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly'
 
 jobs:
   build:
