@@ -49,4 +49,4 @@ jobs:
         asset_name: simulinux-x64-nightly.zip
         tag: Nightly
         overwrite: true
-
+        file_glob: true

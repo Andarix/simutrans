@@ -41,5 +41,5 @@ jobs:
         file: makeobj/makeobj_linux-x64-nightly.zip
         asset_name: makeobj_linux-x64-nightly.zip
         tag: Nightly
-        tag_name: ${{ github.ref }}
         overwrite: true
+        file_glob: true
