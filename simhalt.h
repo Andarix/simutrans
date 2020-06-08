@@ -372,6 +372,15 @@ public:
 	 * Fabrikliste auf.
 	 */
 	void verbinde_fabriken();
+
+	/**
+	 * Connects factory to this halt if not already connected and
+	 * reachability check for oil rigs passed.
+	 * No station coverage checked.
+	 * @returns true if succeeded
+	 */
+	bool connect_factory(fabrik_t *fab);
+
 	void remove_fabriken(fabrik_t *fab);
 
 	/**
@@ -414,7 +423,7 @@ public:
 	sint8 is_connected(halthandle_t halt, uint8 catg_index) const;
 
 	bool has_available_network( const player_t* player, uint8 catg_index = goods_manager_t::INDEX_NONE ) const;
-		
+
 	const slist_tpl<fabrik_t*>& get_fab_list() const { return fab_list; }
 
 	/**
