@@ -1,0 +1,1 @@
+..\libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Makeobj.vcxproj -property:Configuration=Release

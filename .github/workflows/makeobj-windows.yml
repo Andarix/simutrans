@@ -1,4 +1,4 @@
-name: Makeobj Linux x64
+name: Makeobj Windows
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     - name: compile makeobj
       run: |
         cd makeobj
-        build.cmd
+        ..\libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Makeobj.vcxproj -property:Configuration=Release
 
     - name: Rename result
       run: |
