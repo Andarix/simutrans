@@ -18,10 +18,9 @@ jobs:
         cd makeobj
         ..\libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Makeobj.vcxproj -property:Configuration=Release
 
-    - name: Rename result
+    - name: zip result
       run: |
-        cd build/makeobj/Release
-        zip -r -9 makeobj_windows-nightly.zip Makeobj.exe
+				Compress-Archive -Path build\makeobj\Release\Makeobj.exe -DestinationPath build\makeobj\Release\makeobj_windows-nightly.zip
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
