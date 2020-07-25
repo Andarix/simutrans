@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="Mt" PageTemplate="tool" DisplayName="Manifesttool" SwitchPrefix="/" Order="30" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein"/>
+    <Category Name="Input and Output" DisplayName="Eingabe und Ausgabe"/>
+    <Category Name="Isolated COM" DisplayName="Isolated COM"/>
+    <Category Name="Advanced" DisplayName="Erweitert"/>
+    <Category Name="All Options" DisplayName="Alle Optionen" Subtype="Search"/>
+    <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="Manifest" Label="" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <BoolProperty Name="SuppressStartupBanner" DisplayName="Startbanner unterdrücken" Description="Wird ohne Anzeige der standardmäßigen Microsoft-Copyrightinformationen ausgeführt. (-nologo)" Category="General" Switch="nologo" F1Keyword="VC.Project.VCManifestTool.SuppressStartupBanner">
+  </BoolProperty>
+  <BoolProperty Name="VerboseOutput" DisplayName="Ausführliche Ausgabe" Description="Zeigt zusätzliche Informationen während der Manifestgenerierung an. (-verbose)" Category="General" Switch="verbose" F1Keyword="VC.Project.VCManifestTool.VerboseOutput">
+  </BoolProperty>
+  <StringProperty Name="AssemblyIdentity" DisplayName="Assemblyidentität" Description="Die Identitätszeichenfolge enthält die Attribute des assemblyIdentity-Elements. (-identity:[Identitätszeichenfolge])" Category="General" Switch="identity:" F1Keyword="VC.Project.VCManifestTool.AssemblyIdentity">
+  </StringProperty>
+  <StringListProperty CommandLineValueSeparator=" " Subtype="file" Name="AdditionalManifestFiles" DisplayName="Zusätzliche Manifestdateien" Description="Wird verwendet, um Manifeste anzugeben, die verarbeitet werden müssen. (-manifest [Manifest1] [Manifest2] ...)" Category="Input and Output" Switch="manifest" Separator=" " F1Keyword="VC.Project.VCManifestTool.AdditionalManifestFiles">
+  </StringListProperty>
+  <StringProperty Name="InputResourceManifests" DisplayName="Ressourcenmanifeste eingeben" Description="Gibt das Manifest von einer Ressource vom Typ &quot;RT_MANIFEST&quot; mit der angegebenen ID ein. (-inputresource:[Datei];#[Ressourcen-ID])" Category="Input and Output" Switch="inputresource:" F1Keyword="VC.Project.VCManifestTool.InputResourceManifests">
+  </StringProperty>
+  <BoolProperty Name="EmbedManifest" DisplayName="Manifest einbetten" Description="Gibt an, ob die Manifestdatei in die Assembly eingebettet oder als eigenständige Datei erstellt werden soll." Category="Input and Output" IncludeInCommandLine="false" F1Keyword="VC.Project.VCManifestTool.EmbedManifest">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="OutputManifestFile" DisplayName="Manifestdatei ausgeben" Description="Gibt das Manifest von einer Ressource vom Typ &quot;RT_MANIFEST&quot; mit der angegebenen ID aus. (-out:[Datei];#[Ressourcen-ID])" Category="Input and Output" Switch="out:" F1Keyword="VC.Project.VCManifestTool.OutputManifestFile">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="ResourceOutputFileName" DisplayName="Manifestressourcendatei" Description="Gibt die Ausgabenressourcendatei an, die verwendet wird, um das Manifest in die Projektausgabe einzubetten." Category="Input and Output" F1Keyword="VC.Project.VCManifestTool.ResourceOutputFileName">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="ManifestResourceCompile" Label="" HasConfigurationCondition="true"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="GenerateCatalogFiles" DisplayName="Katalogdateien generieren" Description="Generiert CDF-Dateien, um Kataloge zu erstellen. (/makecdfs)" Category="Input and Output" Switch="makecdfs" F1Keyword="VC.Project.VCManifestTool.GenerateCatalogFiles">
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="DependencyInformationFile" DisplayName="Abhängigkeitsinformationsdatei" Description="Gibt die Abhängigkeitsinformationsdatei an, die von Visual Studio verwendet wird, um Abhängigkeitsinformationen für das Manifesttool nachzuverfolgen." Category="Input and Output" Visible="false" F1Keyword="VC.Project.VCManifestTool.DependencyInformationFile">
+  </StringProperty>
+  <StringProperty Name="OutputResourceManifests" DisplayName="Ressourcenmanifest ausgeben" Description="Gibt das Manifest von einer Ressource vom Typ &quot;RT_MANIFEST&quot; mit der angegebenen ID aus. resource_id ist auf eine nicht negative 16-Bit-Zahl beschränkt. (-outputresource:Datei[;[#]resource_id])" Category="Input and Output" Switch="outputresource:" Visible="false" F1Keyword="VC.Project.VCManifestTool.OutputResourceManifest">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="ManifestFromManagedAssembly" DisplayName="Manifest aus ManagedAssembly generieren" Description="Generiert ein Manifest aus der verwalteten Assembly. (-managedassemblyname:[Datei])" Category="Input and Output" Switch="managedassemblyname:" F1Keyword="VC.Project.VCManifestTool.ManifestFromManagedAssembly">
+  </StringProperty>
+  <BoolProperty Name="SuppressDependencyElement" DisplayName="Abhängigkeitselement unterdrücken" Description="Wird mit -managedassembly verwendet. Unterdrückt die Generierung von Abhängigkeitselementen im finalen Manifest. (-nodependency)" Category="Input and Output" Switch="nodependency" F1Keyword="VC.Project.VCManifestTool.SuppressDependencyElement">
+  </BoolProperty>
+  <BoolProperty Name="GenerateCategoryTags" DisplayName="Kategorietags generieren" Description="Wird mit -managedassembly verwendet. -category bewirkt, dass Kategorietags generiert werden. (-category)" Category="Input and Output" Switch="category" F1Keyword="VC.Project.VCManifestTool.GenerateCategoryTags">
+  </BoolProperty>
+  <EnumProperty Name="EnableDpiAwareness" DisplayName="DPI" Description="Fügt dem Manifest Informationen hinzu, die die Anwendung als mit DPI-Werten kompatibel kennzeichnet." Category="Input and Output" F1Keyword="VC.Project.VCManifestTool.EnableDPIAwareness">
+    <EnumValue Name="false" Switch="" DisplayName="Keine" Description="">
+    </EnumValue>
+    <EnumValue Name="true" Switch="" DisplayName="Hohe DPI-Werte" Description="">
+    </EnumValue>
+    <EnumValue Name="PerMonitorHighDPIAware" Switch="" DisplayName="Hohe DPI-Werte pro Monitor" Description="">
+    </EnumValue>
+  </EnumProperty>
+  <StringProperty Subtype="file" Name="TypeLibraryFile" DisplayName="Typbibliotheksdatei" Description="Gibt die Typbibliothek an, die für die registrierungsfreie COM-Manifestunterstützung verwendet wird. (-tlb:[Datei])" Category="Isolated COM" Switch="tlb:" F1Keyword="VC.Project.VCManifestTool.TypeLibraryFile">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="RegistrarScriptFile" DisplayName="Registrierungsskriptdatei" Description="Gibt die Registrierungsskriptdatei an, die für die registrierungsfreie COM-Manifestunterstützung verwendet wird. (-rgs:[Datei])" Category="Isolated COM" Switch="rgs:" F1Keyword="VC.Project.VCManifestTool.RegistrarScriptFile">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="ComponentFileName" DisplayName="Komponentendateiname" Description="Gibt den Dateinamen der Komponente an, die aus den angegebenen TLB- oder RGS-Dateien erstellt wurde. (-dll:[Datei])" Category="Isolated COM" Switch="dll:" F1Keyword="VC.Project.VCManifestTool.ComponentFileName">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="ReplacementsFile" DisplayName="Ersetzungsdatei" Description="Gibt die Datei an, die die Werte für ersetzbare Zeichenfolgen in der RGS-Datei enthält. (replacements:[Datei])" Category="Isolated COM" Switch="replacements:" F1Keyword="VC.Project.VCManifestTool.ReplacementsFile">
+  </StringProperty>
+  <BoolProperty Name="UpdateFileHashes" DisplayName="Dateihashes aktualisieren" Description="Berechnet den Hash von Dateien (in den Dateielementen angegeben) und aktualisiert das Hashattribut mit diesem Wert. (hashupdate:[Pfad])" Category="Advanced" Switch="hashupdate" F1Keyword="VC.Project.VCManifestTool.UpdateFileHashes">
+    <Argument Property="UpdateFileHashesSearchPath" IsRequired="false"/>
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="UpdateFileHashesSearchPath" DisplayName="Suchpfad für Dateihashes aktualisieren" Description="Gibt den zu verwendenden Suchpfad beim Aktualisieren von Dateihashes an." Category="Advanced" Separator=":" F1Keyword="VC.Project.VCManifestTool.UpdateFileHashesSearchPath">
+  </StringProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen" Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  </StringProperty>
+  <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="Nachverfolgungsprotokollverzeichnis" Description="Nachverfolgungsprotokollverzeichnis." IncludeInCommandLine="false" Visible="false">
+  </StringProperty>
+</Rule>

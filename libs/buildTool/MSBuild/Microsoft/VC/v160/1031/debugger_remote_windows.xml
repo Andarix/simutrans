@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="WindowsRemoteDebugger" DisplayName="Remote-Windows-Debugger" PageTemplate="debugger" Description="Optionen für Remote-Windows-Debugger" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile" />
+  </Rule.DataSource>
+  <StringProperty Name="RemoteDebuggerCommand" DisplayName="Remotebefehl" Description="Der auszuführende Debugbefehl." F1Keyword="VC.Project.IVCRemoteDebugPageObject.RemoteCommand" />
+  <StringProperty Name="RemoteDebuggerCommandArguments" DisplayName="Remotebefehlsargumente" Description="Die Befehlszeilenargumente, die an die Anwendung übergeben werden sollen." F1Keyword="VC.Project.IVCRemoteDebugPageObject.CommandArguments">
+    <Argument Property="RemoteDebuggerCommand" />
+  </StringProperty>
+  <StringProperty Name="RemoteDebuggerWorkingDirectory" DisplayName="Arbeitsverzeichnis" Description="Das Arbeitsverzeichnis der Anwendung. Standardmäßig das Verzeichnis, das die Projektdatei enthält." Subtype="folder" F1Keyword="VC.Project.IVCRemoteDebugPageObject.WorkingDirectory" />
+  <StringProperty Name="RemoteDebuggerServerName" DisplayName="Remoteservername" Description="Gibt einen Remoteservernamen an." F1Keyword="VC.Project.IVCRemoteDebugPageObject.RemoteMachine" />
+  <EnumProperty Name="RemoteDebuggerConnection" DisplayName="Verbindung" Description="Gibt den Verbindungstyp an." F1Keyword="VC.Project.IVCRemoteDebugPageObject.Remote">
+    <EnumValue Name="RemoteWithAuthentication" DisplayName="Remote mit Windows-Authentifizierung" Description="Remote mit Windows-Authentifizierung" />
+    <EnumValue Name="RemoteWithoutAuthentication" DisplayName="Remote ohne Authentifizierung" Description="Remote ohne Authentifizierung" />
+  </EnumProperty>
+  <EnumProperty Name="RemoteDebuggerDebuggerType" DisplayName="Debuggertyp" Description="Gibt den zu verwendenden Debuggertyp an. Der Debuggertyp wird basierend auf dem Inhalt der EXE-Datei ausgewählt, wenn die automatische Auswahl festgelegt wurde." F1Keyword="VC.Project.IVCRemoteDebugPageObject.DebuggerType">
+    <EnumProperty.Metadata>
+      <NameValuePair Name="IsDebugType" Value="true" />
+    </EnumProperty.Metadata>
+    <EnumValue Name="NativeOnly" DisplayName="Nur nativ" />
+    <EnumValue Name="ManagedOnly" DisplayName="Nur verwaltet (.NET Framework)" />
+    <EnumValue Name="Mixed" DisplayName="Gemischt (.NET Framework)" />
+    <EnumValue Name="ManagedCore" DisplayName="Nur verwaltet (.NET Core)" />
+    <EnumValue Name="NativeWithManagedCore" DisplayName="Gemischt (.NET Core)" />
+    <EnumValue Name="Auto" DisplayName="Automatisch" />
+    <EnumValue Name="Script" DisplayName="Skript" />
+    <EnumValue Name="GPUOnly" DisplayName="Nur GPU (C++ AMP)" />
+    <EnumValue Name="JavaScriptForWebView2" DisplayName="JavaScript (WebView2)" />
+  </EnumProperty>
+  <StringListProperty Name="RemoteDebuggerEnvironment" DisplayName="Umgebung" Description="Gibt die Umgebung für die zu debuggende Komponente oder die Variablen an, die mit der vorhandenen Umgebung gemergt werden sollen." Separator="&#xA;" F1Keyword="VC.Project.IVCRemoteDebugPageObject.Environment" />
+  <DynamicEnumProperty Name="RemoteGPUDebuggerTargetType" DisplayName="Debuggingbeschleunigungstyp" Category="GPUOptions" EnumProvider="GPUTargets" F1Keyword="VC.Project.IVCRemoteDebugPageObject.GPUDebuggerTargetType" Description="Der für das Debugging des GPU-Codes zu verwendende Debuggingbeschleunigungstyp (Verfügbar, wenn der GPU-Debugger aktiv ist).">
+    <DynamicEnumProperty.Metadata>
+      <NameValuePair Name="ParentPropertyName" Value="RemoteDebuggerDebuggerType" />
+      <NameValuePair Name="ParentPropertyValue" Value="GPUOnly" />
+    </DynamicEnumProperty.Metadata>
+  </DynamicEnumProperty>
+  <EnumProperty Name="GPURefDebuggerBreakOnAllThreads" DisplayName="GPU-Standardhaltepunktverhalten" Category="GPUOptions" Description="Legt fest, wie oft der GPU-Debugger angehalten wird." F1Keyword="VC.Project.IVCRemoteDebugPageObject.GPUBreakOnAllThreads">
+    <EnumValue Name="GPURefBreakOncePerWarp" DisplayName="Ein Halt pro Verzerrung" Description="Ein Halt pro Verzerrung" />
+    <EnumValue Name="GPURefBreakForCPUThread" DisplayName="Halt für jeden Thread (wie CPU-Verhalten)" Description="Halt für jeden Thread (wie CPU-Verhalten)" />
+    <EnumProperty.Metadata>
+      <NameValuePair Name="ParentPropertyName" Value="RemoteDebuggerDebuggerType" />
+      <NameValuePair Name="ParentPropertyValue" Value="GPUOnly" />
+    </EnumProperty.Metadata>
+  </EnumProperty>
+  <BoolProperty Name="RemoteDebuggerAttach" DisplayName="Anfügen" Description="Gibt an, ob der Debugger versuchen soll, sich beim Starten des Debuggings an einen vorhandenen Prozess anzufügen." F1Keyword="VC.Project.IVCRemoteDebugPageObject.Attach" />
+  <BoolProperty Name="RemoteDebuggerSQLDebugging" DisplayName="SQL-Debugging" Description="Fügen Sie den SQL-Debugger an." F1Keyword="VC.Project.IVCRemoteDebugPageObject.SQLDebugging" />
+  <StringProperty Name="DeploymentDirectory" DisplayName="Bereitstellungsverzeichnis" Description="Hier den Pfad angeben, wenn beim Debuggen auf einem Remotecomputer der Inhalt der Projektausgabe (mit Ausnahme der PDB-Dateien) auf den Remotecomputer kopiert werden soll" F1Keyword="VC.Project.IVCRemoteDebugPageObject.DeploymentDirectory" />
+  <StringProperty Name="AdditionalFiles" DisplayName="Zusätzliche bereitzustellende Dateien" Description="Beim Debuggen auf einem Remotecomputer werden die hier angegebenen Dateien und Verzeichnisse (mit Ausnahme der Projektausgabe) in das Bereitstellungsverzeichnis kopiert, sofern dieses angegeben wurde." Subtype="file" F1Keyword="VC.Project.IVCRemoteDebugPageObject.AdditionalFiles" />
+  <BoolProperty Name="RemoteDebuggerDeployDebugCppRuntime" DisplayName="Visual C++ Debugging-Laufzeitbibliotheken bereitstellen" Description="Gibt an, ob die Debugging-Laufzeitbibliotheken für die aktive Plattform bereitgestellt werden sollen." F1Keyword="VC.Project.IVCRemoteDebugPageObject.Remote" />
+  <BoolProperty Name="RemoteDebuggerDeployCppRuntime" DisplayName="Visual C++-Laufzeitbibliotheken bereitstellen" Description="Gibt an, ob die Laufzeitbibliotheken für die aktive Plattform bereitgestellt werden sollen." F1Keyword="VC.Project.IVCRemoteDebugPageObject.Remote" />
+  <BoolProperty Name="UseLegacyManagedDebugger" Visible="false" />
+  <DynamicEnumProperty Name="RemoteDebuggerAmpDefaultAccelerator" DisplayName="Amp-Standard-Accelerator" EnumProvider="AmpAccelerators" F1Keyword="VC.Project.IVCRemoteDebugPageObject.AmpDefaultAccelerator" Description="Überschreiben Sie die Auswahl des Standard-Accelerators von C++ AMP. Die Eigenschaft gilt nicht beim Debuggen von verwaltetem Code.">
+  </DynamicEnumProperty>
+</Rule>

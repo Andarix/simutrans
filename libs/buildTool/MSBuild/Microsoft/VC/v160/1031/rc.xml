@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="RC" PageTemplate="tool" DisplayName="Ressourcen" SwitchPrefix="/" Order="50" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein"/>
+    <Category Name="All Options" DisplayName="Alle Optionen" Subtype="Search"/>
+    <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="ResourceCompile" Label="" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <StringListProperty Name="PreprocessorDefinitions" DisplayName="Präprozessordefinitionen" Description="Gibt mindestens eine Definition für den Ressourcencompiler an. (/d[Makro])" Category="General" Switch="D " F1Keyword="VC.Project.VCResourceCompilerTool.PreprocessorDefinitions">
+  </StringListProperty>
+  <StringListProperty Name="DesigntimePreprocessorDefinitions" DisplayName="Präprozessordefinitionen der Entwurfszeit" Description="Ressourcen-Editor definiert." Category="General" IncludeInCommandLine="false" Visible="false">
+  </StringListProperty>
+  <StringListProperty Name="UndefinePreprocessorDefinitions" DisplayName="Präprozessordefinitionen aufheben" Description="Hebt die Definition eines Symbols auf. (/u)" Category="General" Switch="u" F1Keyword="VC.Project.VCResourceCompilerTool.UndefineProcessorDefinitions">
+  </StringListProperty>
+  <DynamicEnumProperty EnumProvider="cultures" Name="Culture" DisplayName="Kultur" Description="Listet die in den Ressourcen verwendete Kultur (wie etwa US-Englisch oder Italienisch) auf. (/l [num])" Category="General" Switch="l" F1Keyword="VC.Project.VCResourceCompilerTool.Culture">
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="DisplayNameFormat" Value="{}{1} (0x{0:x})"/>
+      <NameValuePair Name="SwitchFormat" Value="{}l 0x{0:x4}"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+  <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Zusätzliche Includeverzeichnisse" Description="Gibt mindestens ein Verzeichnis an, das dem Includepfad hinzugefügt wird. Verwenden Sie für mehrere Verzeichnisse eine durch Semikolons getrennte Liste. (/I[Pfad])" Category="General" Switch="I" F1Keyword="VC.Project.VCResourceCompilerTool.AdditionalIncludeDirectories">
+  </StringListProperty>
+  <BoolProperty Name="IgnoreStandardIncludePath" DisplayName="Standardincludepfade ignorieren" Description="Verhindert, dass der Ressourcencompiler in Verzeichnissen, die in den INCLUDE-Umgebungsvariablen angegeben sind, nach Includedateien sucht. (/X)" Category="General" Switch="X" F1Keyword="VC.Project.VCResourceCompilerTool.IgnoreStandardIncludePath">
+  </BoolProperty>
+  <BoolProperty Name="ShowProgress" DisplayName="Status anzeigen" Description="Die Statusmeldungen werden zum Ausgabefenster gesendet. (/v)" Category="General" Switch="v" F1Keyword="VC.Project.VCResourceCompilerTool.ShowProgress">
+  </BoolProperty>
+  <BoolProperty Name="SuppressStartupBanner" DisplayName="Startbanner unterdrücken" Description="Startbanner und Informationsmeldung werden nicht angezeigt. (/nologo)" Category="General" Switch="nologo" F1Keyword="VC.Project.VCResourceCompilerTool.SuppressStartupBanner">
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="ResourceOutputFileName" DisplayName="Ressourcendateiname" Description="Gibt den Namen der Ressourcendatei an. (/fo[Datei])" Category="General" Switch="fo" F1Keyword="VC.Project.VCResourceCompilerTool.ResourceOutputFileName">
+  </StringProperty>
+  <BoolProperty Name="NullTerminateStrings" DisplayName="Zeichenfolgenende auf Null" Description="Hängt eine 0 (Null) an alle Zeichenfolgen in den Zeichenfolgentabellen an. (/n)" Category="General" Switch="n" F1Keyword="VC.Project.VCResourceCompilerTool.NullTerminateStrings">
+  </BoolProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen" Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  </StringProperty>
+  <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="Nachverfolgungsprotokollverzeichnis" Description="Nachverfolgungsprotokollverzeichnis." Category="General" IncludeInCommandLine="false" Visible="false">
+  </StringProperty>
+</Rule>

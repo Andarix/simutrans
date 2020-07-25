@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneral" DisplayName="Allgemein" PageTemplate="generic" Description="Allgemein" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration"/>
+  </Rule.DataSource>
+  <StringProperty Name="OutDir" DisplayName="Ausgabeverzeichnis" Description="Gibt einen relativen Pfad zum Ausgabedateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Default="$(SolutionDir)$(ConfigurationName)" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.OutputDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="IntDir" DisplayName="Zwischenverzeichnis" Description="Gibt einen relativen Pfad zum Zwischendateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Default="$(ConfigurationName)" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime-Unterstützung" Description="Wählen Sie die von Ihrem Code verwendete Common Language Runtime-Unterstützung aus." Category="General" F1Keyword="VC.Project.VCConfiguration.ManagedExtensions">
+    <EnumValue Name="false" DisplayName="Keine Common Language Runtime-Unterstützung" Description="Keine Common Language Runtime-Unterstützung"/>
+    <EnumValue Name="true" Switch="clr" DisplayName="Common Language Runtime-Unterstützung" Description="Erstellt Metadaten für Ihre Anwendung, die von anderen CLR-Anwendungen genutzt werden können, und ermöglicht, dass Ihre Anwendung Typen und Daten in den Metadaten anderer CLR-Komponenten nutzt."/>
+    <EnumValue Name="Pure" Switch="clr:pure" DisplayName="Reine MSIL Common Language Runtime-Unterstützung" Description="Erstellt eine reine MSIL-Ausgabedatei ohne nativen ausführbaren Code, es können aber in MSIL kompilierte native Typen vorhanden sein."/>
+    <EnumValue Name="Safe" Switch="clr:safe" DisplayName="Sichere MSIL Common Language Runtime-Unterstützung" Description="Erstellt eine überprüfbare, reine MSIL-Ausgabedatei (kein nativer ausführbarer Code)."/>
+  </EnumProperty>
+  <StringProperty Name="BuildLogFile" DisplayName="Buildprotokolldatei" Description="Gibt die Buildprotokolldatei an, in die bei aktivierter Buildprotokollierung geschrieben wird." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log" Subtype="file">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="_ProjectFileVersion" DisplayName="Projektdateiversion" Description="Gibt die Version des zum Erstellen dieser Projektdatei verwendeten Konvertierungstools an." Category="General" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="Zielframeworkmoniker" EnumProvider="TargetFrameworkMoniker" Visible="false"/>
+</Rule>

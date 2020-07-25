@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationBuildEvents" DisplayName="Buildereignisse" PageTemplate="tool" Order="90" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="PreBuild" DisplayName="Präbuildereignis"/>
+    <Category Name="PreLink" DisplayName="Prälinkereignis"/>
+    <Category Name="PostBuild" DisplayName="Postbuildereignis"/>
+  </Rule.Categories>
+  <StringProperty Name="PreBuildCommand" Category="PreBuild" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile an, die vom Präbuildereignis-Tool ausgeführt wird." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreBuildEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="PreBuildMessage" Category="PreBuild" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Präbuildereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreBuildEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="PreBuildEventUseInBuild" Category="PreBuild" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+
+  <StringProperty Name="PreLinkCommand" Category="PreLink" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile an, die vom Prälinkereignis-Tool ausgeführt wird." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreLinkEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="PreLinkMessage" Category="PreLink" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Prälinkereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreLinkEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="PreLinkEventUseInBuild" Category="PreLink" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+
+  <StringProperty Name="PostBuildCommand" Category="PostBuild" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile an, die vom Postbuildereignis-Tool ausgeführt wird." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PostBuildEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="PostBuildMessage" Category="PostBuild" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Postbuildereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PostBuildEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="PostBuildEventUseInBuild" Category="PostBuild" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+</Rule>

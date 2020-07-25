@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="LinuxRemoteCopySources" DisplayName="Quellen kopieren" PageTemplate="generic" Description="Quellen kopieren" Order="9" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label=""/>
+  </Rule.DataSource> 
+
+  <StringProperty Name="SourcesToCopyRemotelyOverride" DisplayName="Zu kopierende Quellen" Description="Gibt die Quellen an, die auf das Remotesystem kopiert werden sollen. Durch Ändern dieser Liste wird die Verzeichnisstruktur, in die die Dateien auf das Remotesystem kopiert werden, möglicherweise verschoben oder in anderer Weise verändert." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <BoolProperty Name="LocalRemoteCopySources" DisplayName="Quellen kopieren" Description="Gibt an, ob die Quellen auf das Remotesystem kopiert werden sollen." Category="General" F1Keyword="">
+  </BoolProperty>
+  
+  <BoolProperty Visible="false" Name="CleanRemoteProjectDirectory" DisplayName="Remoteprojektverzeichnis bereinigen" Description="Gibt an, ob das Remoteprojektverzeichnis beim Ausführen des bereinigten Buildziels gelöscht werden soll." Category="General" F1Keyword="">
+  </BoolProperty>
+     
+  <StringListProperty Name="AdditionalSourcesToCopyMapping" DisplayName="Weitere zu kopierende Quellen" Description="Gibt weitere Quellen an, die auf das Remotesystem kopiert werden sollen. Optional kann die Liste in Form von Lokal-zu-remote-Zuordnungspaaren bereitgestellt werden. Verwenden Sie dazu folgende Syntax: vollständigerlokalerpfad1:=vollständigerremotepfad1;vollständigerlokalerpfad2:=vollständigerremotepfad2, wobei eine lokale Datei in das angegebene Remoteverzeichnis auf dem Remotecomputer kopiert werden kann." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+  
+  <EnumProperty Name="RemoteCopySourceMethod" DisplayName="Methode zum Kopieren von Quellen aus Remotesystemen" Description="Gibt die Methode zum Kopieren der Quelle aus dem Linux-Remoteziel an." Category="General" F1Keyword="VC.Project.VCConfiguration.RemoteCopySourceMethod" Default="rsync">
+    <EnumValue Name="rsync" DisplayName="rsync"/>
+    <EnumValue Name="sftp" DisplayName="sftp"/>
+    <EnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </EnumProperty.DataSource>
+  </EnumProperty>
+</Rule>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="CL" PageTemplate="tool" DisplayName="C/C++" SwitchPrefix="-" Order="10" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein"/>
+    <Category Name="Optimization" DisplayName="Optimierung"/>
+    <Category Name="Preprocessor" DisplayName="Präprozessor"/>
+    <Category Name="Code Generation" DisplayName="Codegenerierung"/>
+    <Category Name="Language" DisplayName="Sprache"/>
+    <Category Name="Advanced" DisplayName="Erweitert"/>
+    <Category Name="All Options" DisplayName="Alle Optionen" Subtype="Search"/>
+    <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <BoolProperty Name="MSVCErrorReport" DisplayName="Visual Studio-Fehlerberichterstellung" Description="Fehler melden, die Visual Studio anhand von Datei- und Zeileninformationen analysieren kann." Category="General" Switch="fdiagnostics-format=msvc" Visible="false" F1Keyword="">
+  </BoolProperty>
+  <StringProperty Name="GccToolChain" DisplayName="Gcc-Toolkette" Description="Ordnerpfad zur Gcc-Toolkette." Category="General" Switch="gcc-toolchain " Visible="false" F1Keyword="">
+  </StringProperty>
+  <StringProperty Name="Target" DisplayName="Ziel" Description="Ziel" Category="General" Switch="target " Visible="false" F1Keyword="">
+  </StringProperty>
+  <StringProperty Name="Sysroot" DisplayName="Sysroot" Description="Ordnerpfad zum Stammverzeichnis für Header und Bibliotheken." Category="General" Switch="-sysroot=" Visible="false" F1Keyword="">
+  </StringProperty>
+  <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Zusätzliche Includeverzeichnisse" Description="Gibt mindestens ein Verzeichnis an, das zum Includepfad hinzugefügt wird. Verwenden Sie bei mehr als einem Verzeichnis Semikolons als Trennzeichen. (-/I[Pfad])" Category="General" Switch="I " F1Keyword="VC.Project.VCClangCompilerTool.AdditionalIncludeDirectories">
+  </StringListProperty>
+  <StringListProperty Subtype="folder" Name="ProjectPublicIncludePath" DisplayName="Includeverzeichnisse für öffentliches Projekt" Description="Hiermit wird mindestens ein Verzeichnis angegeben, das dem Includepfad hinzugefügt und über das AdditionalIncludeDirectories-Makro an verweisende Projekte in der Projektmappe übergeben werden soll. Trennen Sie mehrere Verzeichnisse durch ein Semikolon. (-I[path])." Category="General" Switch="I " F1Keyword="VC.Project.VCClangCompilerTool.AdditionalPublicIncludeDirectories">
+    <StringListProperty.DataSource>
+       <DataSource Persistence="ProjectFile" Label=""/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+  <EnumProperty Name="DebugInformationFormat" DisplayName="Debuginformationsformat" Description="Gibt den Typ der Debugging-Informationen an, die vom Compiler generiert werden." Category="General" F1Keyword="VC.Project.VCClangCompilerTool.DebugInformationFormat">
+    <EnumValue Name="None" Switch="g0" DisplayName="Keine" Description="Liefert keine Debuginformationen, deshalb ist die Kompilierung möglicherweise schneller.">
+    </EnumValue>
+    <EnumValue Name="Minimal" Switch="g1" DisplayName="Mindestmenge an Debuginformationen" Description="Hiermit generieren Sie die Mindestmenge an Debuginformationen.">
+    </EnumValue>
+    <EnumValue Name="FullDebug" Switch="g2 -gdwarf-2" DisplayName="Vollständige Debugging-Informationen(DWARF2)" Description="DWARF2-Debugging-Informationen generieren.">
+    </EnumValue>
+  </EnumProperty>
+  <StringProperty Subtype="file" Name="ObjectFileName" DisplayName="Objektdateiname" Description="Gibt einen Namen an, der den Standardobjektnamen außer Kraft setzt. Dabei kann es sich um einen Datei- oder einen Verzeichnisnamen handeln. (-o [name])." Category="General" Switch="o " F1Keyword="VC.Project.VCClangCompilerTool.ObjectFile">
+  </StringProperty>
+  <EnumProperty Name="WarningLevel" DisplayName="Warnstufe" Description="Wählen Sie aus, wie strikt der Compiler mit Codefehlern umgehen soll.  Andere Flags sollten direkt zusätzlichen Optionen hinzugefügt werden. (/w, /Weverything)" Category="General" F1Keyword="VC.Project.VCClangCompilerTool.WarningLevel">
+    <EnumValue Name="TurnOffAllWarnings" Switch="w" DisplayName="Alle Warnungen deaktivieren" Description="Deaktiviert alle Compilerwarnungen.">
+    </EnumValue>
+    <EnumValue Name="EnableAllWarnings" Switch="Wall" DisplayName="Alle Warnungen aktivieren" Description="Aktiviert alle Warnungen, einschließlich der standardmäßig deaktivierten.">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="TreatWarningAsError" DisplayName="Warnungen als Fehler behandeln" Description="Behandelt alle Compilerwarnungen als Fehler. Bei einem neuen Projekt ist es empfehlenswert, /Werror in allen Kompilierungen zu verwenden. Durch das Auflösen aller Warnungen wird sichergestellt, dass so wenige schwer auffindbare Codefehler wie nur möglich auftreten." Category="General" Switch="Werror" F1Keyword="VC.Project.VCClangCompilerTool.WarnAsError">
+  </BoolProperty>
+  <StringListProperty Name="CAdditionalWarning" DisplayName="Zusätzliche C-Warnungen" Description="Definiert einen Satz zusätzlicher Warnmeldungen." Category="General" Switch="W" F1Keyword="VC.Project.VCClangCompilerTool.AdditionalWarning"/>
+  <StringListProperty Name="CppAdditionalWarning" DisplayName="Zusätzliche C++-Warnungen" Description="Definiert einen Satz zusätzlicher Warnmeldungen." Category="General" Switch="W" F1Keyword="VC.Project.VCClangCompilerTool.AdditionalWarning"/>
+  <BoolProperty Name="Verbose" DisplayName="Ausführlichen Modus aktivieren" Description="Wenn ausführlicher Modus aktiviert ist, druckt dieses Tool mehr Informationen aus als bei der Builddiagnose." Category="General" Switch="v" F1Keyword="VC.Project.VCClangCompilerTool.Verbose">
+  </BoolProperty>
+  <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="Nachverfolgungsprotokollverzeichnis" Description="Nachverfolgungsprotokollverzeichnis." Category="General" IncludeInCommandLine="false" Visible="false">
+  </StringProperty>
+  <StringProperty Name="RemoteCCompileToolExe" DisplayName="C-Compiler" Description="Gibt das Programm an, das beim Kompilieren von C-Quelldateien aufgerufen werden soll, oder den Pfad zum C-Compiler auf dem Remotesystem." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteCppCompileToolExe" DisplayName="C++-Compiler" Description="Gibt das Programm an, das beim Kompilieren von C++-Quelldateien aufgerufen werden soll, oder den Pfad zum C++-Compiler auf dem Remotesystem." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteCompileCommandTimeout" DisplayName="Timeout bei Kompilierung." Description="Timeout für die Remotekompilierung in Millisekunden." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="RemoteCompileLocalCopyObjectFiles" DisplayName="Objektdateien kopieren" Description="Gibt an, ob die kompilierten Objektdateien vom Remotesystem auf den lokalen Computer kopiert werden sollen." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <EnumProperty Name="Optimization" DisplayName="Optimierung" Description="Gibt die Optimierungsebene für die Anwendung an." Category="Optimization" F1Keyword="VC.Project.VCClangCompilerTool.Optimization">
+    <EnumValue Name="Custom" Switch="" DisplayName="Benutzerdefiniert" Description="Benutzerdefinierte Optimierung.">
+    </EnumValue>
+    <EnumValue Name="Disabled" Switch="O0" DisplayName="Deaktiviert" Description="Deaktivieren Sie die Optimierung.">
+    </EnumValue>
+    <EnumValue Name="MinSize" Switch="Os" DisplayName="Größe minimieren" Description="Für Größe optimieren.">
+    </EnumValue>
+    <EnumValue Name="MaxSpeed" Switch="O2" DisplayName="Geschwindigkeit maximieren" Description="Für Geschwindigkeit optimieren.">
+    </EnumValue>
+    <EnumValue Name="Full" Switch="O3" DisplayName="Vollständige Optimierung" Description="Aufwändige Optimierungen.">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty ReverseSwitch="fno-strict-aliasing" Name="StrictAliasing" DisplayName="Strenges Aliasing" Description="Setzt die strengsten Aliasingregeln voraus. Es wird nie davon ausgegangen, dass ein Objekt eines Typs die gleiche Adresse wie ein Objekt eines anderen Typs aufweist." Category="Optimization" Switch="fstrict-aliasing" F1Keyword="VC.Project.VCClangCompilerTool.StrictAliasing">
+  </BoolProperty>
+  <BoolProperty Name="UnrollLoops" DisplayName="Schleifen auflösen" Description="Lösen Sie Schleifen auf, damit die Anwendung aufgrund der verringerten Anzahl ausgeführter Branches schneller wird. Der Code wird jedoch umfangreicher." Category="Optimization" Switch="funroll-all-loops" F1Keyword="VC.Project.VCClangCompilerTool.UnrollLoops">
+  </BoolProperty>
+  <BoolProperty Name="LinkTimeOptimization" DisplayName="Linkzeitoptimierung" Description="Aktivieren Sie die interprozedurale Optimierung, indem Sie dem Optimierer ermöglichen, objektdateiübergreifend in der Anwendung zu suchen." Category="Optimization" Switch="flto" F1Keyword="VC.Project.VCClangCompilerTool.LinkTimeOptimization">
+  </BoolProperty>
+  <BoolProperty ReverseSwitch="fno-omit-frame-pointer" Name="OmitFramePointers" DisplayName="Framezeiger unterdrücken" Description="Unterdrückt die Erstellung von Framezeigern in der Aufrufliste." Category="Optimization" Switch="fomit-frame-pointer" F1Keyword="VC.Project.VCClangCompilerTool.OmitFramePointers">
+  </BoolProperty>
+  <BoolProperty Name="NoCommonBlocks" DisplayName="Keine allgemeinen Blöcke" Description="Ordnen Sie auch nicht initialisierte globale Variablen im Datenabschnitt der Objektdatei zu, anstatt sie als allgemeine Blöcke zu generieren." Category="Optimization" Switch="fno-common" F1Keyword="VC.Project.VCClangCompilerTool.NoCommonBlocks">
+  </BoolProperty>
+  <EnumProperty Name="EnableAVE" DisplayName="Zusätzliche Vektorerweiterungen aktivieren" Description="Ermöglicht die Verwendung erweiterter Vektoranweisungen. Wird nur für Intel-Architekturen verwendet." Category="Code Generation" F1Keyword="VC.Project.VCClangCompilerTool.EnableAVE" Visible="false">
+    <EnumValue Name="SSE3" Switch="msse3" DisplayName="SSE3-Anweisungsset" Description="SSE3-Anweisungsset aktivieren.">
+    </EnumValue>
+    <EnumValue Name="SSE3 (with supplemental extensions)" Switch="mssse3" DisplayName="Ergänzendes SSE3-Anweisungsset" Description="SSE3-Anweisungsset aktivieren.">
+    </EnumValue>
+    <EnumValue Name="SSE41" Switch="msse4.1" DisplayName="SSE4.1-Anweisungsset" Description="SSE41-Anweisungsset aktivieren.">
+    </EnumValue>
+    <EnumValue Name="SSE42" Switch="msse4.2" DisplayName="SSE4.2-Anweisungsset" Description="SSE42-Anweisungsset aktivieren.">
+    </EnumValue>
+    <EnumValue Name="AVX" Switch="mavx" DisplayName="AVX-Anweisungsset" Description="AVX-Anweisungsset aktivieren.">
+    </EnumValue>
+    <EnumValue Name="AVX2" Switch="mavx2" DisplayName="AVX2-Anweisungsset" Description="AVX2-Anweisungsset aktivieren.">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="PositionIndependentCode" DisplayName="Position Independent Code" Description="Position Independent Code (PIC) für die Verwendung in einer freigegebenen Bibliothek generieren." Category="Code Generation" Switch="fpic" F1Keyword="VC.Project.VCClangCompilerTool.PIC">
+  </BoolProperty>
+<!--  <BoolProperty Name="MakeStringsReadOnly" DisplayName="Make Strings Read Only" Description="Reuse String Literals" Category="Code Generation" Switch="fwritable-strings" F1Keyword="VC.Project.VCClangCompilerTool.MakeStringsReadOnly" Visible="false">
+  </BoolProperty>-->
+  <!-- <BoolProperty Name="ThreadSafeStatics" DisplayName="Statics are thread safe" Description="Emit Extra code to use routines specified in C++ ABI for thread safe initilization of local statics." Category="Code Generation" Switch="fno-threadsafe-statics" F1Keyword="VC.Project.VCClangCompilerTool.ThreadSafeStatics">
+  </BoolProperty> -->
+  <EnumProperty Name="ThreadSafeStatics" DisplayName="Statics sind threadsicher" Description="Extra-Code ausgeben, um in C++ ABI angegebene Routinen für die threadsichere Initialisierung lokaler Statics zu verwenden." Category="Code Generation" F1Keyword="VC.Project.VCClangCompilerTool.ThreadSafeStatics">
+    <EnumValue Name="No" Switch="fno-threadsafe-statics" DisplayName="Nein" Description="Hiermit deaktivieren Sie threadsichere Statics.">
+    </EnumValue>
+    <EnumValue Name="Yes" Switch="fthreadsafe-statics" DisplayName="Ja" Description="Hiermit aktivieren Sie threadsichere Statics.">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="RelaxIEEE" DisplayName="Gleitkommaoptimierung" Description="Aktiviert die Gleitkommaoptimierung, indem die Konformität mit IEEE-754 weniger strikt umgesetzt wird." Category="Code Generation" Switch="ffast-math" F1Keyword="VC.Project.VCClangCompilerTool.RelaxIEEE">
+  </BoolProperty>
+  <BoolProperty Name="HideInlineMethods" DisplayName="Inline-Methoden verborgen" Description="Wenn aktiviert, werden Out-of-Line-Kopien von Inline-Methoden als &quot;private extern&quot; deklariert." Category="Code Generation" Switch="fvisibility-inlines-hidden" F1Keyword="VC.Project.VCClangCompilerTool.HideInlineMethods">
+  </BoolProperty>
+  <BoolProperty Name="SymbolsHiddenByDefault" DisplayName="Symbole standardmäßig verborgen" Description="Alle Symbole sind als &quot;private extern&quot; deklariert, wenn sie nicht mit dem &quot;_attribute&quot;-Makro explizit für den Export markiert sind." Category="Code Generation" Switch="fvisibility=hidden" F1Keyword="VC.Project.VCClangCompilerTool.SymbolsHiddenByDefault">
+  </BoolProperty>
+  <EnumProperty Name="ExceptionHandling" DisplayName="C++-Ausnahmen aktivieren" Description="Gibt das Ausnahmebehandlungsmodell an, das vom Compiler verwendet wird." Category="Code Generation" F1Keyword="VC.Project.VCClangCompilerTool.ExceptionHandling">
+    <EnumValue Name="Disabled" Switch="fno-exceptions" DisplayName="Nein" Description="Ausnahmebehandlung deaktivieren.">
+    </EnumValue>
+    <EnumValue Name="Enabled" Switch="fexceptions" DisplayName="Ja" Description="Ausnahmebehandlung aktivieren.">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty ReverseSwitch="fno-rtti" Name="RuntimeTypeInfo" DisplayName="Laufzeittypinfo aktivieren" Description="Fügt Code zum Prüfen der C++-Objekttypen zur Laufzeit hinzu (Laufzeittyp-Informationen).     (frtti, fno-rtti)" Category="Language" Switch="frtti" F1Keyword="VC.Project.VCClangCompilerTool.RuntimeTypeInfo">
+  </BoolProperty>
+  <EnumProperty Name="CLanguageStandard" DisplayName="C-Sprachstandard" Description="Bestimmt den C-Sprachstandard." Category="Language" F1Keyword="VC.Project.VCClangCompilerTool.CLanguageStandard">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard">
+    </EnumValue>
+    <EnumValue Name="c89" Switch="std=c89" DisplayName="C89" Description="C89-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c99" Switch="std=c99" DisplayName="C99" Description="C99-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c11" Switch="std=c11" DisplayName="C11" Description="C11-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu99" Switch="std=gnu99" DisplayName="C99 (GNU-Dialekt)" Description="C99 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu11" Switch="std=gnu11" DisplayName="C11 (GNU-Dialekt)" Description="C11 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+  </EnumProperty>
+  <EnumProperty Name="CppLanguageStandard" DisplayName="C++-Sprachstandard" Description="Bestimmt den C++-Sprachstandard." Category="Language" F1Keyword="VC.Project.VCClangCompilerTool.CppLanguageStandard">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard" Description="">
+    </EnumValue>
+    <EnumValue Name="c++98" Switch="std=c++98" DisplayName="C++03" Description="C++03-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c++11" Switch="std=c++11" DisplayName="C++11" Description="C++11-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c++14" Switch="std=c++14" DisplayName="C++14" Description="C++14-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c++17" Switch="std=c++17" DisplayName="C++17" Description="C++17-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu++98" Switch="std=gnu++98" DisplayName="C++03 (GNU-Dialekt)" Description="C++03 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu++11" Switch="std=gnu++11" DisplayName="C++11 (GNU-Dialekt)" Description="C++11 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu++1y" Switch="std=gnu++14" DisplayName="C++14 (GNU-Dialekt)" Description="C++14 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+  </EnumProperty>
+  <StringListProperty Name="PreprocessorDefinitions" DisplayName="Präprozessordefinitionen" Description="Definiert Präprozessorsymbole für Ihre Quelldatei. (-D)" Category="Preprocessor" Switch="D " F1Keyword="VC.Project.VCClangCompilerTool.PreprocessorDefinitions">
+  </StringListProperty>
+  <StringListProperty Name="UndefinePreprocessorDefinitions" DisplayName="Präprozessordefinitionen aufheben" Description="Gibt eine oder mehrere Definitionen an, die aufgehoben werden. (-U [Makro])" Category="Preprocessor" Switch="U " F1Keyword="VC.Project.VCClangCompilerTool.UndefinePreprocessorDefinitions">
+  </StringListProperty>
+  <BoolProperty Name="UndefineAllPreprocessorDefinitions" DisplayName="Alle Präprozessordefinitionen aufheben" Description="Hebt alle vorher definierten Präprozessorwerte auf.  (-undef)" Category="Preprocessor" Switch="undef" F1Keyword="VC.Project.VCClangCompilerTool.UndefineAllPreprocessorDefinitions">
+  </BoolProperty>
+  <BoolProperty Name="ShowIncludes" DisplayName="Includes anzeigen" Description="Generiert eine Liste von Includedateien mit Compilerausgabe.  (-H)" Category="Preprocessor" Switch="H" F1Keyword="VC.Project.VCClangCompilerTool.ShowIncludes">
+  </BoolProperty>
+  <EnumProperty Name="CompileAs" DisplayName="Kompilierungsart" Description="Wählen Sie die Kompilierungssprachoption für .c- und .cpp-Dateien aus. &quot;Standard&quot; verwendet die Dateierweiterung &quot;.c&quot; oder &quot;.cpp&quot; zur Erkennung. (-x c, -x c++)" Category="Advanced" F1Keyword="VC.Project.VCClangCompilerTool.CompileAs">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard" Description="Standard.">
+    </EnumValue>
+    <EnumValue Name="CompileAsC" Switch="x c" DisplayName="Als C-Code kompilieren" Description="Als C-Code kompilieren.">
+    </EnumValue>
+    <EnumValue Name="CompileAsCpp" Switch="x c++" DisplayName="Als C++-Code kompilieren" Description="Als C++-Code kompilieren.">
+    </EnumValue>
+  </EnumProperty>
+  <StringListProperty Subtype="file" Name="ForcedIncludeFiles" DisplayName="Erzwungene Includedateien" Description="Mindestens eine erzwungene Includedatei (-include [name])" Category="Advanced" Switch="include " F1Keyword="VC.Project.VCClangCompilerTool.ForcedIncludeFiles">
+  </StringListProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  </StringProperty>
+  <StringProperty Name="MultiProcNumber" DisplayName="Maximale Anzahl paralleler Kompilierungsaufträge" Description="Die Anzahl parallel zu erstellender Kompilierungsprozesse. Der Standardwert lautet 1." Category="General" F1Keyword="VC.Project.VCClangCompilerTool.MultiProcessorCount">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="ValidateArchitecture" DisplayName="Architektur überprüfen" Description="Gibt an, ob überprüft werden soll, ob die Projektplattfom mit der Plattform des Remotesystems übereinstimmt." Category="General" F1Keyword="VC.Project.VCClangCompilerTool.ValidateArchitecture">
+   <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <BoolProperty Name="BuildingInIde" Visible="false">
+  </BoolProperty>
+  <BoolProperty Switch="fsanitize=address" Name="EnableASAN" DisplayName="AddressSanitizer aktivieren" Description="Kompiliert das Programm mit AddressSanitizer. Beste Ergebnisse erzielen Sie durch Kompilieren mit -fno-omit-frame-pointer und der Compileroptimierungsebene –Os oder -O0. Eine Verknüpfung mit der Option &quot;AddressSanitizer&quot; ist ebenfalls erforderlich. Muss mit dem Debugger ausgeführt werden, um Diagnoseergebnisse anzuzeigen." F1Keyword="VC.Project.VCClangCompilerTool.EnableASAN" Category="General">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+</Rule>

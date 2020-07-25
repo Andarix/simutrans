@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="MIDL" PageTemplate="tool" DisplayName="MIDL" SwitchPrefix="/" Order="60" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein"/>
+    <Category Name="Output" DisplayName="Ausgabe"/>
+    <Category Name="Advanced" DisplayName="Erweitert"/>
+    <Category Name="All Options" DisplayName="Alle Optionen" Subtype="Search"/>
+    <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="Midl" Label="" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <StringListProperty Name="PreprocessorDefinitions" DisplayName="Präprozessordefinitionen" Description="Gibt mindestens eine Definition an, einschließlich MIDL-Makros. (/D[Makros])" Category="General" Switch="D " F1Keyword="VC.Project.VCMidlTool.PreprocessorDefinitions">
+  </StringListProperty>
+  <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Zusätzliche Includeverzeichnisse" Description="Gibt mindestens ein Verzeichnis an, das dem Includepfad hinzugefügt wird. (/I[Pfad])" Category="General" Switch="I" F1Keyword="VC.Project.VCMidlTool.AdditionalIncludeDirectories">
+  </StringListProperty>
+  <StringListProperty Subtype="folder" Name="AdditionalMetadataDirectories" DisplayName="Zusätzliche Metadatenverzeichnisse " Description="Geben Sie das Verzeichnis für die Datei &quot;Windows.Foundation.WinMD&quot; an (/metadata_dir [path])." Category="General" Switch="metadata_dir " Separator=";" F1Keyword="VC.Project.VCMidlTool.AdditionalMetadataDirectories">
+  </StringListProperty>
+  <BoolProperty Name="EnableWindowsRuntime" DisplayName="Windows-Runtime aktivieren" Description="Aktivieret die Windows-Runtime-Semantik, um die Windows-Metadatendatei zu erstellen. (/winrt)" Category="General" Switch="winrt" F1Keyword="VC.Project.VCMidlTool.IgnoreStandardIncludePath">
+  </BoolProperty>
+  <BoolProperty Name="IgnoreStandardIncludePath" DisplayName="Standardincludepfad ignorieren" Description="Die aktuellen und die INCLUDE-Verzeichnisse werden ignoriert. (/no_def_idir)" Category="General" Switch="no_def_idir" F1Keyword="VC.Project.VCMidlTool.IgnoreStandardIncludePath">
+  </BoolProperty>
+  <BoolProperty Name="MkTypLibCompatible" DisplayName="MkTypLib-kompatibel" Description="Erzwingt Kompatibilität mit &quot;mktyplib.exe&quot;, Version 2.03. (/mktyplib203)" Category="General" Switch="mktyplib203" F1Keyword="VC.Project.VCMidlTool.MkTypLibCompatible">
+  </BoolProperty>
+  <EnumProperty Name="WarningLevel" DisplayName="Warnstufe" Description="Bestimmt, wie strikt MIDL-Codefehler sind. (/Wn)" Category="General" F1Keyword="VC.Project.VCMidlTool.WarningLevel">
+    <EnumValue Name="0" Switch="W0" DisplayName="1">
+    </EnumValue>
+    <EnumValue Name="1" Switch="W1" DisplayName="1">
+    </EnumValue>
+    <EnumValue Name="2" Switch="W2" DisplayName="2">
+    </EnumValue>
+    <EnumValue Name="3" Switch="W3" DisplayName="3">
+    </EnumValue>
+    <EnumValue Name="4" Switch="W4" DisplayName="4">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="WarnAsError" DisplayName="Warnungen als Fehler behandeln" Description="Erlaubt MIDL, alle Warnungen als Fehler zu behandeln. (/WX)" Category="General" Switch="WX" F1Keyword="VC.Project.VCMidlTool.WarnAsError">
+  </BoolProperty>
+  <BoolProperty Name="SuppressStartupBanner" DisplayName="Startbanner unterdrücken" Description="Startbanner und Informationsmeldung werden nicht angezeigt. (/nologo)" Category="General" Switch="nologo" F1Keyword="VC.Project.VCMidlTool.SuppressStartupBanner">
+  </BoolProperty>
+  <EnumProperty Name="DefaultCharType" DisplayName="C-Compiler-Zeichentyp" Description="Gibt den Standardzeichentyp des C-Compilers an, der für die Kompilierung des generierten Codes verwendet wird. (/char signed|unsigned|ascii7)" Category="General" F1Keyword="VC.Project.VCMidlTool.DefaultCharType">
+    <EnumValue Name="Signed" Switch="char signed" DisplayName="Signiert" Description="Signiert">
+    </EnumValue>
+    <EnumValue Name="Unsigned" Switch="char unsigned" DisplayName="Nicht signiert" Description="Nicht signiert">
+    </EnumValue>
+    <EnumValue Name="Ascii" Switch="char ascii7" DisplayName="ASCII" Description="ASCII">
+    </EnumValue>
+  </EnumProperty>
+  <EnumProperty Name="TargetEnvironment" DisplayName="Zielumgebung" Description="Gibt die Zielumgebung an. (/env arm32|win32|ia64|x64)" Category="General" F1Keyword="VC.Project.VCMidlTool.TargetEnvironment">
+    <EnumValue Name="NotSet" Switch="" DisplayName="Nicht festgelegt" Description="Win32">
+    </EnumValue>
+    <EnumValue Name="Win32" Switch="env win32" DisplayName="Microsoft Windows 32-Bit" Description="Win32">
+    </EnumValue>
+    <EnumValue Name="Itanium" Switch="env ia64" DisplayName="Microsoft Windows 64-Bit auf Itanium" Description="IA64">
+    </EnumValue>
+    <EnumValue Name="ARM32" Switch="env arm32" DisplayName="Microsoft Windows ARM" Description="ARM">
+    </EnumValue>
+    <EnumValue Name="ARM64" Switch="env arm64" DisplayName="Microsoft Windows ARM64" Description="ARM64">
+    </EnumValue>
+    <EnumValue Name="X64" Switch="env x64" DisplayName="Microsoft Windows 64-Bit auf x64" Description="X64">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="GenerateStublessProxies" DisplayName="Proxys ohne Stubs generieren" Description="Generiert vollständig interpretierte Stubs mit Erweiterungen und Proxys ohne Stubs für Objektschnittstellen. (/Oicf, /Oif)" Category="General" Switch="Oicf" F1Keyword="VC.Project.VCMidlTool.GenerateStublessProxies">
+  </BoolProperty>
+  <BoolProperty Name="SuppressCompilerWarnings" DisplayName="Compiler-Warnungen unterdrücken" Description="Unterdrückt Compiler-Warnmeldungen. (/no_warn)" Category="General" Switch="no_warn" F1Keyword="VC.Project.VCMidlTool.SuppressCompilerWarnings">
+  </BoolProperty>
+  <BoolProperty Name="ApplicationConfigurationMode" DisplayName="Anwendungskonfigurationsmodus" Description="Ermöglicht ausgewählte ACF-Attribute in der IDL-Datei. (/app_config)" Category="General" Switch="app_config" F1Keyword="VC.Project.VCMidlTool.ApplicationConfigurationMode">
+  </BoolProperty>
+  <IntProperty Name="LocaleID" DisplayName="Gebietsschema-ID" Description="Gibt die LCID für Eingabedateien, Dateinamen und Verzeichnispfade an (/lcid DECIMAL)." Category="General" Switch="lcid" Separator=" " F1Keyword="VC.Project.VCMidlTool.LocaleID">
+  </IntProperty>
+  <BoolProperty Name="MultiProcMIDL" DisplayName="Kompilierung mit mehreren Prozessoren" Description="Führen Sie mehrere Instanzen gleichzeitig aus." Category="General" F1Keyword="VC.Project.VCMidlTool.MultiProcMIDL">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <StringProperty Name="OutputDirectory" DisplayName="Ausgabeverzeichnis" Description="Ausgabeverzeichnis (/out [Verzeichnis])" Category="Output" Switch="out" F1Keyword="VC.Project.VCMidlTool.OutputDirectory">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="MetadataFileName" DisplayName="Metadatendatei" Description="Gibt den Namen für die generierte Metadatendatei an (/winmd filename)." Category="Output" Switch="winmd" Separator=" " F1Keyword="VC.Project.VCMidlTool.WinmdFileName">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="HeaderFileName" DisplayName="Headerdatei" Description="Gibt den Namen der generierten Headerdatei an. (/h Dateiname)" Category="Output" Switch="h" Separator=" " F1Keyword="VC.Project.VCMidlTool.HeaderFileName">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="DllDataFileName" DisplayName="DllData-Datei" Description="Gibt den Namen der DLLDATA-Datei an. (/dlldata Dateiname)" Category="Output" Switch="dlldata" Separator=" " F1Keyword="VC.Project.VCMidlTool.DLLDataFileName">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="InterfaceIdentifierFileName" DisplayName="IID-Datei" Description="Gibt den Namen für die Schnittstellenbezeichnerdatei an. (/iid Dateiname)" Category="Output" Switch="iid" Separator=" " F1Keyword="VC.Project.VCMidlTool.InterfaceIdentifierFileName">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="ProxyFileName" DisplayName="Proxydatei" Description="Gibt den Namen der Proxydatei an. (/proxy Dateiname)" Category="Output" Switch="proxy" Separator=" " F1Keyword="VC.Project.VCMidlTool.ProxyFileName">
+  </StringProperty>
+  <BoolProperty ReverseSwitch="notlb" Name="GenerateTypeLibrary" DisplayName="Typbibliothek generieren" Description="Geben Sie an, ob eine Typbibliothek generiert wird. ([/notlb] falls nicht)" Category="Output" F1Keyword="VC.Project.VCMidlTool.GenerateTypeLibrary">
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="TypeLibraryName" DisplayName="Typbibliothek" Description="Gibt den Namen der Typbibliotheksdatei an. (/tlb Dateiname)" Category="Output" Switch="tlb" Separator=" " F1Keyword="VC.Project.VCMidlTool.TypeLibraryName">
+  </StringProperty>
+  <EnumProperty Name="GenerateClientFiles" DisplayName="Client-Stub-Dateien generieren" Description="Es werden nur Client-Stub-Dateien generiert. (/client [stub|none])" Category="Output" F1Keyword="VC.Project.VCMidlTool.GenerateClientFiles">
+    <EnumValue Name="Stub" Switch="client stub" DisplayName="Stub" Description="Stub">
+    </EnumValue>
+    <EnumValue Name="None" Switch="client none" DisplayName="Keine" Description="Keine">
+    </EnumValue>
+  </EnumProperty>
+  <EnumProperty Name="GenerateServerFiles" DisplayName="Server-Stub-Dateien generieren" Description="Es werden nur Server-Stub-Dateien generiert. (/server [stub|none])" Category="Output" F1Keyword="VC.Project.VCMidlTool.GenerateServerFiles">
+    <EnumValue Name="Stub" Switch="server stub" DisplayName="Stub" Description="Stub">
+    </EnumValue>
+    <EnumValue Name="None" Switch="server none" DisplayName="Keine" Description="Keine">
+    </EnumValue>
+  </EnumProperty>
+  <StringProperty Subtype="file" Name="ClientStubFile" DisplayName="Client-Stub-Datei" Description="Geben Sie die Client-Stub-Datei an. (/cstub [Datei])" Category="Output" Switch="cstub" Separator=" " F1Keyword="VC.Project.VCMidlTool.ClientStubFile">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="ServerStubFile" DisplayName="Server-Stub-Datei" Description="Geben Sie die Server-Stub-Datei an. (/sstub [Datei])" Category="Output" Switch="sstub" Separator=" " F1Keyword="VC.Project.VCMidlTool.ServerStubFile">
+  </StringProperty>
+  <EnumProperty Name="TypeLibFormat" DisplayName="Typbibliothekformat" Description="Gibt das Dateiformat der Typbibliothek an. ([/oldtlb|/newtlb])" Category="Output" F1Keyword="VC.Project.VCMidlTool.TypeLibFormat">
+    <EnumValue Name="NewFormat" Switch="newtlb" DisplayName="NewFormat" Description="Neues Format">
+    </EnumValue>
+    <EnumValue Name="OldFormat" Switch="oldtlb" DisplayName="OldFormat" Description="Altes Format">
+    </EnumValue>
+  </EnumProperty>
+  <StringProperty Name="CPreprocessOptions" DisplayName="C-Präprozessoroptionen" Description="Gibt Schalter an, die an den C-Compiler-Präprozessor übergeben werden. (/cpp_opt switches)" Category="Advanced" Switch="cpp_opt" Separator=" " F1Keyword="VC.Project.VCMidlTool.CPreprocessOptions">
+  </StringProperty>
+  <StringListProperty Name="UndefinePreprocessorDefinitions" DisplayName="Präprozessordefinitionen aufheben" Description="Gibt mindestens eine Definition an, die aufgehoben wird, einschließlich MIDL-Makros. (/U[Makros])" Category="Advanced" Switch="U" F1Keyword="VC.Project.VCMidlTool.UndefinePreprocessorDefinitions">
+  </StringListProperty>
+  <EnumProperty Name="EnableErrorChecks" DisplayName="Fehlerüberprüfung aktivieren" Description="Aktiviert die Fehlerüberprüfungsoption. ([/error all|none])" Category="Advanced" F1Keyword="VC.Project.VCMidlTool.EnableErrorChecks">
+    <EnumValue Name="EnableCustom" Switch="" DisplayName="EnableCustom" Description="Alle">
+    </EnumValue>
+    <EnumValue Name="All" Switch="error all" DisplayName="Alle" Description="Alle">
+    </EnumValue>
+    <EnumValue Name="None" Switch="error none" DisplayName="Keine" Description="Keine">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="ErrorCheckAllocations" DisplayName="Speicherbelegungen überprüfen" Description="Überprüft auf Fehler, die aufgrund von nicht genügend Arbeitsspeicher aufgetreten sind. (/error allocation)" Category="Advanced" Switch="error allocation" F1Keyword="VC.Project.VCMidlTool.ErrorCheckAllocations">
+  </BoolProperty>
+  <BoolProperty Name="ErrorCheckBounds" DisplayName="Begrenzungen überprüfen" Description="Überprüft die Größe im Vergleich mit der Übertragungslängenspezifikation. (/error bounds_check)" Category="Advanced" Switch="error bounds_check" F1Keyword="VC.Project.VCMidlTool.ErrorCheckBounds">
+  </BoolProperty>
+  <BoolProperty Name="ErrorCheckEnumRange" DisplayName="Enumerationsbereich überprüfen" Description="Stellt sicher, dass die Enumerationswerte im zulässigen Bereich sind. (/error enum)" Category="Advanced" Switch="error enum" F1Keyword="VC.Project.VCMidlTool.ErrorCheckEnumRange">
+  </BoolProperty>
+  <BoolProperty Name="ErrorCheckRefPointers" DisplayName="Verweiszeiger überprüfen" Description="Stellt sicher, dass Verweiszeiger nicht Null sind. (/error ref)" Category="Advanced" Switch="error ref" F1Keyword="VC.Project.VCMidlTool.ErrorCheckRefPointers">
+  </BoolProperty>
+  <BoolProperty Name="ErrorCheckStubData" DisplayName="Stub-Daten überprüfen" Description="Gibt zusätzliche Überprüfung für die serverseitige Gültigkeit von Stub-Daten aus. (/error stub_data)" Category="Advanced" Switch="error stub_data" F1Keyword="VC.Project.VCMidlTool.ErrorCheckStubData">
+  </BoolProperty>
+  <BoolProperty Name="Enumclass" DisplayName="C++-Enumerationsklasse aktivieren" Description="Aktiviert die Verwendung des Konstruktes für die C++-Enumerationsklasse (/enum_class)." Category="Advanced" Switch="enum_class" Visible="false" F1Keyword="VC.Project.VCMidlTool.ErrorCheckStubData">
+  </BoolProperty>
+  <BoolProperty Name="PrependWithABINamepsace" DisplayName="'ABI'-Namespace voranstellen" Description="Stellt allen Typen das 'ABI'-Namespace voran.  (/ns_prefix)" Category="Advanced" Switch="ns_prefix" F1Keyword="VC.Project.VCMidlTool.PreendWithABINamepsace">
+  </BoolProperty>
+  <BoolProperty ReverseSwitch="no_robust" Name="ValidateAllParameters" DisplayName="Parameter überprüfen" Description="Generiert zusätzliche Informationen zur Überprüfung von Parametern. (/robust|/no_robust)" Category="Advanced" Switch="robust" F1Keyword="VC.Project.VCMidlTool.ValidateParameters">
+  </BoolProperty>
+  <EnumProperty Name="StructMemberAlignment" DisplayName="Strukturmemberausrichtung" Description="Gibt die Komprimierungsebene der Strukturen im Zielsystem an. (/ZpN)" Category="Advanced" F1Keyword="VC.Project.VCMidlTool.StructMemberAlignment">
+    <EnumValue Name="NotSet" Switch="" DisplayName="Nicht festgelegt" Description="Nicht festgelegt">
+    </EnumValue>
+    <EnumValue Name="1" Switch="Zp1" DisplayName="1 Byte" Description="Zp1">
+    </EnumValue>
+    <EnumValue Name="2" Switch="Zp2" DisplayName="2 Byte" Description="Zp2">
+    </EnumValue>
+    <EnumValue Name="4" Switch="Zp4" DisplayName="4 Byte" Description="Zp4">
+    </EnumValue>
+    <EnumValue Name="8" Switch="Zp8" DisplayName="8 Byte" Description="Zp8">
+    </EnumValue>
+  </EnumProperty>
+  <StringProperty Subtype="file" Name="RedirectOutputAndErrors" DisplayName="Ausgabe umleiten" Description="Leitet Ausgaben vom Bildschirm in eine Datei um. (/o Datei)" Category="Advanced" Switch="o" Separator=" " F1Keyword="VC.Project.VCMidlTool.RedirectOutputAndErrors">
+  </StringProperty>
+  <StringProperty Name="MinimumTargetSystem" DisplayName="Mindestversion Zielsystem" Description="Legen Sie die Mindestversion für das Zielsystem fest (/target STRING)." Category="Advanced" Switch="target" Separator=" " F1Keyword="VC.Project.VCMidlTool.MinimumTargetSystem">
+  </StringProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen" Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  </StringProperty>
+  <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="Nachverfolgungsprotokollverzeichnis" Description="Nachverfolgungsprotokollverzeichnis." IncludeInCommandLine="false" Visible="false">
+  </StringProperty>
+</Rule>

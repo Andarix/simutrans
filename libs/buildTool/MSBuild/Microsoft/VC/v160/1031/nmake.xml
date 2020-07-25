@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationNMake" DisplayName="NMake" PageTemplate="generic" Description="NMake" SwitchPrefix="/" Order="100" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+    <Category Name="IntelliSense" DisplayName="IntelliSense" Description="IntelliSense"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile"/>
+  </Rule.DataSource>
+  <StringProperty Name="NMakeBuildCommandLine" DisplayName="Buildbefehlszeile" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Build&quot; ausgeführt werden soll." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.BuildCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="NMakeReBuildCommandLine" DisplayName="&quot;Alles neu erstellen&quot;-Befehlszeile" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Alles neu erstellen&quot; ausgeführt werden soll." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.ReBuildCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="NMakeCleanCommandLine" DisplayName="Neue Befehlszeile" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Neu&quot; ausgeführt werden soll." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.CleanCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="NMakeOutput" DisplayName="Ausgabe" Description="Gibt die zu generierende Ausgabedatei an." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCNMakeTool.Output"/>
+  <StringListProperty Name="NMakePreprocessorDefinitions" DisplayName="Präprozessordefinitionen" Category="IntelliSense" Switch="D" Description="Gibt die von den Quelldateien verwendeten Präprozessordefinitionen an." F1Keyword="VC.Project.VCNMakeTool.PreprocessorDefinitions"/>
+  <StringListProperty Name="NMakeIncludeSearchPath" DisplayName="Suchpfad einschließen" Category="IntelliSense" Switch="I" Description="Gibt den Includesuchpfad für die Auflösung der eingeschlossenen Dateien an." Subtype="folder" F1Keyword="VC.Project.VCNMakeTool.IncludeSearchPath"/>
+  <StringListProperty Name="NMakeForcedIncludes" DisplayName="Erzwungene Includes" Category="IntelliSense" Switch="FI" Description="Gibt die Dateien, deren Einschluss erzwungen wird." Subtype="folder" F1Keyword="VC.Project.VCNMakeTool.ForcedIncludes"/>
+  <StringListProperty Name="NMakeAssemblySearchPath" DisplayName="Assemblysuchpfad" Category="IntelliSense" Switch="AI" Description="Gibt den Assemblysuchpfad für die Auflösung verwendeter .NET-Assemblys an." Subtype="folder" F1Keyword="VC.Project.VCNMakeTool.AssemblySearchPath"/>
+  <StringListProperty Name="NMakeForcedUsingAssemblies" DisplayName="Erzwungene Verwendung von Assemblys" Category="IntelliSense" Switch="FU" Description="Gibt die Assemblys an, deren Verwendung in den Quelldateien erzwungen wird." F1Keyword="VC.Project.VCNMakeTool.ForcedUsingAssemblies"/>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Category="IntelliSense" Description="Gibt zusätzliche Compilerschalter an, die von Intellisense beim Analysieren von C++Dateien verwendet werden."/>
+</Rule>

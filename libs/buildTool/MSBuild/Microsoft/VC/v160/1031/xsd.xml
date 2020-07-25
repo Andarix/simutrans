@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="XSD" PageTemplate="tool" DisplayName="Tool zum Generieren von XML-Daten" SwitchPrefix="/" Order="120" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein"/>
+    <Category Name="All Options" DisplayName="Alle Optionen" Subtype="Search"/>
+    <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="Xsd" Label="" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <BoolProperty Name="SuppressStartupBanner" DisplayName="Startbanner unterdrücken" Description="Wird ohne Anzeige der standardmäßigen Microsoft-Copyrightinformationen ausgeführt. (/nologo)" Category="General" Switch="nologo" F1Keyword="VC.Project.VCXMLDataGeneratorTool.SupressStartupBanner">
+  </BoolProperty>
+  <StringProperty Name="Namespace" DisplayName="Namespace" Description="Der Namespace für generierte Klassendateien. Der Standardnamespace ist der globale Namespace. (/namespace:[Zeichenfolge])" Category="General" Switch="namespace:" F1Keyword="VC.Project.VCXMLDataGeneratorTool.Namespace">
+  </StringProperty>
+  <StringProperty Name="Language" DisplayName="Sprache" Description="Die für den generierten Code zu verwendende Sprache. Wählen Sie &quot;CS&quot;, &quot;VB&quot;, &quot;JS&quot;, &quot;VJS&quot; oder &quot;CPP&quot; aus, oder geben Sie einen vollqualifizierten Namen für eine Klasse an, die System.CodeDom.Compiler.CodeDomProvider implementiert. Die Standardsprache ist &quot;CS&quot; (CSharp). (/language:[Zeichenfolge])" Category="General" Switch="language:" Visible="false">
+  </StringProperty>
+  <EnumProperty Name="GenerateFromSchema" DisplayName="Aus Schema generieren" Description="Die aus dem Schema generierten Typen." Category="General" F1Keyword="VC.Project.VCXMLDataGeneratorTool.GenerateFromSchema">
+    <EnumValue Name="classes" Switch="classes" DisplayName="Klassen" Description="Generiert Klassen für dieses Schema. (/classes)">
+    </EnumValue>
+    <EnumValue Name="dataset" Switch="dataset" DisplayName="DataSet" Description="Generiert ein untergeordnetes DataSet für dieses Schema. (/dataset)">
+    </EnumValue>
+  </EnumProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen" Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  </StringProperty>
+  <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="Nachverfolgungsprotokollverzeichnis" Description="Nachverfolgungsprotokollverzeichnis." Category="General" IncludeInCommandLine="false" Visible="false">
+  </StringProperty>
+</Rule>

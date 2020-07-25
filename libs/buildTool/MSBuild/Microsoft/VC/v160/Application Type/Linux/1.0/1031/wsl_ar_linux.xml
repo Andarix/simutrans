@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="LIB" PageTemplate="tool" DisplayName="Bibliotheksprogramm" SwitchPrefix="-" Order="40" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein"/>
+    <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="Lib" Label="" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <EnumProperty Name="Command" DisplayName="Befehl" Description="Befehl für AR." Category="General" Visible="false" F1Keyword="VC.Project.Ar.Command">
+    <EnumProperty.Arguments>
+      <Argument Property="CreateIndex" IsRequired="false"/>
+      <Argument Property="CreateThinArchive" IsRequired="false"/>
+      <Argument Property="NoWarnOnCreate" IsRequired="false"/>
+      <Argument Property="TruncateTimestamp" IsRequired="false"/>
+      <Argument Property="SuppressStartupBanner" IsRequired="false"/>
+      <Argument Property="Verbose" IsRequired="false"/>
+    </EnumProperty.Arguments>
+    <EnumValue Name="Delete" Switch="d" DisplayName="Löschen" Description="Datei(en) aus dem Archiv löschen"/>
+    <EnumValue Name="Move" Switch="m" DisplayName="Verschieben" Description="Datei(en) im Archiv verschieben."/>
+    <EnumValue Name="Print" Switch="p" DisplayName="Drucken" Description="Datei(en) aus dem Archiv drucken."/>
+    <EnumValue Name="Quick" Switch="q" DisplayName="Schnell" Description="Datei(en) schnell an das Archiv anhängen."/>
+    <EnumValue Name="Replacement" Switch="r" DisplayName="Ersetzen" Description="Vorhandene Datei(en) ersetzen oder neue in das Archiv einfügen."/>
+    <EnumValue Name="Table" Switch="t" DisplayName="Tabelle" Description="Inhalte des Archivs anzeigen."/>
+    <EnumValue Name="Extract" Switch="x" DisplayName="Extrahieren" Description="Datei(en) aus dem Archiv extrahieren."/>
+  </EnumProperty>
+  <BoolProperty Name="CreateIndex" DisplayName="Einen Archivindex erstellen" Description="Einen Archivindex erstellen (cf. ranlib). Dies kann die Verknüpfung beschleunigen und die Abhängigkeit in der eigenen Bibliothek reduzieren." SwitchPrefix="" Category="General" Switch="s" F1Keyword="VC.Project.Ar.CreateIndex"/>
+  <BoolProperty Name="CreateThinArchive" DisplayName="Schlankes Archiv erstellen" Description="Schlankes Archiv erstellen. Ein schlankes Archiv enthält relative Pfade zu den Objekten, anstatt die Objekte einzubetten. Der Wechsel zwischen Schlank und Normal erfordert ein Löschen der vorhandenen Bibliothek." SwitchPrefix="" Category="General" Switch="T" F1Keyword="VC.Project.Ar.CreateThinArchive"/>
+  <BoolProperty Name="NoWarnOnCreate" DisplayName="Keine Warnung beim Erstellen" Description="Beim Erstellen der Bibliothek nicht warnen." SwitchPrefix="" Category="General" Switch="c" F1Keyword="VC.Project.Ar.NoWarnOnCreate"/>
+  <BoolProperty Name="TruncateTimestamp" DisplayName="Zeitstempel abschneiden" Description="Null für Zeitstempel und uids/gids verwenden." SwitchPrefix="" Category="General" Switch="D" F1Keyword="VC.Project.Ar.TruncateTimestamp"/>
+  <BoolProperty ReverseSwitch="V" Name="SuppressStartupBanner" DisplayName="Startbanner unterdrücken" Description="Versionsnummer nicht anzeigen." SwitchPrefix="" Category="General" F1Keyword="VC.Project.Ar.SuppressStartupBanner"/>
+  <BoolProperty Name="Verbose" DisplayName="Ausführlich" Description="Ausführlich" SwitchPrefix="" Category="General" Switch="v" F1Keyword="VC.Project.Ar.Verbose"/>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage"/>
+  <!--<StringProperty Subtype="file" Name="OutputFile" DisplayName="Output File" Description="The /OUT option overrides the default name and location of the program that the lib creates." SwitchPrefix="" Category="General" Separator=" " F1Keyword="VC.Project.Ar.OutputFile" />-->
+  <StringProperty Subtype="file" Name="OutputFile" DisplayName="Ausgabedatei" Description="Die Option überschreibt den Standardnamen und den Speicherort des Programms, das der Linker erstellt. (-o)" Category="General" Switch="o" F1Keyword="VC.Project.VCLinkerTool.OutputFile">
+  </StringProperty>
+  <StringProperty Subtype="file" Name="RemoteTargetPath" DisplayName="Ausgabedatei" Description="Die /OUT-Option überschreibt den Standardnamen und den Standardspeicherort des Programms, das lib erstellt." SwitchPrefix="" Category="General" Separator=" " F1Keyword="VC.Project.Ar.OutputFile">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteArToolExe" DisplayName="Archivierungsprogramm" Description="Gibt das Programm an, das beim Verknüpfen statischer Objekte aufgerufen werden soll, oder den Pfad zum Archivierungsprogramm auf dem Remotesystem." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteArCommmandTimeout" DisplayName="Timeout bei Archivierungsprogramm." Description="Timeout für das Remotearchivierungsprogramm in Millisekunden." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="RemoteLinkLocalCopyOutput" DisplayName="Ausgabe kopieren" Description="Gibt an, ob die Buildausgabedatei vom Remotesystem auf den lokalen Computer kopiert werden soll." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+</Rule>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="WebServiceDebugger" DisplayName="Webdienst-Debugger" PageTemplate="debugger" Description="Optionen für Webdienst-Debugger" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile"/>
+  </Rule.DataSource>
+  <StringProperty Name="WebServiceDebuggerHttpUrl" DisplayName="HTTP-URL" Description="Gibt die URL für das Projekt an." F1Keyword="VC.Project.IVCWebSvcDebugPageObject.HttpUrl"/>
+  <EnumProperty Name="WebServiceDebuggerDebuggerType" DisplayName="Debuggertyp" Description="Gibt den zu verwendenden Debuggertyp an. Der Debuggertyp wird basierend auf dem Inhalt der EXE-Datei ausgewählt, wenn die automatische Auswahl festgelegt wurde." F1Keyword="VC.Project.IVCWebSvcDebugPageObject.DebuggerType">
+    <EnumValue Name="NativeOnly" DisplayName="Nur nativ" Description="Nur nativ"/>
+    <EnumValue Name="ManagedOnly" DisplayName="Nur verwaltet" Description="Nur verwaltet"/>
+    <EnumValue Name="Mixed" DisplayName="Gemischt" Description="Gemischt"/>
+    <EnumValue Name="Auto" DisplayName="Automatisch" Description="Automatisch"/>
+    <EnumValue Name="Script" DisplayName="Skript" Description="Skript"/>
+  </EnumProperty>
+  <BoolProperty Name="WebServiceDebuggerSQLDebugging" DisplayName="SQL-Debugging" Description="Fügen Sie den SQL-Debugger an." F1Keyword="VC.Project.IVCWebSvcDebugPageObject.SQLDebugging"/>
+  <BoolProperty Name="UseLegacyManagedDebugger" Visible="false"/>
+</Rule>

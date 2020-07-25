@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneral" DisplayName="Allgemein" PageTemplate="generic" Description="Allgemein" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration"/>
+  </Rule.DataSource>
+  <StringProperty Name="OutDir" DisplayName="Ausgabeverzeichnis" Description="Gibt einen relativen Pfad zum Ausgabedateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Default="$(SolutionDir)$(Configuration)\" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.OutputDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="IntDir" DisplayName="Zwischenverzeichnis" Description="Gibt einen relativen Pfad zum Zwischendateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Default="$(Configuration)\" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetName" DisplayName="Zielname" Description="Gibt einen Dateinamen an, der von diesem Projekt generiert wird." F1Keyword="VC.Project.VCConfiguration.TargetName" Category="General" Default="$(ProjectName)">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetExt" DisplayName="Zielerweiterung" Description="Gibt eine Dateierweiterung an, die von diesem Projekt generiert wird. (Beispiel: .exe oder .dll)" F1Keyword="VC.Project.VCConfiguration.TargetExt" Category="General">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringListProperty Name="ExtensionsToDeleteOnClean" DisplayName="Bei der Bereinigung zu löschende Erweiterungen" Description="Trennzeichengetrennte Platzhalterspezifikation dafür, welche Dateien im Zwischenverzeichnis bei der Bereinigung gelöscht oder erneut erstellt werden." Category="General" Separator=";" F1Keyword="VC.Project.VCConfiguration.DeleteExtensionsOnClean">
+                      <StringListProperty.DataSource>
+                            <DataSource Persistence="ProjectFile" Label=""/>
+                      </StringListProperty.DataSource>
+  </StringListProperty>
+  <StringListProperty Name="NoDependencies" DisplayName="Keine Dateiliste für Abhängigkeiten" Description="Eine durch Semikolons getrennte Liste mit Dateien, die während inkrementeller Builds aus der Abhängigkeitsdiagrammüberprüfung ausgeschlossen werden. Jede an den Dateien vorgenommene Änderung, die hier hinzugefügt wird, verhindert das Ausführen des inkrementellen Builds." Category="General" Separator=";" F1Keyword="VC.Project.VCConfiguration.NoDependencies">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+  <StringProperty Name="BuildLogFile" DisplayName="Buildprotokolldatei" Description="Gibt die Buildprotokolldatei an, in die bei aktivierter Buildprotokollierung geschrieben wird." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log" Subtype="file">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <!-- There is no InheritProjectPropertySheets in the project file. The property sheets will be expressed as explicit Imports.
+  <StringListProperty Name="InheritProjectPropertySheets" DisplayName="Inherit Project Property Sheets"
+                      Description="Specifies the project property sheets this configuration or property sheet inherits from."
+                      Category="General" Separator=";" Subtype="file" /> -->
+  <BoolProperty Name="EnableManagedIncrementalBuild" DisplayName="Verwalteten inkrementellen Build aktivieren" Description="Aktiviert verwaltete inkrementelle Buildszenarios mithilfe von metagen." Category="General" F1Keyword="VC.Project.VCConfiguration.EnableManagedIncrementalBuild">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <StringProperty Name="_ProjectFileVersion" DisplayName="Projektdateiversion" Description="Gibt die Version des zum Erstellen dieser Projektdatei verwendeten Konvertierungstools an." Category="General" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="Zielframeworkmoniker" EnumProvider="TargetFrameworkMoniker" Visible="false"/>
+</Rule>

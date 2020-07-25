@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneralAdvanced" DisplayName="Erweitert" PageTemplate="generic" Description="Erweiterte Eigenschaften" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Erweiterte Eigenschaften" Description="Erweiterte Eigenschaften"/>
+    <Category Name="CLR" DisplayName="C++/CLI-Eigenschaften" Description="C++/CLI-Eigenschaften"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration"/>
+  </Rule.DataSource>
+  
+  <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime-Unterstützung" Description="Gibt an, ob diese Konfiguration Common Language Runtime unterstützt. Dies ist mit einigen anderen Einstellungen inkompatibel, z. B. Laufzeitüberprüfungen. In der Hilfe zu den /clr-Schaltern des C++-Compilers finden Sie eine Liste mit allen Konflikten." Category="CLR" F1Keyword="VC.Project.VCConfiguration.ManagedExtensions">
+    <EnumValue Name="false" DisplayName="Keine Common Language Runtime-Unterstützung"/>
+    <EnumValue Name="NetCore" DisplayName=".NET Core Runtime Support (/clr:netcore)"/>
+    <EnumValue Name="true" DisplayName="Common Language Runtime-Unterstützung (/clr)"/>
+    <EnumValue Name="Pure" DisplayName="Reine MSIL Common Language Runtime-Unterstützung (/clr:pure)"/>
+    <EnumValue Name="Safe" DisplayName="Sichere MSIL Common Language Runtime-Unterstützung (/clr:safe)"/>
+  </EnumProperty>
+  
+  <StringProperty Name="TargetFrameworkVersion" DisplayName=".NET Framework-Zielversion" Description="Die Version des .NET Frameworks, die bereits Ziel des Projekts ist. Dies gilt nur, wenn &quot;Common Language Runtime-Unterstützung&quot; festgelegt ist." Category="CLR" F1Keyword="VC.Project.TargetFrameworkVersion">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="False"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <StringProperty Name="TargetFramework" Visible="false" DisplayName=".NET Core-Zielframework" Description="Die .NET Core-Version, auf die das Projekt ausgerichtet ist. Gilt nur, wenn &quot;Common Language Runtime-Unterstützung&quot; auf &quot;.NET Core&quot; festgelegt ist." Category="CLR" F1Keyword="VC.Project.TargetFrameworkVersion">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="False"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <BoolProperty Name="EnableManagedIncrementalBuild" DisplayName="Verwalteten inkrementellen Build aktivieren" Description="Aktiviert verwaltete inkrementelle Buildszenarios mithilfe von metagen." Category="CLR" F1Keyword="VC.Project.VCConfiguration.EnableManagedIncrementalBuild">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+  <StringProperty Name="TargetExt" DisplayName="Zieldateierweiterung" Description="Gibt eine Dateierweiterung für das Programm an. (Beispiel: .exe oder .dll)" F1Keyword="VC.Project.VCConfiguration.TargetExt" Category="General">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <StringListProperty Name="ExtensionsToDeleteOnClean" DisplayName="Bei der Bereinigung zu löschende Erweiterungen" Description="Trennzeichengetrennte Platzhalterspezifikation dafür, welche Dateien im Zwischenverzeichnis bei der Bereinigung gelöscht oder erneut erstellt werden." Category="General" Separator=";" F1Keyword="VC.Project.VCConfiguration.DeleteExtensionsOnClean">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+
+  <StringProperty Name="BuildLogFile" DisplayName="Buildprotokolldatei" Description="Gibt die Buildprotokolldatei an, in die bei aktivierter Buildprotokollierung geschrieben wird." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Subtype="file">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <EnumProperty Name="PreferredToolArchitecture" DisplayName="Bevorzugte Buildtoolarchitektur" Description="Bestimmt, welche Buildtools zum Kompilieren von Programmen (32-Bit oder 64-Bit) verwendet werden." Category="General" F1Keyword="VC.Project.VCConfiguration.PreferredToolArchitecture">
+    <EnumValue Name="" DisplayName="Standard"/>
+    <EnumValue Name="x86" DisplayName="32-Bit (x86)"/>
+    <EnumValue Name="x64" DisplayName="64-Bit (x64)"/>
+  </EnumProperty>
+
+  <BoolProperty Name="UseDebugLibraries" DisplayName="Debugbibliotheken verwenden" Description="Gibt an, ob die Konfiguration für die Entwicklung (DEBUG) oder die Produktion (RELEASE) eingerichtet wird." Category="General" F1Keyword="VC.Project.VCConfiguration.UseDebugLibraries">
+  </BoolProperty>
+
+  <BoolProperty Name="EnableUnitySupport" DisplayName="Unity (JUMBO)-Build aktivieren" Description="Ermöglicht einen Buildprozess, in dem zum Verbessern der Buildleistung mehrere C++-Dateien vor dem Kompilieren zu mindestens einer &quot;Unity&quot;-Datei kombiniert werden. Steht in keinem Zusammenhang mit der Unity-Spielengine." Category="General" F1Keyword="VC.Project.VCConfiguration.EnableUnitySupport"/>
+
+  <BoolProperty Name="CopyLocalDeploymentContent" DisplayName="Inhalt in OutDir kopieren" Description="Hiermit werden Elemente, die als Inhalt markiert sind, in das Ausgabeverzeichnis dieses Projekts kopiert." Category="General" F1Keyword="VC.Project.VCConfiguration.CopyLocalDeploymentContent">
+	<BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+  <BoolProperty Name="CopyLocalProjectReference" DisplayName="Projektverweise in OutDir kopieren" Description="Hiermit wird die Ausgabe von Projektverweisen (DLL/EXE) in das Ausgabeverzeichnis dieses Projekts kopiert. Für das CLR-Projekt wird &quot;Lokal kopieren&quot; von den Eigenschaften für die einzelnen Assemblys und Projektverweise gesteuert." Category="General" F1Keyword="VC.Project.VCConfiguration.CopyLocalProjectReference">
+	<BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+  <BoolProperty Name="CopyLocalDebugSymbols" DisplayName="Symbole von Projektverweisen in OutDir kopieren" Description="Hiermit werden die Symbole von Projektverweisen (PDB) zusammen mit der Ausgabe der Projektverweise (DLL/EXE) in das Ausgabeverzeichnis dieses Projekts kopiert. Für CLR-Projekte immer aktiviert." Category="General" F1Keyword="VC.Project.VCConfiguration.CopyLocalDebugSymbols">
+	<BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+  <BoolProperty Name="CopyCppRuntimeToOutputDir" DisplayName="cpp-Runtime in OutDir kopieren" Description="Kopieren Sie cpp-Runtime-DLLs in das Ausgabeverzeichnis dieses Projekts. " Category="General" F1Keyword="VC.Project.VCConfiguration.CopyCppRuntimeToOutputDir">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+
+  <EnumProperty Name="UseOfMfc" DisplayName="Verwendung von MFC" Description="Gibt an, wie MFC von dieser Konfiguration verwendet wird." Category="General" F1Keyword="VC.Project.VCConfiguration.useOfMfc">
+    <EnumValue Name="false" DisplayName="Windows-Standardbibliotheken verwenden" Description="Windows-Standardbibliotheken verwenden"/>
+    <EnumValue Name="Static" DisplayName="MFC in einer statischen Bibliothek verwenden" Description="MFC in einer statischen Bibliothek verwenden"/>
+    <EnumValue Name="Dynamic" DisplayName="MFC in einer gemeinsam genutzten DLL verwenden" Description="MFC in einer gemeinsam genutzten DLL verwenden"/>
+  </EnumProperty>
+
+  <EnumProperty Name="CharacterSet" DisplayName="Zeichensatz" Description="Weist den Compiler an, den angegebenen Zeichensatz zu verwenden; hilfreich bei Lokalisierungsproblemen." Category="General" F1Keyword="VC.Project.VCConfiguration.CharacterSet">
+    <EnumValue Name="NotSet" DisplayName="Nicht festgelegt" Description="Nicht festgelegt"/>
+    <EnumValue Name="Unicode" DisplayName="Unicode-Zeichensatz verwenden" Description="Unicode-Zeichensatz verwenden"/>
+    <EnumValue Name="MultiByte" DisplayName="Multibyte-Zeichensatz verwenden" Description="Multibyte-Zeichensatz verwenden"/>
+  </EnumProperty>
+
+  <EnumProperty Name="WholeProgramOptimization" DisplayName="Optimierung des gesamten Programms" Description="Gibt an, dass das Programm über die OBJ-Grenzen hinaus optimiert wird. Funktioniert am besten, wenn C/C++-Optimierungen aktiviert sind." Category="General" F1Keyword="VC.Project.VCConfiguration.WholeProgramOptimization">
+    <EnumValue Name="false" DisplayName="Keine komplette Programmoptimierung" Description="Keine komplette Programmoptimierung"/>
+    <EnumValue Name="true" DisplayName="Link-Zeitcodegenerierung verwenden" Description="Link-Zeitcodegenerierung verwenden"/>
+    <EnumValue Name="PGInstrument" DisplayName="Profilgesteuerte Optimierung (PGO) - Instrumentieren" Description="Profilgesteuerte Optimierung (PGO) - Instrumentieren"/>
+    <EnumValue Name="PGOptimize" DisplayName="Profilgesteuerte Optimierung (PGO) - Optimieren" Description="Profilgesteuerte Optimierung (PGO) - Optimieren"/>
+    <EnumValue Name="PGUpdate" DisplayName="Profilgesteuerte Optimierung (PGO) - Aktualisieren" Description="Profilgesteuerte Optimierung (PGO) - Aktualisieren"/>
+  </EnumProperty>
+
+  <DynamicEnumProperty Name="VCToolsVersion" DisplayName="Version des MSVC-Toolsets" EnumProvider="VCToolsVersion" Description="Gibt die vollständige Version des MSVC-Toolsets an, das von diesem Projekt für Builds verwendet wird." Category="General" F1Keyword="VC.Project.VCConfiguration.VCToolsVersion">
+  </DynamicEnumProperty>
+</Rule>

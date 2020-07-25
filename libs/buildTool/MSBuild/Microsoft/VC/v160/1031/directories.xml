@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationDirectories" DisplayName="VC++-Verzeichnisse" Order="8" PageTemplate="generic" Description="Toolsuchverzeichnisse" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="VC++" DisplayName="Allgemein" Description="Visual C++-Verzeichnisse"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile"/>
+  </Rule.DataSource>
+  <StringListProperty Name="ExecutablePath" DisplayName="Ausführbare Verzeichnisse" Description="Pfad, der verwendet wird, wenn beim Erstellen eines VC++-Projekts nach ausführbaren Dateien gesucht werden soll.  Stimmt mit der Umgebungsvariable PATH überein." F1Keyword="VC.Project.VCDirectories.ExecutablePath" Category="VC++" Separator=";" Subtype="folder"/>
+  <StringListProperty Name="IncludePath" DisplayName="Includeverzeichnisse" Description="Pfad, der verwendet wird, wenn beim Erstellen eines VC++-Projekts nach Includedateien gesucht werden soll.  Stimmt mit der Umgebungsvariable INCLUDE überein." F1Keyword="VC.Project.VCDirectories.IncludePath" Category="VC++" Separator=";" Subtype="folder"/>
+  <StringListProperty Name="ReferencePath" DisplayName="Verweisverzeichnisse" Description="Pfad, der verwendet wird, wenn beim Erstellen eines VC++-Projekts Metadatendateien gesucht werden. Stimmt mit der Umgebungsvariable LIBPATH überein." F1Keyword="VC.Project.VCDirectories.ReferencePath" Category="VC++" Separator=";" Subtype="folder"/>
+  <StringListProperty Name="LibraryPath" DisplayName="Bibliotheksverzeichnisse" Description="Pfad, der bei der Suche nach Bibliotheksdateien während des Erstellens eines VC++-Projekts zu verwenden ist.  Stimmt mit der Umgebungsvariable LIB überein." F1Keyword="VC.Project.VCDirectories.LibraryPath" Category="VC++" Separator=";" Subtype="folder"/>
+  <StringListProperty Name="LibraryWPath" DisplayName="WinRT-Bibliotheksverzeichnisse" Description="Pfad, der verwendet wird, wenn beim Erstellen eines VC++-Projekts winmd-Metadatendateien gesucht werden. Wird mit 'Verweisverzeichnisse' in LIBPATH verkettet." F1Keyword="VC.Project.VCDirectories.LibraryWPath" Category="VC++" Separator=";" Subtype="folder"/>
+  <StringListProperty Name="SourcePath" DisplayName="Quellverzeichnisse" Description="Pfad, der zum Suchen der Quelldateien für IntelliSense verwendet wird." F1Keyword="VC.Project.VCDirectories.SourcePath" Category="VC++" Separator=";" Subtype="folder"/>
+  <StringListProperty Name="ExcludePath" DisplayName="Verzeichnisse ausschließen" Description="Bei der Suche nach Suchabhängigkeiten zu überspringender Pfad." F1Keyword="VC.Project.VCDirectories.ExcludePath" Category="VC++" Separator=";" Subtype="folder"/>
+</Rule>

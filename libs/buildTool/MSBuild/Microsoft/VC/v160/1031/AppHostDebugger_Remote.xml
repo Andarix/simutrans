@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.
+    Remote debug properties for Windows UWP apps-->
+<Rule Name="UWPRemoteDebugger" DisplayName="Remotecomputer" PageTemplate="debugger" Order="400" Description="Remote Debugger-Optionen" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  
+  <Rule.Metadata>
+    <sys:Guid x:Key="DebugTargetTypeCommandGuid">FEEA6E9D-77D8-423F-9EDE-3970CBB76125</sys:Guid>
+    <sys:UInt32 x:Key="DebugTargetTypeCommandId">0x400</sys:UInt32>
+  </Rule.Metadata>
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile"/>
+  </Rule.DataSource>
+
+  <BoolProperty Name="DebuggerLaunchApplication" DisplayName="Anwendung starten" F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.LaunchApplication" Description="Gibt an, ob die Anwendung umgehend gestartet oder beim Starten zunächst gewartet werden soll, um diese beim Start zu debuggen."/>
+  <BoolProperty Name="AllowLocalNetworkLoopback" DisplayName="Lokales Netzwerkloopback zulassen" F1Keyword="VC.Project.IVCAppHostLocalDebugPageObject.AllowLocalNetworkLoopback" Description="Ermöglicht beim Debuggen einer Windows Store-App, lokale Dienste zu nutzen, den Netzwerkdatenverkehr zu debuggen und ein lokales Loopback für die Kommunikation mit Komponenten auf dem gleichen Computer zu verwenden."/>
+  <EnumProperty Name="DebuggerType" DisplayName="Debuggertyp" F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.DebuggerType" Description="Gibt den zu debuggenden Codetyp an.">
+    <EnumProperty.Metadata>
+      <NameValuePair Name="IsDebugType" Value="true"/>
+    </EnumProperty.Metadata>
+    <EnumValue Name="NativeOnly" DisplayName="Nur nativ"/>
+    <EnumValue Name="ManagedCore" DisplayName="Nur verwaltet"/>
+    <EnumValue Name="GPUOnly" DisplayName="Nur GPU (C++ AMP)"/>
+    <EnumValue Name="Script" DisplayName="Nur Skript"/>
+    <EnumValue Name="NativeWithManagedCore" DisplayName="Verwaltet und Nativ"/>
+    <EnumValue Name="NativeWithScript" DisplayName="Skript und Nativ"/>
+  </EnumProperty>
+  <StringProperty Name="DebuggerMachineName" DisplayName="Computername" F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.MachineName" Description="Gibt den Namen des Computers an, der für das Remotedebugging verwendet werden soll.">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="CppUniversalRemoteDebuggerPropertyEditor" DisplayName="&lt;Suchen...&gt;">
+        <ValueEditor.Metadata>
+          <NameValuePair Name="AuthenticationPropertyName" Value="DebuggerRequireAuthentication"/>
+        </ValueEditor.Metadata>
+      </ValueEditor>
+    </StringProperty.ValueEditors>
+  </StringProperty> 
+  <EnumProperty Name="DebuggerRequireAuthentication" DisplayName="Authentifizierungstyp" F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.Authentication" Description="Gibt an, welcher Authentifizierungstyp beim Debuggen auf Remotegeräten erforderlich ist.">
+    <EnumValue Name="True" DisplayName="Windows-Authentifizierung"/>
+    <EnumValue Name="False" DisplayName="Keine Authentifizierung"/>
+    <EnumValue Name="Universal" DisplayName="Universell (unverschlüsseltes Protokoll)"/>
+  </EnumProperty>
+  <DynamicEnumProperty Name="GPUDebuggerTargetType" DisplayName="Debuggingbeschleunigungstyp" EnumProvider="GPUTargets" F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.GPUDebuggerTargetType" Description="Der für das Debugging des GPU-Codes zu verwendende Debuggingbeschleunigungstyp (Verfügbar, wenn der GPU-Debugger aktiv ist).">
+    <DynamicEnumProperty.Metadata>
+      <NameValuePair Name="ParentPropertyName" Value="DebuggerType"/>
+      <NameValuePair Name="ParentPropertyValue" Value="GPUOnly"/>
+    </DynamicEnumProperty.Metadata>
+  </DynamicEnumProperty>
+  <EnumProperty Name="GPURefDebuggerBreakOnAllThreads" DisplayName="GPU-Standardhaltepunktverhalten" Description="Legt fest, wie oft der GPU-Debugger angehalten wird." F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.BreakpointBehavior">
+    <EnumValue Name="GPURefBreakOncePerWarp" DisplayName="Ein Halt pro Verzerrung" Description="Ein Halt pro Verzerrung"/>
+    <EnumValue Name="GPURefBreakForCPUThread" DisplayName="Halt für jeden Thread (wie CPU-Verhalten)" Description="Halt für jeden Thread (wie CPU-Verhalten)"/>
+    <EnumProperty.Metadata>
+      <NameValuePair Name="ParentPropertyName" Value="DebuggerType"/>
+      <NameValuePair Name="ParentPropertyValue" Value="GPUOnly"/>
+    </EnumProperty.Metadata>
+  </EnumProperty>
+  <BoolProperty Name="RemoteDebuggerDeployDebugCppRuntime" DisplayName="Visual C++ Debugging-Laufzeitbibliotheken bereitstellen" Description="Gibt an, ob die Debugging-Laufzeitbibliotheken für die aktive Plattform (Win32, x64, oder ARM) bereitgestellt werden sollen." F1Keyword="VC.Project.IVCRemoteDebugPageObject.Remote"/>
+  <DynamicEnumProperty Name="DebuggerAmpDefaultAccelerator" DisplayName="Amp-Standard-Accelerator" EnumProvider="AmpAccelerators" F1Keyword="VC.Project.IVCAppHostRemoteDebugPageObject.AmpDefaultAccelerator" Description="Überschreiben Sie die Auswahl des Standard-Accelerators von C++ AMP. Die Eigenschaft gilt nicht beim Debuggen von verwaltetem Code.">
+  </DynamicEnumProperty>
+  <StringProperty Name="LayoutDir" DisplayName="Paketlayoutpfad" Description="Der Speicherort des Paketlayouts, an den die binäre Ausgabe kopiert wird. Dieser Speicherort kann auch nicht binäre Ressourcen für das Projekt enthalten."/>
+  <EnumProperty Name="RemoteDeploymentType" DisplayName="Erweiterter Remotebereitstellungstyp" Description="Gibt den Typ der Remotebereitstellung an. Wählen Sie &quot;Auf Gerät kopieren&quot; aus, um das Paketlayout physisch auf das Remotegerät zu kopieren, oder &quot;Aus Netzwerk registrieren&quot;, um ein Layout aus einer Netzwerkfreigabe zu registrieren.">
+    <EnumValue Name="CopyToDevice" DisplayName="Auf Gerät kopieren"/>
+    <EnumValue Name="RegisterFromNetwork" DisplayName="Aus Netzwerk registrieren"/>
+  </EnumProperty>
+  <StringProperty Name="PackageRegistrationPath" DisplayName="Paketregistrierungspfad" Description="Für &quot;Auf Gerät kopieren&quot; gibt dies den physischen Speicherort auf dem Remotegerät an, auf das das Layout kopiert wird. Es handelt sich um einen optionalen Parameter. Für &quot;Aus Netzwerk registrieren&quot;
+gibt dies einen Remotenetzwerk-Speicherort für das Paketlayout an. Dies ist ein erforderlicher Parameter."/>
+  <BoolProperty Name="RemoveNonLayoutFiles" DisplayName="Nichtlayoutdateien vom Gerät entfernen" Description="Gibt an, ob die Dateien, die nicht Teil des Layouts sind, während der Bereitstellung vom Zielgerät entfernt werden. Dies gilt nur für die Bereitstellung &quot;Auf Gerät kopieren&quot;."/>
+  <StringProperty Name="CommandLineArgs" DisplayName="Befehlszeilenargumente" Description="Befehlszeilenargumente, die an den Debugger übergeben werden."/>
+</Rule>

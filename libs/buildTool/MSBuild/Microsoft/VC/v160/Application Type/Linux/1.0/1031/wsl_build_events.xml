@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationBuildEvents" DisplayName="Buildereignisse" PageTemplate="tool" Order="90" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="PreBuild" DisplayName="Präbuildereignis"/>
+    <Category Name="PreLink" DisplayName="Prälinkereignis"/>
+    <Category Name="PostBuild" DisplayName="Postbuildereignis"/>
+    <Category Name="RemotePreBuild" DisplayName="WSL-Präbuildereignis ausführen"/>
+    <Category Name="RemotePreLink" DisplayName="WSL-Prälinkerereignis"/>
+    <Category Name="RemotePostBuild" DisplayName="WSL-Postbuildereignis ausführen"/>
+  </Rule.Categories>
+  <StringProperty Name="PreBuildCommand" Category="PreBuild" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile an, die vom Präbuildereignis-Tool ausgeführt wird." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreBuildEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="PreBuildMessage" Category="PreBuild" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Präbuildereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreBuildEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="PreBuildEventUseInBuild" Category="PreBuild" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+  <StringListProperty Name="PreBuildAdditionalSourcesToCopyMapping" DisplayName="Zusätzliche zu kopierende Dateien" Description="Gibt weitere Dateien an, die auf das Remotesystem kopiert werden sollen. Optional kann die Liste in Form von Lokal-zu-remote-Zuordnungspaaren bereitgestellt werden. Verwenden Sie dazu folgende Syntax: vollständigerlokalerpfad1:=vollständigerremotepfad1;vollständigerlokalerpfad2:=vollständigerremotepfad2, wobei eine lokale Datei in das angegebene Remoteverzeichnis auf dem Remotecomputer kopiert werden kann." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="PreBuild" Default="" Visible="false">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreBuildEvent" PersistedName="AdditionalSourcesToCopyMapping"/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+
+  <StringProperty Name="PreLinkCommand" Category="PreLink" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile an, die vom Prälinkereignis-Tool ausgeführt wird." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreLinkEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="PreLinkMessage" Category="PreLink" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Prälinkereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreLinkEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="PreLinkEventUseInBuild" Category="PreLink" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+  <StringListProperty Name="PreLinkAdditionalSourcesToCopyMapping" DisplayName="Zusätzliche zu kopierende Dateien" Description="Gibt weitere Dateien an, die auf das Remotesystem kopiert werden sollen. Optional kann die Liste in Form von Lokal-zu-remote-Zuordnungspaaren bereitgestellt werden. Verwenden Sie dazu folgende Syntax: vollständigerlokalerpfad1:=vollständigerremotepfad1;vollständigerlokalerpfad2:=vollständigerremotepfad2, wobei eine lokale Datei in das angegebene Remoteverzeichnis auf dem Remotecomputer kopiert werden kann." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="PreLink" Default="" Visible="false">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PreLinkEvent" PersistedName="AdditionalSourcesToCopyMapping"/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+
+  <StringProperty Name="PostBuildCommand" Category="PostBuild" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile an, die vom Postbuildereignis-Tool ausgeführt wird." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PostBuildEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="PostBuildMessage" Category="PostBuild" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Postbuildereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PostBuildEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="PostBuildEventUseInBuild" Category="PostBuild" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+  <StringListProperty Name="PostBuildAdditionalSourcesToCopyMapping" DisplayName="Zusätzliche zu kopierende Dateien" Description="Gibt weitere Dateien an, die auf das Remotesystem kopiert werden sollen. Optional kann die Liste in Form von Lokal-zu-remote-Zuordnungspaaren bereitgestellt werden. Verwenden Sie dazu folgende Syntax: vollständigerlokalerpfad1:=vollständigerremotepfad1;vollständigerlokalerpfad2:=vollständigerremotepfad2, wobei eine lokale Datei in das angegebene Remoteverzeichnis auf dem Remotecomputer kopiert werden kann." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="PostBuild" Default="" Visible="false">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="PostBuildEvent" PersistedName="AdditionalSourcesToCopyMapping"/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+
+  <StringProperty Name="RemotePreBuildCommand" Category="RemotePreBuild" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile für die Ausführung des Präbuildereignis-Tools in der WSL-Shell an." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePreBuildEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemotePreBuildMessage" Category="RemotePreBuild" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Präbuildereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePreBuildEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="RemotePreBuildEventUseInBuild" Category="RemotePreBuild" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+  <StringListProperty Name="RemotePreBuildAdditionalSourcesToCopyMapping" DisplayName="Zusätzliche zu kopierende Dateien" Description="Gibt weitere Dateien an, die vom Remotesystem kopiert werden sollen. Optional kann die Liste in Form von Remote-zu-lokal-Zuordnungspaaren bereitgestellt werden. Verwenden Sie dazu folgende Syntax: vollständigerremotepfad1:=vollständigerlokalerpfad1;vollständigerremotepfad2:=vollständigerlokalerpfad2, wobei eine Remotedatei in das angegebene Verzeichnis auf dem lokalen Computer kopiert werden kann." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="RemotePreBuild" Default="" Visible="false">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePreBuildEvent" PersistedName="AdditionalSourcesToCopyMapping"/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+
+  <StringProperty Name="RemotePreLinkCommand" Category="RemotePreLink" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile für die Ausführung des Prälinkerereignis-Tools in der WSL-Shell an." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePreLinkEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemotePreLinkMessage" Category="RemotePreLink" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Prälinkereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePreLinkEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="RemotePreLinkEventUseInBuild" Category="RemotePreLink" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+  <StringListProperty Name="RemotePreLinkAdditionalSourcesToCopyMapping" DisplayName="Zusätzliche zu kopierende Dateien" Description="Gibt weitere Dateien an, die vom Remotesystem kopiert werden sollen. Optional kann die Liste in Form von Remote-zu-lokal-Zuordnungspaaren bereitgestellt werden. Verwenden Sie dazu folgende Syntax: vollständigerremotepfad1:=vollständigerlokalerpfad1;vollständigerremotepfad2:=vollständigerlokalerpfad2, wobei eine Remotedatei in das angegebene Verzeichnis auf dem lokalen Computer kopiert werden kann." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="RemotePreLink" Default="" Visible="false">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePreLinkEvent" PersistedName="AdditionalSourcesToCopyMapping"/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+
+  <StringProperty Name="RemotePostBuildCommand" Category="RemotePostBuild" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile für die Ausführung des Postbuildereignis-Tools in der WSL-Shell an." F1Keyword="VC.Project.IVCEventTool.CommandLine">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePostBuildEvent" PersistedName="Command"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemotePostBuildMessage" Category="RemotePostBuild" DisplayName="Beschreibung" Description="Gibt eine Beschreibung an, die vom Postbuildereignis-Tool angezeigt wird." F1Keyword="VC.Project.IVCEventTool.Description">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePostBuildEvent" PersistedName="Message"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="RemotePostBuildEventUseInBuild" Category="RemotePostBuild" DisplayName="In Build verwenden" Description="Gibt an, ob dieses Buildereignis aus dem Build für die aktuelle Konfiguration ausgeschlossen ist." F1Keyword="VC.Project.IVCEventTool.ExcludedFromBuild">
+  </BoolProperty>
+  <StringListProperty Name="RemotePostBuildAdditionalSourcesToCopyMapping" DisplayName="Zusätzliche zu kopierende Dateien" Description="Gibt weitere Dateien an, die vom Remotesystem kopiert werden sollen. Optional kann die Liste in Form von Remote-zu-lokal-Zuordnungspaaren bereitgestellt werden. Verwenden Sie dazu folgende Syntax: vollständigerremotepfad1:=vollständigerlokalerpfad1;vollständigerremotepfad2:=vollständigerlokalerpfad2, wobei eine Remotedatei in das angegebene Verzeichnis auf dem lokalen Computer kopiert werden kann." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="RemotePostBuild" Default="" Visible="false">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType="RemotePostBuildEvent" PersistedName="AdditionalSourcesToCopyMapping"/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+</Rule>

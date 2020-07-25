@@ -1,0 +1,33 @@
+name: Makeobj Linux x64
+
+on:
+  push:
+    tags:
+      - 'Nightly'
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: compile makeobj
+      run: |
+        cd makeobj
+        build.cmd
+
+    - name: Rename result
+      run: |
+        cd build/makeobj/Release
+        zip -r -9 makeobj_windows-nightly.zip Makeobj.exe
+
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/makeobj/Release/makeobj_windows-nightly.zip
+        asset_name: makeobj_windows-nightly.zip
+        tag: Nightly
+        overwrite: true

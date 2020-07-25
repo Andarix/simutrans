@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneral" DisplayName="Allgemein" PageTemplate="generic" Description="Allgemein" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration"/>
+  </Rule.DataSource>
+  <StringProperty Name="OutDir" DisplayName="Ausgabeverzeichnis" Description="Gibt einen relativen Pfad zum Ausgabedateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Default="$(SolutionDir)$(ConfigurationName)" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.OutputDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="IntDir" DisplayName="Zwischenverzeichnis" Description="Gibt einen relativen Pfad zum Zwischendateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Default="$(ConfigurationName)" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory">
+                  <StringProperty.DataSource>
+                     <DataSource Persistence="ProjectFile" Label=""/>
+                  </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="BuildLogFile" DisplayName="Buildprotokolldatei" Description="Gibt die Buildprotokolldatei an, in die bei aktivierter Buildprotokollierung geschrieben wird." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log" Subtype="file">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <EnumProperty Name="ConfigurationType" DisplayName="Konfigurationstyp" Description="Gibt den Ausgabetyp an, der von dieser Konfiguration generiert wird." Category="General" F1Keyword="VC.Project.VCConfiguration.ConfigurationType">
+    <EnumValue Name="DynamicLibrary" DisplayName="Dynamische Bibliothek (.so)" Description="Dynamische Bibliothek (.so)"/>
+    <EnumValue Name="StaticLibrary" DisplayName="Statische Bibliothek (.a)" Description="Statische Bibliothek (.a)"/>
+    <EnumValue Name="Application" DisplayName="Anwendung (.out)" Description="Anwendung (.out)"/>
+    <EnumValue Name="Makefile" DisplayName="Makefile" Description="Makefile"/>
+  </EnumProperty>
+  <DynamicEnumProperty Name="RemoteTarget" DisplayName="Remotebuildcomputer" Description="Der Zielcomputer oder das Zielgerät, der bzw. das für Remotebuild, -erstellung, und -debugging verwendet werden soll." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="" EnumProvider="RemoteTargets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="UserFile" Label=""/>
+    </DynamicEnumProperty.DataSource>
+  </DynamicEnumProperty>
+  <StringProperty Name="RemoteRootDir" DisplayName="Remotebuild-Stammverzeichnis" Description="Gibt einen Pfad zu einem Verzeichnis auf dem Remotecomputer oder -gerät an." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Configuration"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteProjectDir" DisplayName="Remotebuild-Projektverzeichnis" Description="Gibt einen Pfad zu einem Verzeichnis auf dem Remotecomputer oder -gerät für das Projekt an." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteDeployDir" DisplayName="Verzeichnis für Remotebereitstellung" Description="Gibt für die Bereitstellung einen Pfad zu einem Verzeichnis auf dem Remotecomputer oder -gerät für das Projekt an." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <BoolProperty Name="IncrementalBuild" DisplayName="Inkrementeller Build" Description="Hiermit wird ein inkrementeller Build basierend auf Projektelementen aktiviert. Build und Remotebuild werden übersprungen, wenn die Eingaben nicht geändert wurden." Category="General" Default="false" F1Keyword="VC.Project.VCConfiguration.IncrementalBuildAndDeploy">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+  <StringProperty Name="LinuxProjectType" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <StringProperty Name="ProjectName" ReadOnly="true" Visible="false">
+  </StringProperty>
+  <StringProperty Name="EnableASAN" ReadOnly="true" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+</Rule>

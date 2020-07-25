@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationLinuxIntelliSense" DisplayName="C/C++" PageTemplate="tool" Description="C/C++" SwitchPrefix="/" Order="100" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="IntelliSense" DisplayName="IntelliSense" Description="IntelliSense"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile"/>
+  </Rule.DataSource>
+  <StringListProperty Name="NMakeIncludeSearchPath" DisplayName="Suchpfad einschließen" Category="IntelliSense" Switch="I" Description="Gibt den Includesuchpfad für die Auflösung der eingeschlossenen Dateien an." Subtype="folder" F1Keyword="VC.Project.VCNMakeTool.IncludeSearchPath"/>
+  <StringListProperty Name="NMakeForcedIncludes" DisplayName="Erzwungene Includes" Category="IntelliSense" Switch="FI" Description="Gibt die Dateien, deren Einschluss erzwungen wird." Subtype="folder" F1Keyword="VC.Project.VCNMakeTool.ForcedIncludes"/>
+  <StringListProperty Name="NMakePreprocessorDefinitions" DisplayName="Präprozessordefinitionen" Category="IntelliSense" Switch="D" Description="Gibt die von den Quelldateien verwendeten Präprozessordefinitionen an." F1Keyword="VC.Project.VCNMakeTool.PreprocessorDefinitions"/>
+<!--  <StringListProperty Name="UndefinePreprocessorDefinitions"
+                  DisplayName="Undefine Preprocessor Definitions"
+                  Description="Specifies one or more preprocessor undefines.     (/U[macro])"
+                  Category="IntelliSense"
+                  Switch="U"
+                  F1Keyword="VC.Project.VCCLCompilerTool.UndefinePreprocessorDefinitions" />-->
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Category="IntelliSense" Description="Gibt zusätzliche Compilerschalter an, die von Intellisense beim Analysieren von C++-Dateien verwendet werden."/>
+  <EnumProperty Name="CLanguageStandard" DisplayName="C-Sprachstandard" Description="Bestimmt den C-Sprachstandard." Category="IntelliSense" F1Keyword="VC.Project.VCClangCompilerTool.CLanguageStandard">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard">
+    </EnumValue>
+    <EnumValue Name="c89" Switch="std=c89" DisplayName="C89" Description="C89-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c99" Switch="std=c99" DisplayName="C99" Description="C99-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c11" Switch="std=c11" DisplayName="C11" Description="C11-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu99" Switch="std=gnu99" DisplayName="C99 (GNU-Dialekt)" Description="C99 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu11" Switch="std=gnu11" DisplayName="C11 (GNU-Dialekt)" Description="C11 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumProperty.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true"/>
+    </EnumProperty.DataSource>
+  </EnumProperty>
+  <EnumProperty Name="CppLanguageStandard" DisplayName="C++-Sprachstandard" Description="Bestimmt den C++-Sprachstandard." Category="IntelliSense" F1Keyword="VC.Project.VCClangCompilerTool.CppLanguageStandard">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard" Description="">
+    </EnumValue>
+    <EnumValue Name="c++98" Switch="std=c++98" DisplayName="C++98" Description="C++98-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c++03" Switch="std=c++03" DisplayName="C++03" Description="C++03-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c++11" Switch="std=c++11" DisplayName="C++11" Description="C++11-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c++14" Switch="std=c++14" DisplayName="C++14" Description="C++14-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="c++17" Switch="std=c++17" DisplayName="C++17" Description="C++17-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu++98" Switch="std=gnu++98" DisplayName="C++98 (GNU-Dialekt)" Description="C++98-Sprachstandard (GNU-Dialekt).">
+    </EnumValue>
+    <EnumValue Name="gnu++03" Switch="std=gnu++03" DisplayName="C++03 (GNU-Dialekt)" Description="C++03 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu++11" Switch="std=gnu++11" DisplayName="C++11 (GNU-Dialekt)" Description="C++11 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumValue Name="gnu++1y" Switch="std=gnu++14" DisplayName="C++14 (GNU-Dialekt)" Description="C++14 (GNU-Dialekt)-Sprachstandard.">
+    </EnumValue>
+    <EnumProperty.DataSource>
+        <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true"/>
+    </EnumProperty.DataSource>
+  </EnumProperty>
+</Rule>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="VCEnvironmentVariables" DisplayName="VC++-Umgebungsvariablen" Order="8" PageTemplate="generic" Description="Toolsuchverzeichnisse" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="Env" DisplayName="Umgebung" Description="Visual C++-Umgebungsvariablen"/>
+    <Category Name="Dirs" DisplayName="Verzeichnisse" Description="Visual C++-Verzeichnisse"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile"/>
+  </Rule.DataSource>
+  <StringListProperty Name="Path" DisplayName="PATH" Description="Pfad, der verwendet wird, wenn beim Erstellen eines VC++-Projekts nach ausführbaren Dateien gesucht werden soll.  Stimmt mit der Umgebungsvariable PATH überein." F1Keyword="VC.Project.UseEnvVars.Path" Category="Env" Separator=";" ReadOnly="true"/>
+  <StringListProperty Name="Include" DisplayName="INCLUDE" Description="Pfad, der verwendet wird, wenn beim Erstellen eines VC++-Projekts nach Includedateien gesucht werden soll.  Stimmt mit der Umgebungsvariable INCLUDE überein." F1Keyword="VC.Project.UseEnvVars.Include" Category="Env" Separator=";" ReadOnly="true"/>
+  <StringListProperty Name="LibPath" DisplayName="LIBPATH" Description="Pfad, der verwendet wird, wenn beim Erstellen eines VC++-Projekts mit #using kopierte Dateien gesucht werden.  Stimmt mit der Umgebungsvariable LIBPATH überein." F1Keyword="VC.Project.UseEnvVars.ReferencePath" Category="Env" Separator=";" ReadOnly="true"/>
+  <StringListProperty Name="Lib" DisplayName="LIB" Description="Pfad, der bei der Suche nach Bibliotheksdateien während des Erstellens eines VC++-Projekts zu verwenden ist.  Stimmt mit der Umgebungsvariable LIB überein." F1Keyword="VC.Project.UseEnvVars.LibraryPath" Category="Env" Separator=";" ReadOnly="true"/>
+  <StringListProperty Name="SourcePath" DisplayName="Quellverzeichnisse" Description="Pfad, der zum Suchen der Quelldateien für IntelliSense verwendet wird." F1Keyword="VC.Project.VCDirectories.SourcePath" Category="Dirs" Separator=";" Subtype="folder"/>
+  <StringListProperty Name="ExcludePath" DisplayName="Verzeichnisse ausschließen" Description="Bei der Suche nach Suchabhängigkeiten zu überspringender Pfad." F1Keyword="VC.Project.UseEnvVars.ExcludePath" Category="Dirs" Separator=";" Subtype="folder"/>
+</Rule>
