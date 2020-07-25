@@ -190,7 +190,7 @@ download_and_install_pakset()
 # generated list of pak sets
 paksets=( \
 	"https://downloads.sourceforge.net/project/simutrans/pak64/120-4/simupak64-120-4.zip" \
-	"https://www.simutrans-germany.com/pak.german/pak64.german_0-120-4-1-3_full.zip" \
+	"https://www.simutrans-germany.com/pak.german/pak64.german_0-122-0-0-1_full.zip" \
 	"https://downloads.sourceforge.net/project/simutrans/pak64.japan/120-0/simupak64.japan-120-0-1.zip" \
 	"https://github.com/wa-st/pak-nippon/releases/download/v0.4.0/pak.nippon-v0.4.0.zip" \
 	"https://downloads.sourceforge.net/project/simutrans/pakHAJO/pakHAJO_102-2-2/pakHAJO_0-102-2-2.zip" \
