@@ -28,3 +28,6 @@
 *.log
 /doxygen
 /libs/miniupnpc-2.1
+.vs
+/build
+/packages
