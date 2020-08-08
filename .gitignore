@@ -27,3 +27,4 @@
 *.patch
 *.log
 /doxygen
+/libs/miniupnpc-2.1
