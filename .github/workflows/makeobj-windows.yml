@@ -1,0 +1,32 @@
+name: Makeobj Windows
+
+on:
+  push:
+    tags:
+      - 'Nightly'
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: compile makeobj
+      run: |
+        cd makeobj
+        ..\libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Makeobj.vcxproj -property:Configuration=Release
+
+    - name: zip result
+      run: |
+        Compress-Archive -Path build\makeobj\Release\Makeobj.exe -DestinationPath build\makeobj\Release\makeobj_windows-nightly.zip
+
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/makeobj/Release/makeobj_windows-nightly.zip
+        asset_name: makeobj_windows-nightly.zip
+        tag: Nightly
+        overwrite: true

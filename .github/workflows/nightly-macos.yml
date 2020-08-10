@@ -1,22 +1,25 @@
 name: Nightly build MacOS
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly_mac'
 
 jobs:
   build:
 
     runs-on: macOS-latest
-    
+
     steps:
     - uses: actions/checkout@v1
 
     - name: install_dependencies
-      run: | 
+      run: |
         curl http://www.libsdl.org/release/SDL2-2.0.10.dmg > SDL2-2.0.10.dmg
         hdiutil attach SDL2-2.0.10.dmg >>/dev/stderr
         sudo cp -R -v /Volumes/SDL2/SDL2.framework /Library/Frameworks/
         sudo ls /Library/Frameworks/ >>/dev/stderr
-        hdiutil eject /Volumes/SDL2 >>/dev/stderr 
+        hdiutil eject /Volumes/SDL2 >>/dev/stderr
         brew install autoconf
 #        brew install freetype
 # freetype library is in the system, but not the header
@@ -30,7 +33,7 @@ jobs:
 
     - name: setup
       run: |
-        autoconf 
+        autoconf
         ./configure
         echo "CFLAGS = -F /Library/Frameworks -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
         echo "LDFLAGS = -framework SDL2 -F /Library/Frameworks -I /Library/Frameworks/SDL2.framework/Headers " >>config.default
@@ -40,11 +43,11 @@ jobs:
 
     - name: make
       run: make
-      
+
     - name: distribute
       run: sh ./distribute.sh
 
-    - name: Rename result  
+    - name: Rename result
       run:  |
           ls *.zip >>/dev/stderr
           echo ::set-env name=LATEST::$(ls *.zip)
@@ -57,4 +60,4 @@ jobs:
         file: ./simumac-nightly.zip
         asset_name: simumac-nightly.zip
         tag: Nightly
-        overwrite: true   
+        overwrite: true
