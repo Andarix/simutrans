@@ -19,6 +19,12 @@ jobs:
         del simutrans\Simutrans_GDI.pdb
         del simutrans\Simutrans_GDI.exe.manifest
 
+    - name: load translate files
+      run: |
+        libs\wget\wget.exe -q --no-check-certificate --post-data "version=0&choice=all&submit=Export!"  --delete-after https://translator.simutrans.com/script/main.php?page=wrap
+        libs\wget\wget.exe -q --no-check-certificate -N https://translator.simutrans.com/data/tab/language_pack-Base+texts.zip
+        Expand-Archive -Path language_pack-Base+texts.zip -DestinationPath simutrans/text
+
     - name: zip result
       run: |
         Compress-Archive -Path simutrans -DestinationPath build\Simutrans_win_GDI-nightly.zip
