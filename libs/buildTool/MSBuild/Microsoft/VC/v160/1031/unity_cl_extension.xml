@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="CL" OverrideMode="Extend" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Categories>
+    <Category Name="UnityBuild" DisplayName="Unity-Build" Description="Unity-Buildoptionen"/>
+  </Rule.Categories>
+
+  <BoolProperty Name="IncludeInUnityFile" DisplayName="In Unity-Datei einschließen" Description="Bei Festlegung auf TRUE wird die Datei in eine Unity-Datei eingeschlossen (#included)." Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.IncludeInUnityFile"/>
+  <IntProperty Name="OrderInUnityFile" DisplayName="Sequenznummer in Unity-Datei" Description="In einer Unity-Datei enthaltene Dateien werden anhand ihrer Sequenznummer sortiert." Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.OrderInUnityFile"/>
+  <BoolProperty Name="CombineFilesOnlyFromTheSameFolder" DisplayName="Nur Dateien aus demselben Ordner kombinieren" Description="Bei Festlegung auf &quot;Ja&quot; enthält eine Unity-Datei nur Dateien aus demselben Ordner, sofern die Anzahl von Quellen im Ordner den Wert für &quot;Mindestanzahl von Quellen in einer Unity-Datei&quot; übersteigt." Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.BundleFilesOnlyFromTheSameFolder"/>
+  <IntProperty Name="MinFilesInUnityFile" DisplayName="Mindestanzahl von Quellen in Unity-Datei" Description="Gibt die Mindestanzahl der Quellen in einer Unity-Datei an." Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.MinFilesInUnityFile"/>
+  <IntProperty Name="MaxFilesInUnityFile" DisplayName="Maximale Anzahl von Quellen in einer Unity-Datei" Description="Gibt die Mindestanzahl von Quellen in einer Unity-Datei an. &quot;0&quot; bedeutet, dass keine Begrenzung gegeben ist." Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.MinFilesInUnityFile"/>
+  <IntProperty Name="MinUnityFiles" DisplayName="Mindestanzahl an Unity-Dateien" Description="Gibt die Mindestanzahl an Unity-Dateien an, die generiert werden können." Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.MinUnityFiles"/>
+  <StringProperty Name="AddCodeBeforeSourceInclude" DisplayName="Vor dem Einschließen hinzuzufügender Codeausschnitt" Description="Codeausschnitt, der vor dem Einschließen aller Quelldateien der Unity-Datei hinzugefügt wird. Sie können folgende Makros verwenden:
+  $$unity_id$$: eindeutiger Hash für Unity-Datei
+  $$file_number$$: Anzahl von Quelldateien in der Unity-Datei
+  $$file_name$$: Name der Quelldatei
+  $$file_path$$: Vollständiger Pfad der Quelldatei
+$$project_name$$: Projektname" Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.AddCodeBeforeSourceInclude">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="AddCodeAfterSourceInclude" DisplayName="Nach dem Einschließen hinzuzufügender Codeausschnitt" Description="Codeausschnitt, der nach dem Einschließen aller Quelldateien zur Unity-Datei hinzugefügt wird. Sie können folgende Makros verwenden:
+  $$unity_id$$: eindeutiger Hash für Unity-Datei
+  $$file_number$$: Anzahl von Quelldateien in der Unity-Datei
+  $$file_name$$: Name der Quelldatei
+  $$file_path$$: vollständiger Pfad der Quelldatei
+$$project_name$$: Projektname" Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.AddCodeAfterSourceInclude">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+
+  <StringProperty Name="AddCodeBeforeSourceIncludeFromFile" DisplayName="Vor dem Einschließen hinzuzufügender Dateicodeausschnitt" Description="Codeausschnitt, der vor dem Einschließen jeder Quelldatei zur Unity-Datei hinzugefügt wird." Category="UnityBuild" Subtype="file" F1Keyword="VC.Project.VCCLCompilerTool.AddCodeBeforeSourceIncludeFromFile"/>
+
+  <StringProperty Name="AddCodeAfterSourceIncludeFromFile" DisplayName="Nach dem Einschließen hinzuzufügender Dateicodeausschnitt " Description="Codeausschnitt, der nach dem Einschließen jeder Quelldatei zur Unity-Datei hinzugefügt wird." Category="UnityBuild" Subtype="file" F1Keyword="VC.Project.VCCLCompilerTool.AddCodeBeforeSourceIncludeFromFile"/>
+
+  <StringProperty Name="UnityFilesDirectory" DisplayName="Verzeichnis für Unity-Dateien" Description="Das Verzeichnis zum Erstellen automatisch generierter Unity-Dateien." Subtype="folder" Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.UnityFileDirectory"/>
+  <BoolProperty Name="CustomUnityFile" DisplayName="Benutzerdefinierte Unity-Datei" Description="Gibt eine benutzerdefinierte Unity-Datei an. Bei Festlegung auf &quot;Ja&quot; werden Unity-Dateien nicht automatisch generiert." Category="UnityBuild" F1Keyword="VC.Project.VCCLCompilerTool.CustomUnityFile"/>
+</Rule>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationCustomBuildStep" DisplayName="Benutzerdefinierter Buildschritt" Order="100" PageTemplate="tool" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="CustomBuildStep" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <StringProperty Name="Command" Category="General" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile für den benutzerdefinierten Buildschritt an." F1Keyword="VC.Project.VCCustomBuildStep.Command">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="Message" Category="General" DisplayName="Beschreibung" Description="Gibt eine Beschreibung für den benutzerdefinierten Buildschritt an." F1Keyword="VC.Project.VCCustomBuildStep.Message"/>
+  <StringListProperty Name="Outputs" Category="General" DisplayName="Ausgaben" Description="Gibt die Ausgabedateien an, die der benutzerdefinierte Buildschritt generiert." F1Keyword="VC.Project.VCCustomBuildStep.Outputs"/>
+  <StringListProperty Name="Inputs" Category="General" DisplayName="Zusätzliche Abhängigkeiten" Description="Gibt alle zusätzlichen Eingabedateien an, die für den benutzerdefinierten Buildschritt verwendet werden sollen." F1Keyword="VC.Project.VCCustomBuildStep.AdditionalInputs"/>
+  <BoolProperty Name="TreatOutputAsContent" Category="General" DisplayName="Ausgabe als Inhalt behandeln" F1Keyword="VC.Project.VCCustomBuildStep.TreatOutputAsContent" Description="Geben Sie an, ob es sich bei der Ausgabedatei um Inhalt handelt, der bereitgestellt werden kann.">
+  </BoolProperty>
+  <StringProperty Name="RootFolder" DisplayName="Inhaltsstammordner" Description="Der zum Verpacken verwendete Inhaltsstammordner." Category="General" Subtype="folder">
+  </StringProperty>
+  <DynamicEnumProperty Name="CustomBuildAfterTargets" Category="General" DisplayName="Im Anschluss ausführen" Description="Gibt die Ziele für die nachfolgende Ausführung des benutzerdefinierten Buildschritts und des Tools an." F1Keyword="VC.Project.VCCustomBuildStep.CustomBuildAfterTargets" EnumProvider="Targets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType=""/>
+    </DynamicEnumProperty.DataSource>
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="Exclude" Value="^CustomBuild|^Compute"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+  <DynamicEnumProperty Name="CustomBuildBeforeTargets" Category="General" DisplayName="Vorher ausführen" Description="Gibt die Ziele für die vorherige Ausführung des benutzerdefinierten Buildschritts und des Tools an." F1Keyword="VC.Project.VCCustomBuildStep.CustomBuildBeforeTargets" EnumProvider="Targets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType=""/>
+    </DynamicEnumProperty.DataSource>
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="Exclude" Value="^CustomBuild|^Compute"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+</Rule>

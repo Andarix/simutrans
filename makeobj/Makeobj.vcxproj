@@ -13,11 +13,12 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9944405A-74A3-443D-83A6-F4B9DBE23DB2}</ProjectGuid>
     <RootNamespace>Makeobj</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release'">
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -37,6 +38,11 @@
     <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
     <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Linkage-libpng_static>static</Linkage-libpng_static>
+    <Linkage-zlib_static>static</Linkage-zlib_static>
+    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -45,7 +51,7 @@
       <DisableSpecificWarnings>4250;4373;4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>zlibstat.lib;libbz2.lib;libpng16.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\libs\lpng1637\projects\vstudio\Release Library\libpng16.lib;..\libs\lpng1637\projects\vstudio\Release Library\zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -72,10 +78,12 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <PreprocessorDefinitions>MAKEOBJ;NDEBUG</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\libs\zlib-1.2.11;..\libs\lpng1637;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <IgnoreAllDefaultLibraries Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -203,6 +211,5 @@
     <ClInclude Include="..\utils\simstring.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

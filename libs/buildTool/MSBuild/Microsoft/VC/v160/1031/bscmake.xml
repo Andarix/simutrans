@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="BSCMake" PageTemplate="tool" DisplayName="Informationen durchsuchen" SwitchPrefix="/" Order="80" xmlns="http://schemas.microsoft.com/build/2009/properties" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein"/>
+    <Category Name="All Options" DisplayName="Alle Optionen" Subtype="Search"/>
+    <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="Bscmake" Label="" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <BoolProperty Name="SuppressStartupBanner" DisplayName="Startbanner unterdrücken" Description="Wird ohne Anzeige der standardmäßigen Microsoft-Copyrightinformationen ausgeführt. (/nologo)" Category="General" Switch="nologo" F1Keyword="VC.Project.VCBscMakeTool.SuppressStartupBanner">
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="OutputFile" DisplayName="Ausgabedatei" Description="Überschreibt den Standardnamen der Ausgabedatei (/o[Datei])" Category="General" Switch="o" F1Keyword="VC.Project.VCBscMakeTool.OutputFile">
+  </StringProperty>
+  <BoolProperty Name="PreserveSbr" DisplayName="SBR-Dateien beibehalten" Description="Bewirkt, dass &quot;bscmake.exe&quot; vollständige Builds ausführt, in denen die SBR-Dateien beibehalten werden.  So wird die Verwendung von alternativen inkrementellen Buildmethoden ermöglicht. (/n)" Category="General" Switch="n" F1Keyword="VC.Project.VCBscMakeTool.PreserveSBR">
+  </BoolProperty>
+  <StringProperty Subtype="folder" Name="TrackerLogDirectory" DisplayName="Nachverfolgungsprotokollverzeichnis" Description="Nachverfolgungsprotokollverzeichnis." Category="General" IncludeInCommandLine="false" Visible="false">
+  </StringProperty>
+  <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen" Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
+  </StringProperty>
+</Rule>

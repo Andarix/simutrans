@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="LinuxDebugger" DisplayName="Remote-GDB-Debugger" PageTemplate="debugger" Order="100" Description="Debuggeroptionen" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <Rule.Metadata>
+    <sys:Guid x:Key="DebugTargetTypeCommandGuid">FEEA6E9D-77D8-423F-9EDE-3970CBB76125</sys:Guid>
+    <sys:UInt32 x:Key="DebugTargetTypeCommandId">0x400</sys:UInt32>
+    <sys:String x:Key="DebugTargetDropdownEnum">RemoteDebugTarget</sys:String>
+  </Rule.Metadata>
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile"/>
+  </Rule.DataSource>
+
+  <DynamicEnumProperty Name="RemoteDebugTarget" DisplayName="Remotedebugcomputer" Description="Der Zielcomputer oder das Zielgerät, der bzw. das für Bereitstellung und Debuggen verwendet werden soll." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" EnumProvider="RemoteDebugTargets" Visible="false">
+  </DynamicEnumProperty>
+
+  <DynamicEnumProperty Name="RemoteDebuggingTarget" DisplayName="Remotedebugcomputer" Description="Der Zielcomputer oder das Zielgerät, der bzw. das für Bereitstellung und Debuggen verwendet werden soll." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" EnumProvider="RemoteDebuggingTargets" Visible="true">
+  </DynamicEnumProperty>
+
+  <EnumProperty Name="DebuggerType" DisplayName="Debuggertyp" F1Keyword="VC.Project.RaspberryDebugger.DebuggerType" Description="Gibt den zu debuggenden Codetyp an." Visible="false">
+    <EnumProperty.Metadata>
+      <NameValuePair Name="IsDebugType" Value="true"/>
+    </EnumProperty.Metadata>
+    <EnumValue Name="NativeOnly" DisplayName="Nur nativ"/>
+  </EnumProperty>
+
+  <StringProperty Name="PreLaunchCommand" DisplayName="Befehl vor Start" Description="Ein Befehl, der vor Beginn des Debuggens und vor Ausführung des Debuggers in der Shell ausgeführt wird und zum Anpassen der Debugumgebung verwendet werden kann." Category="General" Visible="true" F1Keyword="VC.Project.RaspberryDebugger.LaunchActivity">
+  </StringProperty>
+
+  <StringProperty Name="RemoteDebuggerCommand" DisplayName="Programm" Description="Der vollständige Pfad zu dem Programm auf dem Remotesystem, für das das Debugging erfolgen soll. Dies ist ein Pfad auf dem Remotesystem. Wenn er leer gelassen oder nicht verändert wird, wird standardmäßig die aktuelle Projektausgabe verwendet." F1Keyword="VC.Project.IVCLocalDebugPageObject.CommandArguments">
+  </StringProperty>
+  <StringProperty Name="RemoteDebuggerCommandArguments" DisplayName="Programmargumente" Description="Die Befehlszeilenargumente, die an das Programm übergeben werden, für das das Debugging erfolgt." F1Keyword="VC.Project.IVCLocalDebugPageObject.CommandArguments">
+  </StringProperty>
+  <StringProperty Name="RemoteDebuggerWorkingDirectory" DisplayName="Arbeitsverzeichnis" Description="Das Arbeitsverzeichnis der Remoteanwendung. Standardmäßig das Basisverzeichnis des Benutzers." F1Keyword="VC.Project.IVCLocalDebugPageObject.WorkingDirectory"/>
+
+  <StringListProperty Name="AdditionalDebuggerCommands" DisplayName="Weitere Debuggerbefehle" Description="Weitere GDB-Befehle, die der Debugger vor Beginn des Debuggens ausführen soll." F1Keyword="VC.Project.RaspberryDebugger.LaunchActivity" Visible="true">
+  </StringListProperty>
+
+  <StringProperty Name="LocalPortNumber" DisplayName="Portnummer für Debugger" Description="Die Portnummer für die Kommunikation des Debuggers mit dem Remotedebugger. Der Port darf nicht lokal in Verwendung sein. Dieser Wert muss positiv sein und zwischen 1 und 65535 liegen. Falls er nicht angegeben wird, wird eine freie Portnummer verwendet." Category="General" Visible="true" F1Keyword="VC.Project.RaspberryDebugger.LaunchActivity">
+  </StringProperty>
+  <StringProperty Name="RemotePortNumber" DisplayName="Portnummer für Remotedebugger" Description="Die Portnummer auf dem Remotesystem, auf der der Server des Remotedebuggers (gdbserver) lauscht. Der Port darf auf dem Remotesystem nicht in Verwendung sein. Dieser Wert muss positiv sein und zwischen 1 und 65535 liegen. Falls er nicht angegeben wird, wird eine freie Portnummer ab Port 4444 verwendet." Category="General" Visible="true" F1Keyword="VC.Project.RaspberryDebugger.LaunchActivity">
+  </StringProperty>
+
+  <EnumProperty Name="RemoteDebuggingMode" DisplayName="Debuggingmodus" F1Keyword="VC.Project.RaspberryDebugger.DebuggerType" Description="Gibt die Schnittstelle des Debuggers mit dem GDB an. Im gdb-Modus steuert der Debugger den GDB über die Shell auf dem Remotesystem. Im gdbserver-Modus wird der GDB lokal ausgeführt und stellt mit dem remote ausgeführten gdbserver eine Verbindung her." Category="General">
+    <EnumValue Name="gdbserver" DisplayName="gdbserver"/>
+    <EnumValue Name="gdb" DisplayName="gdb"/>
+  </EnumProperty>
+
+  <StringListProperty Name="AdditionalSymbolSearchPaths" DisplayName="Zusätzliche Symbolsuchpfade" Description="Weiterer Suchpfad für Debugsymbole (solib-search-path)." F1Keyword="VC.Project.RaspberryDebugger.LaunchActivity" Subtype="folder" Visible="true">
+  </StringListProperty>
+
+  <BoolProperty Name="DebugChildProcesses" DisplayName="Untergeordnete Prozesse debuggen" Category="General" Description="Gibt an, ob das Debuggen untergeordneter Prozesse möglich ist." F1Keyword="VC.Project.LinuxDebugger.DebugChildProcesses"/>
+
+  <StringProperty Name="TargetPath" Visible="false"/>
+
+  <StringProperty Name="GDBPath" Visible="false"/>
+  <StringProperty Name="GdbShellExecProgram" Visible="false"/>
+  <StringProperty Name="GdbShellExecProgramFlags" Visible="false"/>
+  <StringProperty Name="RemoteTargetPath" Visible="false"/>
+
+  <BoolProperty Name="EnablePrettyPrinting" DisplayName="Automatische Strukturierung und Einrückung in Python aktivieren" Description="Automatische Strukturierung und Einrückung von Ausdruckswerten aktivieren. Nur im Debugging-Modus &quot;gdb&quot; unterstützt." Visible="true" F1Keyword="VC.Project.RaspberryDebugger.EnablePrettyPrinting">
+  </BoolProperty>
+
+  <StringProperty Name="LinuxNatvisFile" DisplayName="Visualisierungsdatei" Description="Standardmäßige native Visualisierungsdatei (.natvis) mit Visualisierungsrichtlinien für SLT-Typen. Andere .natvis-Dateien, die zur aktuellen Lösung gehören, werden automatisch geladen." Visible="true" F1Keyword="VC.Project.RaspberryDebugger.LinuxNatvisFile">
+  </StringProperty>
+
+  <StringListProperty Name="SourceMap" DisplayName="Zusätzliche Quelldatei – Pfadzuordnung" Description="Zusätzliche Pfadäquivalenzen für den zu verwendenden Debugger zum Zuordnen von Windows-Quelldateinamen zu Linux-Quelldateinamen. Das Format ist &quot;&lt;windows-path&gt;=&lt;linux-path&gt;;...&quot;. Auf einen unter dem Windows-Pfad gefundener Quelldateinamen wird so verwiesen, als wäre er an der gleichen relativen Position im Linux-Pfad gefunden worden. Für im lokalen Projekt gefundene Dateien ist keine zusätzliche Zuordnung erforderlich." F1Keyword="VC.Project.RaspberryDebugger.SourceMap" Visible="true">
+  </StringListProperty>
+
+  <BoolProperty Name="ShowDisplayString" DisplayName="Natvis-Anzeigezeichenfolge anzeigen" Description="Hiermit wird die standardmäßige Anzeige des Natvis-Elements &quot;DisplayString&quot; in &quot;Lokal&quot;, &quot;Überwachen&quot; und &quot;Datentipps&quot; aktiviert." Visible="true" F1Keyword="VC.Project.RaspberryDebugger.ShowDisplayString">
+  </BoolProperty>
+
+  <EnumProperty Name="LoadAllSymbols" DisplayName="Einstellung zum Laden von Symbolen" Description="Beim Laden aller Symbole werden die Symbole für Solibs in der Symbolliste nicht geladen. Wenn nur Symbole für bestimmte Solibs geladen werden, werden diese Solibs in der Symbolliste angegeben." Visible="true" F1Keyword="VC.Project.RaspberryDebugger.LoadAllSymbols">
+    <EnumValue Name="enabled" DisplayName="Alle Symbole außer denen in der Symbolliste laden"/>
+    <EnumValue Name="disabled" DisplayName="Nur in der Symbolliste angegebene Symbole laden"/>
+  </EnumProperty>
+
+  <StringListProperty Name="SymbolLoadList" Description="Durch Semikolon getrennte Liste von Solib-Namen (Platzhalter zulässig). Informationen finden Sie in der Einstellung zum Laden von Symbolen." DisplayName="Symbolliste" F1Keyword="VC.Project.RaspberryDebugger.SymbolLoadList" Visible="true">
+  </StringListProperty>
+
+  <StringListProperty Name="ASANRuntimeFlags" DisplayName="AddressSanitizer-Runtime-Flags" Description="Über die Umgebungsvariable ASAN_OPTIONS an AddressSanitizer übergebene Runtime-Flags." F1Keyword="VC.Project.RaspberryDebugger.ASANRuntimeFlags" Visible="true">
+  </StringListProperty>
+
+  <BoolProperty Name="DisableFastDeploy" DisplayName="Schnelle Bereitstellung deaktivieren" Description="Deaktiviert die schnelle Bereitstellung." Visible="false" F1Keyword="VC.Project.Deploy.DisableFastDeploy">
+  </BoolProperty>
+
+</Rule>

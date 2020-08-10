@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationCustomBuildTool" DisplayName="Benutzerdefiniertes Buildtool" Order="110" PageTemplate="tool" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="CustomBuild" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <StringProperty Name="Command" Category="General" DisplayName="Befehlszeile" Description="Gibt eine Befehlszeile für das benutzerdefinierte Buildtool an." F1Keyword="VC.Project.VCCustomBuildTool.Command">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="Message" Category="General" DisplayName="Beschreibung" Description="Gibt eine Beschreibung für das benutzerdefinierten Buildtool an." F1Keyword="VC.Project.VCCustomBuildTool.Message"/>
+  <StringListProperty Name="Outputs" Category="General" DisplayName="Ausgaben" Description="Gibt die Ausgabedateien an, die das benutzerdefinierte Buildtool generiert." F1Keyword="VC.Project.VCCustomBuildTool.Outputs"/>
+  <StringListProperty Name="AdditionalInputs" Category="General" DisplayName="Zusätzliche Abhängigkeiten" Description="Gibt alle zusätzlichen Eingabedateien an, die für das benutzerdefinierten Buildtool verwendet werden sollen." F1Keyword="VC.Project.VCCustomBuildTool.AdditionalInputs"/>
+  <BoolProperty Name="VerifyInputsAndOutputsExist" Category="General" DisplayName="Abhängigkeiten und Ausgaben überprüfen" F1Keyword="VC.Project.VCCustomBuildTool.VerifyInputsAndOutputsExist" Description="Gibt an, ob beim Buildvorgang überprüft werden soll, ob alle angegebenen Abhängigkeiten und Ausgaben vorhanden sind. Wenn dies nicht der Fall ist, wird eine Warnung ausgegeben.">
+  </BoolProperty>
+  <BoolProperty Name="LinkObjects" Category="General" DisplayName="Objekte verknüpfen" F1Keyword="VC.Project.VCCustomBuildTool.LinkObjects" Description="Geben Sie an, ob die Eingabe- und Ausgabedateien mit bestimmten Erweiterungen (.obj, .lib, .res, .rsc) an den Linker weitergegeben werden.">
+  </BoolProperty>
+  <DynamicEnumProperty Name="OutputItemType" DisplayName="Dem Elementtyp Ausgaben hinzufügen" Category="General" Description="Gibt den Elementtyp an, dem Ausgabedateien hinzugefügt werden sollen, damit sie als Quellen für andere Buildtools verwendet werden." EnumProvider="ItemTypes" F1Keyword="VC.Project.VCCustomBuildTool.OutputsItemType">
+  </DynamicEnumProperty>
+  <BoolProperty Name="TreatOutputAsContent" Category="General" DisplayName="Ausgabe als Inhalt behandeln" F1Keyword="VC.Project.VCCustomBuildTool.TreatOutputAsContent" Description="Geben Sie an, ob es sich bei der Ausgabedatei um Inhalt handelt, der bereitgestellt werden kann.">
+  </BoolProperty>
+  <StringProperty Name="RootFolder" DisplayName="Inhaltsstammordner" Description="Der zum Verpacken verwendete Inhaltsstammordner." Category="General" Subtype="folder">
+  </StringProperty>
+  <BoolProperty Name="BuildInParallel" Category="General" DisplayName="Parallel kompilieren" F1Keyword="VC.Project.VCCustomBuildTool.BuildInParallel" Description="Gibt an, dass dieses Element parallel zu anderen benutzerdefinierten Buildtoolelementen kompiliert werden kann.">
+  </BoolProperty>
+  <IntProperty Name="MaxProcesses" Category="General" DisplayName="Maximale Prozesse" F1Keyword="VC.Project.VCCustomBuildTool.MaxProcesses" Description="Die maximale Anzahl von CPU-Kernen, die für die parallele Kompilierung verwendet werden. Beim Wert 0 werden alle verfügbaren Prozessoren genutzt.">
+  </IntProperty>
+  <IntProperty Name="MaxItemsInBatch" Category="General" DisplayName="Maximale Batchgröße" F1Keyword="VC.Project.VCCustomBuildTool.MaxProcesses" Description="Die maximal zulässige Anzahl von Elementen, die beim parallelen Kompilieren zusammen ausgeführt werden können. Lautet der Wert 0, werden Elemente gleichmäßig in parallele Batches aufgeteilt. Bei Festlegung des Werts 1 wird die Batchverarbeitung deaktiviert. Größere Batches verbessern die Leistung, wenn das benutzerdefinierte Buildtool Elemente schnell verarbeitet.">
+  </IntProperty>
+  <DynamicEnumProperty Name="CustomBuildAfterTargets" Category="General" DisplayName="Im Anschluss ausführen" Description="Gibt die Ziele für die nachfolgende Ausführung des benutzerdefinierten Buildschritts und des Tools an." F1Keyword="VC.Project.VCCustomBuildStep.CustomBuildAfterTargets" EnumProvider="Targets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType=""/>
+    </DynamicEnumProperty.DataSource>
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="Exclude" Value="^CustomBuild|^Compute"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+  <DynamicEnumProperty Name="CustomBuildBeforeTargets" Category="General" DisplayName="Vorher ausführen" Description="Gibt die Ziele für die vorherige Ausführung des benutzerdefinierten Buildschritts und des Tools an." F1Keyword="VC.Project.VCCustomBuildStep.CustomBuildBeforeTargets" EnumProvider="Targets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType=""/>
+    </DynamicEnumProperty.DataSource>
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="Exclude" Value="^CustomBuild|^Compute"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+</Rule>

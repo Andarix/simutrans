@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="LinuxRemoteBuild" DisplayName="Remotebuild" PageTemplate="generic" Description="Remotebuild" SwitchPrefix="/" Order="100" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile"/>
+  </Rule.DataSource>
+  <StringProperty Name="RemoteBuildCommandLine" DisplayName="Buildbefehlszeile" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Erstellen&quot; ausgeführt werden soll. Diese wird auf dem Remotesystem ausgeführt." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.BuildCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="RemoteReBuildCommandLine" DisplayName="Befehlszeile &quot;Alles neu erstellen&quot;" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Alles neu erstellen&quot; ausgeführt werden soll. Diese wird auf dem Remotesystem ausgeführt." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.ReBuildCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="RemoteCleanCommandLine" DisplayName="Neue Befehlszeile" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Bereinigen&quot; ausgeführt werden soll. Diese wird auf dem Remotesystem ausgeführt." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.CleanCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringListProperty Name="RemoteBuildOutputs" DisplayName="Ausgaben" Description="Gibt die Ausgaben an, die vom Remotebuild auf dem Remotesystem generiert wurden." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCNMakeTool.Output"/>
+  <StringListProperty Subtype="folder" Name="ProjectPublicIncludePath" DisplayName="Öffentliche Includeverzeichnisse für Projekt" Description="Hiermit wird mindestens ein Verzeichnis für die Übergabe an verweisende Projekte angegeben. Bei Angabe mehrerer Verzeichnisse werden diese durch ein Semikolon getrennt." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCClangCompilerTool.AdditionalPublicIncludeDirectories"/>
+</Rule>

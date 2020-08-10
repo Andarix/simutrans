@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="LinuxLocalBuild" DisplayName="Build" PageTemplate="generic" Description="Build" SwitchPrefix="/" Order="100" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile"/>
+  </Rule.DataSource>
+  <StringProperty Name="BuildCommandLine" DisplayName="Buildbefehlszeile" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Build&quot; ausgeführt werden soll." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.BuildCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="ReBuildCommandLine" DisplayName="Befehlszeile &quot;Alles neu erstellen&quot;" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Alles neu erstellen&quot; ausgeführt werden soll." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.ReBuildCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringProperty Name="CleanCommandLine" DisplayName="Bereinigte Befehlszeile" Description="Gibt die Befehlszeile an, die für den Befehl &quot;Bereinigen&quot; ausgeführt werden soll." IncludeInCommandLine="false" Category="General" F1Keyword="VC.Project.VCNMakeTool.CleanCommandLine">
+    <StringProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultCommandPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </StringProperty.ValueEditors>
+  </StringProperty>
+  <StringListProperty Name="LocalBuildOutputs" DisplayName="Ausgaben" Description="Gibt die Ausgaben an, die vom lokalen Befehl zum Bereitstellen im Remotesystem generiert werden." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCNMakeTool.LocalOutputs"/>
+</Rule>

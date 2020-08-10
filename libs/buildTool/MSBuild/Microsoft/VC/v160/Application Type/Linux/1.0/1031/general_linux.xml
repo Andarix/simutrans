@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneral" DisplayName="Allgemein" PageTemplate="generic" Description="Allgemein" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+    <Category Name="ProjectDefaults" DisplayName="Projektstandards" Description="Projektstandards"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration"/>
+  </Rule.DataSource>
+
+  <StringProperty Name="OutDir" DisplayName="Ausgabeverzeichnis" Description="Gibt einen relativen Pfad zum Ausgabedateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Default="$(SolutionDir)$(Configuration)\" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.OutputDirectory">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="IntDir" DisplayName="Zwischenverzeichnis" Description="Gibt einen relativen Pfad zum Zwischendateiverzeichnis an (kann Umgebungsvariablen enthalten)." Category="General" Subtype="folder" F1Keyword="VC.Project.VCConfiguration.IntermediateDirectory">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetName" DisplayName="Zielname" Description="Gibt einen Dateinamen an, der von diesem Projekt generiert wird." F1Keyword="VC.Project.VCConfiguration.TargetName" Category="General">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="TargetExt" DisplayName="Zielerweiterung" Description="Gibt eine Dateierweiterung an, die von diesem Projekt generiert wird. (Beispiel: .a)" F1Keyword="VC.Project.VCConfiguration.TargetExt" Category="General">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringListProperty Name="ExtensionsToDeleteOnClean" DisplayName="Bei der Bereinigung zu löschende Erweiterungen" Description="Trennzeichengetrennte Platzhalterspezifikation dafür, welche Dateien im Zwischenverzeichnis bei der Bereinigung gelöscht oder erneut erstellt werden." Category="General" Separator=";" F1Keyword="VC.Project.VCConfiguration.DeleteExtensionsOnClean">
+    <StringListProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringListProperty.DataSource>
+  </StringListProperty>
+  <StringProperty Name="BuildLogFile" DisplayName="Buildprotokolldatei" Description="Gibt die Buildprotokolldatei an, in die bei aktivierter Buildprotokollierung geschrieben wird." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="$(ProjectDir)\$(MSBuildProjectName).log" Subtype="file">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="BuildLog" PersistedName="Path"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <DynamicEnumProperty Name="PlatformToolset" DisplayName="Plattformtoolset" EnumProvider="Toolsets" Description="Gibt das für das Erstellen der aktuellen Konfiguration verwendete Toolset an. Ist diese Einstellung nicht festgelegt, wird das Standardtoolset verwendet." F1Keyword="VC.Project.VCConfiguration.PlatformToolset" Category="General"/>
+  <DynamicEnumProperty Name="RemoteTarget" DisplayName="Remotebuildcomputer" Description="Der Zielcomputer oder das Zielgerät, der bzw. das für Remotebuild, -erstellung, und -debugging verwendet werden soll." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="" EnumProvider="RemoteTargets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="UserFile" Label=""/>
+    </DynamicEnumProperty.DataSource>
+  </DynamicEnumProperty>
+  <StringProperty Name="RemoteRootDir" DisplayName="Remotestammverzeichnis" Description="Gibt einen Pfad zu einem Verzeichnis auf dem Remotecomputer oder -gerät an." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Configuration"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteProjectDir" DisplayName="Remoteprojektverzeichnis" Description="Gibt einen Pfad zu einem Verzeichnis auf dem Remotecomputer oder -gerät für das Projekt an." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="RemoteDeployDir" DisplayName="Verzeichnis für Remotebereitstellung" Description="Gibt für die Bereitstellung einen Pfad zu einem Verzeichnis auf dem Remotecomputer oder -gerät für das Projekt an." F1Keyword="VC.Project.VCConfiguration.BuildLogFile" Category="General" Default="">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <EnumProperty Name="ConfigurationType" DisplayName="Konfigurationstyp" Description="Gibt den Ausgabetyp an, der von dieser Konfiguration generiert wird." Category="ProjectDefaults" F1Keyword="VC.Project.VCConfiguration.ConfigurationType">
+    <EnumValue Name="DynamicLibrary" DisplayName="Dynamische Bibliothek (.so)" Description="Dynamische Bibliothek (.so)"/>
+    <EnumValue Name="StaticLibrary" DisplayName="Statische Bibliothek (.a)" Description="Statische Bibliothek (.a)"/>
+    <EnumValue Name="Application" DisplayName="Anwendung (.out)" Description="Anwendung (.out)"/>
+    <EnumValue Name="Makefile" DisplayName="Makefile" Description="Makefile"/>
+  </EnumProperty>
+
+  <EnumProperty Name="UseOfStl" DisplayName="Verwendung von STL" Description="Gibt an, welche C++-Standardbibliothek für diese Konfiguration verwendet wird." Category="ProjectDefaults" F1Keyword="VC.Project.VCConfiguration.UseOfSTL">
+    <EnumValue Name="libstdc++_shared" DisplayName="Freigegebene GNU-Standardbibliothek für C++"/>
+    <EnumValue Name="libstdc++_static" DisplayName="Statische GNU-Standardbibliothek für C++ (-static)"/>
+  </EnumProperty>
+
+  <EnumProperty Name="WholeProgramOptimization" DisplayName="Optimierung des gesamten Programms" Description="Gibt an, dass das Programm über die OBJ-Grenzen hinaus optimiert wird. Funktioniert am besten, wenn C/C++-Optimierungen aktiviert sind." Category="ProjectDefaults" F1Keyword="VC.Project.VCConfiguration.WholeProgramOptimization" Visible="false">
+    <EnumValue Name="false" DisplayName="Keine komplette Programmoptimierung" Description="Keine komplette Programmoptimierung"/>
+    <EnumValue Name="true" DisplayName="Link-Zeitcodegenerierung verwenden" Description="Link-Zeitcodegenerierung verwenden"/>
+  </EnumProperty>
+
+  <DynamicEnumProperty Name="TargetPlatformVersion" DisplayName="Version der Zielplattform" Description="Zielplattform" Category="ProjectDefaults" EnumProvider="ProjectExpression" Visible="false" F1Keyword="VC.Project.VCConfiguration.TargetPlatformVersion">
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="Include" Value="$(TargetPlatformVersionOptions)"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+
+  <EnumProperty Name="CharacterSet" DisplayName="Zeichensatz" Description="Weist den Compiler an, den angegebenen Zeichensatz zu verwenden; hilfreich bei Lokalisierungsproblemen." Category="ProjectDefaults" Visible="false" F1Keyword="VC.Project.VCConfiguration.CharacterSet">
+    <EnumValue Name="Unicode" DisplayName="Unicode-Zeichensatz verwenden" Description="Unicode-Zeichensatz verwenden"/>
+  </EnumProperty>
+
+  <BoolProperty Name="UseDebugLibraries" DisplayName="Debugbibliotheken verwenden" Description="Gibt an, ob diese Konfiguration Debugbibliotheken und -schalter verwenden soll." Category="ProjectDefaults" Visible="false">
+  </BoolProperty>
+
+  <StringProperty Name="_ProjectFileVersion" DisplayName="Projektdateiversion" Description="Gibt die Version des zum Erstellen dieser Projektdatei verwendeten Konvertierungstools an." Category="General" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <StringProperty Name="ProjectGuid" Visible="False">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="False"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <StringProperty Name="RemoteTargetArchitecture" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <DynamicEnumProperty Name="TargetFrameworkMoniker" DisplayName="Zielframeworkmoniker" EnumProvider="TargetFrameworkMoniker" Visible="false"/>
+
+  <StringProperty Name="PlatformNativeArch" DisplayName="PlatformNativeArch" F1Keyword="" Visible="false" Description="."/>
+
+  <EnumProperty Name="UseOfMfc" Category="ProjectDefaults" Visible="false">
+    <EnumValue Name="false"/>
+    <EnumValue Name="Static"/>
+    <EnumValue Name="Dynamic"/>
+  </EnumProperty>
+  <EnumProperty Name="UseOfAtl" Visible="false">
+    <EnumValue Name="false"/>
+    <EnumValue Name="Static"/>
+    <EnumValue Name="Dynamic"/>
+  </EnumProperty>
+  <EnumProperty Name="CLRSupport" Visible="False">
+    <EnumValue Name="false"/>
+    <EnumValue Name="true"/>
+    <EnumValue Name="Pure"/>
+    <EnumValue Name="Safe"/>
+  </EnumProperty>
+  <StringProperty Name="TargetPath" Visible="False"/>
+  <StringProperty Name="MSBuildProjectDirectory" Visible="false"/>
+  <StringProperty Name="PackageAction" Visible="false" Description="Das MSBuild-Ziel, das beim Verpacken eines Projekts verwendet werden soll."/>
+  <StringProperty Name="DefaultContentType" Visible="false" Description="Die standardmäßigen Inhaltstypnamen, die beim Hinzufügen von Dateien verwendet werden sollen."/>
+  <StringProperty Name="VCInstallDir" Visible="false"/>
+  <StringProperty Name="VCIDEInstallDir" Visible="false"/>
+  <StringProperty Name="VSInstallDir" Visible="false"/>
+  <StringProperty Name="Platform" Visible="false"/>
+  <StringProperty Name="Configuration" Visible="false"/>
+  <StringProperty Name="DebuggerSymbolsPath" Visible="false"/>
+  <StringProperty Name="AssemblySearchPaths" Visible="false"/>
+  <StringProperty Name="DefaultPlatformToolset" Visible="false"/>
+  <BoolProperty Name="EnableDesignTimeBuild" Visible="false"/>
+  <BoolProperty Name="AppContainerApplication" Visible="false"/>
+  <EnumProperty Name="TargetRuntime" Visible="false">
+    <EnumValue Name="Managed"/>
+    <EnumValue Name="Native"/>
+    <EnumValue Name="AppHost" DisplayName="Windows-App"/>
+  </EnumProperty>
+  <StringProperty Name="AddItemTemplateGuid" Visible="false"/>
+
+  <StringProperty Name="LastRemoteTargetFile" Visible="false"/>
+
+  <BoolProperty Name="_VC_IsWSLToolset" Visible="false"/>
+
+  <StringProperty Name="LinuxProjectType" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="false"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <StringProperty Name="ProjectName" ReadOnly="true" Visible="false">
+  </StringProperty>
+  <StringProperty Name="EnableASAN" ReadOnly="true" Visible="false">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </StringProperty.DataSource>
+  </StringProperty>
+  <BoolProperty Name="_IsClang" Visible="false"/>
+  <StringProperty Name="RemoteCCompileToolExe" Visible="false"/>
+  <StringProperty Name="RemoteCppCompileToolExe" Visible="false"/>
+
+  <StringListProperty Subtype="folder" Name="RemoteCopyIncludeDirectories" DisplayName="Einzuschließende Verzeichnisse für Remotekopieren" Description="Gibt mindestens ein Verzeichnis an, das aus dem Linux-Remoteziel für IntelliSense kopiert werden soll. Trennen Sie die Einträge durch ein Semikolon, wenn mehr als ein Verzeichnis vorhanden ist." Category="General" F1Keyword="VC.Project.VCClangCompilerTool.RemoteCopyIncludeDirectories">
+  </StringListProperty>
+  <StringListProperty Subtype="folder" Name="RemoteCopyExcludeDirectories" DisplayName="Auszuschließende Verzeichnisse für Remotekopieren" Description="Gibt mindestens ein Verzeichnis an, das NICHT aus dem Linux-Remoteziel für IntelliSense kopiert werden soll. Trennen Sie die Einträge durch ein Semikolon, wenn mehr als ein Verzeichnis vorhanden ist." Category="General" F1Keyword="VC.Project.VCClangCompilerTool.RemoteCopyExcludeDirectories">
+  </StringListProperty>
+  <BoolProperty Name="UseCompiler" DisplayName="IntelliSense verwendet Compilerstandardwerte" Description="Gibt an, ob IntelliSense die definierten Compilerstandardwerte und Includespeicherorte verwenden soll. Darf nur FALSE lauten, wenn ein Compiler verwendet wird, der keine GCC-Befehlsoptionen unterstützt." Category="General" Visible="true" Default="true">
+  </BoolProperty>
+</Rule>

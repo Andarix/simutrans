@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="WebBrowserDebugger" DisplayName="Webbrowserdebugger" PageTemplate="debugger" Description="Optionen für Webbrowserdebugger" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile"/>
+  </Rule.DataSource>
+  <StringProperty Name="WebBrowserDebuggerHttpUrl" DisplayName="HTTP-URL" Description="Gibt die URL für das Projekt an." F1Keyword="VC.Project.VCDebugSettings.WebBrowser.WebBrowserDebuggerHttpUrl"/>
+  <EnumProperty Name="WebBrowserDebuggerDebuggerType" DisplayName="Debuggertyp" Description="Gibt den zu verwendenden Debuggertyp an. Der Debuggertyp wird basierend auf dem Inhalt der EXE-Datei ausgewählt, wenn die automatische Auswahl festgelegt wurde." F1Keyword="VC.Project.VCDebugSettings.WebBrowser.DebuggerType">
+    <EnumValue Name="NativeOnly" DisplayName="Nur nativ" Description="Nur nativ"/>
+    <EnumValue Name="ManagedOnly" DisplayName="Nur verwaltet" Description="Nur verwaltet"/>
+    <EnumValue Name="Mixed" DisplayName="Gemischt" Description="Gemischt"/>
+    <EnumValue Name="Auto" DisplayName="Automatisch" Description="Automatisch"/>
+    <EnumValue Name="Script" DisplayName="Skript" Description="Skript"/>
+  </EnumProperty>
+</Rule>

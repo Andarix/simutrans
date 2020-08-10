@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneralFile" DisplayName="Allgemein" PageTemplate="generic" Description="Allgemein" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" Label="Configuration" ItemType="{}{AnyType}"/>
+  </Rule.DataSource>
+  <BoolProperty Name="ExcludedFromBuild" DisplayName="Vom Build ausgeschlossen" Category="General" Description="Schließt die ausgewählte Datei für diese Konfiguration vom Build aus." F1Keyword="VC.Project.VCFileConfiguration.ExcludedFromBuild"/>
+  <BoolProperty Name="DeploymentContent" DisplayName="Inhalt" Category="General" Description="Geben Sie an, ob es sich bei der Datei um Weitergabeinhalt handelt." F1Keyword="VC.Project.VCFileConfiguration.DeploymentContent">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" Label="Configuration" ItemType="{}{AnyType}"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <DynamicEnumProperty Name="{}{ItemType}" DisplayName="Elementtyp" Category="General" Description="Mit dem Elementtyp wird das Buildtool oder die Datei bestimmt." EnumProvider="ItemTypes" F1Keyword="VC.Project.VCFileConfiguration.Tool">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="{}{AnyType}" HasConfigurationCondition="false"/>
+    </DynamicEnumProperty.DataSource>
+  </DynamicEnumProperty>
+  <StringProperty Name="GeneratorTarget" Visible="false"/>
+</Rule>

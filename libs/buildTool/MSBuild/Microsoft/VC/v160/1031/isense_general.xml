@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="CL" DisplayName="Allgemein" PageTemplate="generic" Description="Allgemein" SwitchPrefix="/" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="false"/>
+  </Rule.DataSource>
+  <StringListProperty Name="AdditionalIncludeDirectories" DisplayName="Suchpfad einschließen" Description="Gibt mindestens ein Verzeichnis an, das zum Includepfad hinzugefügt wird. Verwenden Sie bei mehr als einem Verzeichnis Semikolons als Trennzeichen.     (/I[Pfad])" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalIncludeDirectories" Switch="I" Category="General" Subtype="folder"/>
+  <StringListProperty Name="ForcedIncludeFiles" DisplayName="Erzwungene Includedateien" Description="Eine oder mehrere erzwungene Includedateien gefunden.     (/FI[Name])" Category="General" Switch="FI" F1Keyword="VC.Project.VCCLCompilerTool.ForcedIncludeFiles" Subtype="file"/>
+  <StringListProperty Name="PreprocessorDefinitions" DisplayName="Präprozessordefinitionen" Description="Definiert ein Präprozessorsymbol für die Quelldatei.     (/D[macro])" Category="General" Switch="D" F1Keyword="VC.Project.VCCLCompilerTool.PreprocessorDefinitions">
+  </StringListProperty>
+  <StringListProperty Name="UndefinePreprocessorDefinitions" DisplayName="Präprozessordefinitionen aufheben" Description="Gibt eine oder mehrere Definitionen an, die aufgehoben werden.     (/U[Makro])" Category="General" Switch="U" F1Keyword="VC.Project.VCCLCompilerTool.UndefinePreprocessorDefinitions">
+  </StringListProperty>
+</Rule>

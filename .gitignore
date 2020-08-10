@@ -1,6 +1,9 @@
 *.ncb
 *.suo
 *.vcproj.*
+*.vcxproj.*
+*.vcxproj.user
+.vs
 /Debug
 /Release
 /build
@@ -19,8 +22,6 @@
 /simutrans/text
 *.bdf
 *.zip
-*.vcxproj
-*.vcxproj.*
 /ipch/*
 *.*sdf
 *.diff

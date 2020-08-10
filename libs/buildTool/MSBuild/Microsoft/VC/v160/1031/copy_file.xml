@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="CopyFile" DisplayName="Datei kopieren" Order="100" PageTemplate="tool" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  <Rule.DataSource>
+    <DataSource Persistence="ProjectFile" ItemType="CopyFileToFolders" HasConfigurationCondition="true"/>
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="General" DisplayName="Allgemein" Description="Allgemein"/>
+  </Rule.Categories>
+  <StringListProperty Name="DestinationFolders" DisplayName="Zielverzeichnisse" Description="Ordner, in die die Datei kopiert werden soll." Category="General" Subtype="folder">
+  </StringListProperty>
+  <StringProperty Name="DestinationFileName" DisplayName="Name der Zieldatei" Description="Der Dateiname, der beim Kopieren der Datei verwendet werden soll." Category="General">
+  </StringProperty>
+  <BoolProperty Name="TreatOutputAsContent" Category="General" DisplayName="Zieldateien als Inhalt behandeln" Description="Geben Sie an, ob die Zieldateien bereitstellbaren Inhalt enthalten.">
+  </BoolProperty>
+  <StringProperty Name="RootFolder" DisplayName="Inhaltsstammordner" Description="Der zum Verpacken verwendete Inhaltsstammordner." Category="General" Subtype="folder">
+  </StringProperty>
+  <DynamicEnumProperty Name="CopyFileAfterTargets" Category="General" DisplayName="Im Anschluss ausführen" Description="Gibt die Ziele für &quot;Datei kopieren&quot; für die anschließende Ausführung an. Diese sind für alle kopierten Dateien im Projekt identisch." EnumProvider="Targets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType=""/>
+    </DynamicEnumProperty.DataSource>
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="Exclude" Value="^Compute"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+  <DynamicEnumProperty Name="CopyFileBeforeTargets" Category="General" DisplayName="Vorher ausführen" Description="Gibt die Ziele für &quot;Datei kopieren&quot; für die vorangehende Ausführung an. Diese sind für alle kopierten Dateien im Projekt identisch." EnumProvider="Targets">
+    <DynamicEnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" HasConfigurationCondition="true" ItemType=""/>
+    </DynamicEnumProperty.DataSource>
+    <DynamicEnumProperty.ProviderSettings>
+      <NameValuePair Name="Exclude" Value="^Compute"/>
+    </DynamicEnumProperty.ProviderSettings>
+  </DynamicEnumProperty>
+</Rule>

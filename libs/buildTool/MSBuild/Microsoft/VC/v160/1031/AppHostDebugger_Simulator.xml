@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="AppHostSimulatorDebugger" DisplayName="Simulator" PageTemplate="debugger" Order="200" Description="Simulatordebuggeroptionen" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  
+  <Rule.Metadata>
+    <sys:Guid x:Key="DebugTargetTypeCommandGuid">FEEA6E9D-77D8-423F-9EDE-3970CBB76125</sys:Guid>
+    <sys:UInt32 x:Key="DebugTargetTypeCommandId">0x100</sys:UInt32>
+  </Rule.Metadata>
+  <Rule.DataSource>
+    <DataSource Persistence="UserFile"/>
+  </Rule.DataSource>
+  <Rule.Categories>
+    <Category Name="StartOptions" DisplayName="Startoptionen" Description="Startoptionen"/>
+    <Category Name="GPUOptions" DisplayName="GPU-Optionen" Description="GPU-Optionen"/>
+  </Rule.Categories>
+  <BoolProperty Name="DebuggerLaunchApplication" DisplayName="Anwendung starten" Category="StartOptions" F1Keyword="VC.Project.IVCAppHostSimulatorDebugPageObject.LaunchApplication" Description="Gibt an, ob die Anwendung umgehend gestartet oder beim Starten zunächst gewartet werden soll, um diese beim Start zu debuggen."/>
+  <BoolProperty Name="AllowLocalNetworkLoopback" DisplayName="Lokales Netzwerkloopback zulassen" Category="StartOptions" F1Keyword="VC.Project.IVCAppHostLocalDebugPageObject.AllowLocalNetworkLoopback" Description="Ermöglicht beim Debuggen einer Windows Store-App, lokale Dienste zu nutzen, den Netzwerkdatenverkehr zu debuggen und ein lokales Loopback für die Kommunikation mit Komponenten auf dem gleichen Computer zu verwenden."/>
+  <EnumProperty Name="DebuggerType" DisplayName="Debuggertyp" Category="StartOptions" F1Keyword="VC.Project.IVCAppHostSimulatorDebugPageObject.DebuggerType" Description="Gibt den zu debuggenden Codetyp an.">
+    <EnumProperty.Metadata>
+      <NameValuePair Name="IsDebugType" Value="true"/>
+    </EnumProperty.Metadata>
+    <EnumValue Name="NativeOnly" DisplayName="Nur nativ"/>
+    <EnumValue Name="ManagedOnly" DisplayName="Nur verwaltet"/>
+    <EnumValue Name="GPUOnly" DisplayName="Nur GPU (C++ AMP)"/>
+    <EnumValue Name="Script" DisplayName="Nur Skript"/>
+    <EnumValue Name="Mixed" DisplayName="Verwaltet und Nativ"/>
+    <EnumValue Name="NativeWithScript" DisplayName="Skript und Nativ"/>
+  </EnumProperty>
+  <DynamicEnumProperty Name="GPUDebuggerTargetType" DisplayName="Debuggingbeschleunigungstyp" Category="GPUOptions" EnumProvider="GPUTargets" F1Keyword="VC.Project.IVCAppHostSimulatorDebugPageObject.GPUDebuggerTargetType" Description="Der für das Debugging des GPU-Codes zu verwendende Debuggingbeschleunigungstyp (Verfügbar, wenn der GPU-Debugger aktiv ist).">
+    <DynamicEnumProperty.Metadata>
+      <NameValuePair Name="ParentPropertyName" Value="DebuggerType"/>
+      <NameValuePair Name="ParentPropertyValue" Value="GPUOnly"/>
+    </DynamicEnumProperty.Metadata>
+  </DynamicEnumProperty>
+    
+  <EnumProperty Name="GPURefDebuggerBreakOnAllThreads" DisplayName="GPU-Standardhaltepunktverhalten" Category="GPUOptions" Description="Legt fest, wie oft der GPU-Debugger angehalten wird." F1Keyword="VC.Project.IVCAppHostSimulatorDebugPageObject.BreakpointBehavior">
+    <EnumValue Name="GPURefBreakOncePerWarp" DisplayName="Ein Halt pro Verzerrung" Description="Ein Halt pro Verzerrung"/>
+    <EnumValue Name="GPURefBreakForCPUThread" DisplayName="Halt für jeden Thread (wie CPU-Verhalten)" Description="Halt für jeden Thread (wie CPU-Verhalten)"/>
+    <EnumProperty.Metadata>
+      <NameValuePair Name="ParentPropertyName" Value="DebuggerType"/>
+      <NameValuePair Name="ParentPropertyValue" Value="GPUOnly"/>
+    </EnumProperty.Metadata>
+  </EnumProperty>
+  <DynamicEnumProperty Name="DebuggerAmpDefaultAccelerator" DisplayName="Amp-Standard-Accelerator" EnumProvider="AmpAccelerators" F1Keyword="VC.Project.IVCAppHostSimulatorDebugPageObject.AmpDefaultAccelerator" Description="Überschreiben Sie die Auswahl des Standard-Accelerators von C++ AMP. Die Eigenschaft gilt nicht beim Debuggen von verwaltetem Code.">
+  </DynamicEnumProperty>
+  <StringProperty Name="LayoutDir" DisplayName="Paketlayoutpfad" Description="Der Speicherort des Paketlayouts, an den die binäre Ausgabe kopiert wird. Dieser Speicherort kann auch nicht binäre Ressourcen für das Projekt enthalten."/>
+  <StringProperty Name="CommandLineArgs" DisplayName="Befehlszeilenargumente" Description="Befehlszeilenargumente, die an den Debugger übergeben werden."/>
+</Rule>

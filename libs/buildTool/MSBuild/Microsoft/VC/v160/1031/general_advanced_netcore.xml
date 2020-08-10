@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneralAdvanced" OverrideMode="Extend" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  
+ 
+  <StringProperty Name="TargetFramework" DisplayName=".NET Core-Zielframework" Description="Die .NET Core-Version, auf die das Projekt ausgerichtet ist. Gilt nur, wenn &quot;Common Language Runtime-Unterstützung&quot; auf &quot;.NET Core&quot; festgelegt ist." Category="CLR" F1Keyword="VC.Project.TargetFrameworkVersion">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="False"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <StringProperty Name="TargetFrameworkVersion" Visible="false" DisplayName=".NET Framework-Zielversion" Description="Die Version des .NET Frameworks, die bereits Ziel des Projekts ist. Dies gilt nur, wenn &quot;Common Language Runtime-Unterstützung&quot; festgelegt ist." Category="CLR" F1Keyword="VC.Project.TargetFrameworkVersion">
+    <StringProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label="Globals" HasConfigurationCondition="False"/>
+    </StringProperty.DataSource>
+  </StringProperty>
+
+  <BoolProperty Name="EnableManagedIncrementalBuild" Visible="false" DisplayName="Verwalteten inkrementellen Build aktivieren" Description="Aktiviert verwaltete inkrementelle Buildszenarios mithilfe von metagen." Category="CLR" F1Keyword="VC.Project.VCConfiguration.EnableManagedIncrementalBuild">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+</Rule>
