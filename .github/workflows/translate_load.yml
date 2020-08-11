@@ -1,4 +1,4 @@
-name: Simutrans Windows GDI
+name: Simutrans Translate
 
 on: [push]
 
@@ -12,11 +12,8 @@ jobs:
 
     - name: load translate files
       run: |
-        libs\curl\curl.exe -L https://simutrans-germany.com/translator_page/base_text/download.php >NULL
+        libs\curl\curl.exe -L https://simutrans-germany.com/translator_page/base_text/download.php
         libs\curl\curl.exe -L https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip > language_pack.zip
-
-    - name: extract translate files
-      run: |
         libs\7zip\7z.exe x language_pack.zip -osimutrans\text
 
     - name: zip result

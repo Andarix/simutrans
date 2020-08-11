@@ -19,7 +19,6 @@
 *.rej
 /simutrans/*pak*
 /simutrans/pak*
-/simutrans/text
 *.bdf
 *.zip
 /ipch/*
