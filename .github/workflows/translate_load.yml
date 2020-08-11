@@ -17,8 +17,7 @@ jobs:
 
     - name: extract translate files
       run: |
-        dir language_pack.zip
-        Expand-Archive -Path language_pack.zip -DestinationPath simutrans\text
+        libs\7zip\7z.exe x language_pack.zip -osimutrans\text
 
     - name: zip result
       run: |
