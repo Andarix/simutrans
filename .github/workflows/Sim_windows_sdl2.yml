@@ -17,6 +17,7 @@ jobs:
       run: |
         libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-SDL2.vcxproj -property:Configuration=Debug
         copy Simutrans_SDL2.exe simutrans\Simutrans.exe
+        copy libs\SDL2.dll simutrans\SDL2.dll
 
     - name: zip result
       run: |
