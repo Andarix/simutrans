@@ -22,7 +22,7 @@ jobs:
 
     - name: extract translate files
       run: |
-        Expand-Archive language_pack.zip -DestinationPath simutrans/text
+        Expand-Archive -Path language_pack.zip -DestinationPath simutrans\text
 
     - name: zip result
       run: |
