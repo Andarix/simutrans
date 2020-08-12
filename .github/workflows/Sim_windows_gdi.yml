@@ -20,13 +20,13 @@ jobs:
 
     - name: zip result
       run: |
-        Compress-Archive -Path simutrans -DestinationPath build\Simutrans_win_GDI-nightly.zip
+        Compress-Archive -Path simutrans -DestinationPath build\simuwin_GDI-nightly.zip
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: build/Simutrans_win_GDI-nightly.zip
-        asset_name: Simutrans_win_GDI-nightly.zip
+        file: build/simuwin_GDI-nightly.zip
+        asset_name: simuwin_GDI-nightly.zip
         tag: Nightly
         overwrite: true
