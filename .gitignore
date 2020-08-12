@@ -27,7 +27,6 @@
 *.patch
 *.log
 /doxygen
-/revision.h
 /simutrans/*.exe
 /simutrans/*.manifest
 /simutrans/*.pdb
