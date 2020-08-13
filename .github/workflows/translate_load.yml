@@ -1,6 +1,9 @@
 name: Simutrans Translate
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'translate'
 
 jobs:
   build:

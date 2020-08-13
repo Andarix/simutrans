@@ -60,6 +60,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Linkage-bzip2>static</Linkage-bzip2>
     <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
