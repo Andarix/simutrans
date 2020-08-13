@@ -20,7 +20,7 @@ jobs:
 
     - name: zip result
       run: |
-        Compress-Archive -Path build\makeobj\Release\Makeobj.exe -DestinationPath build\makeobj\Release\makeobj_windows-nightly.zip
+        libs\7zip\7z.exe a build\makeobj\Release\makeobj_windows-nightly.zip build\makeobj\Release\Makeobj.exe
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
