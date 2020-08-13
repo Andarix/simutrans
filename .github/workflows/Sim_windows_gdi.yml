@@ -13,10 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: set revision
-      run: |
-        revision.cmd
-
     - name: compile simutrans
       run: |
         libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-GDI.vcxproj -property:Configuration=Debug
