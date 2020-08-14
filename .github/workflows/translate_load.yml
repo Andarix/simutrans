@@ -31,5 +31,5 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simutrans_data.zip
         asset_simutrans_data.zip
-        tag: Nightly
+        tag: translate
         overwrite: true
