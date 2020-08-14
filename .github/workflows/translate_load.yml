@@ -16,9 +16,11 @@ jobs:
     - name: load translate files
       run: |
         libs\curl\curl.exe -L https://simutrans-germany.com/translator_page/base_text/download.php
-        libs\curl\curl.exe -L https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip > language_pack.zip
-        libs\7zip\7z.exe x language_pack.zip -osimutrans\text
+        Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("language_pack.zip", "simutrans/text")
 
     - name: zip result
       run: |
-        Compress-Archive -Path simutrans -DestinationPath build\Simutrans_win_GDI-nightly.zip
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [System.IO.Compression.ZipFile]::CreateFromDirectory("simutrans", "build\Simutrans_win_GDI-nightly.zip")
