@@ -1,0 +1,31 @@
+name: Simutrans Windows GDI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: compile simutrans
+      run: |
+        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-GDI.vcxproj -property:Configuration=Debug
+        copy Simutrans_GDI.exe simutrans\Simutrans.exe
+
+    - name: zip result
+        with:
+          files: simutrans/
+          recursive: false
+          dest: ${{ github.workspace }}/simuwin_GDI-nightly.zip
+
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: simuwin_GDI-nightly.zip
+        asset_name: simuwin_GDI-nightly.zip
+        tag: Nightly
+        overwrite: true
