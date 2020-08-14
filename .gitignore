@@ -30,3 +30,6 @@
 /simutrans/*.exe
 /simutrans/*.manifest
 /simutrans/*.pdb
+/*.exe
+/*.manifest
+/*.pdb
