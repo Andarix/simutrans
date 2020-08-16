@@ -1,0 +1,139 @@
+name: Linux x64
+
+on: [push]
+
+jobs:
+  makeobj_linux-x64-nightly:
+
+    runs-on: ubuntu-16.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: install_dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -ym install autoconf
+          sudo apt-get -ym install libpng-dev
+          sudo apt-get -ym install libbz2-dev
+
+      - name: setup
+        run: |
+          autoconf
+          ./configure
+          echo "STATIC = 1" >>config.default
+          cat config.default >>/dev/stderr
+
+      - name: make makeobj
+        run: |
+          cd makeobj
+          make
+
+      - name: Rename result
+        run: |
+          cd makeobj
+          zip -r -9 makeobj_linux-x64-nightly.zip makeobj
+
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: makeobj/makeobj_linux-x64-nightly.zip
+          asset_name: makeobj_linux-x64-nightly.zip
+          tag: Nightly
+          overwrite: true
+
+  simulinux-x64-nightly:
+
+    runs-on: ubuntu-16.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: install_dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -ym install libsdl2-dev
+          sudo apt-get -ym install libfreetype6-dev
+          sudo apt-get -ym install libbz2-dev
+          sudo apt-get -ym install autoconf
+
+      - name: setup
+        run: |
+          cd libs/zstd-1.4.4/lib
+          make
+          cd ../../../
+          autoconf
+          ./configure
+          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
+          echo "CFLAGS += -std=c++11 " >>config.default
+          echo "STATIC = 1" >>config.default
+          cat config.default >>/dev/stderr
+
+      - name: make
+        run: |
+          make
+
+      - name: distribute
+        run: |
+          sh ./distribute.sh
+
+      - name: Rename result
+        run:  mv ./simu*.zip ./simulinux-x64-nightly.zip
+
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: simulinux-x64-nightly.zip
+          asset_name: simulinux-x64-nightly.zip
+          tag: Nightly
+          overwrite: true
+
+  sim-linux-posix:
+    name: Linux (headless)
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Get Dependencies
+        shell: bash
+        run: sudo apt-get -y update && sudo apt-get install -y --no-install-recommends build-essential clang++-10 zlib1g-dev libbz2-dev
+      - name: Configure
+        run: cp configs/config.${{ github.job }} config.default
+      - name: Build
+        run: make -j$(nproc) all
+      - name: Build Zip
+        run: sh distribute.sh
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: sim-linux-posix-x64-nightly.zip
+          asset_name: sim-linux-posix-x64-nightly.zip
+          tag: Nightly
+          overwrite: true
+
+  nettool-linux:
+    name: Linux Nettool
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Get Dependencies
+        shell: bash
+        run: sudo apt-get -y update && sudo apt-get install -y --no-install-recommends build-essential g++-10
+      - name: Configure
+        run: cp configs/config.${{ github.job }} config.default
+      - name: Build
+        run: make -j$(nproc) nettool
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: Nettool-x64-nightly.zip
+          asset_name: Nettool-x64-nightly.zip
+          tag: Nightly
+          overwrite: true
