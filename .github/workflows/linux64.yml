@@ -92,27 +92,50 @@ jobs:
           tag: Nightly
           overwrite: true
 
-  sim-linux-posix:
-    name: Linux (headless)
+  simulinux-posix-x64_nightly:
+
     runs-on: ubuntu-16.04
+
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Get Dependencies
-        shell: bash
-        run: sudo apt-get -y update && sudo apt-get install -y --no-install-recommends build-essential clang++-10 zlib1g-dev libbz2-dev
-      - name: Configure
-        run: cp configs/config.${{ github.job }} config.default
-      - name: Build
-        run: make -j$(nproc) all
-      - name: Build Zip
-        run: sh distribute.sh
+
+      - name: install_dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -ym install autoconf
+          sudo apt-get -ym install libbz2-dev
+
+      - name: setup
+        run: |
+          cd libs/zstd-1.4.4/lib
+          make
+          cd ../../../
+          autoconf
+          ./configure
+          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
+          echo "CFLAGS += -std=c++11 " >>config.default
+          echo "STATIC = 1" >>config.default
+          echo "BACKEND = posix" >>config.default
+          cat config.default >>/dev/stderr
+
+      - name: make
+        run: |
+          make
+
+      - name: distribute
+        run: |
+          sh ./distribute.sh
+
+      - name: Rename result
+        run:  mv ./simu*.zip ./simulinux_posix-x64-nightly.zip
+
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: sim-linux-posix-x64-nightly.zip
-          asset_name: sim-linux-posix-x64-nightly.zip
+          file: simulinux_posix-x64-nightly.zip
+          asset_name: simulinux_posix-x64-nightly.zip
           tag: Nightly
           overwrite: true
 
@@ -122,18 +145,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Get Dependencies
-        shell: bash
-        run: sudo apt-get -y update && sudo apt-get install -y --no-install-recommends build-essential g++-10
-      - name: Configure
-        run: cp configs/config.${{ github.job }} config.default
-      - name: Build
-        run: make -j$(nproc) nettool
+
+      - name: install_dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -ym install autoconf
+
+      - name: setup
+        run: |
+          autoconf
+          ./configure
+          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
+          echo "CFLAGS += -std=c++11 " >>config.default
+          echo "STATIC = 1" >>config.default
+          cat config.default >>/dev/stderr
+
+      - name: make
+        run: |
+          cd nettools
+          make
+
+      - name: Rename result
+        run: |
+          cd nettools
+          zip -r -9 nettool_linux-x64-nightly.zip nettool
+
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: Nettool-x64-nightly.zip
-          asset_name: Nettool-x64-nightly.zip
+          file: nettools/nettool_linux-x64-nightly.zip
+          asset_name: nettool_linux-x64-nightly.zip
           tag: Nightly
           overwrite: true
