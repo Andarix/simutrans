@@ -3,7 +3,7 @@ name: Makeobj Linux x64
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_'
 
 jobs:
   build:

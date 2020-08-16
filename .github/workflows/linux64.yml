@@ -1,6 +1,9 @@
 name: Linux x64
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly'
 
 jobs:
   makeobj_linux-x64-nightly:
