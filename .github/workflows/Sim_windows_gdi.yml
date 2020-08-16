@@ -3,7 +3,7 @@ name: Simutrans Windows GDI
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_'
 
 jobs:
   build:

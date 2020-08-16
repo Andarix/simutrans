@@ -3,7 +3,7 @@ name: Simutrans Windows SDL2
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_'
 
 jobs:
   build:

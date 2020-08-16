@@ -3,7 +3,7 @@ name: Makeobj Windows
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_'
 
 jobs:
   build:
