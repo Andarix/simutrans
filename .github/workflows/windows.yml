@@ -19,9 +19,8 @@ jobs:
         ..\libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Makeobj.vcxproj -property:Configuration=Release
 
     - name: zip result
-      run: |
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::CreateFromDirectory("build\makeobj\Release\Makeobj.exe", "build\makeobj\Release\makeobj_windows-nightly.zip")
+      run: Compress-Archive build\makeobj\Release\Makeobj.exe build\makeobj\Release\makeobj_windows-nightly.zip
+      shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
@@ -49,13 +48,14 @@ jobs:
       run: |
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/download.php
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory("language_pack.zip", "simutrans/text")
+
+    - name: extract translate files
+      run: Expand-Archive language_pack.zip simutrans/text
+      shell: pwsh
 
     - name: zip result
-      run: |
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::CreateFromDirectory("simutrans", "build\simuwin_GDI-nightly.zip")
+      run: Compress-Archive simutrans build\simuwin_GDI-nightly.zip
+      shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
@@ -84,13 +84,14 @@ jobs:
       run: |
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/download.php
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory("language_pack.zip", "simutrans/text")
+
+    - name: extract translate files
+      run: Expand-Archive language_pack.zip simutrans/text
+      shell: pwsh
 
     - name: zip result
-      run: |
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::CreateFromDirectory("simutrans", "build\simuwin_SDL2-nightly.zip")
+      run: Compress-Archive simutrans build\simuwin_SDL2-nightly.zip
+      shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
