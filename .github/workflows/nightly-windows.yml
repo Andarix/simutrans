@@ -1,6 +1,9 @@
 name: Nightly Built Windows
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly_'
 
 jobs:
   wingdi32:
