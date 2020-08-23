@@ -10,7 +10,7 @@
 #include "../simdebug.h"
 #include "../dataobj/translator.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include <string.h>
 

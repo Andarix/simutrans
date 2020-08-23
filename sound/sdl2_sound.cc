@@ -5,7 +5,7 @@
 
 /// sdl-sound without SDL_mixer.dll
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <string.h>
 #include "sound.h"
 #include "../simmem.h"

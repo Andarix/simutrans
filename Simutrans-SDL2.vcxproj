@@ -113,7 +113,7 @@
       <Message>Obtain SVN revision number</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libs\SDL2-2.0.12\include;libs\freetype-2.10.1\include;libs\libpthreadVC3;libs\zstd-1.4.4\lib;libs\zlib-1.2.11;libs\bzip2-1.0.6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libs\SDL2-2.0.12;libs\freetype-2.10.1\include;libs\libpthreadVC3;libs\zstd-1.4.4\lib;libs\zlib-1.2.11;libs\bzip2-1.0.6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
