@@ -15,8 +15,8 @@ AV_FOUNDATION ?= 0
 
 ALLEGRO_CONFIG  ?= allegro-config
 SDL_CONFIG      ?= sdl-config
-SDL2_CONFIG     ?= pkg-config freetype2
 #SDL2_CONFIG     ?= sdl2-config
+SDL2_CONFIG     ?= pkg-config sdl2
 FREETYPE_CONFIG ?= freetype-config
 #FREETYPE_CONFIG ?= pkg-config freetype2
 

@@ -76,12 +76,10 @@ jobs:
           cat config.default >>/dev/stderr
 
       - name: make
-        run: |
-          make
+        run: make
 
       - name: distribute
-        run: |
-          sh ./distribute.sh
+        run: sh ./distribute.sh
 
       - name: Rename result
         run:  mv ./simu*.zip ./simulinux-x64-nightly.zip
