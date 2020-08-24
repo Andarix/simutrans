@@ -1,0 +1,72 @@
+name: Nightly build MacOS
+
+on: [push]
+#  push:
+#    tags:
+#      - 'Nightly_mac'
+
+jobs:
+  sim-mac-sdl2:
+    name: macOS (SDL2)
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get Dependencies
+        run: |
+          curl http://www.libsdl.org/release/SDL2-2.0.10.dmg > SDL2-2.0.10.dmg
+          hdiutil attach SDL2-2.0.10.dmg >>/dev/stderr
+          sudo cp -R -v /Volumes/SDL2/SDL2.framework /Library/Frameworks/
+          sudo ls /Library/Frameworks/ >>/dev/stderr
+          hdiutil eject /Volumes/SDL2 >>/dev/stderr
+      - name: Configure
+        run: |
+          cp configs/config.${{ github.job }} config.default
+          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans)" >> config.default
+          cat config.default >> /dev/stderr
+      - name: Build
+        run: make -j2
+      - name: Build Zip
+        run: sh distribute.sh
+      - name: Upload Artifact (CI)
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.job }}-nightly
+          path: sim*.zip
+
+
+  makeobj-mac:
+    name: macOS Makeobj
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure
+        run: cp configs/config.${{ github.job }} config.default
+      - name: Build
+        run: make -j2 makeobj
+      - name: Upload Artifact (CI)
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.job }}-nightly
+          path: build/default/makeobj-extended/makeobj-extended
+
+
+  nettool-mac:
+    name: macOS Nettool
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure
+        run: cp configs/config.${{ github.job }} config.default
+      - name: Build
+        run: make -j2 nettool
+      - name: Upload Artifact (CI)
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.job }}-nightly
+          path: build/default/nettool/nettool
