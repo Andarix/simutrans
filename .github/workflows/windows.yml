@@ -1,4 +1,4 @@
-name: Makeobj Windows
+name: Nightly build Windows
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   makeobj_windows-nightly:
-
+    - name: makeobj
     runs-on: windows-2019
 
     steps:
@@ -31,7 +31,6 @@ jobs:
 
   windows_GDI-nightly:
     name: Simutrans Windows GDI
-
     runs-on: windows-2019
 
     steps:
@@ -66,7 +65,6 @@ jobs:
 
   windows_SDL2-nightly:
     name: Simutrans Windows SDL2
-
     runs-on: windows-2019
 
     steps:
@@ -102,7 +100,6 @@ jobs:
 
   windows_server-nightly:
     name: Simutrans Windows Server
-
     runs-on: windows-2019
 
     steps:
@@ -137,7 +134,6 @@ jobs:
 
   windows_nettool:
     name: Simutrans Nettool
-
     runs-on: windows-2019
 
     steps:
