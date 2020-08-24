@@ -1,9 +1,9 @@
 name: Nightly build MacOS
 
-on: [push]
-#  push:
-#    tags:
-#      - 'Nightly_mac'
+on:
+  push:
+    tags:
+      - 'Nightly'
 
 jobs:
   sim-mac-sdl2:
@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
       - name: Get Dependencies
         run: |
           curl http://www.libsdl.org/release/SDL2-2.0.10.dmg > SDL2-2.0.10.dmg
@@ -30,10 +30,15 @@ jobs:
       - name: Build Zip
         run: sh distribute.sh
       - name: Upload Artifact (CI)
-        uses: actions/upload-artifact@v2
+        uses: svenstaro/upload-release-action@v1-release
         with:
-          name: ${{ github.job }}-nightly
-          path: sim*.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: simumac.zip
+          asset_name: simumac_SDL2-nightly.zip
+          #name: ${{ github.job }}-nightly
+          #path:
+          tag: Nightly
+          overwrite: true
 
 
   makeobj-mac:
@@ -42,16 +47,23 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
       - name: Configure
         run: cp configs/config.${{ github.job }} config.default
       - name: Build
         run: make -j2 makeobj
+      - name: zip result
+        run: zip -r -9 makeobj_macos-nightly.zip build/default/makeobj/makeobj
       - name: Upload Artifact (CI)
-        uses: actions/upload-artifact@v2
+        uses: svenstaro/upload-release-action@v1-release
         with:
-          name: ${{ github.job }}-nightly
-          path: build/default/makeobj-extended/makeobj-extended
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: makeobj_macos-nightly.zip
+          asset_name: makeobj_macos-nightly.zip
+          #name: ${{ github.job }}-nightly
+          #path: build/default/makeobj/makeobj
+          tag: Nightly
+          overwrite: true
 
 
   nettool-mac:
@@ -60,13 +72,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
       - name: Configure
         run: cp configs/config.${{ github.job }} config.default
       - name: Build
         run: make -j2 nettool
+      - name: zip result
+        run: zip -r -9 nettool_mac-nightly.zip build/default/nettool/nettool
       - name: Upload Artifact (CI)
-        uses: actions/upload-artifact@v2
+        uses: svenstaro/upload-release-action@v1-release
         with:
-          name: ${{ github.job }}-nightly
-          path: build/default/nettool/nettool
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: nettool_mac-nightly.zip
+          asset_name: nettool_mac-nightly.zip
+          #name: ${{ github.job }}-nightly
+          #path: build/default/nettool/nettool
+          tag: Nightly
+          overwrite: true
