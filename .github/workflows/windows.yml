@@ -110,7 +110,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: compile simutrans
+    - name: compile simutrans server
       run: |
         libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-Server.vcxproj -property:Configuration=Debug
         copy Simutrans_Server.exe simutrans\Simutrans-Server.exe
@@ -145,19 +145,19 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: compile simutrans
+    - name: compile simutrans nettool
       run: |
         libs\buildTool\MSBuild\Current\Bin\MSBuild.exe nettools\Nettool.vcxproj -property:Configuration=Debug
 
     - name: zip result
-      run: Compress-Archive nettools\Nettool.exe nettools\simuwin_nettool-nightly.zip
+      run: Compress-Archive nettools\Nettool.exe nettools\nettool_windows-nightly.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: nettools\simuwin_nettool-nightly.zip
-        asset_name: simuwin_nettool-nightly.zip
+        file: nettools\nettool_windows-nightly.zip
+        asset_name: nettool_windows-nightly.zip
         tag: Nightly
         overwrite: true
