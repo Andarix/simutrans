@@ -101,3 +101,63 @@ jobs:
         asset_name: simuwin_SDL2-nightly.zip
         tag: Nightly
         overwrite: true
+
+  windows_server-nightly:
+    name: Simutrans Windows Server
+
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: compile simutrans
+      run: |
+        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-Server.vcxproj -property:Configuration=Debug
+        copy Simutrans_Server.exe simutrans\Simutrans-Server.exe
+
+    - name: load translate files
+      run: |
+        Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/download.php
+        Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
+
+    - name: extract translate files
+      run: Expand-Archive language_pack.zip simutrans/text
+      shell: pwsh
+
+    - name: zip result
+      run: Compress-Archive simutrans build\simuwin_server-nightly.zip
+      shell: pwsh
+
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/simuwin_server-nightly.zip
+        asset_name: simuwin_server-nightly.zip
+        tag: Nightly
+        overwrite: true
+
+  windows_nettool:
+    name: Simutrans Nettool
+
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: compile simutrans
+      run: |
+        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe nettools\Nettool.vcxproj -property:Configuration=Debug
+
+    - name: zip result
+      run: Compress-Archive nettools\Nettool.exe nettools\simuwin_nettool-nightly.zip
+      shell: pwsh
+
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v1-release
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: nettools\simuwin_nettool-nightly.zip
+        asset_name: simuwin_nettool-nightly.zip
+        tag: Nightly
+        overwrite: true
