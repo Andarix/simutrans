@@ -7,7 +7,7 @@ on:
 
 jobs:
   makeobj_windows-nightly:
-    - name: makeobj
+    name: makeobj
     runs-on: windows-2019
 
     steps:
