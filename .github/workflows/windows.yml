@@ -38,7 +38,7 @@ jobs:
 
     - name: compile simutrans
       run: |
-        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-GDI.vcxproj -property:Configuration=Debug
+        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-GDI.vcxproj -property:Configuration=Release
         copy Simutrans_GDI.exe simutrans\Simutrans.exe
 
     - name: load translate files
@@ -72,7 +72,7 @@ jobs:
 
     - name: compile simutrans
       run: |
-        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-SDL2.vcxproj -property:Configuration=Debug
+        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-SDL2.vcxproj -property:Configuration=Release
         copy Simutrans_SDL2.exe simutrans\Simutrans.exe
         copy libs\SDL2.dll simutrans\SDL2.dll
 
@@ -107,7 +107,7 @@ jobs:
 
     - name: compile simutrans server
       run: |
-        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-Server.vcxproj -property:Configuration=Debug
+        libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-Server.vcxproj -property:Configuration=Release
         copy Simutrans_Server.exe simutrans\Simutrans-Server.exe
 
     - name: load translate files
@@ -140,7 +140,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: compile simutrans nettool
-      run: libs\buildTool\MSBuild\Current\Bin\MSBuild.exe nettools\Nettool.vcxproj -property:Configuration=Debug
+      run: libs\buildTool\MSBuild\Current\Bin\MSBuild.exe nettools\Nettool.vcxproj -property:Configuration=Release
 
     - name: zip result
       run: Compress-Archive nettools\Nettool.exe nettools\nettool_windows-nightly.zip
