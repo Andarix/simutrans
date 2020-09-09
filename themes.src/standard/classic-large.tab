@@ -1,7 +1,7 @@
 # Default simutrans theme
 #
 # name of the theme (will be shown with file selector)
-name=Simutrans (large size)
+name=Simutrans classic (large size)
 
 # show tooltips (default 1=show)
 show_tooltips = 1
@@ -67,7 +67,7 @@ second_open_closes_win = 0
 remember_window_positions = 1
 
 # color used for the default titlebars
-#default_window_title_color = 154
+default_window_title_color = #D74700
 
 # there are three different ways to indicate an active window
 
@@ -79,8 +79,8 @@ remember_window_positions = 1
 
 # third (best together with 2nd):use different text color for bar
 # some colors are 215-white, 240-black 208-214- all shades of gray
-#front_window_text_color = #FFFFFF
-#bottom_window_text_color = #DDDDDD
+front_window_text_color = #FFFFFF
+bottom_window_text_color = #DDDDDD
 
 # How much shade for player colors (7 brightest 0 darkest)
 gui_player_color_bright = 4
@@ -97,4 +97,4 @@ toolbar_max_height = 0
 ##################################pakstuff##################################
 
 # pak with the images for this theme
-themeimages=menu.standard.pak
+themeimages=classic.pak
