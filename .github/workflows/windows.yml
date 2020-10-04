@@ -48,6 +48,9 @@ jobs:
 
     - name: extract translate files
       run: Expand-Archive language_pack.zip simutrans/text
+      shell: pwsh
+
+    - name: delete ce translate files
       run: del simutrans/text/ce.tab
       shell: pwsh
 
@@ -84,6 +87,9 @@ jobs:
 
     - name: extract translate files
       run: Expand-Archive language_pack.zip simutrans/text
+      shell: pwsh
+
+    - name: delete ce translate files
       run: del simutrans/text/ce.tab
       shell: pwsh
 
@@ -119,6 +125,9 @@ jobs:
 
     - name: extract translate files
       run: Expand-Archive language_pack.zip simutrans/text
+      shell: pwsh
+
+    - name: delete ce translate files
       run: del simutrans/text/ce.tab
       shell: pwsh
 
