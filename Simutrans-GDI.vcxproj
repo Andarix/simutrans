@@ -92,7 +92,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/zstdlib.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/zstdlib.lib;Xaudio2.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libcmtd.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
@@ -140,7 +140,7 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/zstdlib.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/zstdlib.lib;Xaudio2.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
@@ -151,7 +151,7 @@
   <ItemGroup>
     <ClCompile Include="display\simgraph16.cc" />
     <ClCompile Include="music\w32_midi.cc" />
-    <ClCompile Include="sound\win32_sound.cc" />
+    <ClCompile Include="sound\win32_sound_xa.cc" />
     <ClCompile Include="sys\clipboard_w32.cc" />
     <ClCompile Include="sys\simsys_w.cc" />
     <ClCompile Include="sys\simsys_w32_png.cc" />

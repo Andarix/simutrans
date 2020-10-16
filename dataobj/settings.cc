@@ -745,8 +745,12 @@ void settings_t::rdwr(loadsave_t *file)
 		}
 		if(file->is_version_atleast(102, 3)) {
 			// network stuff
-			random_counter = get_random_seed( );
-			file->rdwr_long( random_counter );
+			// Superseded by simrand_rdwr in newer versions
+			if (file->is_version_less(122, 1)) {
+				random_counter = get_random_seed( );
+				file->rdwr_long( random_counter );
+			}
+
 			if(  !env_t::networkmode  ||  env_t::server  ) {
 				frames_per_second = clamp(env_t::fps, 5u, 100u); // update it on the server to the current setting
 				frames_per_step = env_t::network_frames_per_step;
@@ -889,6 +893,9 @@ void settings_t::rdwr(loadsave_t *file)
 		}
 		if(  file->is_version_atleast(120, 9)  ) {
 			file->rdwr_long(allow_merge_distant_halt);
+		}
+		if(  file->is_version_atleast(122, 1)  ) {
+			file->rdwr_enum(climate_generator);
 		}
 		// otherwise the default values of the last one will be used
 	}
