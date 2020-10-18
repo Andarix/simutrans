@@ -28,8 +28,9 @@
 class env_t
 {
 public:
-	/// points to the current simutrans data directory
-	static char program_dir[PATH_MAX];
+	/// Points to the current simutrans data directory. Usually this is the same directory
+	/// where the executable is located, unless -use_workdir is specified.
+	static char data_dir[PATH_MAX];
 
 	/// points to the current user directory for loading and saving
 	static const char *user_dir;
@@ -145,6 +146,9 @@ public:
 
 	/// controls scrolling speed and scrolling direction
 	static sint16 scroll_multi;
+
+	/// converts numpad keys to arrows no matter of numlock state
+	static bool numpad_always_moves_map;
 
 	/// open info windows for pedestrian and private cars
 	static bool road_user_info;
