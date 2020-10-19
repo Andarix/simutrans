@@ -20,13 +20,13 @@ jobs:
           sudo cp -R -v /Volumes/SDL2/SDL2.framework /Library/Frameworks/
           sudo ls /Library/Frameworks/ >>/dev/stderr
           hdiutil eject /Volumes/SDL2 >>/dev/stderr
-      - name: Configure
-        run: |
-          cp configs/config.${{ github.job }} config.default
-          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans)" >> config.default
-          cat config.default >> /dev/stderr
+          brew install autoconf automake freetype libpng pkg-config sdl2
       - name: Build
-        run: make -j2
+        run: |
+          autoreconf -ivf
+          ./configure CC=clang
+          make BACKEND=sdl2 MULTI_THREAD=1 OPTIMISE=1 OSTYPE=mac USE_FREETYPE=1 USE_UPNP=0 USE_ZSTD=0 AV_FOUNDATION=1
+          make OSX/getversion
       - name: Build Zip
         run: sh distribute.sh
       - name: Upload Artifact (CI)
