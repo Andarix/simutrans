@@ -8,6 +8,7 @@
 
 
 #include "gui_frame.h"
+#include "components/action_listener.h"
 #include "components/gui_button.h"
 #include "components/gui_button_to_chart.h"
 #include "components/gui_chart.h"
@@ -20,7 +21,6 @@
 #include "components/gui_tab_panel.h"
 #include "components/gui_textarea.h"
 #include "components/gui_textinput.h"
-#include "components/action_listener.h"
 #include "../convoihandle_t.h"
 #include "simwin.h"
 
@@ -56,10 +56,9 @@ private:
 	gui_speedbar_t speed_bar;
 	gui_routebar_t route_bar;
 	gui_chart_t chart;
-	button_t follow_button;
 
 	gui_tab_panel_t switch_mode;
-	gui_aligned_container_t container_freight, container_schedule, container_stats, container_line, *container_top, container_details;
+	gui_aligned_container_t container_freight, container_schedule, container_stats, *container_top, container_details;
 	convoi_detail_t *details;
 	gui_scrollpane_t scroll_freight;
 
