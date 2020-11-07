@@ -104,8 +104,6 @@ bool convoi_frame_t::passes_filter(convoihandle_t cnv)
 		return false;
 	}
 
-	vehicle_t const* const fahr = cnv->front();
-
 	if(  get_filter(convoi_filter_frame_t::special_filter)  ) {
 		if ((!get_filter(convoi_filter_frame_t::noroute_filter)  || cnv->get_state() != convoi_t::NO_ROUTE) &&
 				(!get_filter(convoi_filter_frame_t::stucked_filter)  || (cnv->get_state() != convoi_t::WAITING_FOR_CLEARANCE_TWO_MONTHS && cnv->get_state() != convoi_t::CAN_START_TWO_MONTHS)) &&
@@ -356,7 +354,7 @@ void convoi_frame_t::rdwr( loadsave_t *file )
 	file->rdwr_bool( sortreverse );
 	file->rdwr_long( filter_flags );
 	if( file->is_saving() ) {
-		uint8 good_nr = waren_filter->get_count();
+		uint8 good_nr = get_filter(convoi_filter_frame_t::ware_filter) ? waren_filter->get_count() : 0;
 		file->rdwr_byte( good_nr );
 		FOR( slist_tpl<const goods_desc_t *>, const i, *waren_filter ) {
 			uint8 catg_idx = i->get_catg_index();
@@ -366,13 +364,15 @@ void convoi_frame_t::rdwr( loadsave_t *file )
 	else {
 		uint8 good_nr;
 		file->rdwr_byte( good_nr );
-		static slist_tpl<const goods_desc_t *>waren_filter_rd;
-		for( sint16 i = 0; i < good_nr; i++ ) {
-			uint8 catg_idx;
-			file->rdwr_byte(catg_idx);
-			waren_filter_rd.append( goods_manager_t::get_info_catg(catg_idx) );
+		if( good_nr > 0 ) {
+			static slist_tpl<const goods_desc_t *>waren_filter_rd;
+			for( sint16 i = 0; i < good_nr; i++ ) {
+				uint8 catg_idx;
+				file->rdwr_byte(catg_idx);
+				waren_filter_rd.append( goods_manager_t::get_info_catg(catg_idx) );
+			}
+			waren_filter = &waren_filter_rd;
 		}
-		waren_filter = &waren_filter_rd;
 	}
 
 	if( file->is_loading() ) {
