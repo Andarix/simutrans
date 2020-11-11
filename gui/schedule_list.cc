@@ -81,7 +81,7 @@ schedule_list_gui_t::schedule_list_gui_t(player_t *player_) :
 		// sort by what
 		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Name"), SYSCOL_TEXT) ;
 		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Revenue"), SYSCOL_TEXT) ;
-		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Free capacity"), SYSCOL_TEXT) ;
+		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Free Capacity"), SYSCOL_TEXT) ;
 		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Number of convois"), SYSCOL_TEXT) ;
 		sort_type_c.set_selection(0);
 		sort_type_c.set_focusable( true );
@@ -174,7 +174,6 @@ schedule_list_gui_t::schedule_list_gui_t(player_t *player_) :
 	int index = 0;
 	for(  uint i=0;  i<max_idx;  i++  ) {
 		if(  tabs_to_lineindex[i] == selected_tab[player->get_player_nr()]  ) {
-			selected_line[player->get_player_nr()][selected_tab[player->get_player_nr()]];
 			index = i;
 			break;
 		}
@@ -303,7 +302,7 @@ uint32 schedule_list_gui_t::get_rdwr_id()
 void schedule_list_gui_t::rdwr( loadsave_t *file )
 {
 	scr_size size;
-	sint32 cont_xoff, cont_yoff, halt_xoff, halt_yoff;
+	sint32 cont_xoff, cont_yoff;
 	if(  file->is_saving()  ) {
 		size = get_windowsize();
 		cont_xoff = scl.get_scroll_x();
