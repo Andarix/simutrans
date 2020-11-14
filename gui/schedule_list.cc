@@ -48,7 +48,9 @@
 static uint8 tabs_to_lineindex[9];
 static uint8 max_idx=0;
 
-static int current_sort_mode = 0;
+#define MAX_SORT_IDX (4)
+static uint8 idx_to_sort_mode[MAX_SORT_IDX] = { line_scrollitem_t::SORT_BY_NAME, line_scrollitem_t::SORT_BY_PROFIT, line_scrollitem_t::SORT_BY_TRANSPORTED, line_scrollitem_t::SORT_BY_CONVOIS };
+static char *idx_to_sort_text[MAX_SORT_IDX] = { "Name", "Revenue", "Transported", "Number of convois" };
 
 /// selected tab per player
 static uint8 selected_tab[MAX_PLAYER_COUNT] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -63,6 +65,7 @@ schedule_list_gui_t::schedule_list_gui_t(player_t *player_) :
 {
 	schedule_filter[0] = 0;
 	old_schedule_filter[0] = 0;
+	current_sort_mode = 0;
 
 	// add components
 	// first column: scrolled list of all lines
@@ -79,11 +82,10 @@ schedule_list_gui_t::schedule_list_gui_t(player_t *player_) :
 		add_component( &inp_filter );
 
 		// sort by what
-		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Name"), SYSCOL_TEXT) ;
-		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Revenue"), SYSCOL_TEXT) ;
-		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Free Capacity"), SYSCOL_TEXT) ;
-		sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate("Number of convois"), SYSCOL_TEXT) ;
-		sort_type_c.set_selection(0);
+		for( int i=0; i<MAX_SORT_IDX;  i++ ) {
+			sort_type_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate(idx_to_sort_text[i]), SYSCOL_TEXT) ;
+		}
+		sort_type_c.set_selection(current_sort_mode);
 		sort_type_c.set_focusable( true );
 		sort_type_c.add_listener( this );
 		add_component(&sort_type_c);
@@ -169,7 +171,6 @@ schedule_list_gui_t::schedule_list_gui_t(player_t *player_) :
 	tabs.add_listener(this);
 	add_component(&tabs);
 
-
 	// recover last selected line
 	int index = 0;
 	for(  uint i=0;  i<max_idx;  i++  ) {
@@ -224,10 +225,26 @@ bool schedule_list_gui_t::action_triggered( gui_action_creator_t *comp, value_t 
 	else if(  comp == &scl  ) {
 		if(  line_scrollitem_t *li=(line_scrollitem_t *)scl.get_element(v.i)  ) {
 			line = li->get_line();
+
+			gui_frame_t *line_info = win_get_magic( (ptrdiff_t)line.get_rep() );
+			// try to open to the right
+			scr_coord sc = win_get_pos( this );
+			scr_coord lc = sc;
+			lc.x += get_windowsize().w;
+			if( lc.x > display_get_width() ) {
+				lc.x = max( 0, display_get_width() - 100 );
+			}
+			if(  line_info  ) {
+				// close if open
+				destroy_win( line_info );
+//				top_win( line_info );
+//				win_set_pos( line_info, lc.x, lc.y );
+			}
+			else {
+				create_win( lc.x, lc.y, new line_management_gui_t(line, player), w_info, (ptrdiff_t)line.get_rep() );
+			}
 		}
-		player->simlinemgmt.show_lineinfo( player, line );
-		selected_line[player->get_player_nr()][selected_tab[player->get_player_nr()]] = line;
-		selected_line[player->get_player_nr()][0] = line; // keep these the same in overview
+		scl.set_selection( -1 );
 	}
 	else if(  comp == &inp_filter  ) {
 		if(  strcmp(old_schedule_filter,schedule_filter)  ) {
@@ -273,7 +290,7 @@ void schedule_list_gui_t::build_line_list(int filter)
 
 	FOR(vector_tpl<linehandle_t>, const l, lines) {
 		// search name
-		if(  utf8caseutf8(l->get_name(), schedule_filter)  ) {
+		if(  !*schedule_filter  ||  utf8caseutf8(l->get_name(), schedule_filter)  ) {
 			// match good category
 			if(  is_matching_freight_catg( l->get_goods_catg_index() )  ) {
 				scl.new_component<line_scrollitem_t>(l);
@@ -283,8 +300,9 @@ void schedule_list_gui_t::build_line_list(int filter)
 			}
 		}
 	}
-
 	scl.set_selection( sel );
+
+	current_sort_mode = idx_to_sort_mode[ sort_type_c.get_selection() ];
 	line_scrollitem_t::sort_mode = (line_scrollitem_t::sort_modes_t)current_sort_mode;
 	scl.sort( 0 );
 	scl.set_size(scl.get_size());
