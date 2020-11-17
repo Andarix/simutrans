@@ -936,6 +936,37 @@ void destroy_all_win(bool destroy_sticky)
 	}
 }
 
+void rollup_all_win()
+{
+	bool all_rolldown_flag = true; // If any dialog is open, all rolldown will not be performed
+	for (  sint32 curWin = 0; curWin < (sint32)wins.get_count(); curWin++  ) {
+		if (  !wins[curWin].rollup  ) {
+			wins[curWin].rollup = true;
+			gui_frame_t *gui = wins[curWin].gui;
+			scr_size size = gui->get_windowsize();
+			mark_rect_dirty_wc( wins[curWin].pos.x, wins[curWin].pos.y, wins[curWin].pos.x+size.w, wins[curWin].pos.y+size.h );
+			all_rolldown_flag = false;
+		}
+	}
+
+	if (  !all_rolldown_flag  ) {
+		wl->set_background_dirty();
+	}
+	else if (  wins.get_count()  ) {
+		rolldown_all_win();
+	}
+}
+
+void rolldown_all_win()
+{
+	for (  sint32 curWin = 0; curWin < (sint32)wins.get_count(); curWin++  ) {
+		wins[curWin].rollup = false;
+		gui_frame_t *gui = wins[curWin].gui;
+		scr_size size = gui->get_windowsize();
+		mark_rect_dirty_wc( wins[curWin].pos.x, wins[curWin].pos.y, wins[curWin].pos.x+size.w, wins[curWin].pos.y+size.h );
+	}
+}
+
 
 int top_win(int win, bool keep_state )
 {
@@ -1558,12 +1589,13 @@ void win_poll_event(event_t* const ev)
 	if(  ev->ev_class==EVENT_SYSTEM  &&  ev->ev_code==SYSTEM_RELOAD_WINDOWS  ) {
 		dr_chdir( env_t::user_dir );
 		loadsave_t dlg;
-		if(  dlg.wr_open( "dlgpos.xml", loadsave_t::xml_zipped, 1, "temp", SERVER_SAVEGAME_VER_NR )  ) {
+
+		if(  dlg.wr_open( "dlgpos.xml", loadsave_t::xml_zipped, 1, "temp", SERVER_SAVEGAME_VER_NR ) == loadsave_t::FILE_STATUS_OK  ) {
 			// save all
 			rdwr_all_win( &dlg );
 			dlg.close();
 			destroy_all_win( true );
-			if(  dlg.rd_open( "dlgpos.xml" )  ) {
+			if(  dlg.rd_open( "dlgpos.xml" ) == loadsave_t::FILE_STATUS_OK  ) {
 				// and reload them ...
 				rdwr_all_win( &dlg );
 			}
