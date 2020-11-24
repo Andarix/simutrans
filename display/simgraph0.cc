@@ -340,7 +340,7 @@ void display_show_load_pointer(int)
 {
 }
 
-void simgraph_init(KOORD_VAL, KOORD_VAL, int)
+void simgraph_init(scr_size, bool)
 {
 }
 
@@ -358,7 +358,7 @@ void simgraph_exit()
 	dr_os_close();
 }
 
-void simgraph_resize(KOORD_VAL, KOORD_VAL)
+void simgraph_resize(scr_size)
 {
 }
 
