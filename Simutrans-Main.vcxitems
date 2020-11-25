@@ -34,7 +34,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)simmem.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)simmenu.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)simmesg.cc" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)simobj.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)simplan.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)simskin.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)simsound.cc" />
@@ -265,6 +264,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)obj\pillar.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)obj\roadsign.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)obj\signal.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)obj\simobj.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)obj\tunnel.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)obj\wayobj.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)obj\wolke.cc" />
@@ -329,6 +329,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)squirrel\squirrel\sqvm.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)sys\simsys.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)utils\cbuffer_t.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)utils\checklist.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)utils\csv.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)utils\log.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)utils\searchfolder.cc" />
@@ -364,7 +365,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)simmem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)simmenu.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)simmesg.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)simobj.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)simplan.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)simskin.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)simsound.h" />
@@ -626,6 +626,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)obj\pillar.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)obj\roadsign.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)obj\signal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)obj\simobj.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)obj\tunnel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)obj\wayobj.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)obj\wolke.h" />
@@ -698,6 +699,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)tpl\weighted_vector_tpl.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\cbuffer_t.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\csv.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)utils\checklist.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\log.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\searchfolder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\sha1.h" />
