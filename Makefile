@@ -553,10 +553,16 @@ SOURCES += utils/sha1_hash.cc
 SOURCES += utils/simrandom.cc
 SOURCES += utils/simstring.cc
 SOURCES += utils/simthread.cc
+SOURCES += vehicle/air_vehicle.cc
 SOURCES += vehicle/movingobj.cc
-SOURCES += vehicle/simpeople.cc
+SOURCES += vehicle/pedestrian.cc
+SOURCES += vehicle/rail_vehicle.cc
+SOURCES += vehicle/road_vehicle.cc
 SOURCES += vehicle/simroadtraffic.cc
-SOURCES += vehicle/simvehicle.cc
+SOURCES += vehicle/vehicle.cc
+SOURCES += vehicle/vehicle_base.cc
+SOURCES += vehicle/water_vehicle.cc
+
 
 ifeq ($(BACKEND),allegro)
   SOURCES += sys/simsys_d.cc

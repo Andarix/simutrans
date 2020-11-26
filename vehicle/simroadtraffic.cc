@@ -14,6 +14,8 @@
 #include "../simconvoi.h"
 
 #include "simroadtraffic.h"
+#include "vehicle.h"
+
 #ifdef DESTINATION_CITYCARS
 // for final citycar destinations
 #include "simpeople.h"
@@ -32,8 +34,10 @@
 #include "../descriptor/citycar_desc.h"
 #include "../descriptor/roadsign_desc.h"
 
-
 #include "../utils/cbuffer_t.h"
+
+#include "road_vehicle.h"
+
 
 /**********************************************************************************************************************/
 /* Road users (private cars and pedestrians) basis class from here on */

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -338,10 +338,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)utils\simrandom.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)utils\simstring.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)utils\simthread.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\air_vehicle.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\movingobj.cc" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\simpeople.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\pedestrian.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\rail_vehicle.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\road_vehicle.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\simroadtraffic.cc" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\simvehicle.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\vehicle.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\vehicle_base.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)vehicle\water_vehicle.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)freight_list_sorter.h" />
@@ -707,11 +712,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\simrandom.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\simstring.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils\simthread.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\air_vehicle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\movingobj.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\overtaker.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\simpeople.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\pedestrian.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\rail_vehicle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\road_vehicle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\simroadtraffic.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\simvehicle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\vehicle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\vehicle_base.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vehicle\water_vehicle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="$(MSBuildThisFileDirectory)simres.rc" />

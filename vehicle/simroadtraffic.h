@@ -7,7 +7,7 @@
 #define VEHICLE_SIMROADTRAFFIC_H
 
 
-#include "simvehicle.h"
+#include "vehicle_base.h"
 #include "overtaker.h"
 
 #include "../tpl/stringhashtable_tpl.h"
@@ -19,7 +19,7 @@ class karte_t;
 /**
  * Base class for traffic participants with random movement
  *
- * Transport vehicles are defined in simvehicle.h, because they greatly
+ * Transport vehicles are defined in vehicle.h, because they greatly
  * differ from the vehicles defined herein for the individual traffic
  * (pedestrians, citycars, movingobj aka flock of sheep).
  */
