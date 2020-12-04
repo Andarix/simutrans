@@ -75,7 +75,7 @@
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
@@ -140,7 +140,7 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/zstdlib.lib;Xaudio2.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;Xaudio2.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
