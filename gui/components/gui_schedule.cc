@@ -145,7 +145,7 @@ public:
 		stop_extra.set_color(yesno ? SYSCOL_TEXT_HIGHLIGHT : SYSCOL_TEXT);
 	}
 
-	bool action_triggered( gui_action_creator_t *c, value_t v ) OVERRIDE
+	bool action_triggered( gui_action_creator_t *c, value_t ) OVERRIDE
 	{
 		if( c == &up ) {
 			call_listeners( UP_FLAG | number );
@@ -159,6 +159,7 @@ public:
 			call_listeners( DELETE_FLAG | number );
 			return true;
 		}
+		return false;
 	}
 
 	bool infowin_event(const event_t *ev) OVERRIDE
@@ -463,6 +464,7 @@ gui_schedule_t::~gui_schedule_t()
 	update_tool(false);
 	delete schedule;
 	delete stats;
+	old_schedule->finish_editing();
 }
 
 void gui_schedule_t::init(schedule_t* schedule_, player_t* player, convoihandle_t cnv, linehandle_t lin)
@@ -515,8 +517,23 @@ void gui_schedule_t::init(schedule_t* schedule_, player_t* player, convoihandle_
 
 void gui_schedule_t::update_tool(bool set)
 {
-	tool_t::general_tool[TOOL_SCHEDULE_INS]->set_default_param((const char *)schedule);
-	welt->set_tool( tool_t::general_tool[TOOL_SCHEDULE_INS], player );
+	if (set) {
+		tool_t::general_tool[TOOL_SCHEDULE_ADD]->set_default_param((const char *)schedule);
+		welt->set_tool( tool_t::general_tool[TOOL_SCHEDULE_ADD], player );
+	}
+	else {
+		// we have to reset the tool (in particular, when window closes)
+		if(welt->get_tool(player->get_player_nr())==tool_t::general_tool[TOOL_SCHEDULE_ADD]) {
+			if(tool_t::general_tool[TOOL_SCHEDULE_ADD]->get_default_param()==(const char *)schedule) {
+				welt->set_tool( tool_t::general_tool[TOOL_QUERY], player );
+			}
+		}
+		else if(welt->get_tool(player->get_player_nr())==tool_t::general_tool[TOOL_SCHEDULE_INS]) {
+			if(tool_t::general_tool[TOOL_SCHEDULE_INS]->get_default_param()==(const char *)schedule) {
+				welt->set_tool( tool_t::general_tool[TOOL_QUERY], player );
+			}
+		}
+	}
 }
 
 
