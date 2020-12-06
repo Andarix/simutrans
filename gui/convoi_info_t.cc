@@ -266,6 +266,13 @@ void convoi_info_t::apply_schedule()
 		return;
 	}
 
+	// if convoy was sent to depot do not override schedule here
+	if(  grund_t* gr=welt->lookup(cnv->get_schedule()->get_current_entry().pos)  ) {
+		if (gr->get_depot() != NULL) {
+			return;
+		}
+	}
+
 	// do not send changes if the convoi is about to be deleted
 	if (cnv->get_state() != convoi_t::SELF_DESTRUCT) {
 		if (cnv->in_depot()) {
@@ -527,7 +534,7 @@ bool convoi_info_t::action_triggered( gui_action_creator_t *comp, value_t v)
 		if( comp == &switch_mode ) {
 			scd.highlight_schedule( v.i == 1 );
 			if( v.i == 1 ) {
-				cnv->call_convoi_tool( 's', "1" );
+				cnv->call_convoi_tool( 's', "1" ); // set state to EDIT_SCHEDULE, calls cnv->schedule->start_editing(), reset in gui_schedule_t::~gui_schedule_t
 			}
 			else if(scd.has_pending_changes()) {
 				apply_schedule();
@@ -631,9 +638,8 @@ void convoi_info_t::change_schedule()
 bool convoi_info_t::infowin_event(const event_t *ev)
 {
 	if(  ev->ev_class == INFOWIN  &&  ev->ev_code == WIN_CLOSE  ) {
-		if(  scd.has_pending_changes()  ) {
-			apply_schedule();
-		}
+		// always apply schedule here, to reset wait_lock for convoys in convoi_t::set_schedule
+		apply_schedule();
 		scd.highlight_schedule( false );
 	}
 

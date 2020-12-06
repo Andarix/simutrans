@@ -28,10 +28,6 @@
 
 #include "../../tpl/vector_tpl.h"
 
-#include "../simwin.h"
-#include "../depot_frame.h"
-#include "../minimap.h"
-
 #include "gui_button.h"
 #include "gui_image.h"
 #include "gui_textarea.h"
@@ -263,7 +259,7 @@ public:
 		current_stop_mark->clear_flag( obj_t::highlight );
 	}
 
-	void update_schedule()
+	void update_schedule(bool highlight)
 	{
 		// compare schedules
 		bool ok = (last_schedule != NULL)  &&  last_schedule->entries.get_count() == schedule->entries.get_count();
@@ -300,13 +296,15 @@ public:
 			}
 			set_size(get_min_size());
 		}
-		highlight_schedule(true);
+		if (highlight) {
+			highlight_schedule(true);
+		}
 	}
 
 	void draw(scr_coord offset) OVERRIDE
 	{
 		if( schedule ) {
-			update_schedule();
+			update_schedule(true);
 		}
 		gui_aligned_container_t::draw(offset);
 	}
@@ -383,7 +381,7 @@ void gui_schedule_t::highlight_schedule( bool hl )
 	update_tool(hl);
 }
 
-gui_schedule_t::gui_schedule_t(schedule_t* schedule_, player_t* player_, convoihandle_t cnv_, linehandle_t lin_) :
+gui_schedule_t::gui_schedule_t() :
 	lb_waitlevel(SYSCOL_TEXT_HIGHLIGHT, gui_label_t::right),
 	lb_wait("month wait time"),
 	lb_load("Full load"),
@@ -431,6 +429,7 @@ gui_schedule_t::gui_schedule_t(schedule_t* schedule_, player_t* player_, convoih
 		bt_revert.set_tooltip("Revert to original schedule");
 		bt_revert.add_listener(this);
 		bt_revert.pressed = false;
+		bt_revert.enable(false); // schedule was not changed yet
 		add_component(&bt_revert);
 
 		bt_return.init(button_t::roundbox | button_t::flexible, "Revert schedule");
@@ -448,10 +447,6 @@ gui_schedule_t::gui_schedule_t(schedule_t* schedule_, player_t* player_, convoih
 	stats->add_listener(this);
 
 	current_schedule_rotation = welt->get_settings().get_rotation();
-
-	if (schedule_) {
-		init(schedule_, player_, cnv_, lin_);
-	}
 
 	scrolly.set_maximize(true);
 
@@ -501,6 +496,7 @@ void gui_schedule_t::init(schedule_t* schedule_, player_t* player, convoihandle_
 
 		stats->player = player;
 		stats->schedule = schedule;
+		stats->update_schedule(false);
 
 		numimp_load.set_value( schedule->get_current_entry().minimum_loading );
 
@@ -509,7 +505,6 @@ void gui_schedule_t::init(schedule_t* schedule_, player_t* player, convoihandle_
 		bt_return.enable( !no_editing );
 
 		update_selection();
-		update_tool(true);
 	}
 	set_size(gui_aligned_container_t::get_min_size());
 }
@@ -588,7 +583,7 @@ bool gui_schedule_t::action_triggered( gui_action_creator_t *comp, value_t p)
 		}
 		schedule = get_old_schedule()->copy();
 		stats->schedule = schedule;
-		stats->update_schedule();
+		stats->update_schedule(true);
 		update_selection();
 		update_tool(true);
 		value_t v;
