@@ -1711,6 +1711,7 @@ const char *tool_buy_house_t::work( player_t *player, koord3d pos)
 
 	// since buildings can have more than one tile, we must handle them together
 	gebaeude_t* gb = gr->find<gebaeude_t>();
+	gb = gb->get_first_tile();
 	if(  gb== NULL  ||  !gb->is_city_building()  ||  !player_t::check_owner(gb->get_owner(),player)  ) {
 		return "Das Feld gehoert\neinem anderen Spieler\n";
 	}
@@ -4817,7 +4818,7 @@ const char *tool_rotate_building_t::work( player_t *player, koord3d pos )
 			for(k.x=0; k.x<desc->get_x(layout); k.x++) {
 				for(k.y=0; k.y<desc->get_y(layout); k.y++) {
 					grund_t *gr = welt->lookup( gb->get_pos()+k );
-					if(  !gr  ) {
+					if(  !gr  ||  gr->hat_wege()  ) {
 						return "Cannot rotate this building!";
 					}
 					const building_tile_desc_t *tile = desc->get_tile(newlayout, k.x, k.y);
@@ -4829,6 +4830,9 @@ const char *tool_rotate_building_t::work( player_t *player, koord3d pos )
 						return "Cannot rotate this building!";
 					}
 				}
+			}
+			if( fabrik_t *fab=gb->get_fabrik() ) {
+				fab->set_rotate( (fab->get_rotate() + 3) % fab->get_desc()->get_building()->get_all_layouts() );
 			}
 			// ok, we can rotate it
 			for(k.x=0; k.x<desc->get_x(layout); k.x++) {
