@@ -18,11 +18,11 @@ OUTPUT_DIR=simutrans/text
 # Use curl if available, else use wget
 curl -q -h > /dev/null
 if [ $? -eq 0 ]; then
-    curl -q -L -d "version=0&choice=all&submit=Export%21" https://translator.simutrans.com/script/main.php?page=wrap > /dev/null || {
+    curl -q -L https://simutrans-germany.com/translator_page/base_text/download.php > /dev/null || {
       echo "Error: generating file language_pack-Base+texts.zip failed (curl returned $?)" >&2;
       exit 3;
     }
-    curl -q -L https://translator.simutrans.com/data/tab/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
+    curl -q -L https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
       echo "Error: download of file language_pack-Base+texts.zip failed (curl returned $?)" >&2
       rm -f "language_pack-Base+texts.zip"
       exit 4
@@ -30,11 +30,11 @@ if [ $? -eq 0 ]; then
 else
     wget -q --help > /dev/null
     if [ $? -eq 0 ]; then
-        wget -q --post-data "version=0&choice=all&submit=Export!"  --delete-after https://translator.simutrans.com/script/main.php?page=wrap || {
+        wget -q --delete-after https://simutrans-germany.com/translator_page/base_text/download.php || {
           echo "Error: generating file language_pack-Base+texts.zip failed (wget returned $?)" >&2;
           exit 3;
         }
-        wget -q -N https://translator.simutrans.com/data/tab/language_pack-Base+texts.zip || {
+        wget -q -N https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip || {
           echo "Error: download of file language_pack-Base+texts.zip failed (wget returned $?)" >&2
           rm -f "language_pack-Base+texts.zip"
           exit 4
@@ -56,4 +56,4 @@ rm -f ${OUTPUT_DIR}/ce.tab
 # Remove check test
 #rm xx.tab
 #rm -rf xx
-				
+
