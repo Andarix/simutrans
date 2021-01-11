@@ -124,6 +124,12 @@ void convoi_info_t::init(convoihandle_t cnv)
 			add_component(&target_label);
 			add_component(&route_bar);
 			end_table();
+			add_table(2,1);
+			line_button2.init( button_t::arrowright, NULL );
+			line_button2.add_listener( this );
+			add_component( &line_button2 );
+			add_component( &line_label );
+			end_table();
 		}
 		end_table();
 
@@ -407,6 +413,10 @@ void convoi_info_t::update_labels()
 		line_label.buf().append(cnv->get_line()->get_name());
 		line_label.set_color(cnv->get_line()->get_state_color());
 	}
+	else {
+		line_label.buf().clear();
+	}
+	line_button2.set_visible( cnv->get_line().is_bound() );
 	line_label.update();
 
 	// buffer update now only when needed by convoi itself => dedicated buffer for this
@@ -454,8 +464,13 @@ void convoi_info_t::draw(scr_coord pos, scr_size size)
 	else if(  !scd.get_schedule()->empty()  &&  line_selector.get_element(1)->get_text()[0]=='-'  ) {
 		init_line_selector();
 	}
+	else if(  old_line_count != cnv->get_owner()->simlinemgmt.get_line_count()  ) {
+		// line added or removed
+		init_line_selector();
+	}
 
 	line_button.enable( dynamic_cast<line_scrollitem_t*>(line_selector.get_selected_item()) );
+	line_button2.enable( line.is_bound() );
 
 	go_home_button.enable(!route_search_in_progress && is_change_allowed);
 	if(  grund_t* gr=welt->lookup(cnv->get_schedule()->get_current_entry().pos)  ) {
@@ -514,6 +529,12 @@ bool convoi_info_t::action_triggered( gui_action_creator_t *comp, value_t v)
 			if(  li->get_line().is_bound()  ) {
 				cnv->get_owner()->simlinemgmt.show_lineinfo( cnv->get_owner(), li->get_line() );
 			}
+		}
+	}
+	else if(  comp == &line_button2  ) {
+		// open selected line as schedule
+		if( cnv->get_line().is_bound() ) {
+			cnv->get_owner()->simlinemgmt.show_lineinfo( cnv->get_owner(), cnv->get_line() );
 		}
 	}
 	else if(  comp == &input  ) {
