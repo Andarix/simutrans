@@ -1,4 +1,4 @@
-name: Nightly built Ubuntu
+name: Nightly build Ubuntu
 
 on:
   push:
