@@ -1,6 +1,9 @@
 name: Update tag
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly_'
 
 jobs:
   update-nightly:
