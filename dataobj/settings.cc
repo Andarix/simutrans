@@ -1403,7 +1403,7 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 	if( test < 2 ) {
 		tree = !test;
 	}
-	tree = contents.get_int( "trees_distribution", tree );
+	tree = contents.get_int( "tree_distribution", tree );
 	lake_height = (contents.get_int("no_lakes", (lake_height == 0) )) ? 0 : 8;
 	lake_height = contents.get_int("lake_height", lake_height );
 
@@ -1564,6 +1564,11 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 
 	// Default pak file path
 	objfilename = ltrim(contents.get_string("pak_file_path", "" ) );
+
+	// FluidSynth MIDI parameters
+	if(  *contents.get("soundfont_filename")  ) {
+		env_t::soundfont_filename = ltrim(contents.get("soundfont_filename"));
+	}
 
 	printf("Reading simuconf.tab successful!\n" );
 }

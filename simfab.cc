@@ -193,6 +193,13 @@ void ware_production_t::rdwr(loadsave_t *file)
 		// recalc transit always on load
 		statistics[0][FAB_GOODS_TRANSIT] = 0;
 	}
+
+	if (file->is_version_atleast(122, 1)) {
+		file->rdwr_long(index_offset);
+	}
+	else if (file->is_loading()) {
+		index_offset = 0;
+	}
 }
 
 
@@ -737,6 +744,7 @@ void fabrik_t::rem_lieferziel(koord ziel)
 
 fabrik_t::fabrik_t(loadsave_t* file)
 {
+	transformer = NULL;
 	owner = NULL;
 	prodfactor_electric = 0;
 	lieferziele_active_last_month = 0;
@@ -765,19 +773,13 @@ fabrik_t::fabrik_t(loadsave_t* file)
 		}
 	}
 
-	delta_sum = 0;
-	delta_menge = 0;
-	menge_remainder = 0;
-	total_input = total_transit = total_output = 0;
-	status = STATUS_NOTHING;
-	currently_producing = false;
-	transformer = NULL;
 	last_sound_ms = welt->get_ticks();
 }
 
 
 fabrik_t::fabrik_t(koord3d pos_, player_t* owner, const factory_desc_t* factory_desc, sint32 initial_prod_base) :
 	desc(factory_desc),
+	transformer(NULL),
 	pos(pos_)
 {
 	this->pos.z = welt->max_hgt(pos.get_2d());
@@ -1172,7 +1174,30 @@ DBG_DEBUG("fabrik_t::rdwr()","loading factory '%s'",s);
 	// pos will be assigned after call to hausbauer_t::build
 	file->rdwr_byte(rotate);
 
-	// now rebuilt information for received goods
+	if (file->is_version_atleast(122, 1)) {
+		file->rdwr_long(delta_sum);
+		file->rdwr_long(delta_menge);
+		file->rdwr_long(menge_remainder);
+		file->rdwr_long(prodfactor_electric);
+		file->rdwr_bool(currently_producing);
+		file->rdwr_long(total_input);
+		file->rdwr_long(total_transit);
+		file->rdwr_long(total_output);
+		file->rdwr_byte(status);
+	}
+	else if (file->is_loading()) {
+		delta_sum = 0;
+		delta_menge = 0;
+		menge_remainder = 0;
+		prodfactor_electric = 0;
+		currently_producing = false;
+		total_input = 0;
+		total_transit = 0;
+		total_output = 0;
+		status = STATUS_NOTHING;
+	}
+
+	// now rebuild information for received goods
 	file->rdwr_long(input_count);
 	if(  file->is_loading()  ) {
 		input.resize( input_count );
@@ -1649,14 +1674,12 @@ sint32 fabrik_t::get_power_satisfaction() const
 
 sint64 fabrik_t::get_power() const
 {
-	sint64 power;
 	if(  desc->is_electricity_producer()  ) {
-		power = ((sint64)get_power_supply() * (sint64)get_power_consumption()) >> leitung_t::FRACTION_PRECISION;
+		return ((sint64)get_power_supply() * (sint64)get_power_consumption()) >> leitung_t::FRACTION_PRECISION;
 	}
 	else {
-		power = -(((sint64)get_power_demand() * (sint64)get_power_satisfaction() + (((sint64)1 << leitung_t::FRACTION_PRECISION) - 1)) >> leitung_t::FRACTION_PRECISION);
+		return -(((sint64)get_power_demand() * (sint64)get_power_satisfaction() + (((sint64)1 << leitung_t::FRACTION_PRECISION) - 1)) >> leitung_t::FRACTION_PRECISION);
 	}
-	return power;
 }
 
 
@@ -1776,26 +1799,24 @@ bool fabrik_t::is_active_lieferziel( koord k ) const
 	return false;
 }
 
+
 sint32 fabrik_t::get_jit2_power_boost() const
 {
-	// transformer boost amount
-	sint32 boost = 0;
-
-	// compute power boost
-	if(  is_transformer_connected()  ) {
-		sint32 const power_satisfaction = get_power_satisfaction();
-		if(  power_satisfaction >= ((sint32)1 << leitung_t::FRACTION_PRECISION)  ) {
-			// all demand fulfilled
-			boost = (sint32)desc->get_electric_boost();
-		}
-		else {
-			// calculate bonus, rounding down
-			boost = (sint32)(((sint64)desc->get_electric_boost() * (sint64)power_satisfaction) >> leitung_t::FRACTION_PRECISION);
-		}
+	if (!is_transformer_connected()) {
+		return 0;
 	}
 
-	return boost;
+	const sint32 power_satisfaction = get_power_satisfaction();
+	if(  power_satisfaction >= ((sint32)1 << leitung_t::FRACTION_PRECISION)  ) {
+		// all demand fulfilled
+		return (sint32)desc->get_electric_boost();
+	}
+	else {
+		// calculate bonus, rounding down
+		return (sint32)(((sint64)desc->get_electric_boost() * (sint64)power_satisfaction) >> leitung_t::FRACTION_PRECISION);
+	}
 }
+
 
 void fabrik_t::step(uint32 delta_t)
 {
@@ -1863,9 +1884,10 @@ void fabrik_t::step(uint32 delta_t)
 	/// Compute base production.
 	{
 		// Calculate actual production. A remainder is used for extra precision.
+		const uint32 remainder_bits = (PRODUCTION_DELTA_T_BITS + DEFAULT_PRODUCTION_FACTOR_BITS + DEFAULT_PRODUCTION_FACTOR_BITS - fabrik_t::precision_bits);
 		const uint64 want_prod_long = (uint64)prodbase * (uint64)boost * (uint64)delta_t + (uint64)menge_remainder;
-		prod = (uint32)(want_prod_long >> (PRODUCTION_DELTA_T_BITS + DEFAULT_PRODUCTION_FACTOR_BITS + DEFAULT_PRODUCTION_FACTOR_BITS - fabrik_t::precision_bits));
-		menge_remainder = (uint32)(want_prod_long & ((1 << (PRODUCTION_DELTA_T_BITS + DEFAULT_PRODUCTION_FACTOR_BITS + DEFAULT_PRODUCTION_FACTOR_BITS - fabrik_t::precision_bits)) - 1 ));
+		prod = (uint32)(want_prod_long >> remainder_bits);
+		menge_remainder = (uint32)(want_prod_long & ((1 << remainder_bits) - 1 ));
 	}
 
 	/// Perform the control logic.
