@@ -126,10 +126,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs\bzip2-1.0.6;libs\libpthreadVC3;libs\zstd-1.4.4\lib;libs\zlib-1.2.11;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs\bzip2-1.0.6;libs\libpthreadVC3;libs\zstd-1.4.4\lib;libs\zlib-1.2.11;libs\lpng1637;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/libzstd_static.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/libzstd_static.lib;libs/libpng16.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
