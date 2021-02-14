@@ -121,20 +121,15 @@
     <ClCompile Include="..\descriptor\writer\way_writer.cc" />
     <ClCompile Include="..\descriptor\writer\way_obj_writer.cc" />
     <ClCompile Include="..\descriptor\writer\xref_writer.cc" />
+    <ClCompile Include="..\utils\log.cc" />
+    <ClCompile Include="..\utils\searchfolder.cc" />
+    <ClCompile Include="..\utils\simstring.cc" />
+    <ClCompile Include="..\simio.cc" />
     <ClInclude Include="..\io\classify_file.cc" />
     <ClCompile Include="..\io\raw_image.cc" />
     <ClCompile Include="..\io\raw_image_bmp.cc" />
     <ClCompile Include="..\io\raw_image_png.cc" />
     <ClCompile Include="..\io\raw_image_ppm.cc" />
-    <ClCompile Include="..\utils\log.cc" />
-    <ClCompile Include="..\utils\searchfolder.cc" />
-    <ClCompile Include="..\utils\simstring.cc" />
-    <ClCompile Include="..\io\classify_file.cc" />
-    <ClCompile Include="..\io\raw_image.cc" />
-    <ClCompile Include="..\io\raw_image_bmp.cc" />
-    <ClCompile Include="..\io\raw_image_png.cc" />
-    <ClCompile Include="..\io\raw_image_ppm.cc" />
-    <ClCompile Include="..\simio.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\macros.h" />
@@ -212,20 +207,18 @@
     <ClInclude Include="..\tpl\slist_tpl.h" />
     <ClInclude Include="..\tpl\vector_tpl.h" />
     <ClInclude Include="..\tpl\weighted_vector_tpl.h" />
-    <ClInclude Include="..\io\classify_file.h" />
-    <ClInclude Include="..\io\raw_image.h" />
     <ClInclude Include="..\utils\for.h" />
     <ClInclude Include="..\utils\log.h" />
     <ClInclude Include="..\utils\searchfolder.h" />
     <ClInclude Include="..\utils\sha1.h" />
     <ClInclude Include="..\utils\simrandom.h" />
     <ClInclude Include="..\utils\simstring.h" />
+    <ClInclude Include="..\simio.h" />
     <ClInclude Include="..\io\classify_file.h" />
     <ClInclude Include="..\io\raw_image.h" />
     <ClInclude Include="..\io\raw_image_bmp.h" />
     <ClInclude Include="..\io\raw_image_png.h" />
     <ClInclude Include="..\io\raw_image_ppm.h" />
-    <ClInclude Include="..\simio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
