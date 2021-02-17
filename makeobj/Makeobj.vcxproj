@@ -51,7 +51,7 @@
       <DisableSpecificWarnings>4250;4373;4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\libs\libpng16.lib;..\libs\zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\libs/libz-static.lib;..\libs\libpng16.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -124,9 +124,9 @@
     <ClCompile Include="..\utils\log.cc" />
     <ClCompile Include="..\utils\searchfolder.cc" />
     <ClCompile Include="..\utils\simstring.cc" />
+    <ClCompile Include="..\io\raw_image.cc" />
     <ClCompile Include="..\simio.cc" />
     <ClInclude Include="..\io\classify_file.cc" />
-    <ClCompile Include="..\io\raw_image.cc" />
     <ClCompile Include="..\io\raw_image_bmp.cc" />
     <ClCompile Include="..\io\raw_image_png.cc" />
     <ClCompile Include="..\io\raw_image_ppm.cc" />
