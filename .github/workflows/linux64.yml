@@ -71,9 +71,8 @@ jobs:
           cd ../../../
           autoconf
           ./configure
-          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
           echo "CFLAGS += -std=c++11 " >>config.default
-          echo "STATIC = 1" >>config.default
+          echo "STATIC := 1" >>config.default
           cat config.default >>/dev/stderr
 
       - name: make
@@ -115,9 +114,8 @@ jobs:
           cd ../../../
           autoconf
           ./configure
-          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
           echo "CFLAGS += -std=c++11 " >>config.default
-          echo "STATIC = 1" >>config.default
+          echo "STATIC := 1" >>config.default
           echo "BACKEND = posix" >>config.default
           cat config.default >>/dev/stderr
 
@@ -157,7 +155,6 @@ jobs:
         run: |
           autoconf
           ./configure
-          echo "CFLAGS += -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
           echo "CFLAGS += -std=c++11 " >>config.default
           echo "STATIC = 1" >>config.default
           cat config.default >>/dev/stderr
