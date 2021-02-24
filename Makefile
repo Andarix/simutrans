@@ -86,7 +86,7 @@ else
   SOURCES += sys/clipboard_internal.cc
 endif
 
-LIBS += -lbz2 -lz -lpng
+LIBS += -lbz2 -lz #-lpng
 
 ifdef OPTIMISE
   ifeq ($(shell expr $(OPTIMISE) \>= 1), 1)
