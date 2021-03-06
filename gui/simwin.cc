@@ -322,13 +322,15 @@ static void win_draw_window_title(const scr_coord pos, const scr_size size,
 	PIXVAL lighter = display_blend_colors(title_color, color_idx_to_rgb(COL_WHITE), 25);
 	PIXVAL darker  = display_blend_colors(title_color, color_idx_to_rgb(COL_BLACK), 25);
 
+	// fill title bar with color
 	display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, D_TITLEBAR_HEIGHT, title_color, false);
 
-	display_fillbox_wh_clip_rgb( pos.x + 1, pos.y,                         size.w - 2, 1, lighter, false );
-	display_fillbox_wh_clip_rgb( pos.x + 1, pos.y + D_TITLEBAR_HEIGHT - 1, size.w - 2, 1, darker,  false );
+	// border of title bar
+	display_fillbox_wh_clip_rgb( pos.x + 1, pos.y,                         size.w - 2, 1, lighter, false ); // top
+	display_fillbox_wh_clip_rgb( pos.x + 1, pos.y + D_TITLEBAR_HEIGHT - 1, size.w - 2, 1, darker,  false ); // bottom
 
-	display_vline_wh_clip_rgb( pos.x,              pos.y, D_TITLEBAR_HEIGHT, lighter, false );
-	display_vline_wh_clip_rgb( pos.x + size.w - 1, pos.y, D_TITLEBAR_HEIGHT, darker,  false );
+	display_vline_wh_clip_rgb( pos.x,              pos.y, D_TITLEBAR_HEIGHT, lighter, false ); // left
+	display_vline_wh_clip_rgb( pos.x + size.w - 1, pos.y, D_TITLEBAR_HEIGHT, darker,  false ); // right
 
 	// Draw the gadgets and then move left and draw text.
 	flags.gotopos = (welt_pos != koord3d::invalid);
@@ -1058,12 +1060,11 @@ void display_win(int win)
 	}
 	// mark top window, if requested
 	if(env_t::window_frame_active  &&  (unsigned)win==wins.get_count()-1) {
-		const int y_off = wins[win].flags.title ? 0 : D_TITLEBAR_HEIGHT;
 		if(!wins[win].rollup) {
-			display_ddd_box_clip_rgb( wins[win].pos.x-1, wins[win].pos.y-1 + y_off, size.w+2, size.h+2 - y_off, title_color, title_color); //, wins[win].dirty | wins[win].gui->is_dirty() );
+			display_ddd_box_clip_rgb( wins[win].pos.x-1, wins[win].pos.y-1, size.w+2, size.h+2, title_color, title_color);
 		}
 		else {
-			display_ddd_box_clip_rgb( wins[win].pos.x-1, wins[win].pos.y-1 + y_off, size.w+2, D_TITLEBAR_HEIGHT + 2 - y_off, title_color, title_color); //, wins[win].dirty | wins[win].gui->is_dirty() );
+			display_ddd_box_clip_rgb( wins[win].pos.x-1, wins[win].pos.y-1, size.w+2, D_TITLEBAR_HEIGHT + 2, title_color, title_color);
 		}
 	}
 	if(!wins[win].rollup) {
