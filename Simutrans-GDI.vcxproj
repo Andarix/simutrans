@@ -154,7 +154,6 @@
     <ClCompile Include="sound\win32_sound_xa.cc" />
     <ClCompile Include="sys\clipboard_w32.cc" />
     <ClCompile Include="sys\simsys_w.cc" />
-    <ClCompile Include="sys\simsys_w32_png.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sys\simsys_w32_png.h" />
