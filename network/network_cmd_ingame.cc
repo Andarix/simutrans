@@ -944,6 +944,7 @@ void nwc_chg_player_t::do_command(karte_t *welt)
 
 
 nwc_tool_t::nwc_tool_t() : network_broadcast_world_command_t(NWC_TOOL, 0, 0),
+	init(false),
 	custom_data(custom_data_buf, lengthof(custom_data_buf), true)
 {
 	tool = NULL;
@@ -1148,7 +1149,7 @@ network_broadcast_world_command_t* nwc_tool_t::clone(karte_t *welt)
 bool nwc_tool_t::ignore_old_events() const
 {
 	// messages are allowed to arrive at any time (return true if message)
-	return tool_id==(SIMPLE_TOOL|TOOL_ADD_MESSAGE);
+	return tool_id==(GENERAL_TOOL|TOOL_ADD_MESSAGE);
 }
 
 
