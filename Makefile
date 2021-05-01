@@ -76,6 +76,8 @@ else ifeq ($(OSTYPE),mingw)
   else
     LDFLAGS += -mwindows
   endif
+else ifeq ($(OSTYPE),linux)
+  LD_FLAGS += "-Wl,-Bstatic"
 endif
 
 ifeq ($(BACKEND),sdl2)
@@ -99,6 +101,11 @@ ifdef OPTIMISE
   endif
 else
   CFLAGS += -O1
+endif
+
+ifneq ($(LTO),)
+  CFLAGS += -flto
+  LDFLAGS += -flto
 endif
 
 ifdef DEBUG
