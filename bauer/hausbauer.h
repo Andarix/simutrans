@@ -36,7 +36,7 @@ private:
 	static vector_tpl<const building_desc_t*> townhalls;         ///< Town halls
 	static vector_tpl<const building_desc_t*> monuments;         ///< All monuments
 	static vector_tpl<const building_desc_t*> unbuilt_monuments; ///< All unbuilt monuments
-	static vector_tpl<const building_desc_t*> headquarters;       ///< Company headquarters
+	static vector_tpl<const building_desc_t*> headquarters;      ///< Company headquarters
 	static vector_tpl<const building_desc_t*> station_building;  ///< All station buildings
 
 	/// @returns a random entry from @p list
@@ -123,7 +123,7 @@ public:
 	/**
 	 * Removes an arbitrary building.
 	 * It will also take care of factories and foundations.
-	 * @param sp the player wanting to remove the building.
+	 * @param player the player wanting to remove the building.
 	 */
 	static void remove(player_t *player, gebaeude_t *gb);
 

@@ -306,12 +306,6 @@ void karte_t::perlin_hoehe_loop( sint16 x_min, sint16 x_max, sint16 y_min, sint1
 }
 
 
-/**
- * Height one point in the map with "perlin noise"
- *
- * @param frequency in 0..1.0 roughness, the higher the rougher
- * @param amplitude in 0..160.0 top height of mountains, may not exceed 160.0!!!
- */
 sint32 karte_t::perlin_hoehe(settings_t const* const sets, koord k, koord const size)
 {
 	// replace the fixed values with your settings. Amplitude is the top highness of the mountains,
@@ -1757,6 +1751,9 @@ void karte_t::distribute_trees_region( sint16 xtop, sint16 ytop, sint16 xbottom,
 		break;
 	case settings_t::TREE_DIST_NONE:
 		// no trees
+		break;
+	case settings_t::TREE_DIST_COUNT:
+		assert(false); // should not happen
 		break;
 	}
 }
