@@ -294,7 +294,7 @@ void env_t::init()
 	// upper right
 	compass_map_position = ALIGN_RIGHT|ALIGN_TOP;
 	// lower right
-	compass_screen_position = 0, // disbale, other could be ALIGN_RIGHT|ALIGN_BOTTOM;
+	compass_screen_position = 0; // disbale, other could be ALIGN_RIGHT|ALIGN_BOTTOM;
 
 	// Listen on all addresses by default
 	listen.append_unique("::");
@@ -543,7 +543,7 @@ void env_t::rdwr(loadsave_t *file)
 		}
 
 		file->rdwr_short(env_t::menupos);
-		env_t::menupos & 3;
+		env_t::menupos &= 3;
 	}
 
 	// server settings are not saved, since they are server specific
