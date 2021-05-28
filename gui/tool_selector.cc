@@ -198,11 +198,20 @@ bool tool_selector_t::infowin_event(const event_t *ev)
 			// change tool
 			tool_t *tool = tools[wz_idx].tool;
 			if(IS_LEFTRELEASE(ev)) {
-				welt->set_tool( tool, welt->get_active_player() );
+				if(  env_t::reselect_closes_tool  &&  tool  &&  tool->is_selected() ) {
+					// ->exit triggers tool_selector_t::infowin_event in the closing toolbar,
+					// which resets active tool to query tool
+					if( tool->exit( welt->get_active_player() ) ) {
+						welt->set_tool( tool_t::general_tool[TOOL_QUERY], welt->get_active_player() );
+					}
+				}
+				else {
+					welt->set_tool( tool, welt->get_active_player() );
+				}
 			}
 			else {
 				// right-click on toolbar icon closes toolbars and dialogues. Resets selectable simple and general tools to the query-tool
-				if (tool  &&  tool->is_selected()  ) {
+				if(  tool  &&  tool->is_selected()  ) {
 					// ->exit triggers tool_selector_t::infowin_event in the closing toolbar,
 					// which resets active tool to query tool
 					if(  tool->exit(welt->get_active_player())  ) {
@@ -255,9 +264,7 @@ bool tool_selector_t::infowin_event(const event_t *ev)
 
 void tool_selector_t::draw(scr_coord pos, scr_size sz)
 {
-	CLIP_NUM_PDECL CLIP_NUM_VAR CLIP_NUM_DEFAULT_ZERO;
 	player_t *player = welt->get_active_player();
-
 
 	if( toolbar_id == 0 ) {
 		// checks for main menu (since it can change during changing layout)
@@ -306,7 +313,6 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 		}
 	}
 
-	display_push_clip_wh(pos.x, pos.y + D_TITLEBAR_HEIGHT, sz.w, sz.h CLIP_NUM_PAR);
 	for(  uint i = tool_icon_disp_start;  i < tool_icon_disp_end;  i++  ) {
 		const image_id icon_img = tools[i].tool->get_icon(player);
 		const scr_coord draw_pos = pos + offset + scr_coord(( (i-tool_icon_disp_start)%(tool_icon_width+(offset.x!=0)) )*env_t::iconsize.w, D_TITLEBAR_HEIGHT+( (i-tool_icon_disp_start)/(tool_icon_width+(offset.x!=0)) )*env_t::iconsize.h);
@@ -356,7 +362,6 @@ void tool_selector_t::draw(scr_coord pos, scr_size sz)
 	if(  tool_icon_width == 1  &&  (tool_icon_disp_start+tool_icon_height < tools.get_count()  ||  (-offset.y) < env_t::iconsize.h*tool_icon_height-get_windowsize().h)  ) {
 		display_color_img(gui_theme_t::arrow_button_down_img[0], pos.x+sz.w-D_ARROW_DOWN_WIDTH, pos.y+D_TITLEBAR_HEIGHT+sz.h-D_ARROW_DOWN_HEIGHT, 0, false, false);
 	}
-	display_pop_clip_wh(CLIP_NUM_VAR);
 
 	if(  !is_dragging  ) {
 		// tooltips?

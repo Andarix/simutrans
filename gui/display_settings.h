@@ -29,7 +29,7 @@ private:
 		simloops_value_label;
 
 public:
-	button_t toolbar_pos;
+	button_t toolbar_pos, reselect_closes_tool;
 
 	gui_settings_t();
 	virtual void draw( scr_coord offset ) OVERRIDE;
@@ -71,7 +71,7 @@ private:
 	gui_combobox_t convoy_tooltip, money_booking, follow_mode;
 public:
 	traffic_settings_t();
-	virtual bool action_triggered( gui_action_creator_t *comp, value_t v );
+	bool action_triggered( gui_action_creator_t *comp, value_t v ) OVERRIDE;
 };
 
 /**

@@ -37,7 +37,6 @@ void schedule_t::copy_from(const schedule_t *src)
 	// make sure, we can access both
 	if(  src==NULL  ) {
 		dbg->fatal("schedule_t::copy_to()","cannot copy from NULL");
-		return;
 	}
 	entries.clear();
 	FOR(minivec_tpl<schedule_entry_t>, const& i, src->entries) {
@@ -284,7 +283,6 @@ void schedule_t::move_entry_backward( uint8 cur )
 	}
 
 	sint16 delta = (new_cur - (sint16)cur);
-	;
 
 	if(  new_cur+1 > entries.get_count()  ||  new_cur == 0  ) {
 		// insert at front

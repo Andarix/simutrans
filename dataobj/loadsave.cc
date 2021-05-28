@@ -126,8 +126,7 @@ void loading_trigger_fill_buffer()
 	if (readdata_flag < 0) {
 		pthread_mutex_unlock(&readdata_mutex);
 		// reading thread exited due to error
-		dbg->fatal("loadsave_t::read","savegame corrupt, not enough data");
-		return;
+		dbg->fatal("loadsave_t::read", "savegame corrupt, not enough data");
 	}
 	readdata_flag = 1; // more data please
 
@@ -221,7 +220,7 @@ void NORETURN loadsave_t::fatal(const char* who, const char* format, ...)
 	std::string fn_new = filename + "-error";
 	dr_remove(fn_new.c_str());
 	dr_rename(fn, fn_new.c_str());
-	dbg->custom_fatal(formatbuffer);
+	dbg->custom_fatal(buffer);
 }
 
 
@@ -621,7 +620,6 @@ size_t loadsave_t::read(void *buf, size_t len)
 
 	if(  len>=LS_BUF_SIZE*2  ) {
 		dbg->fatal("loadsave_t::read()","Request for %d too long", len);
-		return 0;
 	}
 	if(  buff[curr_buff].pos+len<=buff[curr_buff].len  ) {
 		// room in the buffer, copy it all
@@ -652,7 +650,6 @@ size_t loadsave_t::read(void *buf, size_t len)
 		// check if enough read
 		if(  len-i>buff[curr_buff].len  ) {
 			dbg->fatal("loadsave_t::read","savegame corrupt, not enough data");
-			return 0;
 		}
 
 		// copy the rest

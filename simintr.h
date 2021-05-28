@@ -38,20 +38,20 @@ void interrupt_check(const char* caller_info = "0");
 
 #if COLOUR_DEPTH == 0 && defined PROFILE
 	// 0 bit graphic + profiling: no interrupt_check.
-	#define INT_CHECK(info);
+	#define INT_CHECK(info)
 #else
 	#ifndef DEBUG
 		// standard version
-		#define INT_CHECK(info) interrupt_check();
+		#define INT_CHECK(info) do { interrupt_check(); } while(false)
 	#else
 		// debug version
-		#define INT_CHECK(info) interrupt_check( __FILE__ ":" QUOTEME(__LINE__) );
+		#define INT_CHECK(info) do { interrupt_check( __FILE__ ":" QUOTEME(__LINE__) ); } while(false)
 	#endif
 #endif
 
 // returns a time string in the desired format
 // Returns an empty string if called before the world model defining time is initalized.
-// reutrns a shorter date (without season and yeear if second parameter true)
+// reutrns a shorter date (without season and year if second parameter true)
 char const *tick_to_string( uint32 ticks, bool omit_season_year=false );
 
 // returns a time difference string in the desired format

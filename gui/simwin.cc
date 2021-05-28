@@ -688,13 +688,13 @@ void win_clamp_xywh_position( scr_coord_val &x, scr_coord_val &y, scr_size wh, b
 		// rect default
 		break;
 	case MENU_BOTTOM:
-		clip_rr = scr_rect(0, win_get_statusbar_height(), display_get_width(), display_get_height() - add_menuheight);
+		clip_rr = scr_rect(0, win_get_statusbar_height(), display_get_width(), clip_rr.h );
 		break;
 	case MENU_LEFT:
 		clip_rr = scr_rect(add_menuwidth, 0, display_get_width() - add_menuwidth, display_get_height() - win_get_statusbar_height());
 		break;
 	case MENU_RIGHT:
-		clip_rr = scr_rect(0, 0, display_get_width() - add_menuheight, display_get_height() - win_get_statusbar_height());
+		clip_rr = scr_rect(0, 0, display_get_width() - add_menuwidth, display_get_height() - win_get_statusbar_height());
 		break;
 	}
 
@@ -971,7 +971,6 @@ bool destroy_win(const gui_frame_t *gui)
 				destroy_framed_win(&win);
 			}
 			return true;
-			break;
 		}
 	}
 	return false;
@@ -1748,6 +1747,7 @@ void win_display_flush(double konto)
 	tooltip_element = main_menu->is_hit( get_mouse_x()-menu_pos.x, get_mouse_y()-menu_pos.y) ? main_menu : NULL;
 	void *old_inside_event_handling = inside_event_handling;
 	inside_event_handling = main_menu;
+	display_set_clip_wh( menu_pos.x, menu_pos.y, menu_size.w, menu_size.h );
 	menu_pos.y -= D_TITLEBAR_HEIGHT;
 	main_menu->draw(menu_pos, menu_size);
 	inside_event_handling = old_inside_event_handling;
