@@ -9,6 +9,10 @@
 #endif
 #endif
 
+#if defined(_MSC_VER)  &&  defined(DEBUG)
+// Console window on MSVC debug builds
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#endif
 
 #include <stdio.h>
 #include <string>
@@ -1255,7 +1259,10 @@ int simu_main(int argc, char** argv)
 
 
 	if(  translator::get_language()==-1  ) {
-		ask_language();
+		// try current language
+		if(  !translator::set_language( dr_get_locale()  ) ) {
+			ask_language();
+		}
 	}
 
 	bool new_world = true;
