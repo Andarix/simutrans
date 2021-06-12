@@ -127,7 +127,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs\SDL2-2.0.12;libs\freetype-2.10.1\include;libs\libpthreadVC3;libs\zstd-1.4.4\lib;libs\zlib-1.2.11;libs\bzip2-1.0.6;libs\lpng1637;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs\SDL2-2.0.14;libs\freetype-2.10.1\include;libs\libpthreadVC3;libs\zstd-1.4.4\lib;libs\zlib-1.2.11;libs\bzip2-1.0.6;libs\lpng1637;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/SDL2main.lib;libs/SDL2.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib</AdditionalDependencies>

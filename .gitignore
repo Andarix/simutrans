@@ -30,3 +30,10 @@
 /*.exe
 /*.manifest
 /*.pdb
+/*.ipdb
+/*.iobj
+/libs/lpng1637/projects
+/libs/miniupnpc-2.2.1
+/libs/miniupnpc-2.1
+/libs/miniupnpc-master
+/packages
