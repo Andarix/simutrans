@@ -543,8 +543,8 @@ void setup_logging(const args_t &args)
 #endif
 
 #ifdef SYSLOG
-	bool cli_syslog_enabled = (gimme_arg( argc, argv, "-syslog", 0 ) != NULL);
-	const char* cli_syslog_tag = gimme_arg( argc, argv, "-tag", 1 );
+	bool cli_syslog_enabled = args.has_arg("-syslog");
+	const char* cli_syslog_tag = args.gimme_arg("-tag", 1);
 #else
 	bool cli_syslog_enabled = false;
 	const char* cli_syslog_tag = NULL;
@@ -612,11 +612,16 @@ int simu_main(int argc, char** argv)
 #ifdef __BEOS__
 	if (1) // since BeOS only supports relative paths ...
 #else
-	// If use_workdir is given, use cwd as data dir, otherwise use the directory
-	// where the executable is located
+	// 3 possibilities:
+	//  * -set_workdir : Use the specified directory as data dir
+	//  * -use_workdir : Use the current directory as data dir
+	//  * otherwise    : Use the directory where the executable is located
 	if( const char *p = args.gimme_arg( "-set_workdir", 1 ) ) {
 		if(  dr_chdir( p )  ) {
-			dbg->fatal( "Path not found for -set_work \"%s\"",  p);
+			cbuffer_t errmsg;
+			errmsg.printf("Path not found for -set_workdir \"%s\"",  p);
+			dr_fatal_notify(errmsg);
+			return EXIT_FAILURE;
 		}
 		else {
 			tstrncpy( env_t::data_dir, p, lengthof( env_t::data_dir ) );
