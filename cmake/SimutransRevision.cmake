@@ -7,10 +7,6 @@ include(FindSubversion)
 include(FindGit)
 
 
-if (Subversion_FOUND OR Git_FOUND)
-	option(SIMUTRANS_WITH_REVISION "Build executable with SVN/git revision information" ON)
-endif (Subversion_FOUND OR Git_FOUND)
-
 # We have to try Git first because Subversion_WC_INFO does not fail silently if
 # this repository is not a Subversion repository
 # assume this is from aburch/simutrans!
@@ -37,7 +33,7 @@ if (SIMUTRANS_WC_REVISION)
 	file(WRITE revision.h.txt "#define REVISION ${SIMUTRANS_WC_REVISION}\n")
 	# copy the file to the final header only if the version changes
 	# reduces needless rebuilds
-#	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different revision.h.txt ${SOURCE_DIR}/revision.h)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different revision.h.txt ${SOURCE_DIR}/revision.h)
 
 	message(STATUS "Compiling Simutrans revision ${SIMUTRANS_WC_REVISION} ...")
 else ()
