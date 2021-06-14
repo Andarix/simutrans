@@ -1,17 +1,20 @@
 name: Nightly build MacOS
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly_'
 
 jobs:
   build:
 
     runs-on: macos-11.0
-    
+
     steps:
     - uses: actions/checkout@v1
 
     - name: install_dependencies
-      run: | 
+      run: |
         brew install cmake pkg-config libpng sdl2 freetype fluidsynth zstd
 
     - name: build
@@ -33,4 +36,4 @@ jobs:
         file: build/simumac-nightly.zip
         asset_name: simumac-nightly.zip
         tag: Nightly
-        overwrite: true   
+        overwrite: true
