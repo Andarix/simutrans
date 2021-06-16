@@ -39,6 +39,7 @@ if (FluidSynth_FOUND AND NOT WIN32)
 	option(SIMUTRANS_USE_FLUIDSYNTH_MIDI "Enable FluidSynth for MIDI playback" ON)
 endif (FluidSynth_FOUND AND NOT WIN32)
 
+option(SIMUTRANS_INSTALL_PAK64 "Download pak64 on install" OFF)
 option(SIMUTRANS_ENABLE_PROFILING "Enable profiling code" OFF)
 option(SIMUTRANS_USE_SYSLOG "Enable logging to syslog" OFF)
 option(SIMUTRANS_USE_IP4_ONLY "Use only IPv4" OFF)
@@ -129,6 +130,15 @@ else (MSVC) # Assume GCC/Clang
 		-Wcast-align
 		-Walloca
 		-Wduplicated-cond
+	)
+
+	SIMUTRANS_CHECK_CXX_COMPILER_FLAGS(SIMUTRANS_COMMON_COMPILE_OPTIONS
+		-Wno-format-nonliteral       # Mostly for translator
+		-Wno-overloaded-virtual      # For makeobj
+		-Wno-deprecated-declarations # auto_ptr for squirrel
+		-Wno-deprecated-copy         # for squirrel
+		-Wno-cast-align              # for squirrel
+		-Wno-return-std-move         # for squirrel
 	)
 
 	if (SIMUTRANS_PROFILE)

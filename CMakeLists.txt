@@ -101,15 +101,12 @@ if (${VS} EQUAL 0)
 	# using a script for MSVC project files
 	file(WRITE ${CMAKE_SOURCE_DIR}/revision.h "#define REVISION \n")
 	add_custom_command(TARGET simutrans PRE_BUILD WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND cscript.exe /Nologo revision.jse COMMENT "Find SVN revision")
-
 else ()
-# using custom target svnhear that is always built to update the revision.h file using cmake script
-add_custom_target(svnheader ALL DEPENDS svn_header)
-add_custom_command(OUTPUT svn_header COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_SOURCE_DIR} -P ${CMAKE_MODULE_PATH}/SimutransRevision.cmake)
-set_source_files_properties(${CMAKE_SOURCE_DIR}/revision.h PROPERTIES GENERATED TRUE HEADER_FILE_ONLY TRUE)
-add_dependencies(simutrans svnheader)
-
-
+	# using custom target svnhear that is always built to update the revision.h file using cmake script
+	add_custom_target(svnheader ALL DEPENDS svn_header)
+	add_custom_command(OUTPUT svn_header COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_SOURCE_DIR} -P ${CMAKE_MODULE_PATH}/SimutransRevision.cmake)
+	set_source_files_properties(${CMAKE_SOURCE_DIR}/revision.h PROPERTIES GENERATED TRUE HEADER_FILE_ONLY TRUE)
+	add_dependencies(simutrans svnheader)
 endif ()
 
 #
@@ -119,7 +116,6 @@ endif ()
 target_link_libraries(simutrans PRIVATE PNG::PNG)
 
 if (WIN32)
-#	set(CMAKE_RC_COMPILER_INIT windres)
 	target_sources(simutrans PRIVATE simres.rc)
 	target_sources(simutrans PRIVATE sys/clipboard_w32.cc)
 	target_link_libraries(simutrans PRIVATE ws2_32 winmm)
@@ -128,9 +124,18 @@ if (WIN32)
 	set(BACKUP_SOUND sound/win32_sound_xa.cc)
 	set(BACKUP_MUSIC music/w32_midi.cc)
 else ()
-	target_sources(simutrans PRIVATE sys/clipboard_internal.cc)
-	set(BACKUP_SOUND sound/no_sound.cc)
-	set(BACKUP_MUSIC music/no_midi.cc)
+	if (SIMUTRANS_BACKEND STREQUAL "sdl2")
+		target_sources(simutrans PRIVATE sys/clipboard_s2.cc)
+	else ()
+		target_sources(simutrans PRIVATE sys/clipboard_internal.cc)
+	endif ()
+	if (APPLE)
+		set(BACKUP_SOUND sound/AVF_core-audio_sound.mm sound/core-audio_sound.mm)
+		set(BACKUP_MUSIC music/AVF_core-audio_midi.mm music/core-audio_midi.mm)
+	else ()
+		set(BACKUP_SOUND sound/no_sound.cc)
+		set(BACKUP_MUSIC music/no_midi.cc)
+	endif ()
 endif ()
 
 if (SIMUTRANS_MULTI_THREAD)
@@ -194,6 +199,7 @@ endif (SIMUTRANS_USE_UPNP)
 
 if (SIMUTRANS_USE_ZSTD)
 	target_sources(simutrans PRIVATE io/rdwr/zstd_file_rdwr_stream.cc)
+	target_include_directories(simutrans PRIVATE ${ZSTD_INCLUDE_DIRS})
 	target_compile_definitions(simutrans PRIVATE USE_ZSTD=1)
 	if (MSVC)
 		target_link_libraries(simutrans PRIVATE zstd::libzstd_static)
@@ -286,17 +292,57 @@ endif ()
 #
 # Installation
 #
-install(TARGETS simutrans RUNTIME DESTINATION simutrans BUNDLE DESTINATION simutrans)
+install(TARGETS simutrans RUNTIME DESTINATION "${CMAKE_BINARY_DIR}/simutrans/" BUNDLE DESTINATION "${CMAKE_BINARY_DIR}/simutrans/")
 
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/simutrans/" DESTINATION "simutrans")
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/simutrans" DESTINATION "${CMAKE_BINARY_DIR}")
 
-install(FILES get_pak.sh DESTINATION "simutrans"
-	PERMISSIONS
-		OWNER_READ OWNER_WRITE OWNER_EXECUTE
-		GROUP_READ GROUP_EXECUTE
-		WORLD_READ WORLD_EXECUTE
-)
+# download language files
+if (MSVC)
+	# MSVC has no variable on teh install target path at execution time, which is why we expand the directories at creation time!
+	install(CODE "execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_SOURCE_DIR}/get_lang_files.ps1 WORKING_DIRECTORY ${simutrans_BINARY_DIR})")
+	if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+		install(CODE "execute_process(COMMAND powershell -Command \"Remove-Item \'${simutrans_BINARY_DIR}/simutrans/simutrans.pdb\')")
+	endif ()
+else ()
+	install(CODE "execute_process(COMMAND sh ../get_lang_files.sh WORKING_DIRECTORY \${CMAKE_BINARY_DIR})")
+endif ()
 
+# pak installer
+if (NOT WIN32)
+	install(FILES get_pak.sh DESTINATION "${CMAKE_BINARY_DIR}/simutrans/"
+		PERMISSIONS
+			OWNER_READ OWNER_WRITE OWNER_EXECUTE
+			GROUP_READ GROUP_EXECUTE
+			WORLD_READ WORLD_EXECUTE
+	)
+else ()
+	# NSIS missing
+	install(CODE "execute_process(COMMAND NSIS WORKING_DIRECTORY \${CMAKE_SOURCE_DIR}/nsis)")
+endif ()
+
+# install pak if needed
+if (SIMUTRANS_INSTALL_PAK64)
+	if (MSVC)
+		install(CODE
+		"if(NOT EXISTS ${simutrans_BINARY_DIR}/simutrans/pak)
+		execute_process(COMMAND powershell -Command \"Remove-Item \'${simutrans_BINARY_DIR}/simutrans/pak\' -Recurse\" WORKING_DIRECTORY ${simutrans_BINARY_DIR})
+		file(STRINGS ${CMAKE_SOURCE_DIR}/paksetinfo.h URLpak64 REGEX \"/pak64/\")
+		string( REGEX REPLACE \"^.[\\t ]*\\\"\" \"\" URLpak64 \${URLpak64})
+		string( REGEX REPLACE \"\\\", .*\$\" \"\" URLpak64 \${URLpak64})
+		message(\"install pak to \" ${simutrans_BINARY_DIR})
+		execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_SOURCE_DIR}/get_pak.ps1 \${URLpak64} WORKING_DIRECTORY ${simutrans_BINARY_DIR}/simutrans)
+		endif ()
+		")
+	else ()
+		# install pak64 with the bundle
+		install(CODE
+		"file(STRINGS  ${CMAKE_SOURCE_DIR}/paksetinfo.h URLpak64 REGEX \"/pak64/\")
+		 string( REGEX REPLACE \"^.[\\t ]*\\\"\" \"\" URLpak64 \${URLpak64})
+		 string( REGEX REPLACE \"\\\", .*\$\" \"\" URLpak64 \${URLpak64})
+		 execute_process(COMMAND sh ../../get_pak.sh \${URLpak64} WORKING_DIRECTORY \${CMAKE_BINARY_DIR}/simutrans)
+		")
+	endif ()
+endif()
 
 
 #
