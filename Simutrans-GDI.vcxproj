@@ -104,7 +104,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;USE_UPNP=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;DEBUG=3;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;DEBUG=3;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Stable'">
