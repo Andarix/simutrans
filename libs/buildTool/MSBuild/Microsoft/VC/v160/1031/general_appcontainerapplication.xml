@@ -68,6 +68,7 @@
     <EnumValue Name="true" DisplayName="Link-Zeitcodegenerierung verwenden" Description="Link-Zeitcodegenerierung verwenden"/>
   </EnumProperty>
   <BoolProperty Name="WindowsAppContainer" DisplayName="Unterstützung für Windows Store-Apps" Description="Dieses Projekt aktivieren, um Windows Store-Apps zu unterstützen." ReadOnly="true" Category="ProjectDefaults" F1Keyword="VC.Project.VCConfiguration.AppSupport"/>
+  <BoolProperty Name="DesktopCompatible" DisplayName="Windows Desktop-kompatibel" Description="Hiermit wird die Projektausgabe zur Verwendung in Windows-Desktop-Apps aktiviert." Category="ProjectDefaults" F1Keyword="VC.Project.VCConfiguration.DesktopCompatible"/>
   <EnumProperty Name="CharacterSet" DisplayName="Zeichensatz" Description="Weist den Compiler an, den angegebenen Zeichensatz zu verwenden; hilfreich bei Lokalisierungsproblemen." Category="ProjectDefaults" Visible="false" F1Keyword="VC.Project.VCConfiguration.CharacterSet">
     <EnumValue Name="Unicode" DisplayName="Unicode-Zeichensatz verwenden" Description="Unicode-Zeichensatz verwenden"/>
   </EnumProperty>

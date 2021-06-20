@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>
+      <!-- _locID_text="title" _locComment="" -->choice</Title>
+    <Author>Microsoft Corporation</Author>
+    <Shortcut>ctchoice</Shortcut>
+    <Description>
+      <!-- _locID_text="description" _locComment="" -->XML-Ausschnitt für 'XSD complexType' mit 'choice'.</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>name</ID>
+        <ToolTip>
+          <!-- _locID_text="tooltip" _locComment="" -->Name des komplexen Typs.
+        </ToolTip>
+        <Default>name</Default>
+      </Literal>
+      <Literal>
+        <ID>min</ID>
+        <Default>0</Default>
+      </Literal>
+      <Literal>
+        <ID>max</ID>
+        <Default>unbounded</Default>
+      </Literal>
+    </Declarations>
+    <Code Language="XML"><![CDATA[<xsd:complexType name="$name$" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:choice minOccurs="$min$" maxOccurs="$max$">$selected$$end$
+    </xsd:choice>
+    </xsd:complexType>]]></Code>
+  </Snippet>
+</CodeSnippet>

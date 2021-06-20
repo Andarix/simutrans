@@ -53,7 +53,41 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <ReferencePath>$(LibraryWPath);$(ReferencePath)</ReferencePath>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <SetBuildDefaultEnvironmentVariablesDependsOn>
+      AddExternalIncludDirectoriesToPaths;
+      $(SetBuildDefaultEnvironmentVariablesDependsOn)
+    </SetBuildDefaultEnvironmentVariablesDependsOn>
+    <DetermineProjectTypeTargets>
+      $(DetermineProjectTypeTargets);
+      AddExternalIncludDirectoriesToPaths
+    </DetermineProjectTypeTargets>
+  </PropertyGroup>
+
+  <Target Name="AddExternalIncludDirectoriesToPaths"
+    DependsOnTargets="$(AddExternalIncludDirectoriesToPathsDependsOn)"
+    Condition="'$(UseEnv)' != 'true'">
+
+    <ItemGroup Condition="'$(ExternalIncludePath)' != ''">
+      <_ExternalIncludePathToInclude Include="$(ExternalIncludePath)"/>
+      <_ExternalIncludePathToInclude Remove="$(IncludePath)"/>
+      <_ExternalIncludePathToExclude Include="$(ExternalIncludePath)"/>
+      <_ExternalIncludePathToExclude Remove="$(ExcludePath)"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+      <IncludePath Condition="'@(_ExternalIncludePathToInclude)' != ''">$(IncludePath);@(_ExternalIncludePathToInclude)</IncludePath>
+      <ExcludePath Condition="'@(_ExternalIncludePathToExclude)' != ''">$(ExcludePath);@(_ExternalIncludePathToExclude)</ExcludePath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <_ExternalIncludePathToInclude Remove="@(_ExternalIncludePathToInclude)" />
+      <_ExternalIncludePathToExclude Remove="@(_ExternalIncludePathToExclude)" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="SetBuildDefaultEnvironmentVariables"
+          DependsOnTargets="$(SetBuildDefaultEnvironmentVariablesDependsOn)"
           Condition="'$(UseEnv)' != 'true' and '$(DesignTimeBuild)' != 'true'">
 
     <!-- Vs2013 does not use NativeExecutablePath, but we have to keep this for older toolsets. -->
@@ -80,9 +114,15 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </SetEnv>
 
     <SetEnv Name   ="INCLUDE"
-            Value  ="$(IncludePath)"
-            Prefix ="false" >
+        Value  ="$(IncludePath)"
+        Prefix ="false" >
       <Output TaskParameter="OutputEnvironmentVariable" PropertyName="INCLUDE"/>
+    </SetEnv>
+
+    <SetEnv Name   ="EXTERNAL_INCLUDE"
+        Value  ="$(ExternalIncludePath)"
+        Prefix ="false" >
+      <Output TaskParameter="OutputEnvironmentVariable" PropertyName="EXTERNAL_INCLUDE"/>
     </SetEnv>
 
   </Target>

@@ -16,6 +16,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <UsingTask TaskName="VCMessage" AssemblyFile="$(MSBuildThisFileDirectory)Microsoft.Build.CppTasks.Common.dll" />
   <UsingTask TaskName="CheckVCToolsetVersion" AssemblyFile="$(MSBuildThisFileDirectory)Microsoft.Build.CppTasks.Common.dll" />
+  <UsingTask TaskName="GenerateDesktopDeployRecipe" AssemblyFile="$(MSBuildThisFileDirectory)Microsoft.Build.CppTasks.Common.dll"/>
+  <UsingTask TaskName="GetOutputFileNameItems" AssemblyFile="$(MSBuildThisFileDirectory)Microsoft.Build.CppTasks.Common.dll"/>
 
   <!-- *******************************************************************************************
         Tools usage for various config types
@@ -31,11 +33,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <!-- ManagedAssembly and WinMDAssembly property defined as false by default for VC projects -->
     <ManagedAssembly>false</ManagedAssembly>
+    <IntDirFullPath>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(IntDir)'))</IntDirFullPath>
+    <OutDirFullPath>$([MSBuild]::NormalizePath('$(ProjectDir)', '$(OutDir)'))</OutDirFullPath>
+    <DesktopDeployRecipeFile Condition="'$(GenerateDesktopDeployRecipeFile)'=='true' and '$(DesktopDeployRecipeFile)' == ''">$(IntDirFullPath)$(TargetName)$(TargetExt).recipe</DesktopDeployRecipeFile>
     <WinMDAssembly Condition="'$(WinMDAssembly)' == ''">false</WinMDAssembly>
-    
-    <!-- CopyLocalProjectReference is only for native projects. -->
-    <CopyLocalProjectReference Condition="'$(CopyLocalProjectReference)'=='' and '$(CLRSupport)'!='' and '$(CLRSupport)'!='false'">false</CopyLocalProjectReference>
-    <CopyLocalProjectReference Condition="'$(CopyLocalProjectReference)'=='' and '$(AppContainerApplication)'=='true'">false</CopyLocalProjectReference>
   </PropertyGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.BuildSteps.Targets"/>
@@ -114,6 +115,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <AfterBuildLinkTargets Condition="'$(ConfigurationType)'!='Utility'">
       $(AfterBuildLinkTargets);
+      CreateRecipeFile;
       CreateSatelliteAssemblies;
       CopyLocalNativeReference;
       _Appverifier;
@@ -124,9 +126,19 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <AfterBuildLinkTargets Condition="'$(ConfigurationType)'=='Utility'">
       $(AfterBuildLinkTargets);
+      CreateRecipeFile;
       PostBuildEvent
     </AfterBuildLinkTargets>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(BuildPassReferences)' == 'true' or '$(AllowParallelCompileInReferencedProjects)' == 'true'">
+    <!-- Utility, CLR, WinMD Projects are not possible to participate in BuildPass. -->
+    <IgnoreProjectBuildPass Condition="'$(ConfigurationType)'=='Utility'
+    or ('$(CLRSupport)'!='' and '$(CLRSupport)'!='false')
+    or '$(WindowsStoreApp)'=='true'">true</IgnoreProjectBuildPass>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IgnoreProjectBuildPass)' != 'true'">
     <BuildGenerateSourcesAction>_BuildGenerateSourcesAction</BuildGenerateSourcesAction>
     <BuildCompileAction>_BuildCompileAction</BuildCompileAction>
     <BuildLinkAction>_BuildLinkAction</BuildLinkAction>
@@ -146,11 +158,14 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Target Name="_BuildLinkAction"
     DependsOnTargets="$(CommonBuildOnlyTargets);$(BeforeBuildLinkTargets);$(BuildLinkTargets);$(AfterBuildLinkTargets)" />
 
+  <Import Project="Microsoft.Cpp.BuildPass.targets" Condition="'$(AllowParallelCompileInReferencedProjects)'=='true' and '$(IgnoreProjectBuildPass)' != 'true'" />
+
   <!-- *******************************************************************************************
         Selective Build
        ******************************************************************************************* -->
   <!-- The following targets removes build items form the project. For selective build work, only
        the specific targets should run, e.g. ClCompile, ResourceCompile -->
+
 
   <Target Name="_SelectedFiles" DependsOnTargets="PrepareForBuild;InitializeBuildStatus;SetBuildDefaultEnvironmentVariables;SetUserMacroEnvironmentVariables">
     <ItemGroup>
@@ -164,16 +179,29 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <!-- ComputeReferenceCLInput is needed to complete the ForceUsing switch for managed projects.
        The BuildProjectReferences (see below in PrepareForBuild) is false to prevent building reference projects. -->
-  <Target Name="SelectClCompile" DependsOnTargets="_SelectedFiles;$(ComputeCompileInputsTargets);SelectCustomBuild">
-    <ItemGroup Condition="'@(SelectedFiles)'!=''">
-      <!-- Add the PCH to the list of files to be compiled. -->
-      <SelectedFiles Remove="@(ClCompile)" Condition="$(SelectedFilesBuildPCH) != 'false' and '%(ClCompile.PrecompiledHeader)' == 'Create'" />
-      <SelectedFiles Include="@(ClCompile)" Condition="$(SelectedFilesBuildPCH) != 'false' and '%(ClCompile.PrecompiledHeader)' == 'Create'" />
+  <Target Name="SelectClCompile" DependsOnTargets="_SelectedFiles;$(ComputeCompileInputsTargets);SelectCustomBuild;SetModuleDependencies">
 
-      <ClCompile Remove="@(ClCompile)" Condition="'%(Identity)' != '@(SelectedFiles)'"/>
-      <ClCompile>
-        <MinimalRebuildFromTracking Condition="'%(ClCompile.PrecompiledHeader)' != 'Create'">false</MinimalRebuildFromTracking>
-      </ClCompile>
+    <ItemGroup>
+      <_SelectedClCompile Include="@(ClCompile)" Condition="'%(Identity)' == '@(SelectedFiles)'">
+        <MinimalRebuildFromTracking>false</MinimalRebuildFromTracking>
+      </_SelectedClCompile>
+    </ItemGroup>
+
+    <!-- Add the PCH to the list of files to be compiled. -->
+    <ItemGroup Condition="'@(SelectedFiles)'!='' and '$(SelectedFilesBuildPCH)' != 'false'">
+      <_SelectedClCompile Include="@(ClCompile)" Condition="'%(ClCompile.PrecompiledHeader)' == 'Create'" />
+    </ItemGroup>
+
+    <!-- Add module interface and header unit files to the list of files to be compiled -->
+    <ItemGroup Condition="'@(SelectedFiles)'!='' and '$(SelectedFilesBuildModules)' != 'false'">
+      <_SelectedClCompile Include="@(ClCompile)" Condition="'%(ClCompile.ModulesSupported)' == 'true' and
+                                                            '%(ClCompile.ModuleOrHeaderUnit)' == 'true'" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'@(_SelectedClCompile)'!=''">
+      <ClCompile Remove="@(ClCompile)"/>
+      <ClCompile Include="@(_SelectedClCompile->Metadata('Identity')->Distinct())" />
+      <_SelectedClCompile Remove="@(_SelectedClCompile)" />
     </ItemGroup>
   </Target>
 
@@ -234,6 +262,14 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ManagedAssembly Condition="'$(TargetRuntime)' != 'Native' and (('$(CLRSupport)'!='' and '$(CLRSupport)'!='false') or ('%(ClCompile.CompileAsManaged)' != 'false' and '%(ClCompile.CompileAsManaged)' != ''))">true</ManagedAssembly>
     </PropertyGroup>
 
+    <PropertyGroup>
+      <!-- Managed and UWP projects will copy references by default in msbuild common targets.
+           Disable copy targets that are specific to native projects -->
+      <CopyLocalProjectReference Condition="'$(ManagedAssembly)'=='true' or '$(WinMDAssembly)'=='true'">false</CopyLocalProjectReference>
+      <!-- Managed and UWP projects always copy content, naive projects only if CopyLocalDeploymentContent is true -->
+      <CopyDeploymentContent Condition="'$(CopyLocalDeploymentContent)' == 'true' or '$(ManagedAssembly)'=='true' or '$(WinMDAssembly)'=='true'">true</CopyDeploymentContent>
+    </PropertyGroup>
+
     <!-- Clear the target framework for Native projects -->
     <PropertyGroup>
       <TargetFrameworkMoniker Condition="'$(ManagedAssembly)' != 'true'"></TargetFrameworkMoniker>
@@ -281,16 +317,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         Imports PGO property sheets to overwrite any user settings.
        ******************************************************************************************* -->
 
-    <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'true'"           Project="$(VCTargetsPath)\microsoft.Cpp.WholeProgramOptimization.props"/>
-    <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'PGInstrument'"   Project="$(VCTargetsPath)\microsoft.Cpp.pginstrument.props"/>
-    <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'PGOptimize'"     Project="$(VCTargetsPath)\microsoft.Cpp.pgoptimize.props"/>
-    <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'PGUpdate'"       Project="$(VCTargetsPath)\microsoft.Cpp.pgupdate.props"/>
+  <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'true'"           Project="$(VCTargetsPath)\microsoft.Cpp.WholeProgramOptimization.props"/>
+  <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'PGInstrument'"   Project="$(VCTargetsPath)\microsoft.Cpp.pginstrument.props"/>
+  <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'PGOptimize'"     Project="$(VCTargetsPath)\microsoft.Cpp.pgoptimize.props"/>
+  <Import Condition="'$(WholeProgramOptimizationDelayImport)' == 'true' and '$(WholeProgramOptimization)' == 'PGUpdate'"       Project="$(VCTargetsPath)\microsoft.Cpp.pgupdate.props"/>
 
 
   <!-- *******************************************************************************************
         Non-target-specific files whose directories need to be made
        ******************************************************************************************* -->
-       <!--PropertyGroup>
+  <!--PropertyGroup>
           <TempProjectDir>"$([System.IO.Path]::GetDirectoryName('$(ProjectDir)'))"</TempProjectDir>
   </PropertyGroup-->
 
@@ -321,8 +357,21 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ProjectStateLine Condition="'$(CLRSupport)' == 'NetCore'">TargetFramework=$(TargetFramework):$(ProjectStateLine)</ProjectStateLine>
       <ProjectStateLine Condition="'$(CLRSupport)' != 'NetCore' and '$(ManagedAssembly)' == 'true'">TargetFrameworkVersion=$(TargetFrameworkVersion)::EnableManagedIncrementalBuild=$(EnableManagedIncrementalBuild):$(ProjectStateLine)</ProjectStateLine>
       <ProjectStateLine Condition="'$(TargetPlatformVersion)' != ''">TargetPlatformVersion=$(TargetPlatformVersion):$(ProjectStateLine)</ProjectStateLine>
-      <ProjectStateLine Condition="'$(VCToolsVersion)' != '' and '$(ForceRebuildWhenVCToolsVersionChanges)' != 'false'">VCToolsVersion=$(VCToolsVersion):$(ProjectStateLine)</ProjectStateLine>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(VCToolsVersion)' != '' and '$(ForceRebuildWhenVCToolsVersionChanges)' != 'false'">
+      <ProjectStateLine Condition="'$(VCServicingVersionCompilers)' != '' and '$(VCServicingVersionCompilers)' != '$(VCToolsVersion)'">VCServicingVersionCompilers=$(VCServicingVersionCompilers):$(ProjectStateLine)</ProjectStateLine>
+      <ProjectStateLine Condition="'$(VCServicingVersionCrtHeaders)' != '' and '$(VCServicingVersionCrtHeaders)' != '$(VCToolsVersion)'">VCServicingVersionCrtHeaders=$(VCServicingVersionCrtHeaders):$(ProjectStateLine)</ProjectStateLine>
+      <ProjectStateLine Condition="'$(VCServicingVersionATL)' != '' and '$(VCServicingVersionATL)' != '$(VCToolsVersion)'">VCServicingVersionATL=$(VCServicingVersionATL):$(ProjectStateLine)</ProjectStateLine>
+      <ProjectStateLine Condition="('$(UseOfMFC)' != 'static' or '$(UseOfMFC)' != 'dynamic') and '$(VCServicingVersionMFC)' != '' and '$(VCServicingVersionMFC)' != '$(VCToolsVersion)'">VCServicingVersionMFC=$(VCServicingVersionMFC):$(ProjectStateLine)</ProjectStateLine>
+      <ProjectStateLine>VCToolsVersion=$(VCToolsVersion):$(ProjectStateLine)</ProjectStateLine>      
+    </PropertyGroup>
+
+    <PropertyGroup>
       <ProjectStateLine>PlatformToolSet=$(PlatformToolSet):VCToolArchitecture=$(VCToolArchitecture):$(ProjectStateLine)</ProjectStateLine>
+    </PropertyGroup>
+
+    <PropertyGroup>
       <StateBuildType Condition="'$(StateBuildType)' == '' and '@(_ReadProjectStateLine)' != '' and '%(_ReadProjectStateLine.Identity)' == '$(ProjectStateLine)'">Build</StateBuildType>
       <StateBuildType Condition="'$(StateBuildType)' == '' and '@(_ReadProjectStateLine)' != '' ">Rebuild</StateBuildType>
       <StateBuildType Condition="'$(StateBuildType)' == ''">Build</StateBuildType>
@@ -351,7 +400,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         PrepareForBuild target
        ******************************************************************************************* -->
   <Target Name="PrepareForBuild" DependsOnTargets="SetBuildDefaultEnvironmentVariables;SetUserMacroEnvironmentVariables;_PrepareForReferenceResolution;GetResolvedWinMD;$(PrepareForBuildDependsOn)">
-  <!-- These PropertyGroups are required because TargetPath and others are defined
+    <!-- These PropertyGroups are required because TargetPath and others are defined
        to contain an item list. We want that item list to be expanded so that it can be used
        as a regular property value and not as an item-list-with-transform. -->
     <PropertyGroup>
@@ -403,17 +452,18 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <VCMessage Code="MSB8010" Type="Error" Condition="'$(DesignTimeBuild)'!='true' and '$(VCToolsInstallDir)'=='' and '$(UseEnv)' != 'true' and '$(PlatformToolset)'=='v90'" />
 
     <!-- Error out VCToolsVersion does not match MSVC PlatformToolset -->
-    <CheckVCToolsetVersion Condition="'$(DesignTimeBuild)'!='true' and '$(CheckMSVCComponents)'!='false'"
+    <CheckVCToolsetVersion Condition="'$(DesignTimeBuild)'!='true' and '$(CheckMSVCComponents)'=='true'"
       VCToolsVersion="$(VCToolsVersion)"
-      PlatformToolset="$(PlatformToolset)" />
+      PlatformToolset="$(PlatformToolset)"
+      VCToolsInstallDir="$(VCToolsInstallDir)"/>
 
-    <ItemGroup Condition="'$(DesignTimeBuild)' != 'true' and '$(UseEnv)' != 'true' and '$(CheckMSVCComponents)' != 'false' ">
+    <ItemGroup Condition="'$(DesignTimeBuild)' != 'true' and '$(UseEnv)' != 'true' and '$(CheckMSVCComponents)'=='true' ">
       <Link Include="__Tempfile__" >
         <Temp>true</Temp>
       </Link>
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(DesignTimeBuild)' != 'true' and '$(UseEnv)' != 'true' and '$(CheckMSVCComponents)' != 'false'">
+    <PropertyGroup Condition="'$(DesignTimeBuild)' != 'true' and '$(UseEnv)' != 'true' and '$(CheckMSVCComponents)'=='true'">
       <CheckMFCInstalled Condition="('$(UseOfMFC)' == 'static' or '$(UseOfMFC)' == 'dynamic') and '$(MFC_KeyFile)' != '' ">true</CheckMFCInstalled>
       <CheckATLInstalled Condition="'$(ATL_KeyFile)' != '' and ('$(ConfigurationType)' == 'Application' or '$(ConfigurationType)' == 'DynamicLibrary')
                          and %(Link.AdditionalDependencies) != '' and  $([System.String]::new('%(Link.AdditionalDependencies)').Contains('atls.lib'))">true</CheckATLInstalled>
@@ -424,7 +474,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <Link Remove="@(Link)" Condition="'%(Link.Temp)' == 'true'" />
     </ItemGroup>
 
-      <!-- Error out if required optional components are not installed -->
+    <!-- Error out if required optional components are not installed -->
     <!-- MFC -->
     <VCMessage Code="MSB8041" Type="Error" Arguments="MFC" Condition="'$(CheckMFCInstalled)' == 'true' and !Exists($(MFC_KeyFile)) and '$(SpectreLibs)' == ''" />
     <VCMessage Code="MSB8042" Type="Error" Arguments="MFC" Condition="'$(CheckMFCInstalled)' == 'true' and !Exists($(MFC_KeyFile)) and '$(SpectreLibs)' != ''" />
@@ -434,15 +484,11 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <!-- Error out if Spectre libraries are not installed. See https://aka.ms/Ofhn4c for more information. -->
     <VCMessage Code="MSB8040" Type="Error" Condition="'$(DesignTimeBuild)' != 'true' and
-                                                        '$(CheckMSVCComponents)' != 'false' and
+                                                        '$(CheckMSVCComponents)'=='true' and
                                                         '$(SpectreMitigation)' != '' and
                                                         '$(SpectreMitigation)' != 'false' and
-                                                        (('$(_VC_Target_Library_Platform)' == 'OneCore' and !Exists('$(VC_LibraryPath_VC_x86_OneCore_spectre)')) or
-                                                         ('$(_VC_Target_Library_Platform)' == 'Desktop' and !Exists('$(VC_LibraryPath_VC_x86_Desktop_spectre)')))" />
-
-    <!-- Error if ASAN specified but target does not support it -->
-    <VCMessage Code="MSB8058" Type="Error" Arguments="$(PlatformTarget)" Condition="'$(DesignTimeBuild)'!='true' and '$(EnableASAN)' == 'true' and '$(LlvmPlatformName)' == ''" />
-    <VCMessage Code="MSB8059" Type="Error" Arguments="Debug" Condition="'$(DesignTimeBuild)'!='true' and '$(ApplicationType)'!='Linux' and '$(EnableASAN)' == 'true' and '$(UseDebugLibraries)'=='true'" />
+                                                        (('$(_VC_Target_Library_Platform)' == 'OneCore' and !Exists('$(VC_LibraryPath_VC_OneCore_CurrentPlatform_spectre)')) or
+                                                         ('$(_VC_Target_Library_Platform)' == 'Desktop' and !Exists('$(VC_LibraryPath_VC_Desktop_CurrentPlatform_spectre)')))" />
 
     <!-- Warn the user that about the missing envoriment variable -->
     <VCMessage Code="MSB8003" Type="Warning" Arguments="VCToolsInstallDir"  Condition="'$(DesignTimeBuild)'!='true' and '$(VCToolsInstallDir)'=='' and '$(UseEnv)' != 'true'" />
@@ -467,12 +513,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <VCMessage Code="MSB8028" Type="Warning" Arguments="$(IntDirSharingProjects);$(IntDir)" Condition="'$(IgnoreWarnIntDirSharingDetected)' != 'true' and '$(IntDirSharingDetected)' == 'true'"/>
 
     <!-- Warn if IntDir or OutDir is a subfolder of the Temp -->
-    <PropertyGroup>
-      <_IntDirFullpath>$([System.IO.Path]::Combine($(ProjectDir), $(IntDir)))</_IntDirFullpath>
-      <_OutDirFullpath>$([System.IO.Path]::Combine($(ProjectDir), $(OutDir)))</_OutDirFullpath>
-    </PropertyGroup>
 
-    <VCMessage Code="MSB8029" Type="Warning" Condition="'$(DesignTimeBuild)'!='true' and '$(IgnoreWarnIntDirInTempDetected)' != 'true' and ('$(_IntDirFullpath.StartsWith($(Tmp), true, null))' == 'true' or '$(_IntDirFullpath.StartsWith($(Temp), true, null))' == 'true' or '$(_OutDirFullpath.StartsWith($(Tmp), true, null))' == 'true' or '$(_OutDirFullpath.StartsWith($(Temp), true, null))' == 'true')"/>
+    <VCMessage Code="MSB8029" Type="Warning" Condition="'$(DesignTimeBuild)'!='true' and '$(IgnoreWarnIntDirInTempDetected)' != 'true' and ('$(IntDirFullPath.StartsWith($(Tmp), true, null))' == 'true' or '$(IntDirFullPath.StartsWith($(Temp), true, null))' == 'true' or '$(OutDirFullPath.StartsWith($(Tmp), true, null))' == 'true' or '$(OutDirFullPath.StartsWith($(Temp), true, null))' == 'true')"/>
 
     <!-- Create the directories for intermediate and final build products, and any other arbitrary directories. -->
     <MakeDir Directories="@(GeneralDirsToMake)" Condition="'$(DesignTimeBuild)' != 'true'"/>
@@ -579,11 +621,14 @@ Copyright (C) Microsoft Corporation. All rights reserved.
        ******************************************************************************************* -->
   <Target Name="MakeDirsForFxc">
     <ItemGroup Condition="'@(FxCompile)'!=''">
-      <FxcOutputs Include="@(FxCompile->Metadata('HeaderFileOutput')->Distinct())" />
-      <FxcOutputs Include="@(FxCompile->Metadata('ObjectFileOutput')->Distinct())">
+      <_FxCompile Include="@(FxCompile)" Condition="'%(FxCompile.ExcludedFromBuild)'!='true'" />
+    </ItemGroup>
+    <ItemGroup Condition="'@(_FxCompile)'!=''">
+      <FxcOutputs Include="@(_FxCompile->Metadata('HeaderFileOutput')->Distinct())" />
+      <FxcOutputs Include="@(_FxCompile->Metadata('ObjectFileOutput')->Distinct())">
         <DeploymentContent>True</DeploymentContent>
       </FxcOutputs>
-      <FxcOutputs Include="@(FxCompile->Metadata('AssemblerOutputFile')->Distinct())" />
+      <FxcOutputs Include="@(_FxCompile->Metadata('AssemblerOutputFile')->Distinct())" />
       <FxcDirsToMake Include="@(FxcOutputs->DirectoryName())" />
       <FxcOutputs>
         <Link Condition="'%(FxcOutputs.DeploymentContent)'=='True'">$([MSBuild]::MakeRelative($(TargetDir), %(FullPath)))</Link>
@@ -593,6 +638,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <MakeDir Directories="@(FxcDirsToMake)" />
 
     <ItemGroup>
+      <_FxCompile Remove="@(_FxCompile)" />
       <FxcDirsToMake Remove="@(FxcDirsToMake)" />
     </ItemGroup>
   </Target>
@@ -745,7 +791,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Target Name="ComputeLegacyManifestEmbedding" Condition="'$(LegacyManifestEmbedding)' != 'true'">
     <ItemGroup>
       <Manifest Include="temp" Condition="'@(Manifest)' == ''">
-          <_LocalVariable>true</_LocalVariable>
+        <_LocalVariable>true</_LocalVariable>
       </Manifest>
     </ItemGroup>
 
@@ -782,7 +828,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <ItemGroup>
       <Manifest Include="%(Link.ManifestFile)" Condition="'$(GenerateManifest)' == 'true' and '$(LegacyManifestEmbedding)' == 'true'"/>
       <Manifest Include="temp" Condition="'@(Manifest)' == ''">
-          <_LocalVariable>true</_LocalVariable>
+        <_LocalVariable>true</_LocalVariable>
       </Manifest>
     </ItemGroup>
     <PropertyGroup>
@@ -827,7 +873,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <Target Name="_Manifest"
           DependsOnTargets="ComputeLegacyManifestEmbedding">
-          <CallTarget Targets="$(_ManifestDependsOn)" Condition="'$(LegacyManifestEmbedding)' == 'true'" />
+    <CallTarget Targets="$(_ManifestDependsOn)" Condition="'$(LegacyManifestEmbedding)' == 'true'" />
   </Target>
 
   <!-- Easy to override before/after targets -->
@@ -848,7 +894,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <!-- Item props defining default processing for Mt outputs -->
   <ItemDefinitionGroup>
     <Manifest>
-       <LinkCompiledInterface>false</LinkCompiledInterface>
+      <LinkCompiledInterface>false</LinkCompiledInterface>
     </Manifest>
   </ItemDefinitionGroup>
 
@@ -902,28 +948,28 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </PropertyGroup>
 
   <!--Moved here to filter out the unset values-->
-    <ItemDefinitionGroup>
-      <Link>
-        <EntryPointSymbol            Condition="'%(Link.EntryPointSymbol)'            == '' and
+  <ItemDefinitionGroup>
+    <Link>
+      <EntryPointSymbol            Condition="'%(Link.EntryPointSymbol)'            == '' and
                                                 '$(ConfigurationType)'                != 'DynamicLibrary' and
                                                 '$(CharacterSet)'                     == 'Unicode' and
                                                 '%(Link.SubSystem)'                   != 'Console' and
                                                 '$(UseOfMFC)'                         != 'false' and
                                                 '$(UseOfMFC)'                         != ''">wWinMainCRTStartup</EntryPointSymbol>
 
-        <!-- Add delayimp.lib when Delay Loaded Dlls isn't empty.  Change the property $(DelayImplib) to load a different library or not one at all. -->
-        <AdditionalDependencies Condition="'%(Link.DelayLoadDLLs)' != '' and '$(DelayImplib)' != ''">%(AdditionalDependencies);$(DelayImplib)</AdditionalDependencies>
-        <ManifestFile Condition="'$(GenerateManifest)' != 'true'"></ManifestFile>
-        <EnableUAC Condition="'$(GenerateManifest)' != 'true'"></EnableUAC>
-        <ImportLibrary Condition="'%(Link.ImportLibrary)' == '' and '$(IgnoreImportLibrary)' == 'false'">$(OutDir)$(TargetName).lib</ImportLibrary>
-      </Link>
-    </ItemDefinitionGroup>
+      <!-- Add delayimp.lib when Delay Loaded Dlls isn't empty.  Change the property $(DelayImplib) to load a different library or not one at all. -->
+      <AdditionalDependencies Condition="'%(Link.DelayLoadDLLs)' != '' and '$(DelayImplib)' != ''">%(AdditionalDependencies);$(DelayImplib)</AdditionalDependencies>
+      <ManifestFile Condition="'$(GenerateManifest)' != 'true'"></ManifestFile>
+      <EnableUAC Condition="'$(GenerateManifest)' != 'true'"></EnableUAC>
+      <ImportLibrary Condition="'%(Link.ImportLibrary)' == '' and '$(IgnoreImportLibrary)' == 'false'">$(OutDir)$(TargetName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
 
   <Target Name="ComputeCLInputPDBName">
     <ItemGroup Condition="'$(DesignTimeBuild)' != 'true'">
-      <ClCompile Condition="HasTrailingSlash('%(ClCompile.ProgramDataBaseFileName)') and '%(ClCompile.DebugInformationFormat)' != '' and '%(ClCompile.ExcludedFromBuild)' != 'true'">
+      <ClCompile Condition="HasTrailingSlash('%(ClCompile.ProgramDataBaseFileName)') and '%(ClCompile.DebugInformationFormat)' != ''">
         <ProgramDataBaseFileName Condition="'$(ConfigurationType)' != 'StaticLibrary'">%(ProgramDataBaseFileName)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
-        <ProgramDataBaseFileName Condition="'$(ConfigurationType)' == 'StaticLibrary'">%(ProgramDataBaseFileName)$(ProjectName).pdb</ProgramDataBaseFileName>
+        <ProgramDataBaseFileName Condition="'$(ConfigurationType)' == 'StaticLibrary'">%(ProgramDataBaseFileName)$(TargetName).pdb</ProgramDataBaseFileName>
       </ClCompile>
     </ItemGroup>
   </Target>
@@ -940,12 +986,13 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ClDirsToMake Include="@(CLCompile->Metadata('XMLDocumentationFileName')->DirectoryName()->Distinct()->ClearMetadata())" />
       <ClDirsToMake Include="@(CLCompile->Metadata('BrowseInformationFile')->DirectoryName()->Distinct()->ClearMetadata())" />
       <ClDirsToMake Include="@(CLCompile->Metadata('PreprocessOutputPath')->DirectoryName()->Distinct()->ClearMetadata())" />
+      <ClDirsToMake Include="@(CLCompile->Metadata('ModuleOutputFile')->DirectoryName()->Distinct()->ClearMetadata())" />
     </ItemGroup>
 
     <MakeDir Directories="@(ClDirsToMake)" />
 
     <ItemGroup>
-        <ClDirsToMake Remove="@(ClDirsToMake)" />
+      <ClDirsToMake Remove="@(ClDirsToMake)" />
     </ItemGroup>
   </Target>
 
@@ -957,8 +1004,25 @@ Copyright (C) Microsoft Corporation. All rights reserved.
        ******************************************************************************************* -->
   <!-- This will compute the references for the /FU switch on compiler. -->
   <Target Name="ComputeReferenceCLInput"
-          DependsOnTargets="FindReferenceAssembliesForReferences"
+          Condition="'$(ReferenceResolutionDisabled)' != 'true'"
+          DependsOnTargets="FindReferenceAssembliesForReferences;GetReferencedVCProjectsInfo"
           Returns="@(ReferencePath)" >
+
+    <ItemGroup Condition="'@(ReferencedVCProjectsInfo)' != ''">
+        <ReferencedProjectsPublicModules Include="@(ReferencedVCProjectsInfo)" Condition="'%(ReferencedVCProjectsInfo.FileType)' == 'Module'"/>
+      <ReferencedProjectsPublicHeaderUnits Include="@(ReferencedVCProjectsInfo)" Condition="'%(ReferencedVCProjectsInfo.FileType)' == 'HeaderUnit'"/>
+      <_ReferencedPublicIncludeDirectories Include="@(ReferencedVCProjectsInfo)" Condition="'%(ReferencedVCProjectsInfo.FileType)' == 'IncludeDirectory'"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'@(_ReferencedPublicIncludeDirectories)' != ''">
+      <ClCompile>
+        <AdditionalIncludeDirectories>%(ClCompile.AdditionalIncludeDirectories);@(_ReferencedPublicIncludeDirectories->Metadata('Identity')->Distinct())</AdditionalIncludeDirectories>
+      </ClCompile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ReferencedPublicIncludeDirectories Remove="@(_ReferencedPublicIncludeDirectories)" />
+    </ItemGroup>
 
     <!-- C++/CLI project -->
     <ItemGroup>
@@ -971,7 +1035,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         <AdditionalOptions>/clr:nostdlib %(ClCompile.AdditionalOptions)</AdditionalOptions>
       </ClCompile>
     </ItemGroup>
-       
+
     <!-- Add the results to the ReferencePath and to Compiler /FU switch -->
     <ItemGroup Condition="'@(ReferencePathWithRefAssemblies)' != ''">
       <AssemblyReferenceToCompile Condition="'%(ReferencePathWithRefAssemblies.ReferenceOutputAssembly)' != 'false' and '%(ReferencePathWithRefAssemblies.WinMDFile)' != 'true'" Include="@(ReferencePathWithRefAssemblies)" />
@@ -982,29 +1046,40 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       </ClCompile>
     </ItemGroup>
 
-    <!-- Add CTR files to copy if requested -->
+    <!-- Add CRT files to copy if requested -->
     <ItemGroup Condition="'$(CopyCppRuntimeToOutputDir)' == 'true' and '$(ApplicationType)' == ''">
       <_CppRuntimeFilesDirs Include ="$(DebugCppRuntimeFilesPath)" Condition="'$(UseDebugLibraries)' == 'true' and '$(DebugCppRuntimeFilesPath)' != ''" />
       <_CppRuntimeFilesDirs Include ="$(CppRuntimeFilesPath)" Condition="'$(UseDebugLibraries)' != 'true' and '$(CppRuntimeFilesPath)' != ''" />
       <_CppRuntimeFiles Include="%(_CppRuntimeFilesDirs.Identity)\**\*.dll"/>
       <ReferenceCopyLocalPaths Include="@(_CppRuntimeFiles)" Condition="'@(_CppRuntimeFiles)' != ''"/>
     </ItemGroup>
-   
-    <ItemGroup>
-      <__ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)')"/>
-      <_ReferenceCopyLocalPaths Include="%(__ReferenceCopyLocalPaths.FullPath)"/>  <!-- Convert to fullpath -->
-      <_ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths->'%(FullPath)')"/>  <!-- Remove any files that did not needed copying-->
+
+    <ItemGroup  Condition="'$(DesignTimeBuild)' != 'true'">
+      <_ReferenceOutputsToCopyLocally Include="%(ReferenceCopyLocalPaths.FullPath)">
+        <FullDestinationPath>$(OutDirFullPath)%(ReferenceCopyLocalPaths.DestinationSubDirectory)%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)</FullDestinationPath>
+      </_ReferenceOutputsToCopyLocally>
+
+      <!-- Remove files that did not needed copying-->
+      <_ReferenceOutputsToCopyLocally Remove="%(_ReferenceOutputsToCopyLocally.FullDestinationPath)" />
     </ItemGroup>
 
-    <!-- Write the references with CopyLocal flag to a tlog for cleaning -->
-    <WriteLinesToFile Condition="'@(_ReferenceCopyLocalPaths)'!='' and '$(DesignTimeBuild)' != 'true'" File="$(TLogLocation)$(ProjectName).write.1u.tlog" Lines="^$(ProjectPath);@(_ReferenceCopyLocalPaths)" Encoding="Unicode"/>
-    <WriteLinesToFile Condition="'@(ReferenceCopyLocalPaths)'!='' and '$(DesignTimeBuild)' != 'true'" File="$(TLogLocation)$(ProjectName).read.1u.tlog" Lines="^$(ProjectPath);@(ReferenceCopyLocalPaths)" Encoding="Unicode"/>
+    <!-- Write tlogs for copied references -->
+    <WriteLinesToFile Condition="'@(_ReferenceOutputsToCopyLocally)'!='' and '$(DesignTimeBuild)' != 'true' and '$(TrackFileAccess)' == 'true'"
+                      File="$(TLogLocation)CopyLocal.read.1u.tlog"
+                      Lines="^$(ProjectPath);@(_ReferenceOutputsToCopyLocally)"
+                      Encoding="Unicode"
+                      Overwrite="true"/>
+
+    <WriteLinesToFile Condition="'@(_ReferenceOutputsToCopyLocally)'!='' and '$(DesignTimeBuild)' != 'true' and '$(TrackFileAccess)' == 'true'"
+                      File="$(TLogLocation)CopyLocal.write.1u.tlog"
+                      Lines="^$(ProjectPath);@(_ReferenceOutputsToCopyLocally->'%(FullDestinationPath)')"
+                      Encoding="Unicode"
+                      Overwrite="true"/>
 
     <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Text="ReferencePath=@(ReferencePath)" Importance="high" />
 
     <ItemGroup>
-      <_ReferenceCopyLocalPaths Remove="@(_ReferenceCopyLocalPaths)" />
-      <__ReferenceCopyLocalPaths Remove="@(__ReferenceCopyLocalPaths)" />
+      <_ReferenceOutputsToCopyLocally Remove="@(_ReferenceOutputsToCopyLocally)" />
       <_CppRuntimeFilesDirs Remove="@(_CppRuntimeFilesDirs)" />
       <_CppRuntimeFiles Remove="@(_CppRuntimeFiles)" />
     </ItemGroup>
@@ -1072,13 +1147,13 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <CreateItem
         Include="@(CustomBuildOutputs)"
         Condition="'%(CustomBuildOutputs.OutputItemType)'!=''">
-       <Output
-           TaskParameter="Include"
-           ItemName="%(CustomBuildOutputs.OutputItemType)"/>
-       <Output
-           TaskParameter="Include"
-           Condition="'%(CustomBuildOutputs.OutputItemType)' == 'Link' and '$(GenerateImportLib)'=='true'"
-           ItemName="ImpLib"/>
+      <Output
+          TaskParameter="Include"
+          ItemName="%(CustomBuildOutputs.OutputItemType)"/>
+      <Output
+          TaskParameter="Include"
+          Condition="'%(CustomBuildOutputs.OutputItemType)' == 'Link' and '$(GenerateImportLib)'=='true'"
+          ItemName="ImpLib"/>
     </CreateItem>
 
     <!-- Include outputs from Custom Build Step -->
@@ -1133,19 +1208,19 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <ItemGroup>
       <!-- No object file name defined: filename.obj -->
-      <Obj Condition="'%(ClCompile.ObjectFileName)'=='' and '%(ClCompile.ExcludedFromBuild)'!='true' and '%(ClCompile.CompilerIteration)' == ''" Include="@(ClCompile->'%(Filename).obj')">
+      <Obj Condition="'%(ClCompile.ObjectFileName)'=='' and '%(ClCompile.ExcludedFromBuild)'!='true' and ('%(ClCompile.CompilerIteration)' == '' or '%(ClCompile.CompilerIteration)' == 'Modules')" Include="@(ClCompile->'%(Filename).obj')">
         <LinkCompiled>%(ClCompile.LinkCompiled)</LinkCompiled>
         <LibCompiled>%(ClCompile.LibCompiled)</LibCompiled>
         <ImpLibCompiled>%(ClCompile.ImpLibCompiled)</ImpLibCompiled>
       </Obj>
       <!-- Object file name is a directory (has trailing slash): ofn\filename.obj -->
-      <Obj Condition="HasTrailingSlash('%(ClCompile.ObjectFileName)') and '%(ClCompile.ExcludedFromBuild)'!='true' and '%(ClCompile.CompilerIteration)' == ''" Include="@(ClCompile->'%(ObjectFileName)%(Filename).obj')">
+      <Obj Condition="HasTrailingSlash('%(ClCompile.ObjectFileName)') and '%(ClCompile.ExcludedFromBuild)'!='true' and ('%(ClCompile.CompilerIteration)' == '' or '%(ClCompile.CompilerIteration)' == 'Modules')" Include="@(ClCompile->'%(ObjectFileName)%(Filename).obj')">
         <LinkCompiled>%(ClCompile.LinkCompiled)</LinkCompiled>
         <LibCompiled>%(ClCompile.LibCompiled)</LibCompiled>
         <ImpLibCompiled>%(ClCompile.ImpLibCompiled)</ImpLibCompiled>
       </Obj>
       <!-- Object file name is a file (does not has trailing slash): ofn -->
-      <Obj Condition="'%(ClCompile.ObjectFileName)' != '' and !HasTrailingSlash('%(ClCompile.ObjectFileName)') and '%(ClCompile.ExcludedFromBuild)'!='true' and '%(ClCompile.CompilerIteration)' == ''" Include="@(ClCompile->'%(ObjectFileName)')" >
+      <Obj Condition="'%(ClCompile.ObjectFileName)' != '' and !HasTrailingSlash('%(ClCompile.ObjectFileName)') and '%(ClCompile.ExcludedFromBuild)'!='true' and ('%(ClCompile.CompilerIteration)' == '' or '%(ClCompile.CompilerIteration)' == 'Modules')" Include="@(ClCompile->'%(ObjectFileName)')" >
         <LinkCompiled>%(ClCompile.LinkCompiled)</LinkCompiled>
         <LibCompiled>%(ClCompile.LibCompiled)</LibCompiled>
         <ImpLibCompiled>%(ClCompile.ImpLibCompiled)</ImpLibCompiled>
@@ -1229,12 +1304,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </PropertyGroup>
   </Target>
 
-    <PropertyGroup>
-      <ComputeLinkInputsTargets>
-        $(ComputeLinkInputsTargets);
-        ComputeLinkInputsFromProject;
-      </ComputeLinkInputsTargets>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ComputeLinkInputsTargets>
+      $(ComputeLinkInputsTargets);
+      ComputeLinkInputsFromProject;
+    </ComputeLinkInputsTargets>
+  </PropertyGroup>
 
   <Target Name="ComputeLibInputsFromProject">
     <ItemGroup>
@@ -1247,12 +1322,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </ItemGroup>
   </Target>
 
-    <PropertyGroup>
-      <ComputeLibInputsTargets>
-        $(ComputeLibInputsTargets);
-        ComputeLibInputsFromProject;
-      </ComputeLibInputsTargets>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ComputeLibInputsTargets>
+      $(ComputeLibInputsTargets);
+      ComputeLibInputsFromProject;
+    </ComputeLibInputsTargets>
+  </PropertyGroup>
 
   <Target Name="ComputeImpLibInputsFromProject">
     <ItemGroup>
@@ -1265,12 +1340,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </ItemGroup>
   </Target>
 
-    <PropertyGroup>
-      <ComputeImpLibInputsTargets>
-        $(ComputeImpLibInputsTargets);
-        ComputeImpLibInputsFromProject;
-      </ComputeImpLibInputsTargets>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ComputeImpLibInputsTargets>
+      $(ComputeImpLibInputsTargets);
+      ComputeImpLibInputsFromProject;
+    </ComputeImpLibInputsTargets>
+  </PropertyGroup>
 
   <!-- *******************************************************************************************
         Link targets
@@ -1341,7 +1416,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <_LinkImportLibrary Include="%(Link.ImportLibrary)" Condition="!Exists('$(OutDir)$(TargetName).lib') and Exists('%(Link.ImportLibrary)')"/>
 
       <_LinkSecondaryOutput Include="%(Link.WindowsMetadataFile)" Condition="Exists('%(Link.WindowsMetadataFile)')"/>
-      <_LinkSecondaryOutput Include="@(_LinkImportLibrary);@(_LinkImportLibrary->'%(RootDir)%(Directory)%(FileName).exp')" />
+      <_LinkSecondaryOutput Include="@(_LinkImportLibrary)" />
+      <_LinkSecondaryOutput Include="@(_LinkImportLibrary->'%(RootDir)%(Directory)%(FileName).exp')" Condition="Exists('@(_LinkImportLibrary->'%(RootDir)%(Directory)%(FileName).exp')')" />
       <_LinkSecondaryOutput Include="$(OutDir)$(TargetName).ipdb" Condition="Exists('$(OutDir)$(TargetName).ipdb')"/>
       <_LinkSecondaryOutput Include="$(OutDir)$(TargetName).iobj" Condition="Exists('$(OutDir)$(TargetName).iobj')"/>
     </ItemGroup>
@@ -1408,12 +1484,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Text="ProjectReferenceToLink=@(ProjectReferenceToLink)" Importance="high" />
   </Target>
 
-   <PropertyGroup>
+  <PropertyGroup>
     <ComputeLinkInputsTargets>
       $(ComputeLinkInputsTargets);
       ComputeReferenceLinkInputs;
     </ComputeLinkInputsTargets>
-   </PropertyGroup>
+  </PropertyGroup>
 
   <!-- *******************************************************************************************
         Compute Reference Lib Inputs
@@ -1446,12 +1522,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Text="ProjectReferenceToLink=@(ProjectReferenceToLink)" Importance="high" />
   </Target>
 
-   <PropertyGroup>
+  <PropertyGroup>
     <ComputeLibInputsTargets>
       $(ComputeLibInputsTargets);
       ComputeReferenceLibInputs;
     </ComputeLibInputsTargets>
-   </PropertyGroup>
+  </PropertyGroup>
 
   <!-- *******************************************************************************************
         Lib targets
@@ -1579,7 +1655,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <!-- Makes the the directories that XdcMake uses -->
   <Target Name="MakeDirsForXdcMake">
-  <!-- List of directories and files whose directories should be made prior to running XdcMake -->
+    <!-- List of directories and files whose directories should be made prior to running XdcMake -->
     <ItemGroup Condition="'@(XdcMake)'!=''">
       <XdcDirsToMake Include="@(XdcMake->'%(OutputFile)')" />
     </ItemGroup>
@@ -1610,7 +1686,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <!-- Makes the the directories that BscMake uses -->
   <Target Name="MakeDirsForBscMake">
-  <!-- List of directories and files whose directories should be made prior to running BscMake -->
+    <!-- List of directories and files whose directories should be made prior to running BscMake -->
     <ItemGroup Condition="'@(BscMake)'!=''">
       <BscDirsToMake Include="@(BscMake->'%(OutputFile)')" />
     </ItemGroup>
@@ -1650,10 +1726,58 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <!--  Needed to add this after common.targets-->
   <ItemDefinitionGroup>
     <ProjectReference>
-      <OutputItemType Condition="'%(ProjectReference.LinkLibraryDependencies)' == 'true'">_ResolvedNativeProjectReferencePaths</OutputItemType>
+      <OutputItemType Condition="'%(ProjectReference.LinkLibraryDependencies)' == 'true' or ('$(ConfigurationType)' == 'StaticLibrary' and '$(DesignTimeBuild)' == 'true')">_ResolvedNativeProjectReferencePaths</OutputItemType>
     </ProjectReference>
   </ItemDefinitionGroup>
 
+  <!-- Gets info from referenced vc projects
+       Populates ReferencedVCProjectsInfo item group with various types of files and directories from referenced projects
+       Currently includes libs, recipe, modules, header units and public include directories. -->
+
+  <PropertyGroup>
+    <GetReferencedVCProjectsInfoDependsOn Condition="'$(DesignTimeBuild)' != 'true'">
+      $(CommonBuildOnlyTargets);
+      $(GetReferencedVCProjectsInfoDependsOn);
+    </GetReferencedVCProjectsInfoDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GetReferencedVCProjectsInfo" DependsOnTargets="$(GetReferencedVCProjectsInfoDependsOn)">
+    <MSBuild
+        Projects="@(_MSBuildProjectReferenceExistent)"
+        Targets="GetProjectInfoForReference"
+        BuildInParallel="true"
+        Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
+        Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != ''"
+        ContinueOnError="!$(BuildingProject)"
+        RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
+      <Output TaskParameter="TargetOutputs" ItemName="ReferencedVCProjectsInfo"/>
+    </MSBuild>
+  </Target>
+
+  <!-- used in designtime builds-->
+  <PropertyGroup>
+    <GetClCommandLineForReferenceDependsOn>
+      GetPublicIncludeDirectories;
+      $(GetClCommandLineForReferenceDependsOn);
+    </GetClCommandLineForReferenceDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GetProjectInfoForReferenceDependsOn>
+      $(GetProjectInfoForReferenceDependsOn);
+      AddPublicIncludeDirectoriesToProjectsInfoForReference;
+    </GetProjectInfoForReferenceDependsOn>
+    <GetProjectInfoForReferenceDependsOn Condition="'$(DesignTimeBuild)' != 'true'">
+      $(GetProjectInfoForReferenceDependsOn);
+      AddPublicBMIsToProjectsInfoForReference;
+      AddDeployRecipeFileToProjectsInfoForReference;
+      AddLibrariesToProjectsInfoForReference;
+    </GetProjectInfoForReferenceDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GetProjectInfoForReference" Returns="@(ProjectInfoForReference)" DependsOnTargets="$(GetProjectInfoForReferenceDependsOn)" />
+
+  <!-- Gets objs from referenced static libraries projects -->
   <Target Name="ResolvedLinkObjs" DependsOnTargets="$(CommonBuildOnlyTargets)">
     <!-- Make sure that called GetResolvedLinkObjs of child projects-->
     <MSBuild
@@ -1664,7 +1788,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != ''"
         ContinueOnError="!$(BuildingProject)"
         RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
-        <Output TaskParameter="TargetOutputs" ItemName="_ResolvedNativeProjectReferencePaths"/>
+      <Output TaskParameter="TargetOutputs" ItemName="_ResolvedNativeProjectReferencePaths"/>
     </MSBuild>
   </Target>
 
@@ -1682,17 +1806,11 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </ItemGroup>
   </Target>
 
-  <Target Name="ResolvedLinkLib" DependsOnTargets="$(CommonBuildOnlyTargets)">
-    <MSBuild
-        Projects="@(_MSBuildProjectReferenceExistent)"
-        Targets="GetResolvedLinkLibs"
-        BuildInParallel="$(BuildInParallel)"
-        Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)"
-        Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != ''"
-        ContinueOnError="!$(BuildingProject)"
-        RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
-        <Output TaskParameter="TargetOutputs" ItemName="_ResolvedNativeProjectReferencePaths"/>
-    </MSBuild>
+
+  <Target Name="ResolvedLinkLib" DependsOnTargets="GetReferencedVCProjectsInfo">
+    <ItemGroup>
+      <_ResolvedNativeProjectReferencePaths Include="@(ReferencedVCProjectsInfo)"  Condition="'%(ReferencedVCProjectsInfo.FileType)' == 'lib'" />
+    </ItemGroup>
   </Target>
 
   <!-- We only want to recursively call ResolvedLinkLib if this project is a static lib.  Skip recursive resolution for designtimebuild -->
@@ -1700,14 +1818,15 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <StaticLibraryResolveLinkLib Condition="'$(StaticLibraryResolveLinkLib)' == '' and '$(ConfigurationType)' == 'StaticLibrary' and '$(DesignTimeBuild)' != 'true'">$(CommonBuildOnlyTargets);ResolvedLinkLib</StaticLibraryResolveLinkLib>
   </PropertyGroup>
 
+
   <Target Name="GetResolvedLinkLibs" Returns="@(LibFullPath)" DependsOnTargets="$(StaticLibraryResolveLinkLib)">
     <!--  Add a tmp Link incase it doesn't exist.-->
     <ItemGroup>
       <Link Include="tmp" Condition="'@(Link)'==''">
-       <DeleteSoon>true</DeleteSoon>
+        <DeleteSoon>true</DeleteSoon>
       </Link>
       <Lib Include="tmp"  Condition="'@(Lib)'==''">
-       <DeleteSoon>true</DeleteSoon>
+        <DeleteSoon>true</DeleteSoon>
       </Lib>
     </ItemGroup>
     <PropertyGroup>
@@ -1717,6 +1836,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <_LibFullPath Condition="'$(ConfigurationType)'=='StaticLibrary' and '$(GetResolvedLinkLibs_Order)' == 'BreadthFirst'">@(Lib->MetaData('OutputFile')->FullPath()->Distinct());$(_LibFullPath)</_LibFullPath>
       <_LibFullPath Condition="'$(ConfigurationType)'=='StaticLibrary' and '$(GetResolvedLinkLibs_Order)' != 'BreadthFirst'">$(_LibFullPath);@(Lib->MetaData('OutputFile')->FullPath()->Distinct())</_LibFullPath>
     </PropertyGroup>
+
     <ItemGroup>
       <LibFullPathTemp Include="$(_LibFullPath)">
         <ProjectType>$(ConfigurationType)</ProjectType>
@@ -1729,8 +1849,115 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <Link Remove="@(Link)" Condition="'%(Link.DeleteSoon)'=='true'" />
       <Lib Remove="@(Lib)" Condition="'%(Lib.DeleteSoon)'=='true'" />
     </ItemGroup>
+
     <Message Condition="'$(_REFERENCE_DEBUG)'=='true'" Importance="High" Text="LibFullPath=@(LibFullPath)"/>
   </Target>
+
+  <Target Name="AddLibrariesToProjectsInfoForReference" DependsOnTargets="GetResolvedLinkLibs">
+    <ItemGroup>
+      <ProjectInfoForReference Include="@(LibFullPath)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="AddDeployRecipeFileToProjectsInfoForReference">
+    <ItemGroup>
+      <ProjectInfoForReference Condition="'$(DesktopDeployRecipeFile)' != ''" Include="$(DesktopDeployRecipeFile)">
+        <ProjectType>$(ConfigurationType)</ProjectType>
+        <FileType>recipe</FileType>
+        <ProjectPath>$(MSBuildProjectFullPath)</ProjectPath>
+      </ProjectInfoForReference>
+    </ItemGroup>
+  </Target>
+
+  <!-- public include directories -->
+  <Target Name="GetPublicIncludeDirectories" DependsOnTargets="$(GetPublicIncludeDirectoriesDependsOn)">
+    <ItemGroup>
+      <_PublicIncludeDeirectories Include="$(PublicIncludeDirectories)"/>
+      <_PublicIncludeDeirectories Include="@(CLInclude->Metadata('FullPath')->DirectoryName()->Distinct()->ClearMetadata())" Condition="'$(AllProjectIncludesArePublic)' == 'true'"/>
+    </ItemGroup>
+    <ItemGroup>
+      <PublicIncludeDirectories Condition="'@(_PublicIncludeDeirectories)' != ''" Include="@(_PublicIncludeDeirectories->Metadata('FullPath')->Distinct())"/>
+    </ItemGroup>
+    <ItemGroup>
+      <_PublicIncludeDeirectories Remove="@(_PublicIncludeDeirectories)"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="AddPublicIncludeDirectoriesToProjectsInfoForReference" DependsOnTargets="GetPublicIncludeDirectories">
+    <ItemGroup>
+      <ProjectInfoForReference Include="@(PublicIncludeDirectories)">
+        <FileType>IncludeDirectory</FileType>
+      </ProjectInfoForReference>
+    </ItemGroup>
+  </Target>
+
+  <!-- public modules and header units-->
+  <Target Name="AddPublicBMIsToProjectsInfoForReference" DependsOnTargets="$(ComputeCompileInputsTargets);SetModuleDependencies;GetPublicIncludeDirectories">
+    <PropertyGroup>
+      <_UseOnlySourcesInPublicDirectories Condition="$(AllProjectBMIsArePublic) != 'true'">true</_UseOnlySourcesInPublicDirectories>
+    </PropertyGroup>
+
+    <!-- public modules -->
+    <ItemGroup>
+      <_Modules Include="@(ClCompile)" Condition="('%(ClCompile.LanguageStandard)' == 'stdcpplatest' or '%(ClCompile.LanguageStandard)' == 'stdcpp20') and
+                                                  '%(ClCompile.ExcludedFromBuild)' != 'true' and
+                                                  '%(ClCompile.CompileAs)' == 'CompileAsCppModule'" />
+    </ItemGroup>
+
+    <GetOutputFileNameItems
+      Condition="'@(_Modules)' != ''"
+      Sources="@(_Modules)"
+      UseOnlySourcesInPublicDirectories="$(_UseOnlySourcesInPublicDirectories)"
+      PublicDirectories="$(PublicModuleDirectories)"
+      OutputMetadataName="ModuleOutputFile"
+      OutputExtension="%(_Modules.Extension).ifc"
+    >
+      <Output TaskParameter="OutputFiles" ItemName="PublicModuleBmis" />
+    </GetOutputFileNameItems>
+
+    <ItemGroup>
+      <ProjectInfoForReference Include="%(PublicModuleBmis.FullPath)">
+        <FileType>Module</FileType>
+      </ProjectInfoForReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_Modules Remove="@(_Modules)" />
+    </ItemGroup>
+
+    <!-- header units -->
+    <ItemGroup>
+      <_HeaderUnits Include="@(ClCompile)" Condition="('%(ClCompile.LanguageStandard)' == 'stdcpplatest' or '%(ClCompile.LanguageStandard)' == 'stdcpp20') and
+                                                      '%(ClCompile.ExcludedFromBuild)' != 'true' and
+                                                      '%(ClCompile.CompileAs)' == 'CompileAsHeaderUnit'" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_UseOnlySourcesInPublicDirectories Condition="$(AllProjectBMIsArePublic) != 'true'">true</_UseOnlySourcesInPublicDirectories>
+    </PropertyGroup>
+
+    <GetOutputFileNameItems
+      Condition="'@(_HeaderUnits)' != ''"
+      Sources="@(_HeaderUnits)"
+      UseOnlySourcesInPublicDirectories="$(_UseOnlySourcesInPublicDirectories)"
+      PublicDirectories="$(PublicModuleDirectories);@(PublicIncludeDirectories)"
+      OutputMetadataName="ModuleOutputFile"
+      OutputExtension="%(_HeaderUnits.Extension).ifc"
+     >
+      <Output TaskParameter="OutputFiles" ItemName="PublicHeaderUnitBmis" />
+    </GetOutputFileNameItems>
+
+    <ItemGroup>
+      <ProjectInfoForReference Include="%(PublicHeaderUnitBmis.FullPath)">
+        <FileType>HeaderUnit</FileType>
+      </ProjectInfoForReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_HeaderUnits Remove="@(_HeaderUnits)" />
+    </ItemGroup>
+  </Target>
+
 
   <Target Name="ResolvedXDCMake" DependsOnTargets="$(CommonBuildOnlyTargets)" Condition="'$(DocumentLibraryDependencies)'=='true'">
     <MSBuild
@@ -1741,7 +1968,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != '' and '$(_ClCompileGenerateXMLDocumentationFiles)' == 'true'"
         ContinueOnError="!$(BuildingProject)"
         RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
-        <Output TaskParameter="TargetOutputs" ItemName="_ResolvedNativeProjectReferencePaths"/>
+      <Output TaskParameter="TargetOutputs" ItemName="_ResolvedNativeProjectReferencePaths"/>
     </MSBuild>
   </Target>
 
@@ -1759,7 +1986,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Target Name="GetResolvedWinMD" Returns="@(WinMDFullPath)">
     <ItemGroup>
       <Link Include="tmp" Condition="'@(Link)'==''">
-       <DeleteSoon>true</DeleteSoon>
+        <DeleteSoon>true</DeleteSoon>
       </Link>
 
       <WinMDFullPath Condition="'%(Link.GenerateWindowsMetadata)' == 'true'" Include="@(Link->Metadata('WindowsMetadataFile')->FullPath()->Distinct()->ClearMetadata())">
@@ -1906,7 +2133,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
           Returns="@(DebugSymbolsProjectOutputGroupOutput)"
           DependsOnTargets="$(DebugSymbolsProjectOutputGroupDependsOn)">
     <ItemGroup>
-    <!--  Remove values defined from Microsoft.Common.targets  -->
+      <!--  Remove values defined from Microsoft.Common.targets  -->
       <DebugSymbolsProjectOutputGroupOutput Remove="@(DebugSymbolsProjectOutputGroupOutput)" />
     </ItemGroup>
 
@@ -1933,20 +2160,20 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       Name="DocumentationProjectOutputGroup"
       Returns="@(DocumentationProjectOutputGroupOutput)"
       DependsOnTargets="$(DocumentationProjectOutputGroupDependsOn)">
-      <ItemGroup>
-        <XDCMake Condition="'@(XDCMake)' == ''" Include="Temp">
-          <localtemp>true</localtemp>
-        </XDCMake>
-        <DocumentationProjectOutputGroupOutput Include="@(XDCMake->MetaData('OutputFile')->FullPath()->Distinct()->ClearMetaData())" />
-        <DocumentationProjectOutputGroupOutput Remove="@(DocumentationProjectOutputGroupOutput)" Condition="!Exists(%(DocumentationProjectOutputGroupOutput.Identity))"/>
-        <XDCMake Condition="'%(XDCMake.localtemp)' == 'true'" Remove="@(XDCMake)" />
-      </ItemGroup>
+    <ItemGroup>
+      <XDCMake Condition="'@(XDCMake)' == ''" Include="Temp">
+        <localtemp>true</localtemp>
+      </XDCMake>
+      <DocumentationProjectOutputGroupOutput Include="@(XDCMake->MetaData('OutputFile')->FullPath()->Distinct()->ClearMetaData())" />
+      <DocumentationProjectOutputGroupOutput Remove="@(DocumentationProjectOutputGroupOutput)" Condition="!Exists(%(DocumentationProjectOutputGroupOutput.Identity))"/>
+      <XDCMake Condition="'%(XDCMake.localtemp)' == 'true'" Remove="@(XDCMake)" />
+    </ItemGroup>
   </Target>
 
   <!-- *************************SourceFilesProjectOutputGroup****************************************** -->
 
   <PropertyGroup>
-   <SourceFilesProjectOutputGroupDependsOn>PrepareForBuild;AssignTargetPaths</SourceFilesProjectOutputGroupDependsOn>
+    <SourceFilesProjectOutputGroupDependsOn>PrepareForBuild;AssignTargetPaths</SourceFilesProjectOutputGroupDependsOn>
   </PropertyGroup>
 
   <Target
@@ -1983,9 +2210,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
       <!-- Include the project file -->
       <SourceFilesProjectOutputGroupOutput Include="$(MSBuildProjectFullPath)">
-          <!-- For compatibility with 2.0 -->
-          <OriginalItemSpec>$(MSBuildProjectFullPath)</OriginalItemSpec>
-          <TargetPath>$(ProjectFileName)</TargetPath>
+        <!-- For compatibility with 2.0 -->
+        <OriginalItemSpec>$(MSBuildProjectFullPath)</OriginalItemSpec>
+        <TargetPath>$(ProjectFileName)</TargetPath>
       </SourceFilesProjectOutputGroupOutput>
     </ItemGroup>
   </Target>
@@ -2002,28 +2229,67 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       DependsOnTargets="$(ContentFilesProjectOutputGroupDependsOn)">
 
     <ItemGroup>
-      <_ContentFilesProjectOutputGroupOutput
-       Include="@(ClCompile);
-                @(EmbeddedResource);
-                @(_LicxFile);
-                @(ClInclude);
-                @(Midl);
-                @(FxcOutputs);
-                @(ResourceCompile);
-                @(Xsd);
-                @(Xml);
-                @(Text);
-                @(Font);
-                @(CustomBuild);
-                @(Resource);
-                @(Object);
-                @(Library);
-                @(Manifest);
-                @(Image);
-                @(Media);
-                @(_EmbedManagedResourceFile);
-                @(AppConfigWithTargetPath);
-                @(None);" >
+      <_ContentFilesProjectOutputGroupOutput Include="@(ClCompile)" Condition="'%(ClCompile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(_LicxFile)" Condition="'%(_LicxFile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(ClInclude)" Condition="'%(ClInclude.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Midl)" Condition="'%(Midl.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(FxcOutputs)" Condition="'%(FxcOutputs.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(ResourceCompile)" Condition="'%(ResourceCompile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Xsd)" Condition="'%(Xsd.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Xml)" Condition="'%(Xml.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Text)" Condition="'%(Text.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Font)" Condition="'%(Font.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(CustomBuild)" Condition="'%(CustomBuild.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Resource)" Condition="'%(Resource.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Object)" Condition="'%(Object.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Library)" Condition="'%(Library.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Manifest)" Condition="'%(Manifest.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Image)" Condition="'%(Image.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Media)" Condition="'%(Media.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(_EmbedManagedResourceFile)" Condition="'%(_EmbedManagedResourceFile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(AppConfigWithTargetPath)" Condition="'%(AppConfigWithTargetPath.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(None)" Condition="'%(None.DeploymentContent)'=='true'">
         <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
       </_ContentFilesProjectOutputGroupOutput>
 
@@ -2069,7 +2335,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ContentFilesProjectOutputGroupOutputFullPath Remove="@(ContentFilesProjectOutputGroupOutputFullPath)" />
 
       <!-- Add items to ContentWithTargetPath so the project export these content. -->
-      <ContentWithTargetPath Include="@(ContentFilesProjectOutputGroupOutput)" >
+      <ContentWithTargetPath Condition="'$(CopyDeploymentContent)' == 'true'" Include="@(ContentFilesProjectOutputGroupOutput)" >
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </ContentWithTargetPath>
     </ItemGroup>
@@ -2165,7 +2431,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != ''"
       ContinueOnError="!$(BuildingProject)"
       RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
-       <Output TaskParameter="TargetOutputs" ItemName="BuiltProjectOutputGroupDependency"/>
+      <Output TaskParameter="TargetOutputs" ItemName="BuiltProjectOutputGroupDependency"/>
     </MSBuild>
 
     <ItemGroup>
@@ -2200,7 +2466,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       Condition="'%(_MSBuildProjectReferenceExistent.Extension)' == '.vcxproj' and '@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceExistent)' != ''"
       ContinueOnError="!$(BuildingProject)"
       RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)">
-       <Output TaskParameter="TargetOutputs" ItemName="DebugSymbolsProjectOutputGroupDependency"/>
+      <Output TaskParameter="TargetOutputs" ItemName="DebugSymbolsProjectOutputGroupDependency"/>
     </MSBuild>
 
     <!-- This item represents dependent PDB's -->
@@ -2213,6 +2479,17 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </ItemGroup>
   </Target>
 
+
+  <!-- *************************DocumentationProjectOutputGroupDependencies****************************************** -->
+
+  <Target
+      Name="DocumentationProjectOutputGroupDependencies">
+
+    <!--  XDCMake already traverse project reference during build. -->
+  </Target>
+
+  <!-- ************************* Copy dependencies to this project output directory support ****************************************** -->
+
   <Target
       Name="CopyLocalNativeReference"
       DependsOnTargets="$(CopyLocalNativeReferenceDependsOn)"
@@ -2224,18 +2501,30 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
         OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
         Retries="$(CopyRetryCount)"
-        RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" 
+        RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
         Condition="'@(NativeReferenceCopyLocalPaths)'!=''" >
-        <Output TaskParameter="DestinationFiles" ItemName="FileWritesShareable"/>
+      <Output TaskParameter="DestinationFiles" ItemName="FileWritesShareable"/>
     </Copy>
   </Target>
 
-  <!-- *************************DocumentationProjectOutputGroupDependencies****************************************** -->
+  <!-- ************************* Recipe file containing outputs of this project, as well as referenced projects  ****************************************** -->
 
-  <Target
-      Name="DocumentationProjectOutputGroupDependencies">
+  <PropertyGroup>
+    <CreateRecipeFileDependsOn>BuiltProjectOutputGroup;SatelliteDllsProjectOutputGroup;ContentFilesProjectOutputGroup;GetReferencedVCProjectsInfo</CreateRecipeFileDependsOn>
+  </PropertyGroup>
 
-      <!--  XDCMake already traverse project reference during build. -->
+  <Target Name="CreateRecipeFile" DependsOnTargets="$(CreateRecipeFileDependsOn)" Condition="'$(GenerateDesktopDeployRecipeFile)' == 'true' and '$(DesignTimeBuild)' != 'true'">
+
+    <ItemGroup>
+       <_ReferencedProjectsRecipeFiles Include="@(ReferencedVCProjectsInfo)"  Condition="'%(ReferencedVCProjectsInfo.FileType)' == 'recipe'"/>
+    </ItemGroup>
+    <GenerateDesktopDeployRecipe RecipeFiles="@(_ReferencedProjectsRecipeFiles)"
+                    OutputFile="$(DesktopDeployRecipeFile)"
+                    BuiltProjectOutputs="@(BuiltProjectOutputGroupOutput)"
+                    ContentFiles="@(ContentFilesProjectOutputGroupOutput)"
+                    SatelliteDlls="@(SatelliteDllsProjectOutputGroupOutput)"
+                    ProjectReferences="@(_MSBuildProjectReferenceExistent)"
+                    ProjectDir="$(ProjectDir)" />
   </Target>
 
   <!-- *******************************************************************************************
@@ -2245,13 +2534,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <!-- default debuggers -->
 
   <PropertyGroup Condition="'$(_ApplicableDebuggers)' == ''">
-    <!-- For Desktop projects -->
-    <_ApplicableDebuggers Condition="'$(WindowsAppContainer)' != 'true'">Desktop</_ApplicableDebuggers>
-    <!-- For Windows Store app projects with package -->
-    <_ApplicableDebuggers Condition="'$(WindowsAppContainer)' == 'true' and '$(AppxPackage)' == 'true'">AppHost</_ApplicableDebuggers>
-    <!-- For Desktop Windows Store app compatible projects -->
-    <_ApplicableDebuggers Condition="'$(WindowsAppContainer)' == 'true' and '$(AppxPackage)' != 'true' and '$(AppContainerApplication)' != 'true' and '$(ConfigurationType)' != 'Application'">Desktop</_ApplicableDebuggers>
-    <!-- No debuggers for Windows Store app projects without package -->
+    <_ApplicableDebuggers Condition="'$(AppxPackage)' == 'true'">AppHost</_ApplicableDebuggers>
+    <_ApplicableDebuggers Condition="'$(_ApplicableDebuggers)'=='' and '$(WindowsAppContainer)' != 'true'">Desktop</_ApplicableDebuggers>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UseDefaultPropertyPageSchemas)' != 'false' and '$(UseDefaultDebuggersPropertyPageSchemas)' != 'false'">
@@ -2322,20 +2606,20 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseDefaultPropertyPageSchemas)' != 'false' and '$(UseDefaultGeneralPropertyPageSchema)' != 'false'">
-    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general.xml" Condition="'$(AppContainerApplication)' != 'true'">
-       <Context>Project</Context>
-    </PropertyPageSchema>
-    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_advanced.xml" Condition="'$(AppContainerApplication)' != 'true'">
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general.xml" Condition="'$(WindowsStoreApp)' != 'true'">
       <Context>Project</Context>
     </PropertyPageSchema>
-    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_advanced_netcore.xml" Condition="'$(AppContainerApplication)' != 'true' and '$(CLRSupport)' == 'NetCore'">
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_advanced.xml" Condition="'$(WindowsStoreApp)' != 'true'">
       <Context>Project</Context>
     </PropertyPageSchema>
-    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_appcontainerapplication.xml" Condition="'$(AppContainerApplication)' == 'true'">
-       <Context>Project</Context>
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_advanced_netcore.xml" Condition="'$(WindowsStoreApp)' != 'true' and '$(CLRSupport)' == 'NetCore'">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_appcontainerapplication.xml" Condition="'$(WindowsStoreApp)' == 'true'">
+      <Context>Project</Context>
     </PropertyPageSchema>
     <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_ps.xml">
-       <Context>PropertySheet</Context>
+      <Context>PropertySheet</Context>
     </PropertyPageSchema>
     <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\folder.xml">
       <Context>File;BrowseObject</Context>
@@ -2343,7 +2627,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseDefaultPropertyPageSchemas)' != 'false'">
-  <!-- Platform and Platform toolset schemas. We want to include them last so that user's property pages can override the standard ones included above. -->
+    <!-- Platform and Platform toolset schemas. We want to include them last so that user's property pages can override the standard ones included above. -->
     <PropertyPageSchema Condition="'$(ConfigurationType)' != 'Utility'" Include="
         $(VCTargetsPathEffective)Platforms\$(Platform)\$(LangID)\*.xml;
         $(VCTargetsPathEffective)Platforms\$(Platform)\PlatformToolsets\$(PlatformToolset)\$(LangID)\*.xml;

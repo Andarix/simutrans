@@ -14,7 +14,7 @@ if "%VSCMD_DEBUG%" NEQ "" (
 if "%VSCMD_DEBUG%" GEQ "2" (
     @echo [DEBUG:%~nx0] --------------------- VS Developer Command Prompt Environment [pre-init] ---------------------
     set
-    @echo [DEBUG:%~nx0] --------------------- VS Developer Command Prompt Environment [pre-init] --------------------- 
+    @echo [DEBUG:%~nx0] --------------------- VS Developer Command Prompt Environment [pre-init] ---------------------
 )
 
 @REM script-local error counter
@@ -51,6 +51,12 @@ if "%VSCMD_DEBUG%" GEQ "2" (
 @REM Process scripts 'core' and then 'ext in alphabetical order'.
 call :process_core
 call :process_ext
+
+@rem Normalize common variables with semi-colon separated lists
+call :normalize_multipath_variable PATH
+call :normalize_multipath_variable INCLUDE
+call :normalize_multipath_variable LIB
+call :normalize_multipath_variable LIBPATH
 
 goto :end
 
@@ -146,7 +152,7 @@ exit /B 0
 
 @REM VsDevCmd.bat location: Microsoft Visual Studio 16.0\Common7\Tools
 @REM get version from VsWhere.exe
-@REM fallback to printing default 
+@REM fallback to printing default
 
 set __VSCMD_VER=
 
@@ -202,12 +208,28 @@ if "%VSCMD_BANNER_TEXT_ALT%"=="" (
 if "%VSCMD_ARG_no_logo%"=="" (
     @echo **********************************************************************
     @echo ** %__VSCMD_BANNER_TEXT%
-    @echo ** Copyright ^(c^) 2020 Microsoft Corporation
+    @echo ** Copyright ^(c^) 2021 Microsoft Corporation
     @echo **********************************************************************
 )
 
 set __VSCMD_BANNER_TEXT=
 set __VSCMD_BANNER_SHELL_NAME=
+exit /B 0
+
+@REM ------------------------------------------------------------------------
+@REM call :normalize_multipath_variable <variable name>
+@REM Removes trailing semi-colons from semi-colon separated list variable
+:normalize_multipath_variable
+set "__NORMALIZE_VAR=%1"
+call set "__NORMALIZE_VAR_CONTENT=%%%__NORMALIZE_VAR%%%"
+
+if "%__NORMALIZE_VAR_CONTENT:~-1%"==";" (
+    set "%__NORMALIZE_VAR%=%__NORMALIZE_VAR_CONTENT:~0,-1%"
+)
+
+set "__NORMALIZE_VAR="
+set "__NORMALIZE_VAR_CONTENT="
+
 exit /B 0
 
 @REM ------------------------------------------------------------------------
@@ -230,7 +252,7 @@ call "%~dp0vsdevcmd\core\vsdevcmd_end.bat"
 
 if "%__vscmd_vsdevcmd_errcount%" NEQ "0" (
     @echo [ERROR:%~nx0] *** VsDevCmd.bat encountered errors. Environment may be incomplete and/or incorrect. ***
-    @echo [ERROR:%~nx0] In an uninitialized command prompt, please 'set VSCMD_DEBUG=[value]' and then re-run 
+    @echo [ERROR:%~nx0] In an uninitialized command prompt, please 'set VSCMD_DEBUG=[value]' and then re-run
     @echo [ERROR:%~nx0] vsdevcmd.bat [args] for additional details.
     @echo [ERROR:%~nx0] Where [value] is:
     @echo [ERROR:%~nx0]    1 : basic debug logging
@@ -261,9 +283,9 @@ if "%VSCMD_DEBUG%" NEQ "" (
 
 @REM Dump the post-initialization environment if debug level is 2 or greater (detailed or full trace).
 if "%VSCMD_DEBUG%" GEQ "2" (
-    @echo [DEBUG:%~nx0] --------------------- VS Developer Command Prompt Environment [post-init] --------------------- 
+    @echo [DEBUG:%~nx0] --------------------- VS Developer Command Prompt Environment [post-init] ---------------------
     set
-    @echo [DEBUG:%~nx0] --------------------- VS Developer Command Prompt Environment [post-init] --------------------- 
+    @echo [DEBUG:%~nx0] --------------------- VS Developer Command Prompt Environment [post-init] ---------------------
 )
 
 exit /B 0

@@ -1,0 +1,1 @@
+The "Services" directory is where ServiceHub hosted services for VS reside.

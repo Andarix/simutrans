@@ -170,6 +170,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <Language>C++</Language>
     <DefaultLanguageSourceExtension>.cpp</DefaultLanguageSourceExtension>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic Condition="'$(ConfigurationType)' == 'StaticLibrary'">true</AllProjectBMIsArePublic>
+    <AllProjectBMIsArePublic Condition="'$(ConfigurationType)' != 'StaticLibrary'">false</AllProjectBMIsArePublic>
   </PropertyGroup>
 
   <!-- Define defaults for all tools for property page-->
@@ -192,7 +195,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     Set property MultiProcMaxCount or CL_MPCount to the max number of jobs.  CL_MPCount is set by the IDE.
     -->
     <UseMultiToolTask Condition="'$(UseMultiToolTask)' == ''">false</UseMultiToolTask>
-    <EnforceProcessCountAcrossBuilds Condition="'$(EnforceProcessCountAcrossBuilds)' == ''">false</EnforceProcessCountAcrossBuilds>
+    <EnforceProcessCountAcrossBuilds Condition="'$(EnforceProcessCountAcrossBuilds)' == ''">$(UseMsbuildResourceManager)</EnforceProcessCountAcrossBuilds>
+    <MultiProcSchedulerName Condition="'$(MultiProcSchedulerName)' == '' and '$(UseMsbuildResourceManager)' == 'true'">Microsoft.Build.CPPTasks.MsbuildProcessCounter</MultiProcSchedulerName>
     <MultiProcMIDL Condition="'$(MultiProcMIDL)' == '' and '$(UseMultiToolTask)' == 'true'">true</MultiProcMIDL>
     <MultiProcMIDL Condition="'$(MultiProcMIDL)' == ''">false</MultiProcMIDL>
     <MultiProcFXC Condition="'$(MultiProcFXC)' == '' and '$(UseMultiToolTask)' == 'true'">true</MultiProcFXC>
@@ -217,17 +221,28 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <CopyLocalDeploymentContent Condition="'$(CopyLocalDeploymentContent)'==''">false</CopyLocalDeploymentContent>
     <CopyLocalDebugSymbols Condition="'$(CopyLocalDebugSymbols)'==''">false</CopyLocalDebugSymbols>
     <CopyCppRuntimeToOutputDir Condition="'$(CopyCppRuntimeToOutputDir)'==''">false</CopyCppRuntimeToOutputDir>
+
+    <!-- Generate Recipe Files for Desktop defaults to true. -->
+    <GenerateDesktopDeployRecipeFile Condition="'$(GenerateDesktopDeployRecipeFile)' == '' and '$(ApplicationType)' == ''">true</GenerateDesktopDeployRecipeFile>
+    <GenerateDesktopDeployRecipeFile Condition="'$(GenerateDesktopDeployRecipeFile)' == '' and '$(ApplicationType)' == 'Windows Store' and '$(DesktopCompatible)'== 'true'">true</GenerateDesktopDeployRecipeFile>
   </PropertyGroup>
 
   <!-- CRT SDK Reference - used by UWP and Centennial Desktop projects -->
-  <PropertyGroup Condition="'$(EnableAppLocalVCLibs)' != 'true'">
+  <PropertyGroup>
     <CrtSDKReferenceVersion Condition="'$(CrtSDKReferenceVersion)' == ''">14.0</CrtSDKReferenceVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(DesktopCompatible)' == 'true'">
+    <CrtSDKReferenceInclude Condition="'$(CrtSDKReferenceInclude)' == ''">Microsoft.VCLibs.Desktop, Version=$(CrtSDKReferenceVersion)</CrtSDKReferenceInclude>
+  </PropertyGroup>
+
+  
+  <PropertyGroup Condition="'$(DesktopCompatible)' != 'true' and '$(EnableAppLocalVCLibs)' != 'true'">
     <CrtSDKReferenceInclude Condition="'$(CrtSDKReferenceInclude)' == ''">Microsoft.VCLibs, Version=$(CrtSDKReferenceVersion)</CrtSDKReferenceInclude>
   </PropertyGroup>
 
-  <!-- Applocal CRT SDK Reference, in case user wants it explicitly by setting 'UseAppLocalVcLibs' -->
-  <PropertyGroup Condition="'$(EnableAppLocalVCLibs)' == 'true'">
-    <CrtSDKReferenceVersion Condition="'$(CrtSDKReferenceVersion)' == ''">14.0</CrtSDKReferenceVersion>
+  <!-- Applocal CRT SDK Reference, in case user wants it explicitly by setting 'UseAppLocalVcLibs'. There is no 'Desktop' applocal version of the package. -->
+  <PropertyGroup Condition="'$(DesktopCompatible)' != 'true' and '$(EnableAppLocalVCLibs)' == 'true'">
     <CrtSDKReferenceInclude Condition="'$(CrtSDKReferenceInclude)' == ''">Microsoft.VCLibs.AppLocal, Version=$(CrtSDKReferenceVersion)</CrtSDKReferenceInclude>
   </PropertyGroup>
 
@@ -404,7 +419,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <ImportGroup Label="PropertySheets" Condition="'$(ConfigurationType)' != 'Makefile'">
     <!-- Core Windows Libraries -->
-    <Import Condition="'$(WindowsAppContainer)' == 'true'" Project="$(VCTargetsPath)\Microsoft.Cpp.AppContainerApplication.props" />
+    <Import Condition="'$(WindowsStoreApp)' == 'true'" Project="$(VCTargetsPath)\Microsoft.Cpp.AppContainerApplication.props" />
 
     <Import Condition="'$(NonCoreWin)' != 'true' and ( '$(UseOfMFC)' == 'false' OR '$(UseOfMFC)' == '')" Project="$(VCTargetsPath)\Microsoft.Cpp.CoreWin.props"/>
 

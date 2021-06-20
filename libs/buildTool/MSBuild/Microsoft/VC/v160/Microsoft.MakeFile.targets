@@ -19,7 +19,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <!-- Assign back VC IntDir to match the common.targets intdir. -->
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)'==''">$(IntDir)</IntermediateOutputPath>
-    <TargetPath Condition="'$(NMakeOutput)' != ''">$([System.IO.Path]::Combine('$(ProjectDir)','$(NMakeOutput)'))</TargetPath>
+    <TargetPath Condition="'$(NMakeOutput)' != ''">$([MSBuild]::NormalizePath('$(ProjectDir)', '$(NMakeOutput)'))</TargetPath>
     <TargetFileName Condition="'$(TargetFileName)' == '' and '$(TargetPath)' != ''">$([System.IO.Path]::GetFileName('$(TargetPath)'))</TargetFileName>
     <TargetDir Condition="'$(TargetDir)' == '' and '$(TargetPath)' != ''">$([System.IO.Path]::GetDirectoryName('$(TargetPath)'))</TargetDir>
     <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)' == ''">$(TargetPath)</LocalDebuggerCommand>
@@ -37,13 +37,13 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Target Name="CoreClean" DependsOnTargets="PrepareForNMakeBuild">
     <VCMessage Code="MSB8005" Type="Warning" Arguments="NMakeCleanCommandLine" Condition="'$(NMakeCleanCommandLine)'==''"/>
     <Exec Command="$(NMakeCleanCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeCleanCommandLine)'!=''"/>
-    <Exec Command="chcp 65001 &gt;NUL &amp;&amp; $(NMakeCleanCommandLine)" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeCleanCommandLine)'!=''"/>
+    <Exec Command="$(NMakeCleanCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeCleanCommandLine)'!=''"/>
   </Target>
 
   <Target Name="Build" DependsOnTargets="PrepareForNMakeBuild;ResolveReferences;GetTargetPath;$(PreNMakeBuildTarget)" Returns="$(NMakeManagedOutput)">
     <VCMessage Code="MSB8005" Type="Warning" Arguments="NMakeBuildCommandLine" Condition="'$(NMakeBuildCommandLine)'==''"/>
     <Exec Command="$(NMakeBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeBuildCommandLine)'!=''"/>
-    <Exec Command="chcp 65001 &gt;NUL &amp;&amp; $(NMakeBuildCommandLine)" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeBuildCommandLine)'!=''"/>
+    <Exec Command="$(NMakeBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeBuildCommandLine)'!=''"/>
   </Target>
 
   <Target Name="Rebuild" DependsOnTargets="PrepareForNMakeBuild;_SetRebuildReferences;ResolveReferences;GetTargetPath;$(PreNMakeBuildTarget)" Returns="$(NMakeManagedOutput)">
@@ -51,9 +51,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <Exec Command="$(NMakeReBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'!=''"/>
     <Exec Command="$(NMakeCleanCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
     <Exec Command="$(NMakeBuildCommandLine)" Condition="'$(NMakeUseOemCodePage)' == 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
-    <Exec Command="chcp 65001 &gt;NUL &amp;&amp; $(NMakeReBuildCommandLine)" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'!=''"/>
-    <Exec Command="chcp 65001 &gt;NUL &amp;&amp; $(NMakeCleanCommandLine)" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
-    <Exec Command="chcp 65001 &gt;NUL &amp;&amp; $(NMakeBuildCommandLine)" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
+    <Exec Command="$(NMakeReBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'!=''"/>
+    <Exec Command="$(NMakeCleanCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
+    <Exec Command="$(NMakeBuildCommandLine)" UseUtf8Encoding="Always" StdErrEncoding="UTF-8" StdOutEncoding="UTF-8" Condition="'$(NMakeUseOemCodePage)' != 'true' and '$(NMakeReBuildCommandLine)'=='' and '$(NMakeCleanCommandLine)'!='' and '$(NMakeBuildCommandLine)'!=''" />
   </Target>
 
   <!-- *******************************************************************************************
@@ -66,6 +66,51 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Target Name="GetResolvedLinkLibs" DependsOnTargets="GetNativeTargetPath" Returns="@(NMakeNativeOutput)" />
   <Target Name="GetResolvedXDCMake" DependsOnTargets="GetNativeTargetPath" Returns="@(NMakeNativeOutput)" />
   <Target Name="GetCopyToOutputDirectoryItems" />
+
+  <PropertyGroup>
+    <GetProjectInfoForReferenceDependsOn Condition="'$(DesignTimeBuild)' != 'true'">
+      $(GetProjectInfoForReferenceDependsOn);
+      AddOutputsToProjectsInfoForReference;
+    </GetProjectInfoForReferenceDependsOn>
+    <GetProjectInfoForReferenceDependsOn>
+      $(GetProjectInfoForReferenceDependsOn);
+      AddPublicIncludeDirectoriesToProjectsInfoForReference;
+    </GetProjectInfoForReferenceDependsOn>
+    <GetClCommandLineForReferenceDependsOn>
+      GetPublicIncludeDirectories;
+      $(GetClCommandLineForReferenceDependsOn);
+    </GetClCommandLineForReferenceDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="GetProjectInfoForReference" Returns="@(ProjectInfoForReference)" DependsOnTargets="$(GetProjectInfoForReferenceDependsOn)" />
+
+  <Target Name="AddPublicIncludeDirectoriesToProjectsInfoForReference" DependsOnTargets="GetPublicIncludeDirectories">
+    <ItemGroup>
+      <ProjectInfoForReference Include="@(PublicIncludeDirectories)">
+        <FileType>IncludeDirectory</FileType>
+      </ProjectInfoForReference>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="AddOutputsToProjectsInfoForReference" DependsOnTargets="GetNativeTargetPath">
+    <ItemGroup>
+      <ProjectInfoForReference Include="@(NMakeNativeOutput)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- public include directories -->
+  <Target Name="GetPublicIncludeDirectories" DependsOnTargets="$(ComputeCompileInputsTargets)">
+    <ItemGroup>
+      <_PublicIncludeDeirectories Include="$(PublicIncludeDirectories)"/>
+    </ItemGroup>
+    <ItemGroup>
+      <PublicIncludeDirectories Condition="'@(_PublicIncludeDeirectories)' != ''" Include="%(_PublicIncludeDirectories.FullPath)"/>
+      <PublicIncludeDirectories Condition="'$(AllProjectIncludesArePublic)' == 'true'" Include="@(CLInclude->Metadata('FullPath')->DirectoryName()->Distinct()->ClearMetadata())" />
+    </ItemGroup>
+    <ItemGroup>
+      <_PublicIncludeDeirectories Remove="@(_PublicIncludeDeirectories)"/>
+    </ItemGroup>
+  </Target>
 
   <Target Name="GetNativeTargetPath" Returns="@(NMakeNativeOutput)">
     <ItemGroup>

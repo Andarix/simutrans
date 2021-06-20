@@ -61,6 +61,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <ItemGroup>
     <CoreCppClean Include="$(IntDir)"/>
     <CoreCppClean Condition="'$(TLogLocation)' != '$(IntDir)'" Include="$(TLogLocation)"/>
+    <CoreCppClean Condition="'$(TLogLocation_ModuleDependencies)' != ''" Include="$(TLogLocation_ModuleDependencies)"/>
     <CoreCppClean Condition="'$(GeneratedFilesDir)' != ''" Include="$(GeneratedFilesDir)" />
     <!-- Files in OutDir will be deleted using the filepattern which will get evaluated to real full paths -->
   </ItemGroup>

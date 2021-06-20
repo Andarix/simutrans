@@ -23,7 +23,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <Optimization Condition="'$(UseDebugLibraries)' == 'true'">Disabled</Optimization>
       <Optimization Condition="'$(UseDebugLibraries)' != 'true'">Full</Optimization>
       <StrictAliasing>false</StrictAliasing>
-      <ProgramDatabaseFileName>$(IntDir)</ProgramDatabaseFileName>
+      <ProgramDatabaseFileName Condition="'$(ConfigurationType)' != 'StaticLibrary'">$(IntDir)</ProgramDatabaseFileName>
+      <ProgramDatabaseFileName Condition="'$(ConfigurationType)' == 'StaticLibrary'">$(OutDir)</ProgramDatabaseFileName>
       <OmitFramePointers Condition="'$(UseDebugLibraries)' == 'true'">false</OmitFramePointers>
       <OmitFramePointers Condition="'$(UseDebugLibraries)' != 'true'">true</OmitFramePointers>
       <ExceptionHandling>Enabled</ExceptionHandling>

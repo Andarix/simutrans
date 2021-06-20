@@ -11,7 +11,7 @@
   
   <EnumProperty Name="CLRSupport" DisplayName="Common Language Runtime-Unterstützung" Description="Gibt an, ob diese Konfiguration Common Language Runtime unterstützt. Dies ist mit einigen anderen Einstellungen inkompatibel, z. B. Laufzeitüberprüfungen. In der Hilfe zu den /clr-Schaltern des C++-Compilers finden Sie eine Liste mit allen Konflikten." Category="CLR" F1Keyword="VC.Project.VCConfiguration.ManagedExtensions">
     <EnumValue Name="false" DisplayName="Keine Common Language Runtime-Unterstützung"/>
-    <EnumValue Name="NetCore" DisplayName=".NET Core Runtime Support (/clr:netcore)"/>
+    <EnumValue Name="NetCore" DisplayName=".NET Core-Runtime-Unterstützung (/clr:netcore)"/>
     <EnumValue Name="true" DisplayName="Common Language Runtime-Unterstützung (/clr)"/>
     <EnumValue Name="Pure" DisplayName="Reine MSIL Common Language Runtime-Unterstützung (/clr:pure)"/>
     <EnumValue Name="Safe" DisplayName="Sichere MSIL Common Language Runtime-Unterstützung (/clr:safe)"/>
@@ -70,19 +70,19 @@
     </BoolProperty.DataSource>
   </BoolProperty>
 
-  <BoolProperty Name="CopyLocalProjectReference" DisplayName="Projektverweise in OutDir kopieren" Description="Hiermit wird die Ausgabe von Projektverweisen (DLL/EXE) in das Ausgabeverzeichnis dieses Projekts kopiert. Für das CLR-Projekt wird &quot;Lokal kopieren&quot; von den Eigenschaften für die einzelnen Assemblys und Projektverweise gesteuert." Category="General" F1Keyword="VC.Project.VCConfiguration.CopyLocalProjectReference">
+  <BoolProperty Name="CopyLocalProjectReference" DisplayName="Projektverweise in OutDir kopieren" Description="Hiermit wird die Ausgabe von Projektverweisen (DLL/EXE) in das Ausgabeverzeichnis dieses Projekts kopiert. In C++-/CLI-Projekten (/clr) wird diese Eigenschaft ignoriert, und der Kopiervorgang der Verweisausgabe wird durch die Eigenschaft &quot;Lokal kopieren&quot; des Verweises gesteuert." Category="General" F1Keyword="VC.Project.VCConfiguration.CopyLocalProjectReference">
 	<BoolProperty.DataSource>
       <DataSource Persistence="ProjectFile" Label=""/>
     </BoolProperty.DataSource>
   </BoolProperty>
 
-  <BoolProperty Name="CopyLocalDebugSymbols" DisplayName="Symbole von Projektverweisen in OutDir kopieren" Description="Hiermit werden die Symbole von Projektverweisen (PDB) zusammen mit der Ausgabe der Projektverweise (DLL/EXE) in das Ausgabeverzeichnis dieses Projekts kopiert. Für CLR-Projekte immer aktiviert." Category="General" F1Keyword="VC.Project.VCConfiguration.CopyLocalDebugSymbols">
+  <BoolProperty Name="CopyLocalDebugSymbols" DisplayName="Symbole von Projektverweisen in OutDir kopieren" Description="Hiermit werden die Symbole von Projektverweisen (PDB) zusammen mit der Ausgabe der Projektverweise (DLL/EXE) in das Ausgabeverzeichnis dieses Projekts kopiert. Diese Option ist für CLR-Projekte immer aktiviert." Category="General" F1Keyword="VC.Project.VCConfiguration.CopyLocalDebugSymbols">
 	<BoolProperty.DataSource>
       <DataSource Persistence="ProjectFile" Label=""/>
     </BoolProperty.DataSource>
   </BoolProperty>
 
-  <BoolProperty Name="CopyCppRuntimeToOutputDir" DisplayName="cpp-Runtime in OutDir kopieren" Description="Kopieren Sie cpp-Runtime-DLLs in das Ausgabeverzeichnis dieses Projekts. " Category="General" F1Keyword="VC.Project.VCConfiguration.CopyCppRuntimeToOutputDir">
+  <BoolProperty Name="CopyCppRuntimeToOutputDir" DisplayName="C++-Runtime in OutDir kopieren" Description="Hiermit werden C++-Runtime-DLLs in das Ausgabeverzeichnis dieses Projekts kopiert. " Category="General" F1Keyword="VC.Project.VCConfiguration.CopyCppRuntimeToOutputDir">
     <BoolProperty.DataSource>
       <DataSource Persistence="ProjectFile" Label=""/>
     </BoolProperty.DataSource>

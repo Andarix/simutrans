@@ -13,9 +13,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemDefinitionGroup>
       <ClCompile>
-        <AdditionalIncludeDirectories>$(NMakeIncludeSearchPath)</AdditionalIncludeDirectories>
         <AdditionalOptions>$(AdditionalOptions)</AdditionalOptions>
-        <AdditionalUsingDirectories>$(NMakeAssemblySearchPath)</AdditionalUsingDirectories>
         <ForcedIncludeFiles>$(NMakeForcedIncludes)</ForcedIncludeFiles>
         <ForcedUsingFiles>$(NMakeForcedUsingAssemblies)</ForcedUsingFiles>
         <PreprocessorDefinitions>$(NMakePreprocessorDefinitions)</PreprocessorDefinitions>

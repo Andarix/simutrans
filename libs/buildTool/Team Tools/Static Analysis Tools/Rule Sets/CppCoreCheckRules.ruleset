@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="C++ Core Check Rules" Description="These rules enforce a subset of the checks from the C++ Core Guidelines (http://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#c-core-guidelines)." ToolsVersion="10.0">
+  <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
+    <Name Resource="CppCoreCheckRules_Name" />
+    <Description Resource="CppCoreCheckRules_Description" />
+  </Localization>
+  <Include Path="CppCoreCheckArithmeticRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckBoundsRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckClassRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckConstRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckConcurrencyRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckDeclRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckEnumRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckFuncRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckGslRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckOwnerPointerRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckRawPointerRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckSharedPointerRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckStlRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckStyleRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckTypeRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckUniquePointerRules.ruleset" Action="Default" />
+</RuleSet>

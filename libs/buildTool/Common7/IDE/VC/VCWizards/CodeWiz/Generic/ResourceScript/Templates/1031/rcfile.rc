@@ -1,0 +1,60 @@
+// In Microsoft Visual C++ generiertes Ressourcenskript.
+//
+
+#include "[!output RESOURCE_INCLUDE]"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Aus der Ressource TEXTINCLUDE 2 generiert.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Ressourcen für [!output LANGUAGE]
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE [!output PRIMARY_LANG_ID], [!output SUB_LANG_ID]
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+    "[!output RESOURCE_INCLUDE]\0"
+END
+
+2 TEXTINCLUDE  
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE  
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Ressourcen für [!output LANGUAGE]
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Aus der Ressource TEXTINCLUDE 3 generiert.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // nicht APSTUDIO_INVOKED

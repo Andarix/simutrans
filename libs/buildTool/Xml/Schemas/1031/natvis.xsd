@@ -1,0 +1,1162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://schemas.microsoft.com/vstudio/debugger/natvis/2010" xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- Definition of complex named types-->
+
+  <xs:simpleType name="GuidType">
+    <xs:annotation>
+      <xs:documentation>Werte dieses Typs sehen wie folgt aus: "01234567-89AB-CDEF-0123-456789ABCDEF" oder "{01234567-89AB-CDEF-0123-456789ABCDEF}".</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[{(]?[0-9A-Fa-f]{8}\-?[0-9A-Fa-f]{4}\-?[0-9A-Fa-f]{4}\-?[0-9A-Fa-f]{4}\-?[0-9A-Fa-f]{12}[})]?"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="CppIdType">
+    <xs:annotation>
+      <xs:documentation>Ein gültiger C++-Bezeichner.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-zA-Z$_][a-zA-Z$_0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="StringType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="MaxItemsPerViewType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt die maximale Anzahl Auflistungselemente an, die gleichzeitig angezeigt werden können. Wenn die Anzahl der Elemente in der Auflistung
+        diesen Grenzwert überschreitet, wird am Ende ein besonderer Knoten erstellt, der aufgeklappt werden kann und dann weitere Elemente anzeigt.
+
+        Der genaue Grenzwert für die maximale Anzahl der angezeigten Elemente in einer Ansicht ist ein Optimierungsparameter. Während eine größere Anzahl die gleichzeitige
+        Darstellung von mehr Elementen ermöglicht, verbessert eine kleinere Anzahl die Leistung von Visual Studio beim Aufklappen von benutzerdefinierten Listenobjekten.  Allgemein gilt,
+        dass mit zunehmender Komplexität der Traversierungslogik die Anzahl der Elemente pro Ansicht kleiner werden muss, um die Reaktionsfähigkeit der IDE zu bewahren.
+
+        Die maximale Anzahl Elemente pro Ansicht muss zwischen 1 und 50.000 liegen. Ein Standardwert von 5.000 wird verwendet, wenn dieses Attribut nicht angegeben wird.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:unsignedInt">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="50000"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ConditionType">
+    <xs:annotation>
+      <xs:documentation>Gibt die Bedingung an, unter der dieses Element aktiv ist. Der Ausdruck sollte ausgewertet einen booleschen Wert ergeben.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="OptionalType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt an, ob das Element optional ist. Ein optionales Element, bei dem ein Analysefehler auftritt, lässt die Verwendung der verbleibenden Elemente im einschließenden
+        &lt;Type&gt;-Eintrag zu. Ein Analysefehler bei einem obligatorischen Element bewirkt, dass das gesamte einschließende &lt;Type&gt;-Element ungültig wird. Standardmäßig werden alle Elemente als obligatorisch angesehen,
+        sofern nicht 'Optional="true"' angegeben ist.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:boolean">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ViewIncludeType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt eine durch Semikola getrennte Liste von Ansichten an, in denen dieses Element angezeigt werden soll. Die Ansicht des Objekts wird
+        durch den Formatbezeichner ",view(&lt;name&gt;)" gesteuert.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ViewExcludeType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt eine durch Semikola getrennte Liste von Ansichten an, in denen dieses Element ausgeblendet werden soll. Die Ansicht des Objekts wird
+        durch den Formatbezeichner ",view(&lt;name&gt;)" gesteuert.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TypeNameType">
+    <xs:annotation>
+      <xs:documentation>Gibt den vollqualifizierten Namen des Typs für die Schnellansicht an. Wenn es sich bei dem Typ um eine Vorlagenklasse handelt, enthält er ggf. das Sternchen (*) als Platzhalterzeichen für Vorlagenparameter. Die Namen primitiver Datentypen sind nur mit UIVisualizer-Definitionen zulässig.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ModuleNameStringType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Namen eines Moduls an. Sollte nur den Modulnamen und keine absoluten oder relativen Pfade enthalten.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:pattern value="([^\\^//])+"/>
+      <!-- Prevent absolute or relative pathing, just the module name only-->
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="VersionStringType">
+    <xs:annotation>
+      <xs:documentation>1.2.3.4 oder 1.2 sind zulässig.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([0-9])+\.([0-9])+(\.([0-9])+\.([0-9])+)?"/>
+      <!--1.2.3.4 or 1.2 are acceptable -->
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="AlternativeHResultType">
+    <xs:annotation>
+      <xs:documentation>Gibt ein alternatives HRESULT aus, das dieselbe Schnellansicht teilen wird.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Name" type="TypeNameType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="IntrinsicParameterType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Typ des Parameters für die angegebene intrinsische Funktion an.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Type" type="StringType" use="required"/>
+    <xs:attribute name="Name" type="CppIdType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Gibt bei Angabe eines Ausdrucks den Namen an, über den der Ausdruck auf den Parameter verweisen kann. Wenn die Funktion über eine Debuggererweiterung implementiert wird,
+        kann dieses Attribut ausgelassen werden.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="IntrinsicType">
+    <xs:annotation>
+      <xs:documentation>Beschreibt eine benutzerdefinierte intrinsische Funktion, die von einem Ausdruck aufgerufen werden kann. Ein &lt;Intrinsic&gt;-Element muss von einer
+        Debuggerkomponente begleitet werden, die die Funktion über die IDkmIntrinsicFunctionEvaluator140-Schnittstelle implementiert.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Parameter" minOccurs="0" maxOccurs="unbounded" type="IntrinsicParameterType"></xs:element>
+    </xs:choice>
+    <xs:attributeGroup ref="CommonAttributes_NoCondition_NoView"/>
+    <xs:attribute name="Name" type="CppIdType" use="required">
+      <xs:annotation>
+        <xs:documentation>Der Name der intrinsischen Funktion. Dies muss ein gültiger C++-Bezeichner sein.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Category" type="IconType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Gibt an, welches Symbol den Ergebnissen von Ausdrücken zugewiesen werden soll, die diese Funktion aufrufen. Steuert, welches Symbol
+ im Überwachungsfenster für Ausdrücke verwendet wird, die die Funktion aufrufen. Der Kategorienstandardwert ist "Method".</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="ReturnType" type="StringType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Der Rückgabetyp der intrinsischen Funktion. Der Rückgabetyp kann ausgelassen werden, wenn ein Ausdruck angegeben wird (der Typ des Ausdrucks impliziert den Rückgabetyp).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Expression" type="StringType" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Ein Ausdruck, der in den Rückgabewert der Funktion ausgewertet wird.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="SourceId" type="GuidType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Gibt die Quell-ID an, die zum Identifizieren der Debuggerkomponente verwendet wird, die die Funktion implementiert. Dies muss den Filtereinschränkungen der IDkmIntrinsicFunctionEvaluator140-Implementierung entsprechen.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="LanguageId" type="GuidType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Gibt die Sprach-ID an, die zum Identifizieren der Debuggerkomponente verwendet wird, die die Funktion implementiert. Dies muss den Filtereinschränkungen der IDkmIntrinsicFunctionEvaluator140-Implementierung entsprechen.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Id" type="xs:unsignedInt" use="optional">
+      <xs:annotation>
+        <xs:documentation>Gibt eine eindeutige ID für die Funktion anhand der angegebenen Quell-ID und Sprach-ID an. Dies wird von der implementierenden Komponente verwendet, um die aufgerufene Funktion zu ermitteln,
+        wenn sie mehrere intrinsische Funktionen implementiert.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="SideEffect" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>"True" zeigt an, dass diese Funktion Nebeneffekte verursachen kann. Wenn "True", werden Aufrufe dieser Funktion
+        in Szenarien deaktiviert, in denen unerwartete Nebeneffekte für den Benutzer verwirrend sein können. Für Funktionen, die eine Zustandsänderung bewirken (entweder im Debugger oder in Visual Studio), sollte diese Option auf "True" festgelegt werden.
+        Der Standardwert ist "False".</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Varargs" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          "True" zeigt an, dass diese Funktion eine varargs-Funktion ist und nach den explizit aufgelisteten Parametern zusätzliche Argumente übergeben werden können. Der Standardwert ist "False".
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="AlternativeTypeType">
+    <xs:annotation>
+      <xs:documentation>Gibt einen alternativen Typ an, der dieselbe Schnellansicht verwendet.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Name" type="TypeNameType" use="required"/>
+    <xs:attribute name="Priority" type="PriorityType" use="optional"/>
+    <xs:attribute name="Inheritable" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          "True", wenn diese Schnellansicht von Objekten der vom angegebenen Typ abgeleiteten Klasse verwendet wird, "false", wenn ein Objekt direkt von diesem Typ sein muss, um die Schnellansicht zu verwenden.
+          Standardmäßig ist "true" festgelegt.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="VersionType">
+    <xs:annotation>
+      <xs:documentation>Gibt den zugehörigen Modulnamen und die Version für die Schnellansicht an.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Name" type="ModuleNameStringType" use="required"/>
+    <xs:attribute name="Min" type="VersionStringType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Gibt die minimale (inklusive) Versionsnummer an. </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Max" type="VersionStringType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Gibt die maximale (inklusive) Versionsnummer an. </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <!-- Attributes for elements that support filtering by view-->
+  <xs:attributeGroup name="ViewConstraints">
+    <xs:attribute name="IncludeView" type="ViewIncludeType" use="optional"/>
+    <xs:attribute name="ExcludeView" type="ViewExcludeType" use="optional"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="CommonAttributes_NoCondition_NoView">
+    <xs:attribute name="ModuleName" type="ModuleNameStringType" use="optional"/>
+    <xs:attribute name="ModuleVersionMin" type="VersionStringType" use="optional"/>
+    <xs:attribute name="ModuleVersionMax" type="VersionStringType" use="optional"/>
+    <xs:attribute name="Optional" type="OptionalType" use="optional"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="CommonAttributes_NoCondition">
+    <xs:attributeGroup ref="CommonAttributes_NoCondition_NoView"/>
+    <xs:attributeGroup ref="ViewConstraints"/>
+  </xs:attributeGroup>
+
+  <!-- These attributes are shared by all top-level natvis elements (DisplayString/StringView/top-level children of Expand)-->
+  <xs:attributeGroup name="CommonAttributes">
+    <xs:attributeGroup ref="CommonAttributes_NoCondition"/>
+    <xs:attribute name="Condition" type="ConditionType" use="optional"/>
+  </xs:attributeGroup>
+
+  <xs:complexType name="DisplayStringType">
+    <xs:annotation>
+      <xs:documentation>Gibt die Zeichenfolge an, die als Wert der Objekte des Schnellansichtstyps angezeigt wird. Beliebige Zeichenfolgen können mit Ausdrücken gemischt werden. Alle Zeichen in geschweiften Klammern (d. h. { und }) werden als Ausdruck interpretiert und ausgewertet. Geben Sie zwei geschweifte Klammern (z. B. {{ oder }}) ein, wenn Sie eine geschweifte Klammer außer Kraft setzen möchten.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attributeGroup ref="CommonAttributes"/>
+        <xs:attribute name="LegacyAddin" type="StringType" use="optional">
+          <xs:annotation>
+            <xs:documentation>Wenn ein Legacy-Add-In vorhanden ist, wird dessen DLL angegeben. Wenn kein vollständiger Pfad angegeben ist, sucht Visual Studio im Verzeichnis der Schnellansicht neben der Datei ".natvis", die das Add-In angegeben hat. In Verbindung mit einem Add-In ist immer noch eine reguläre Anzeigenzeichenfolge zulässig. Diese wird als Fallback verwendet, wenn die DLL des Add-Ins nicht geladen werden kann.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Export" type="StringType" use="optional">
+          <xs:annotation>
+            <xs:documentation>Wenn ein Legacy-Add-In vorhanden ist, gibt dieses Attribut den Namen des Exports für die Implementierung des Legacy-Add-Ins an. Dieses Attribut gilt nur, wenn auch "LegacyAddin" angegeben wird.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Encoding" type="EncodingType" use="optional">
+          <xs:annotation>
+            <xs:documentation>Gibt die Codierung der Zeichenfolge an, die vom Legacy-Add-In zurückgegeben wird. Standard ist UTF8. Dieses Attribut gilt nur, wenn auch "LegacyAddin" angegeben wird.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="EncodingType">
+    <xs:restriction base="xs:normalizedString">
+      <xs:enumeration value="Ansi"/>
+      <xs:enumeration value="Utf8"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="CustomVisualizerType">
+    <xs:annotation>
+      <xs:documentation>Gibt ein Schnellansichts-Add-In an, das die Debuggeransicht dieses Objekts anpasst.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="VisualizerId" type="GuidType" use="required"/>
+    <xs:attributeGroup ref="CommonAttributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="StringViewType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Ausdruck an, dessen Wert an die integrierten Text-Schnellansichten gesendet wird.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attributeGroup ref="CommonAttributes"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="IndexNodeType">
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attribute name="Condition" type="ConditionType" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:attributeGroup name="NameAttribute">
+  <xs:attribute type="xs:string" name="Name" use="optional">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt einen optionalen Namen (in &lt;DisplayString&gt;-Syntax) für diesen Knoten an. Wenn keine Angabe erfolgt, wird als Name
+        des Knotens einfach der Index des Elements in der Baumtraversierung verwendet. Ausdrücke in geschweiften Klammern
+        werden im Kontext des Knotens ausgewertet.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>    
+  </xs:attributeGroup>
+  
+  <xs:complexType name="ListItemsNodeType">
+    <xs:annotation>
+      <xs:documentation>Ausdruck, der auf den Wert des verknüpften Listenknotens zeigt. Sie können ihn leer lassen oder mithilfe von "this" auf den verknüpften Listenknoten verweisen. Dieser Ausdruck wird im Kontext des verknüpften Listenknotens und nicht im Kontext des übergeordneten Typs der verknüpften Liste ausgewertet.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attributeGroup ref="NameAttribute"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="TreeItemsNodeType">
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attribute name="Condition" type="ConditionType" use="optional"/>
+        <xs:attributeGroup ref="NameAttribute"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ItemType">
+    <xs:annotation>
+      <xs:documentation>Gibt ein einzelnes untergeordnetes Element an. Ausdrücke sind zulässig, beliebige Zeichenfolgen jedoch nicht. Wenn der Ausdruck einen komplexen Typwert erstellt, kann der untergeordnete Knoten vom Benutzer aufgeklappt werden.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attribute name="Name" type="StringType" use="required">
+          <xs:annotation>
+            <xs:documentation>Name des untergeordneten Elements, der in den Variablenfenstern des Debuggers unter der Namenspalte angezeigt wird.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attributeGroup ref="CommonAttributes"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ExpandedItemType">
+    <xs:annotation>
+      <xs:documentation>Gibt ein untergeordnetes Element an, dessen untergeordnete Elemente als untergeordnete Elemente des aktuellen Knotens angezeigt werden. Zum Erstellen einer flachen Ansicht eines erweiterten Typs verwenden.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attributeGroup ref="CommonAttributes"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="ArrayDirectionType">
+    <xs:annotation>
+      <xs:documentation>Gibt an, wie die mehrdimensionalen Arrayindizes ausgerollt werden sollen. Verwenden Sie für Zeilen-Arrays 'Forward' und für Spalten-Arrays 'Backward'.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:normalizedString">
+      <xs:enumeration value="Forward"/>
+      <xs:enumeration value="Backward"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="IconType">
+    <xs:restriction base="xs:normalizedString">
+      <xs:enumeration value="Data">
+        <xs:annotation>
+          <xs:documentation>
+            Gibt an, dass das Element das allgemeinen Daten zugeordnete Symbol verwenden soll.
+          </xs:documentation>
+        </xs:annotation>        
+      </xs:enumeration>
+      <xs:enumeration value="Method">
+        <xs:annotation>
+          <xs:documentation>
+            Gibt an, dass das Element das Methodenaufrufen zugeordnete Symbol verwenden soll.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Property">
+        <xs:annotation>
+          <xs:documentation>
+            Gibt an, dass das Element das Eigenschaften zugeordnete Symbol verwenden soll.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ExpandType">
+    <xs:annotation>
+      <xs:documentation>Gibt die Liste der untergeordneten Elemente an, die angezeigt werden sollen, wenn im Debuggerfenster eine Variable des Schnellansichtstyps aufgeklappt ist.</xs:documentation>
+    </xs:annotation>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Item" minOccurs="0" maxOccurs="unbounded" type="ItemType"/>
+      <xs:element name="ArrayItems" minOccurs="0" maxOccurs="unbounded" type="ArrayItemsType"/>
+      <xs:element name="IndexListItems" minOccurs="0" maxOccurs="unbounded" type="IndexListItemsType"/>
+      <xs:element name="LinkedListItems" minOccurs="0" maxOccurs="unbounded" type="LinkedListItemsType"/>
+      <xs:element name="TreeItems" minOccurs="0" maxOccurs="unbounded" type="TreeItemsType"/>
+      <xs:element name="ExpandedItem" minOccurs="0" maxOccurs="unbounded" type="ExpandedItemType"/>
+      <xs:element name="Synthetic" minOccurs="0" maxOccurs="unbounded" type="SyntheticItemType"/>
+      <xs:element name="CustomListItems" minOccurs="0" maxOccurs="unbounded" type="CustomListItemsType"/>
+    </xs:choice>
+    <xs:attribute name="HideRawView" type="xs:boolean">
+      <xs:annotation>
+        <xs:documentation>Gibt an, ob der "[Raw View]"-Knoten für dieses Objekt ausgeblendet werden soll. Standardmäßig hat dieses Attribut den Wert 'false',
+        was dazu führt, dass die Rohansicht des aktuellen Objekts dem Benutzer angezeigt wird.
+           </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="CustomListItemsType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine benutzerdefinierte Logik für das Iterieren in einer Auflistung an, die nicht mit anderen Mitteln visualisiert werden kann.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Variable" minOccurs="0" maxOccurs="unbounded" type="VariableType"></xs:element>
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Size" minOccurs="1" maxOccurs="1" type="CustomListSizeType">
+        </xs:element>
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="1">
+        <xs:element name="Skip" minOccurs="1" maxOccurs="1" type="SkipType"></xs:element>
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="CustomListCode"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="CommonAttributes"/>
+    <xs:attribute name="MaxItemsPerView" type="MaxItemsPerViewType" use="optional">
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="SkipType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt Logik zum Überspringen einer angegebenen Anzahl Elemente in der Auflistung an. Die Logik zum Überspringen
+        wird aufgerufen, wenn der Benutzer im Überwachungsfenster scrollt, um schnell längs bis zum gewünschten Punkt durch die Auflistung zu navigieren. Nach der Logik zum Überspringen
+        kehrt die Steuerung an den Beginn der Ausführung zurück, jedoch mit geänderten Iterationsvariablen, wie es zur Berücksichtigung des aktualisierten Zustands erforderlich ist.
+
+        Das &lt;Skip&gt;-Element ist als optionale Leistungsoptimierung vorgesehen, um bei der Traversierung der Auflistung das schnelle Überspringen
+        einer großen Zahl von Elementen zu ermöglichen. Wenn kein &lt;Skip&gt;-Element angegeben ist, führt die Ausdrucksauswertung bei erforderlichen Überspringungen
+        die Traversierungslogik aus, bis die gewünschte Anzahl &lt;Item&gt;-Elemente ausgeführt wurde. Je nach der Datenstruktur der zugrundeliegenden Auflistung
+        kann das einen erheblichen, unnötigen Mehraufwand bei der Berechnung verursachen.
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="CustomListCode_NoItem"/>
+    </xs:choice>
+
+    <xs:attribute name="Value" type="CppIdType" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Der Name der Variablen, die die Anzahl der zu überspringenden Elemente angibt, als vorzeichenloser, 32-bittiger Integer. Wenn ein &lt;Size&gt;-Element angegeben wird,
+          übergibt die Ausdrucksauswertung in keinem Fall einen Wert fürs Überspringen, der ausgehend vom aktuellen Index der Traversierung zum Überschreiten der Auflistungsgrenzen führen würde.
+          Wenn kein &lt;Size&gt;-Element angegeben wird, kann der Wert für das Überspringen eine beliebige ganze Zahl sein, und die erforderliche Überprüfung der Grenzen liegt
+          in der Zuständigkeit der &lt;Skip&gt;-Logik. In dem Fall, dass ein Überspringen der gesamten angeforderten Anzahl Elemente nicht möglich ist, sollte die &lt;Skip&gt;-Logik den
+          Wert der Überspringen-Variablen so ändern, dass sie nach dem Abschluss der Ausführung die Anzahl der tatsächlich übersprungenen Elemente enthält.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="CustomListSizeType">
+    <xs:annotation>
+      <xs:documentation>Gibt die Gesamtzahl der Elemente in der Auflistung an.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attribute name="Condition" type="ConditionType" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:group name="CustomListCode_NoItem">
+    <xs:choice>
+      <!-- For the sake of simplifying implementation, I am not implementing declaring variables inside of an 'loop' block
+           until I encounter a scenario that requires it.-->
+      <!--<xs:element name="Variable" minOccurs="0" maxOccurs="unbounded" type="VariableType"></xs:element>-->
+      <xs:element name="Loop" minOccurs="0" maxOccurs="unbounded" type="LoopType_NoItem"></xs:element>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="If" minOccurs="1" maxOccurs="1" type="IfType_NoItem"></xs:element>
+        <xs:element name="Elseif" minOccurs="0" maxOccurs="unbounded" type="IfType_NoItem"></xs:element>
+        <xs:element name="Else" minOccurs="0" maxOccurs="1" type="ElseType_NoItem"></xs:element>
+      </xs:sequence>
+      <xs:element name="Exec" minOccurs="0" maxOccurs="unbounded" type="ExecType"></xs:element>
+      <xs:element name="Break" minOccurs="0" maxOccurs="unbounded" type="BreakType"></xs:element>
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="CustomListCode">
+    <xs:choice>
+      <!-- For the sake of simplifying implementation, I am not implementing declaring variables inside of an 'loop' block
+          until I encounter a scenario that requires it.-->
+      <!--<xs:element name="Variable" minOccurs="0" maxOccurs="unbounded" type="VariableType"></xs:element>-->
+      <xs:element name="Loop" minOccurs="0" maxOccurs="unbounded" type="LoopType"></xs:element>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="If" minOccurs="1" maxOccurs="1" type="IfType"></xs:element>
+        <xs:element name="Elseif" minOccurs="0" maxOccurs="unbounded" type="IfType"></xs:element>
+        <xs:element name="Else" minOccurs="0" maxOccurs="1" type="ElseType"></xs:element>
+      </xs:sequence>
+      <xs:element name="Exec" minOccurs="0" maxOccurs="unbounded" type="ExecType"></xs:element>
+      <xs:element name="Break" minOccurs="0" maxOccurs="unbounded" type="BreakType"></xs:element>
+      <xs:element name="Item" minOccurs="0" maxOccurs="unbounded" type="CustomListItemType"></xs:element>
+    </xs:choice>
+  </xs:group>
+
+  <xs:attributeGroup name="CustomListCode_Attributes">
+    <xs:attribute name="Condition" type="ConditionType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Bedingung, die steuert, ob dieses Element und seine inneren Elemente ausgeführt werden sollen</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="CustomListCode_Attributes_NoCondition"/>
+  </xs:attributeGroup>
+
+  <!-- Defines attributes that do on custom list code elements besides the condition.  Currently, this is empty, but maintaining the group
+  as a placeholder in case we decide to add something to it later. -->
+  <xs:attributeGroup name="CustomListCode_Attributes_NoCondition">
+  </xs:attributeGroup>
+
+  <xs:complexType name="LoopType_NoItem">
+    <xs:annotation>
+      <xs:documentation>Gibt einen Anweisungsblock an, der mehrere Male ausgeführt wird, bis ein &lt;Break&gt;-Element auftritt oder ein Ausdruck nicht ausgewertet werden kann.</xs:documentation>
+    </xs:annotation>
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="CustomListCode_NoItem"/>
+    </xs:choice>
+
+    <xs:attributeGroup ref="CustomListCode_Attributes"/>
+  </xs:complexType>
+
+
+  <xs:complexType name="LoopType">
+    <xs:annotation>
+      <xs:documentation>Gibt einen Anweisungsblock an, der mehrere Male ausgeführt wird, bis ein &lt;Break&gt;-Element auftritt oder ein Ausdruck nicht ausgewertet werden kann.</xs:documentation>
+    </xs:annotation>
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="CustomListCode"/>
+    </xs:choice>
+
+    <xs:attributeGroup ref="CustomListCode_Attributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="IfType_NoItem">
+    <xs:annotation>
+      <xs:documentation>Gibt einen Anweisungsblock an, der nur ausgewertet wird, wenn eine Bedingung erfüllt (true) ist.</xs:documentation>
+    </xs:annotation>
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="CustomListCode_NoItem"/>
+    </xs:choice>
+
+    <xs:attributeGroup ref="CustomListCode_Attributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="IfType">
+    <xs:annotation>
+      <xs:documentation>Gibt einen Anweisungsblock an, der nur ausgewertet wird, wenn eine Bedingung erfüllt (true) ist.</xs:documentation>
+    </xs:annotation>
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="CustomListCode"/>
+    </xs:choice>
+
+    <xs:attributeGroup ref="CustomListCode_Attributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="ElseType_NoItem">
+    <xs:annotation>
+      <xs:documentation>Gibt einen Anweisungsblock an, der nur ausgewertet wird, wenn eine Bedingung erfüllt (true) ist.</xs:documentation>
+    </xs:annotation>
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="CustomListCode_NoItem"/>
+    </xs:choice>
+
+    <xs:attributeGroup ref="CustomListCode_Attributes_NoCondition"/>
+  </xs:complexType>
+
+  <xs:complexType name="ElseType">
+    <xs:annotation>
+      <xs:documentation>Gibt einen Anweisungsblock an, der nur ausgewertet wird, wenn eine Bedingung erfüllt (true) ist.</xs:documentation>
+    </xs:annotation>
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="CustomListCode"/>
+    </xs:choice>
+
+    <xs:attributeGroup ref="CustomListCode_Attributes_NoCondition"/>
+  </xs:complexType>
+
+  <xs:complexType name="VariableType">
+    <xs:annotation>
+      <xs:documentation>
+        Deklariert eine Variable für die Verwendung in zukünftigen Ausdrücken mit dem &lt;CustomListItems&gt;-Block.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Name" type="CppIdType" use="required">
+      <xs:annotation>
+        <xs:documentation>Name der Variablen</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="InitialValue" type="StringType" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Ausdruck, der zum Anfangswert der Variablen ausgewertet wird.
+          Dieser Ausdruck gibt außerdem den Typ der Variablen an. Ausdrücke mit Anfangswerten können andere bereits definierte Variablen verwenden.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="ExecType">
+    <xs:annotation>
+      <xs:documentation>
+        Führt einen einzelnen Ausdruck aus. Der Ausdruck wird im Kontext des Objekts ausgeführt, kann aber Iterationsvariablen verwenden.
+        Der Ausdruck darf Iterationsvariablen auch ändern, andere Nebeneffekte sind aber nicht zulässig.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attributeGroup ref="CustomListCode_Attributes"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="CustomListItemType">
+    <xs:annotation>
+      <xs:documentation>Generiert ein untergeordnetes Element, das durch Auswerten des angegebenen Ausdrucks erhalten wird.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attributeGroup ref="CustomListCode_Attributes"/>
+        <xs:attribute name="Name" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              Gibt einen optionalen Namen für das Element an. Der Name wird in &lt;DisplayString&gt;-Syntax angegeben und darf eingebettete Ausdrücke enthalten.
+              Wenn kein Name angegeben wird, wird ein Standardname der Form "[i]" verwendet, wobei 'i' der Index ist, der die Reihenfolge angibt, in der das Element zurückgegeben wurde.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="BreakType">
+    <xs:annotation>
+      <xs:documentation>Löst das innerste &lt;Loop&gt;-Element heraus. Ein &lt;Break&gt;-Element außerhalb einer Schleife beendet die Iteration der Auflistung.</xs:documentation>
+    </xs:annotation>
+    <xs:attributeGroup ref="CustomListCode_Attributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="SyntheticItemType">
+    <xs:annotation>
+      <xs:documentation>Gibt ein untergeordnetes Element an, dessen Wert nicht durch einen Ausdruck bestimmt wird. Der Wert des Elements kann mithilfe eines "DisplayString"-Elements festgelegt werden. Die Unterelemente des Elements können mithilfe eines "Expand"-Elements angegeben werden.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CustomVisualizer" type="CustomVisualizerType"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DisplayString" type="DisplayStringType"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="StringView" type="StringViewType"/>
+      <xs:element minOccurs="0" name="Expand" type="ExpandType"/>
+    </xs:sequence>
+    <xs:attribute name="Name" type="StringType" use="required">
+      <xs:annotation>
+        <xs:documentation>Name des untergeordneten Elements, der im Debuggerfenster unter der Namenspalte angezeigt wird.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="Expression" type="StringType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Ausdruck, der zum Abrufen des Werts des Elements verwendet wird, wenn der Benutzer diesen mithilfe des Befehls "Überwachung hinzufügen" separat nachverfolgen möchte.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attributeGroup ref="CommonAttributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="ValuePointerType">
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attribute name="Condition" type="ConditionType" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="SizeType">
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attributeGroup ref="CommonAttributes"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ArrayItemsType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine Arrayansicht des Inhalts einer Variablen an. Es wird davon ausgegangen, dass Datenelemente im Speicher aneinandergrenzen.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Direction" type="ArrayDirectionType"/>
+      <xs:element minOccurs="0" maxOccurs="1" name="Rank" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Gibt den Rang des Arrays an.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Size" type="SizeType">
+        <xs:annotation>
+          <xs:documentation>Gibt die Größe der einzelnen Dimensionen des Arrays an. Für mehrdimensionale Arrays kann ein Ausdruck angegeben werden, der den impliziten $i-Parameter verwendet. Der Parameter wird durch den Dimensionsindex ersetzt, um die Größe des Arrays in jener Dimension festzustellen.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="LowerBound" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Gibt die untere Grenze der einzelnen Dimensionen des Arrays an. Für mehrdimensionale Arrays kann ein Ausdruck angegeben werden, der den impliziten $i-Parameter verwendet. Der Parameter wird durch den Dimensionsindex ersetzt, um die untere Grenze des Arrays in jener Dimension festzustellen.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="ValuePointer" type="ValuePointerType">
+        <xs:annotation>
+          <xs:documentation>Gibt den Ausdruck an, der auf das erste Element des Arrays zeigt. Bei dem Ausdruck muss es sich um einen Zeiger des Elementtyps handeln, der nicht leer ist*.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attributeGroup ref="CommonAttributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="IndexListItemsType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine allgemeinere Form der Arrayansicht einer Variablen an. Verwenden Sie dies, wenn die Datenelemente im Speicher nicht aneinandergrenzen und der Index für die Datenelemente berechnet werden muss.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="Size" type="SizeType">
+        <xs:annotation>
+          <xs:documentation>Gibt die Größe der Indexliste an.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="ValueNode" type="IndexNodeType">
+        <xs:annotation>
+          <xs:documentation>Gibt den Ausdruck an, der den impliziten $i-Parameter verwendet, der auf das ith-Element zeigt.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attributeGroup ref="CommonAttributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="LinkedListItemsType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine verknüpfte Listenansicht des Inhalts einer Variablen an.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Size" type="SizeType">
+        <xs:annotation>
+          <xs:documentation>Gibt die Elementanzahl in der verknüpften Liste an. Wenn mehrere Größenelemente angegeben sind, legt das erste Größenelement mit einer wahren Bedingung (oder keiner Bedingung)
+          die Größe fest. Wenn keine Größe angegeben ist (oder alle Größenelemente falsche Bedingungen aufweisen), traversiert der Debugger die Liste, um die Größe zu ermitteln. Es wird empfohlen, dass natvis-Einträge
+          möglichst eine Größe für verknüpfte Listen festlegen, das das Bereitstellen einer Größe die Leistung des Debuggers verbessert.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="1" name="HeadPointer" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Ausdruck, der auf den ersten Knoten der verknüpften Liste zeigt.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="1" name="NextPointer" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Ausdruck, der auf das nächste Element zeigt. Dieser Ausdruck wird im Kontext des verknüpften Listenknotens und nicht im Kontext des übergeordneten Typs der verknüpften Liste ausgewertet.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="1" name="ValueNode" type="ListItemsNodeType">
+      </xs:element>
+    </xs:sequence>
+    <xs:attributeGroup ref="CommonAttributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="TreeItemsType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine Baumansicht des Inhalts einer Variablen an.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Size" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Die Größe des Baums.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="1" name="HeadPointer" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Ausdruck, der auf den Kopf des Baums zeigt.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="1" name="LeftPointer" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Ausdruck, der auf das linke untergeordnete Element eines Baumknotens zeigt. Dieser Ausdruck wird im Kontext des Baumknotens und nicht im Kontext des übergeordneten Typs ausgewertet.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="1" name="RightPointer" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Ausdruck, der auf das rechte untergeordnete Element eines Baumknotens zeigt. Dieser Ausdruck wird im Kontext des Baumknotens und nicht im Kontext des übergeordneten Typs ausgewertet.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element maxOccurs="1" name="ValueNode" type="TreeItemsNodeType">
+        <xs:annotation>
+          <xs:documentation>Ausdruck, der auf den Wert des Baumknotens zeigt. Sie können ihn leer lassen oder mithilfe von "this" auf den Listenknoten verweisen. Dieser Ausdruck wird im Kontext des Baumknotens und nicht im Kontext des übergeordneten Typs ausgewertet.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attributeGroup ref="CommonAttributes"/>
+  </xs:complexType>
+
+  <xs:complexType name="UIVisualizerItemType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine Benutzeroberflächenschnellansicht an, die Objekte dieses Typs verarbeiten kann. Die Benutzeroberflächenschnellansicht muss zuvor in der Datei "natvis" definiert werden.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="ServiceId" type="GuidType" use="required">
+          <xs:annotation>
+            <xs:documentation>Gibt die Dienst-GUID der Schnellansicht an.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Id" type="xs:int" use="required">
+          <xs:annotation>
+            <xs:documentation>Gibt die ID der Schnellansicht an. Dient zur Unterscheidung mehrerer Viewer des Diensts für die Schnellansicht.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="FavoritesItemType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine Sammlung von bevorzugten Elementen für den Typ an. Diese Werte werden als erstes untergeordnetes Element des Elements und in der standardmäßigen Anzeigezeichenfolge angezeigt.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Favorite" type="FavoriteItemType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="FavoriteItemType">
+    <xs:annotation>
+      <xs:documentation>Gibt ein bevorzugtes Element für den Typ an.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="MostDerivedObjectType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt einen Ausdruck an, der in das aktuelle Objekt ausgewertet wird, umgewandelt in den am stärksten abgeleiteten Typ.  
+        
+        In den meisten Fällen kann der Debugger den am stärksten abgeleiteten Typ eines Objekts automatisch ermitteln; in diesem Fall muss das &lt;MostDerivedType&gt; 
+-Element nicht verwendet werden.  Für die automatische Ermittlung des am stärksten abgeleiteten Typs eines Objekts muss das Objekt eine Instanz einer C++-Klasse sein und über eine 
+        compilergenerierte virtuelle Funktionstabelle verfügen.  Dies ist ausreichen für die meisten Klassenhierarchien; benutzerdefinierte Logik kann jedoch gelegentlich beim Umfang
+        mit einer Klassenhierarchie erforderlich sein, die keine virtuellen Funktionen enthält, oder wenn die virtuelle Funktionstabelle manuell vom
+        Anwendungscode erstellt wird.
+      </xs:documentation>
+    </xs:annotation>
+    
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attributeGroup ref="CommonAttributes"/>
+        <xs:attribute name="IgnoreVTable" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              "True" zeigt an, dass der am weitesten abgeleitete Typ des Objekts immer der statische Typ des angegebenen Ausdrucks ist.  Standardmäßig
+              verwendet der Debugger vtables zum Berechnen des am weitesten abgeleiteten Typs der angegebenen Ausdrücke des am weitesten abgeleiteten Typs. Diese Option sollte
+              nur verwendet werden, wenn der Anwendungscode vtables mit benutzerdefinierter Logik erstellt, die der Debugger nicht versteht.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="SmartPointerUsage">
+    <xs:annotation>
+      <xs:documentation>Gibt an, wie ein intelligenter Zeiger syntaktisch verwendet werden kann.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:normalizedString">
+      <xs:enumeration value="Minimal">
+        <xs:annotation>
+          <xs:documentation>
+            Gibt an, dass der intelligente Zeiger syntaktisch nur zu Dereferenzierungs- und Vergleichszwecken verwendet werden kann.
+            Die folgenden überladenen Operatoren werden definiert:
+            - operator*()    (Dereferenzierung)
+            - operator-&gt;()   (Zugriffsfeld des dereferenzierten Werts)
+            - operator==()   (Vergleich mit Rohzeiger oder einem anderen intelligenten Zeiger des gleichen Typs)
+            - operator!=()   (Vergleich mit Rohzeiger oder einem anderen intelligenten Zeiger des gleichen Typs)
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Indexable">
+        <xs:annotation>
+          <xs:documentation>
+            Gibt an, dass der intelligente Zeiger syntaktisch zu Dereferenzierungs-, Vergleichs- und Indizierungszwecken verwendet werden kann.
+            Die folgenden überladenen Operatoren werden definiert:
+            - operator+()  (Hinzufügen eines Offsets vom Typ "size_t".)
+            - operator-()  (Subtrahieren eines Offsets vom Typ "size_t".)
+            - operator[]   (Hinzufügen eines Offsets vom Typ "size_t" und Dereferenzierung.)
+            - Alle unterstützten Operatoren durch SmartPointerUsage="Minimal"
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Full">
+        <xs:annotation>
+          <xs:documentation>
+            Gibt an, dass der intelligente Zeiger einen Konvertierungsoperator für den zugrunde liegenden Zeiger enthält. Jede gültige Verwendung des zugrunde liegenden
+            Zeigers in der Sprache kann über den Konvertierungsoperator verwendet werden. Eine direkte Zuweisung an den intelligenten Zeiger ist weiterhin unzulässig.
+            Wenn Sie den internen Zeiger in einem Ausdruck ändern möchten, muss dies explizit geschehen.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="SmartPointerType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt an, dass der angegebene Typ ein intelligenter Zeiger ist. Der Text in diesem Element gibt den Ausdruck an, in den der zugrunde liegende Zeiger ausgewertet wird.
+        
+        Das Element &lt;SmartPointer&gt; besitzt die folgenden Auswirkungen:
+          – Wenn kein alternatives Element &lt;DisplayString&gt; angegeben wird (oder alle Elemente &lt;DisplayString&gt; fehlerhafte Bedingungen aufweisen), ist der zugrunde liegende Zeiger die Anzeigezeichenfolge.
+          – Wenn kein alternatives Element &lt;StringView&gt; angegeben wird (oder alle Elemente &lt;StringView&gt; fehlerhafte Bedingungen aufweisen), ist der zugrunde liegende Zeiger die Zeichenfolgenansicht, wenn eine solche vorhanden ist.
+          – Wenn kein alternatives Element &lt;Expand&gt; angegeben wird, ist die Erweiterung des intelligenten Zeigers die Erweiterung des zugrunde liegenden Zeigers.
+          - Die Klasse der intelligenten Zeiger unterstützt auch überladene Operatoren (wie durch das Attribut &lt;Usage&gt; festgelegt). Sie können das Abonnement für dieses Verhalten kündigen, indem Sie Folgendes angeben: 
+              "DefaultExpansion="false""
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="StringType">
+        <xs:attributeGroup ref="CommonAttributes_NoCondition"/>
+        <xs:attribute name="Usage" type="SmartPointerUsage" use="required">
+          <xs:annotation>
+            <xs:documentation>Gibt an, welche Kombinationen aus Operatoren dieses intelligente Zeiger-Objekt unterstützt.              
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="DefaultExpansion" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              Wenn dieser Wert "true" ist und kein Element "Expand" angegeben wird, wird eine Standarderweiterung basierend auf der Erweiterung des
+              zugrunde liegenden Zeigers bereitgestellt. Wenn dieser Wert "false" ist, wird kein Element &lt;Expand&gt; automatisch
+              basierend auf dem intelligenten Zeiger erstellt. Wenn dieses Attribut nicht vorhanden ist, ist der Standardwert "true".
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="VisualizerType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Schnellansichtseintrag an, der die Debuggeransicht eines Typs anpasst.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AlternativeType" type="AlternativeTypeType"/>
+      <xs:element minOccurs="0" maxOccurs="1" name="Version" type="VersionType"/>
+      <xs:choice minOccurs="0" maxOccurs="1">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Intrinsic" type="IntrinsicType"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="MostDerivedType" type="MostDerivedObjectType"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="CustomVisualizer" type="CustomVisualizerType"/>
+          <xs:element minOccurs="0" maxOccurs="1" name="SmartPointer" type="SmartPointerType"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DisplayString" type="DisplayStringType"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="StringView" type="StringViewType"/>
+          <xs:element minOccurs="0" name="Expand" type="ExpandType"/>
+          <xs:element minOccurs="0" maxOccurs="1" name="Favorites" type="FavoritesItemType"/>
+        </xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="UIVisualizer" type="UIVisualizerItemType"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="Name" type="TypeNameType" use="required"/>
+    <xs:attributeGroup ref="ViewConstraints"/>
+    <xs:attribute name="Priority" type="PriorityType"/>
+    <xs:attribute name="Inheritable" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          "True", wenn diese Schnellansicht von Objekten der vom angegebenen Typ abgeleiteten Klasse verwendet wird, "false", wenn ein Objekt direkt von diesem Typ sein muss, um die Schnellansicht zu verwenden.
+          Standardmäßig ist "true" festgelegt.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:simpleType name="PriorityType">
+    <xs:annotation>
+      <xs:documentation>Gibt eine optionale Priorität zum Zuweisen dieses Eintrags für die Typübereinstimmung an. Einträge mit höherer Priorität innerhalb einer bestimmten Datei oder eines bestimmten Verzeichnisses
+      werden zuerst überprüft.  &lt;Type&gt;-Einträge, die keine Priorität angeben, erhalten die Standardpriorität "Mittel"  &lt;AlternativeType&gt;-Einträge, die keine Priorität angeben,
+      erben die Priorität des einschließenden &lt;Type&gt;-Elements. Die Priorität wird nur verwendet, um die Typübereinstimmung eindeutig zu machen, wenn alle anderen Mittel zur Mehrdeutigkeitsvermeidung nicht verfügbar sind.
+      Einträge mit spezifischeren Vorlageninstanziierungen, Moduleinschränkungen oder Ansichtseinschränkungen haben beispielsweise Priorität, unabhängig von den angegebenen Prioritätswerten.  
+      In ähnlicher Weise haben natvis-Dateien, unabhängig von der Priorität, immer Vorrang vor Dateien im natvis-Verzeichnis des Benutzers, 
+      das wiederum Vorrang vor Dateien im systemweiten natvis-Verzeichnis hat.   
+      
+      Wenn zwei Einträge dieselbe Priorität haben und nicht anderweitig eindeutig unterschieden werden können, ist nicht klar, welche verwendet wird.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="Low"/>
+          <xs:enumeration value="MediumLow"/>
+          <xs:enumeration value="Medium"/>
+          <xs:enumeration value="MediumHigh"/>
+          <xs:enumeration value="High"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:complexType name="UIVisualizerType">
+    <xs:annotation>
+      <xs:documentation>Gibt Details zu einer Benutzeroberflächenschnellansicht an, die zum Anzeigen eines Objekts eine eigenständige Schnittstelle erstellt. Der Schnellansichtseintrag eines Typs muss auf eine Benutzeroberflächenschnellansicht verweisen, damit er dieser zugeordnet werden kann.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="ServiceId" type="GuidType" use="required">
+          <xs:annotation>
+            <xs:documentation>Gibt die Dienst-GUID der Schnellansicht an. Der Dienst muss von einem Visual Studio-Paket bereitgestellt werden, das auch die IVsCppDebugUIVisualizer-Schnittstelle implementiert. Das Paket wird nur vom Debugger geladen, wenn der Benutzer diesen Schnellansichtsdienst anfordert.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Id" type="xs:int" use="required">
+          <xs:annotation>
+            <xs:documentation>Gibt die ID der Schnellansicht an. Dient zur Unterscheidung mehrerer Viewer des Diensts für die Schnellansicht.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="MenuName" type="xs:string" use="required">
+          <xs:annotation>
+            <xs:documentation>Gibt den Namen einer Variablen an, der in der Liste der Benutzeroberflächenschnellansicht angezeigt wird.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Description" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>Legt die Beschreibung dieser Benutzeroberflächenschnellansicht fest.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="HResultType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Schnellansichtseintrag an, der die Debuggeransicht eines HRESULT anpasst.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AlternativeHResult" type="AlternativeHResultType">
+        <xs:annotation>
+          <xs:documentation>Andere HResult-Typen, die dieselbe Schnellansicht verwenden.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="1" maxOccurs="1" name="HRValue" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Anzupassender 32-Bit-HRESULT-Wert.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" maxOccurs="1" name="HRDescription" type="StringType">
+        <xs:annotation>
+          <xs:documentation>Die Beschreibung dieses HRESULT-Werts für das Debuggerfenster.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="Name" type="StringType" use="required">
+      <xs:annotation>
+        <xs:documentation>Der Name des HRESULT-Werts für das Debuggerfenster.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="LocalizedStringType">
+    <xs:annotation>
+      <xs:documentation>
+        Definiert die Quelle der lokalisierten Zeichenfolge, auf die mit NATVIS-Elementen verwiesen werden kann, die Zeichenfolgen zulassen (z. B. DisplayString, Name-Attribut des Item-Elements).
+        Verwenden Sie für Verweise auf lokalisierte Zeichenfolgen das Format @&lt;id&gt;; (z. B. @1001;)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="Id" use="required">
+          <xs:annotation>
+            <xs:documentation>Die ID der lokalisierten Zeichenfolge. Verwenden Sie für Verweise auf diese lokalisierte Zeichenfolge das Format @&lt;id&gt;;.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:unsignedInt">
+              <xs:minInclusive value="1"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="LocalizedStringsType">
+    <xs:annotation>
+      <xs:documentation>
+        Gibt eine Liste lokalisierter Zeichenfolgen an, auf die mit NATVIS-Elementen verwiesen werden kann. Definieren Sie lokalisierte Zeichenfolgen in einem Satelliten der NATVIS-Datei, der denselben Namen wie die Hauptdatei hat,
+        und stellen Sie sie neben der NATVIS-Hauptdatei in einem gebietsschemaspezifischen Ordner bereit. Der Debugger lädt die lokalisierten Ressourcen aus der passenden Satellitendatei.
+        Definieren Sie lokalisierte Zeichenfolgen als Standard in der NATVIS-Hauptdatei, damit darauf zurückgegriffen werden kann, wenn für ein Gebietsschema keine Satellitendatei vorhanden ist.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="unbounded" name="LocalizedString" type="LocalizedStringType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Definition of complex elements-->
+
+  <xs:element name="AutoVisualizer">
+    <xs:annotation>
+      <xs:documentation>Stammelement der Datei "natvis".</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="Version" type="VersionType">
+          <xs:annotation>
+            <xs:documentation>Gibt die zugehörigen Modulnamen und Versionen aller Schnellansichten an, deren Modulnamen und Versionen in dieser Datei nicht explizit angegeben sind.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="LocalizedStrings" type="LocalizedStringsType"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="UIVisualizer" type="UIVisualizerType"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Type" type="VisualizerType"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="HResult" type="HResultType"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Intrinsic" type="IntrinsicType"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

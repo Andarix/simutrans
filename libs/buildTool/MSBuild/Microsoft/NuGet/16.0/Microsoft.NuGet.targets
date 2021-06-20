@@ -32,7 +32,7 @@ Copyright (c) .NET Foundation. All rights reserved.
     <When Condition="'$(RestoreProjectStyle)' == 'PackageReference'">
       <!-- The RestoreProjectStyle property has been specified to PackageReference, so use that. -->
       <PropertyGroup>
-        <ProjectLockFile>$(BaseIntermediateOutputPath)project.assets.json</ProjectLockFile>
+        <ProjectLockFile>$(MSBuildProjectExtensionsPath)project.assets.json</ProjectLockFile>
       </PropertyGroup>
     </When>
 
@@ -57,11 +57,23 @@ Copyright (c) .NET Foundation. All rights reserved.
     <Otherwise>
       <!-- No assets or lock file provided at all, so fallback to project.assets.json file.-->
       <PropertyGroup>
-        <ProjectLockFile>$(BaseIntermediateOutputPath)project.assets.json</ProjectLockFile>
+        <ProjectLockFile>$(MSBuildProjectExtensionsPath)project.assets.json</ProjectLockFile>
       </PropertyGroup>
     </Otherwise>
   </Choose>
 
+  <!--
+  The project system would prefer this to be a path relative to the project. Consider what
+  happens when the user creates a new project from a template: the project is first created
+  in a temporary location, and then moved to the final location. If the project system asks
+  for the property between those two steps and we give it an absolute path it will end up
+  watching the wrong location for updates to the lock file. However, if we give it a path
+  relative to the project file then that will still be correct after the move.
+  -->
+  <PropertyGroup>
+    <ProjectLockFile>$([MSBuild]::MakeRelative($(MSBuildProjectDirectory), $(ProjectLockFile)))</ProjectLockFile>
+  </PropertyGroup>
+  
   <!-- Add to MSBuildAllProjects in order to better support incremental builds. -->
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>

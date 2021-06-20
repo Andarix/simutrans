@@ -22,11 +22,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <PropertyGroup>
     <!-- check if older vc toolset which does not support /JMC is used -->
     <VCToolsetSupportsJustMyCode Condition="'$(VCToolsetSupportsJustMyCode)' == '' and
-                                            '$(VCToolsVersion)' != '' and
-                                            '$(VCToolsVersion)' != '14.11.25503' and
-                                            '$(VCToolsVersion)' != '14.12.25827' and
-                                            '$(VCToolsVersion)' != '14.13.26128' and
-                                            '$(VCToolsVersion)' != '14.14.26428'">true</VCToolsetSupportsJustMyCode>
+                                            '$(VCToolsVersion)' != ''">true</VCToolsetSupportsJustMyCode>
   </PropertyGroup>
 
   <ItemDefinitionGroup Condition="'$(UseDebugLibraries)' == 'true'">
@@ -48,7 +44,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <BrowseInformationFile            Condition="'%(ClCompile.BrowseInformationFile)'         == ''">$(IntDir)</BrowseInformationFile>
       <BasicRuntimeChecks               Condition="'%(ClCompile.BasicRuntimeChecks)'            == ''">Default</BasicRuntimeChecks>
       <CompileAs                        Condition="'%(ClCompile.CompileAs)'                     == ''">Default</CompileAs>
-      <ConformanceMode                  Condition="'%(ClCompile.ConformanceMode)'               == ''">false</ConformanceMode>
+      <ConformanceMode                  Condition="'%(ClCompile.ConformanceMode)'               == ''">Default</ConformanceMode>
       <DiagnosticsFormat                Condition="'%(ClCompile.DiagnosticsFormat)'             == ''">Column</DiagnosticsFormat>
       <DisableLanguageExtensions        Condition="'%(ClCompile.DisableLanguageExtensions)'     == ''">false</DisableLanguageExtensions>
       <ErrorReporting                   Condition="'%(ClCompile.ErrorReporting)'                == ''
@@ -63,14 +59,19 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ForceConformanceInForLoopScope   Condition="'%(ClCompile.ForceConformanceInForLoopScope)'== ''">true</ForceConformanceInForLoopScope>
       <ForcedIncludeFiles               Condition="'%(ClCompile.ForcedIncludeFiles)'            == ''"></ForcedIncludeFiles>
       <ForcedUsingFiles                 Condition="'%(ClCompile.ForcedUsingFiles)'              == ''"></ForcedUsingFiles>
+      <GenerateModuleDependencies       Condition="'%(ClCompile.GenerateModuleDependencies)'    == ''">false</GenerateModuleDependencies>
+      <GenerateSourceDependencies       Condition="'%(ClCompile.GenerateSourceDependencies)'    == ''">false</GenerateSourceDependencies>
       <GenerateXMLDocumentationFiles    Condition="'%(ClCompile.GenerateXMLDocumentationFiles)' == ''">false</GenerateXMLDocumentationFiles>
       <InlineFunctionExpansion          Condition="'%(ClCompile.InlineFunctionExpansion)'       == ''">Default</InlineFunctionExpansion>
       <IntrinsicFunctions               Condition="'%(ClCompile.IntrinsicFunctions)'            == ''">false</IntrinsicFunctions>
       <IgnoreStandardIncludePath        Condition="'%(ClCompile.IgnoreStandardIncludePath)'     == ''">false</IgnoreStandardIncludePath>
       <LanguageStandard                 Condition="'%(ClCompile.LanguageStandard)'              == ''">Default</LanguageStandard>
+      <LanguageStandard_C               Condition="'%(ClCompile.LanguageStandard_C)'            == ''">Default</LanguageStandard_C>
       <MinimalRebuild                   Condition="'%(ClCompile.MinimalRebuild)'                == '' and
                                                   ('$(CLRSupport)'                              == '' or
                                                    '$(CLRSupport)'                              == 'false')">false</MinimalRebuild>
+      <ModuleDependenciesFile           Condition="'%(ClCompile.ModuleDependenciesFile)'        == ''">$(IntDir)</ModuleDependenciesFile>
+      <ModuleOutputFile                 Condition="'%(ClCompile.ModuleOutputFile)'              == ''">$(IntDir)</ModuleOutputFile>
       <OmitDefaultLibName               Condition="'%(ClCompile.OmitDefaultLibName)'            == ''">false</OmitDefaultLibName>
       <FavorSizeOrSpeed                 Condition="'%(ClCompile.FavorSizeOrSpeed)'              == ''">Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization         Condition="'%(ClCompile.WholeProgramOptimization)'      == ''">false</WholeProgramOptimization>
@@ -82,20 +83,21 @@ Copyright (C) Microsoft Corporation. All rights reserved.
                                                   ('$(CLRSupport)'                              == '' or
                                                    '$(CLRSupport)'                              == 'false')">Cdecl</CallingConvention>
       <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == '' and
-                                                   '$(ConfigurationType)'                       == 'StaticLibrary'">$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+                                                   '$(ConfigurationType)' == 'StaticLibrary'">$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == '' and
-                                                   '$(PlatformToolsetVersion)'                  != ''">$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+                                                   '$(ConfigurationType)' != 'StaticLibrary'">$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <PrecompiledHeader                Condition="'%(ClCompile.PrecompiledHeader)'             == ''">NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile            Condition="'%(ClCompile.PrecompiledHeaderFile)'         == ''">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile      Condition="'%(ClCompile.PrecompiledHeaderOutputFile)'   == ''">$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <ProgramDataBaseFileName          Condition="'%(ClCompile.ProgramDataBaseFileName)'       == ''">$(IntDir)vc140.pdb</ProgramDataBaseFileName>
       <PreprocessToFile                 Condition="'%(ClCompile.PreprocessToFile)'              == ''">false</PreprocessToFile>
       <PreprocessKeepComments           Condition="'%(ClCompile.PreprocessKeepComments)'        == ''">false</PreprocessKeepComments>
       <PreprocessSuppressLineNumbers    Condition="'%(ClCompile.PreprocessSuppressLineNumbers)' == ''">false</PreprocessSuppressLineNumbers>
       <ProcessorNumber                  Condition="'$(CL_MPCount)'                              != ''">$(CL_MPCount)</ProcessorNumber>
       <RemoveUnreferencedCodeData       Condition="'%(ClCompile.RemoveUnreferencedCodeData)'    == ''">true</RemoveUnreferencedCodeData>
       <RuntimeLibrary                   Condition="'%(ClCompile.RuntimeLibrary)'                == ''">MultiThreadedDll</RuntimeLibrary>
+      <ScanSourceForModuleDependencies  Condition="'%(ClCompile.ScanSourceForModuleDependencies)' == ''">false</ScanSourceForModuleDependencies>
       <ShowIncludes                     Condition="'%(ClCompile.ShowIncludes)'                  == ''">false</ShowIncludes>
+      <SourceDependenciesFile           Condition="'%(ClCompile.SourceDependenciesFile)'        == ''">$(IntDir)</SourceDependenciesFile>
       <SuppressStartupBanner            Condition="'%(ClCompile.SuppressStartupBanner)'         == ''">true</SuppressStartupBanner>
       <BufferSecurityCheck              Condition="'%(ClCompile.BufferSecurityCheck)'           == ''">true</BufferSecurityCheck>
       <SmallerTypeCheck                 Condition="'%(ClCompile.SmallerTypeCheck)'              == ''">false</SmallerTypeCheck>
@@ -103,14 +105,26 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <StructMemberAlignment            Condition="'%(ClCompile.StructMemberAlignment)'         == ''">Default</StructMemberAlignment>
       <SupportJustMyCode                Condition="'%(ClCompile.SupportJustMyCode)'             == ''">false</SupportJustMyCode>
       <TrackerLogDirectory              Condition="'%(ClCompile.TrackerLogDirectory)'           == ''">$(TLogLocation)</TrackerLogDirectory>
+      <TranslateIncludes                Condition="'%(ClCompile.TranslateIncludes)'             == ''">false</TranslateIncludes>
       <MinimalRebuildFromTracking       Condition="'%(ClCompile.MinimalRebuildFromTracking)'    == ''">true</MinimalRebuildFromTracking>
       <TreatWarningAsError              Condition="'%(ClCompile.TreatWarningAsError)'           == ''">false</TreatWarningAsError>
       <TreatWChar_tAsBuiltInType        Condition="'%(ClCompile.TreatWChar_tAsBuiltInType)'     == ''">true</TreatWChar_tAsBuiltInType>
       <UseFullPaths                     Condition="'%(ClCompile.UseFullPaths)'                  == ''">true</UseFullPaths>
       <WarningLevel                     Condition="'%(ClCompile.WarningLevel)'                  == ''">Level1</WarningLevel>
       <XMLDocumentationFileName         Condition="'%(ClCompile.XMLDocumentationFileName)'      == ''">$(IntDir)</XMLDocumentationFileName>
+      <DebugInformationFormatDefined    Condition="'%(ClCompile.DebugInformationFormat)'        != ''">true</DebugInformationFormatDefined>
       <DebugInformationFormat           Condition="'%(ClCompile.DebugInformationFormat)'        == ''">ProgramDatabase</DebugInformationFormat>
       <IntelJCCErratum                  Condition="'%(ClCompile.IntelJCCErratum)'               == ''">false</IntelJCCErratum>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(_ClExternalIncludesSupported)' == 'true'">
+    <ClCompile>
+      <ExternalDirectoriesEnv>EXTERNAL_INCLUDE;%(ClCompile.ExternalDirectoriesEnv)</ExternalDirectoriesEnv>
+      <TreatAngleIncludeAsExternal      Condition="'%(ClCompile.TreatAngleIncludeAsExternal)' == ''">false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel             Condition="'%(ClCompile.ExternalWarningLevel)' == ''">InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal Condition="'%(ClCompile.TreatExternalTemplatesAsInternal)' == ''">true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal           Condition="'%(ClCompile.DisableAnalyzeExternal)' == ''">false</DisableAnalyzeExternal>
     </ClCompile>
   </ItemDefinitionGroup>
 

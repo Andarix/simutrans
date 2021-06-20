@@ -19,6 +19,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <ClearDevCommandPromptEnvVars Condition="'$(ClearDevCommandPromptEnvVars)' == '' and '$(VSCMD_VER)' != '' and '$(DisableRegistryUse)' != 'true' and '$(UseEnv)' != 'true'">true</ClearDevCommandPromptEnvVars>
   </PropertyGroup>
 
+  <!-- ensure that IDE is always using current version of CLCommandLine task for designtime builds -->
+  <UsingTask TaskName="CLCommandLine" AssemblyFile="$(CurrentVCTargetsPath)\Microsoft.Build.CPPTasks.Common.dll"/>
+
   <!-- clear out properties defined as env vars in dev command prompt and which interfere with the project settings -->
   <PropertyGroup Condition = "'$(ClearDevCommandPromptEnvVars)' == 'true'">
     <Framework40Version />
@@ -48,6 +51,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
 
   <Import Condition="Exists('$(VCTargetsPath)\ImportBefore\Default')" Project="$(VCTargetsPath)\ImportBefore\Default\*.props" />
+  <Import Condition="'$(DisableInstalledVCTargetsUse)' == 'true' and '$(VCTargetsPath16)' != '' and Exists('$(VCTargetsPath16)\ImportBefore\Default')" Project="$(VCTargetsPath16)\ImportBefore\Default\*.props" />
 
   <PropertyGroup Condition="'$(DisableInstalledVCTargetsUse)' != 'true'">
     <VCTargetsPath10 Condition="'$(VCTargetsPath10)' == '' or ('$(VCTargetsPath10)' != '' and !exists('$(VCTargetsPath10)'))">$(MSBuildProgramFiles32)\MSBuild\Microsoft.Cpp\v4.0\</VCTargetsPath10>
@@ -196,8 +200,15 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <WholeProgramOptimizationDelayImport Condition="'$(WholeProgramOptimization)' != ''">true</WholeProgramOptimizationDelayImport>
     <WholeProgramOptimization Condition="'$(WholeProgramOptimization)' == ''">false</WholeProgramOptimization>
+    <AppContainerApplication Condition="'$(AppContainerApplication)' == '' and '$(WindowsPackageType)'=='MSIX'">true</AppContainerApplication>
     <WindowsAppContainer Condition="'$(WindowsAppContainer)' == '' and '$(AppContainerApplication)' == 'true'">true</WindowsAppContainer>
     <WindowsAppContainer Condition="'$(WindowsAppContainer)' == ''">false</WindowsAppContainer>
+    <WindowsStoreApp Condition="'$(WindowsStoreApp)' == '' and '$(ApplicationType)' == 'Windows Store'">true</WindowsStoreApp>
+    <WindowsStoreApp Condition="'$(WindowsAppContainer)' == 'true'">true</WindowsStoreApp>
+    <WindowsStoreApp Condition="'$(WindowsStoreApp)' == ''">false</WindowsStoreApp>
+    <!-- Default Project Reunion projects (which have WindowsPackageType set) to DesktopCompatible -->
+    <DesktopCompatible Condition="'$(WindowsPackageType)' == '' and '$(WindowsStoreApp)' == 'true'">false</DesktopCompatible>
+    <DesktopCompatible Condition="'$(WindowsPackageType)' != ''">true</DesktopCompatible>
     <CLRSupport Condition="'$(CLRSupport)' == ''">false</CLRSupport>
     <UseOfATL Condition="'$(UseOfATL)' == ''">false</UseOfATL>
     <UseOfMFC Condition="'$(UseOfMFC)' == ''">false</UseOfMFC>
@@ -211,17 +222,17 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <EnableASAN Condition="'$(EnableASAN)' == ''">false</EnableASAN>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <LLVMToolsVersion Condition="'$(LLVMToolsVersion)' == ''">11.0.0</LLVMToolsVersion>
+  </PropertyGroup>
+
   <ItemDefinitionGroup>
     <BuildLog>
       <Path>$(IntDir)$(MSBuildProjectName).log</Path>
     </BuildLog>
   </ItemDefinitionGroup>
 
-  <PropertyGroup>
-    <_DefaultLLVMInstallDir Condition="'$(_DefaultLLVMInstallDir)' == ''">$(VsInstallRoot)\VC\Tools\Llvm</_DefaultLLVMInstallDir>
-    <LLVMInstallDir Condition="'$(LLVMInstallDir)' == ''">$(_DefaultLLVMInstallDir)</LLVMInstallDir>
-  </PropertyGroup>
-
   <Import Condition="Exists('$(VCTargetsPath)\ImportAfter\Default')" Project="$(VCTargetsPath)\ImportAfter\Default\*.props" />
+  <Import Condition="'$(DisableInstalledVCTargetsUse)' == 'true' and '$(VCTargetsPath16)' != '' and Exists('$(VCTargetsPath16)\ImportAfter\Default')" Project="$(VCTargetsPath16)\ImportAfter\Default\*.props" />
   <Import Condition="Exists('$(ForceImportAfterCppDefaultProps)')" Project="$(ForceImportAfterCppDefaultProps)" />
 </Project>

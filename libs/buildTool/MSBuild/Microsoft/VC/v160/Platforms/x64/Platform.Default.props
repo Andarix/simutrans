@@ -22,7 +22,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <DefaultPlatformToolset Condition="'$(DefaultPlatformToolset)' == ''">v142</DefaultPlatformToolset>
 
     <!-- Required for ASAN libraries -->
-    <!--<LlvmPlatformName>x86_64</LlvmPlatformName>-->
+    <LlvmPlatformName>x86_64</LlvmPlatformName>
     
     <!-- Have to maintain compatibility with VS2010 projects, which might not have toolset defined in the project-->
     <PlatformToolset Condition="'$(PlatformToolset)' == ''">$(DefaultX64PlatformToolset)</PlatformToolset>

@@ -34,7 +34,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <!-- Special case that runs analysis for selected file compile -->
   <Target Name="RunSelectedFileClangTidy"
           Condition="'$(RunClangCppAnalysis)'=='true' AND '$(SelectedFiles)'!=''"
-          DependsOnTargets="ClangTidy"
+          DependsOnTargets="ClangTidy;AddSarifLogFileMetadata;WriteAnalysisResultManifest"
           AfterTargets="ClCompile">
     <Message Text="Running clang analysis targets for selected files $(SelectedFiles)" />
   </Target>
@@ -56,6 +56,12 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <AfterClCompileTargets>$(AfterClCompileTargets);AddSarifLogFileMetadata</AfterClCompileTargets>
     <WriteAnalysisResultManifestDependsOn>$(WriteAnalysisResultManifestDependsOn);AddSarifLogFileMetadata</WriteAnalysisResultManifestDependsOn>
   </PropertyGroup>
+
+  <!-- Special case for individual file compilation. -->
+  <Target Name="SelectAnalysisManifest"
+          Condition="'$(RunMsvcAnalysis)'=='true' and '$(SelectedFiles)'!=''"
+          DependsOnTargets="AddSarifLogFileMetadata;WriteAnalysisResultManifest"
+          AfterTargets="SelectClCompile" />
 
   <PropertyGroup Condition="'$(RunCppAnalysis)'=='true' AND ('$(EnableMicrosoftCodeAnalysis)'=='true' OR '$(EnableClangTidyCodeAnalysis)'=='true') AND '$(VCCodeAnalysisUX)'=='true'">
     <AfterClCompileTargets>$(AfterClCompileTargets);WriteAnalysisResultManifest</AfterClCompileTargets>

@@ -44,16 +44,26 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <VCToolsRedistInstallDir>$(VCToolsRedistInstallDir_160)</VCToolsRedistInstallDir>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <_VCToolsServicingVersionsProps Condition="'$(VCToolsInstallDir)' != ''">$(VCToolsInstallDir)Auxiliary\Microsoft.VC.ServicingVersion.props</_VCToolsServicingVersionsProps>
+    <_VCToolsInternalCLFeatureProps Condition="'$(VCToolsInstallDir)' != ''">$(VCToolsInstallDir)Auxiliary\Microsoft.VC.Internal.CL.Features.props</_VCToolsInternalCLFeatureProps>
+    <_VCToolsInternalLinkFeatureProps Condition="'$(VCToolsInstallDir)' != ''">$(VCToolsInstallDir)Auxiliary\Microsoft.VC.Internal.Link.Features.props</_VCToolsInternalLinkFeatureProps>
+  </PropertyGroup>
 
-  <!-- Import vc tools version specific props when available -->
-  <!--<Import Condition="Exists($(VCToolsInstallDir_160)VCToolsVersion.props)" Project="$(VCToolsInstallDir_160)VCToolsVersion.props"/>-->
-
+  <!-- Import vc tools servicing versions props if available -->
+  <Import Condition="Exists($(_VCToolsServicingVersionsProps))" Project="$(_VCToolsServicingVersionsProps)"/>
+  
+  <!-- Import vc tools feature props if available -->
+  <Import Condition="Exists($(_VCToolsInternalCLFeatureProps))" Project="$(_VCToolsInternalCLFeatureProps)"/>
+  <Import Condition="Exists($(_VCToolsInternalLinkFeatureProps))" Project="$(_VCToolsInternalLinkFeatureProps)"/>
+  
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.VCTools.Content.props"/>
 
   <!-- Abstract the Target Library platform so users can easily pick OneCore that isn't currently supported in the IDE -->
   <PropertyGroup  Condition="'$(_VC_Target_Library_Platform)' == ''">
     <_VC_Target_Library_Platform Condition="'$(WindowsAppContainer)' != 'true'">Desktop</_VC_Target_Library_Platform>
-    <_VC_Target_Library_Platform Condition="'$(WindowsAppContainer)' == 'true'">Store</_VC_Target_Library_Platform>
+    <_VC_Target_Library_Platform Condition="'$(WindowsAppContainer)' == 'true' and '$(DesktopCompatible)' != 'true'">Store</_VC_Target_Library_Platform>
+    <_VC_Target_Library_Platform Condition="'$(WindowsAppContainer)' == 'true' and '$(DesktopCompatible)' == 'true'">UWP</_VC_Target_Library_Platform>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(_VC_Target_Library_Platform)' == 'Desktop'">
@@ -68,6 +78,13 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <VC_LibraryPath_VC_x64 Condition="'$(VC_LibraryPath_VC_x64)' == ''">$(_VC_LibraryPath_VC_x64_Store);</VC_LibraryPath_VC_x64>
     <VC_LibraryPath_VC_ARM Condition="'$(VC_LibraryPath_VC_ARM)' == ''">$(_VC_LibraryPath_VC_ARM_Store);</VC_LibraryPath_VC_ARM>
     <VC_LibraryPath_VC_ARM64 Condition="'$(VC_LibraryPath_VC_ARM64)' == ''">$(_VC_LibraryPath_VC_ARM64_Store);</VC_LibraryPath_VC_ARM64>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(_VC_Target_Library_Platform)' == 'UWP'">
+    <VC_LibraryPath_VC_x86 Condition="'$(VC_LibraryPath_VC_x86)' == ''">$(_VC_LibraryPath_VC_x86_UWP);</VC_LibraryPath_VC_x86>
+    <VC_LibraryPath_VC_x64 Condition="'$(VC_LibraryPath_VC_x64)' == ''">$(_VC_LibraryPath_VC_x64_UWP);</VC_LibraryPath_VC_x64>
+    <VC_LibraryPath_VC_ARM Condition="'$(VC_LibraryPath_VC_ARM)' == ''">$(_VC_LibraryPath_VC_ARM_UWP);</VC_LibraryPath_VC_ARM>
+    <VC_LibraryPath_VC_ARM64 Condition="'$(VC_LibraryPath_VC_ARM64)' == ''">$(_VC_LibraryPath_VC_ARM64_UWP);</VC_LibraryPath_VC_ARM64>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(_VC_Target_Library_Platform)' == 'OneCore'">

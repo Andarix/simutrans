@@ -53,7 +53,7 @@
   <StringProperty Name="LastGenOutput" Visible="false" Description="SFG の結果として最後に生成されたファイルのファイル名です。"/>
   <BoolProperty Name="DesignTime" Visible="false" Description="このファイルにデザイナーがあるかどうかを示す値です。"/>
   <BoolProperty Name="AutoGen" Visible="false" Description="生成されたファイルであるかどうかを示す値です。"/>
-  <StringProperty Name="CustomTool" Visible="false" Description="Generator プロパティへのアクセスに使用する DTE プロパティです。">
+  <StringProperty Name="CustomTool" Visible="false" Description="ジェネレーター プロパティへのアクセスに使用する DTE プロパティです。">
     <StringProperty.DataSource>
       <DataSource Persistence="ProjectFile" ItemType="EmbeddedResource" PersistedName="Generator" HasConfigurationCondition="False"/>
     </StringProperty.DataSource>

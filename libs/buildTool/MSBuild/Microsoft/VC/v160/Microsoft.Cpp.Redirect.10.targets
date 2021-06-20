@@ -236,28 +236,67 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       DependsOnTargets="$(ContentFilesProjectOutputGroupDependsOn)">
 
     <ItemGroup>
-      <_ContentFilesProjectOutputGroupOutput
-       Include="@(ClCompile);
-                @(EmbeddedResource);
-                @(_LicxFile);
-                @(ClInclude);
-                @(Midl);
-                @(FxcOutputs);
-                @(ResourceCompile);
-                @(Xsd);
-                @(Xml);
-                @(Text);
-                @(Font);
-                @(CustomBuild);
-                @(Resource);
-                @(Object);
-                @(Library);
-                @(Manifest);
-                @(Image);
-                @(Media);
-                @(_EmbedManagedResourceFile);
-                @(AppConfigWithTargetPath);
-                @(None);" >
+      <_ContentFilesProjectOutputGroupOutput Include="@(ClCompile)" Condition="'%(ClCompile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(_LicxFile)" Condition="'%(_LicxFile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(ClInclude)" Condition="'%(ClInclude.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Midl)" Condition="'%(Midl.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(FxcOutputs)" Condition="'%(FxcOutputs.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(ResourceCompile)" Condition="'%(ResourceCompile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Xsd)" Condition="'%(Xsd.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Xml)" Condition="'%(Xml.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Text)" Condition="'%(Text.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Font)" Condition="'%(Font.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(CustomBuild)" Condition="'%(CustomBuild.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Resource)" Condition="'%(Resource.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Object)" Condition="'%(Object.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Library)" Condition="'%(Library.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Manifest)" Condition="'%(Manifest.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Image)" Condition="'%(Image.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(Media)" Condition="'%(Media.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(_EmbedManagedResourceFile)" Condition="'%(_EmbedManagedResourceFile.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(AppConfigWithTargetPath)" Condition="'%(AppConfigWithTargetPath.DeploymentContent)'=='true'">
+        <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
+      </_ContentFilesProjectOutputGroupOutput>
+      <_ContentFilesProjectOutputGroupOutput Include="@(None)" Condition="'%(None.DeploymentContent)'=='true'">
         <_RootFolder>%(DefiningProjectDirectory)</_RootFolder>
       </_ContentFilesProjectOutputGroupOutput>
 

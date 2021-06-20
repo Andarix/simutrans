@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>propg</Title>
+			<Shortcut>propg</Shortcut>
+			<Description>Codeausschnitt für eine automatisch implementierte Eigenschaft mit einem get-Accessor und einem privaten set-Accessor
+Sprachversion: C# 3.0 oder höher</Description>
+			<Author>Microsoft Corporation</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>type</ID>
+					<ToolTip>Eigenschaftentyp</ToolTip>
+					<Default>int</Default>
+				</Literal>
+				<Literal>
+					<ID>property</ID>
+					<ToolTip>Eigenschaftsname</ToolTip>
+					<Default>MyProperty</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp"><![CDATA[public $type$ $property$ { get; private set; }$end$]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

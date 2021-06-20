@@ -1,0 +1,22 @@
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+  <Metadata>
+    <Identity Id="Microsoft.VisualStudio.Workspace.ExternalBuildFramework.F3641056-6B12-4C85-A36F-77736BEA3FC9" Version="1.0" Language="en-US" Publisher="Microsoft" />
+    <DisplayName>External Build support for Visual Studio</DisplayName>
+    <Description>External Build Framework for providing integration with external build systems and Visual Studio Open Folder</Description>
+    <Locale>1033</Locale>
+    <AllowClientRole>true</AllowClientRole>
+  </Metadata>
+  <Installation SystemComponent="true">
+    <InstallationTarget Version="15.0" Id="Microsoft.VisualStudio.Pro" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
+    <Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" Version="[15.0]" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" Path="Microsoft.VisualStudio.Workspace.ExternalBuildFramework.VS.pkgdef" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.Workspace.ExternalBuildFramework.VS.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.Workspace.ExternalBuildFramework.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.Workspace.ExternalBuildFramework.Impl.dll" />
+  </Assets>
+</PackageManifest>

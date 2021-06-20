@@ -1,0 +1,5 @@
+{
+  "$schema": "../../../schemas/servicehub.host.schema.json",
+  "hostExecutable": "./ServiceHub.LiveUnitTesting.exe",
+  "hostArgs": [ "$HOSTID", "$PIPE", "$TELEMETRYSESSION" ]
+}

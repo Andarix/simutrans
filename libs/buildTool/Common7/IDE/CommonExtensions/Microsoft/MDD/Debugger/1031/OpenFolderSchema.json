@@ -1,0 +1,286 @@
+{
+  "debugExtensions": {
+    "cppdbg": {
+      "vsDebugEngineGuid": "{ea6637c6-17df-45b5-a183-0951c54243bc}",
+      "VsDebugTargetInfo4": {
+        "bstrCurDir": "${workspaceRoot}",
+        "bstrExe": "${debugInfo.target}",
+        "bstrOptions": "*"
+      },
+      "templates": [
+        {
+          "templateId": "launch",
+          "displayName": "C/C++-Start für MinGW/Cygwin (gdb)",
+          "description": "Debugstartkonfiguration für in MinGW oder Cygwin gehosteten C/C++-Code.",
+          "fileExtensions": [
+            "*.exe",
+            "*.out",
+            "Makefile"
+          ],
+          "initialConfiguration": {
+            "cwd": "${workspaceRoot}",
+            "program": "${debugInfo.target}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "${env.MINGW_PREFIX}\\bin\\gdb.exe",
+            "externalConsole": true
+          }
+        },
+        {
+          "templateId": "attach",
+          "displayName": "C/C++-Anfügung für MinGW/Cygwin (gdb)",
+          "description": "Konfiguration für das Anfügen während des Debuggens für in MinGW oder Cygwin gehosteten C/C++-Code.",
+          "fileExtensions": [
+            "*.exe",
+            "*.out",
+            "Makefile"
+          ],
+          "initialConfiguration": {
+            "cwd": "${workspaceRoot}",
+            "program": "${debugInfo.target}",
+            "processId": "0",
+            "MIMode": "gdb",
+            "miDebuggerPath": "${env.MINGW_PREFIX}\\bin\\gdb.exe",
+            "externalConsole": true
+          }
+        }
+      ],
+      "schema": {
+        "definitions": {
+          "cpp_schema": {
+            "type": "object",
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Vollständiger Pfad zur ausführbaren Programmdatei."
+              },
+              "processId": {
+                "type": "integer",
+                "description": "Optionale Prozess-ID, an die der Debugger angefügt wird."
+              },
+              "sourceFileMap": {
+                "type": "object",
+                "description": "Optionale Quelldateizuordnungen, die an die Debug-Engine übergeben werden. Format: \"{ \"<Compiler-Quellspeicherort>\": \"<Editor-Quellspeicherort>\" }\" ODER \"{ \"<Compiler-Quellspeicherort>\": { \"editorPath\": \"<Editor-Quellspeicherort>\", \"useForBreakpoints\": true } }\". \nBeispiel: \"{ \"/home/user/foo\": \"C:\\foo\" }\" ODER \"{ \"/home/user/foo\": { \"editorPath\": \"c:\\foo\", \"useForBreakpoints\": true } }\".",
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "Zeichenfolge"
+                    },
+                    {
+                      "$ref": "#/definitions/cpp_schema/definitions/sourceFileMapOptions"
+                    }
+                  ]
+                }
+              },
+              "MIMode": {
+                "type": "string",
+                "description": "Gibt den Typ des MI-fähigen Konsolendebuggers an, mit dem MIDebugEngine eine Verbindung herstellt. \nZulässige Werte sind \"gdb\" und \"lldb\"."
+              },
+              "args": {
+                "type": "array",
+                "description": "Befehlszeilenargumente, die an das Programm übergeben werden.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "environment": {
+                "type": "array",
+                "description": "Umgebungsvariablen, die der Umgebung für das Programm hinzugefügt werden sollen. \nBeispiel: [ { \"name\": \"squid\", \"value\": \"clam\" } ].",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "targetArchitecture": {
+                "type": "string",
+                "description": "Die Architektur der zu debuggenden Komponente. Falls dieser Parameter nicht festgelegt ist, wird die Architektur automatisch erkannt. \nZulässige Werte sind \"x86\", \"arm\", \"arm64\", \"mips\", \"x64\", \"amd64\" und \"x86_64\"."
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Das Arbeitsverzeichnis des Ziels."
+              },
+              "miDebuggerPath": {
+                "type": "string",
+                "description": "Der Pfad zum MI-fähigen Debugger (z. B. gdb). Ist die Option nicht angegeben, wird zuerst nach PATH für den Debugger gesucht."
+              },
+              "miDebuggerServerAddress": {
+                "type": "string",
+                "description": "Netzwerkadresse des MI-fähigen Debuggerservers, mit dem eine Verbindung hergestellt werden soll. \nBeispiel: localhost:1234."
+              },
+              "setupCommands": {
+                "type": "array",
+                "description": "Mindestens ein GDB/LLDB-Befehl, der zum Einrichten des zugrunde liegenden Debuggers ausgeführt wird. \nBeispiel: \"setupCommands\": [ { \"text\": \"-enable-pretty-printing\", \"description\": \"Enable GDB pretty printing\", \"ignoreFailures\": true }].",
+                "items": {
+                  "$ref": "#/definitions/cpp_schema/definitions/launchSetupCommands"
+                }
+              },
+              "customLaunchSetupCommands": {
+                "type": "array",
+                "description": "Wenn diese Option angegeben ist, werden die Standardbefehle zum Starten eines Ziels durch einige andere Befehle ersetzt. \nZum Anfügen eines Zielprozesses kann dies z. B. \"-target-attach\" sein. \nIm Fall einer leeren Befehlsliste werden die Startbefehle durch nichts ersetzt. Dies kann nützlich sein, wenn für den Debugger Startoptionen als Befehlszeilenoptionen angegeben werden. \nBeispiel: \"customLaunchSetupCommands\": [ { \"text\": \"target-run\", \"description\": \"run target\", \"ignoreFailures\": false }].",
+                "items": {
+                  "$ref": "#/definitions/cpp_schema/definitions/launchSetupCommands"
+                }
+              },
+              "launchCompleteCommand": {
+                "type": "string",
+                "enum": [
+                  "exec-run",
+                  "exec-continue",
+                  "None"
+                ],
+                "description": "Der Befehl, der nach der vollständigen Einrichtung des Debuggers ausgeführt wird, um den Zielprozess auszuführen. \nZulässige Werte sind \"exec-run\", \"exec-continue\" und \"None\". \nDer Standardwert ist \"exec-run\"."
+              },
+              "debugServerPath": {
+                "type": "string",
+                "description": "Optionaler vollständiger Pfad zum zu startenden Debugserver. \nDer Standardwert ist \"null\"."
+              },
+              "debugServerArgs": {
+                "type": "string",
+                "description": "Optionale Debugserverargumente. \nDer Standardwert ist \"null\"."
+              },
+              "serverStarted": {
+                "type": "string",
+                "description": "Optionales vom Server gestartetes Muster, nach dem in der Ausgabe des Debugservers gesucht wird. \nDer Standardwert ist \"null\"."
+              },
+              "filterStdout": {
+                "type": "boolean",
+                "description": "stdout-Stream für ein vom Server gestartetes Muster suchen und stdout in der Debugausgabe protokollieren. \nDer Standardwert ist \"true\"."
+              },
+              "filterStderr": {
+                "type": "boolean",
+                "description": "stderr-Stream für ein vom Server gestartetes Muster suchen und stderr in der Debugausgabe protokollieren. \nDer Standardwert ist \"false\"."
+              },
+              "serverLaunchTimeout": {
+                "type": "integer",
+                "description": "Optionale Zeit in Millisekunden, während der der Debugger auf den Start von debugServer wartet. Der Standardwert ist 10.000."
+              },
+              "coreDumpPath": {
+                "type": "string",
+                "description": "Optionaler vollständiger Pfad zu einer Kern-Speicherabbilddatei für das angegebene Programm. \nDer Standardwert ist \"NULL\"."
+              },
+              "externalConsole": {
+                "type": "boolean",
+                "description": "Bei \"true\" wird eine Konsole für die zu debuggende Komponente gestartet. Bei \"false\" wird keine Konsole gestartet. \nDer Standardwert ist \"false\". HINWEIS: In manchen Fällen wird diese Option aus technischen Gründen ignoriert."
+              },
+              "pipeTransport": {
+                "$ref": "#/definitions/cpp_schema/definitions/pipeTransportOptions"
+              },
+              "stopAtConnect": {
+                "type": "boolean",
+                "description": "If true, the debugger should stop after connecting to the target. If false, the debugger will continue after connecting. \nDefaults to false."
+              },
+              "hardwareBreakpoints": {
+                "$ref": "#/definitions/cpp_schema/definitions/hardwareBreakpointsOptions"
+              }
+            },
+            "definitions": {
+              "launchSetupCommands": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Der auszuführende Debuggerbefehl."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Optionale Beschreibung des Befehls."
+                  },
+                  "ignoreFailures": {
+                    "type": "boolean",
+                    "description": "Bei \"true\" werden durch den Befehl verursachte Fehler ignoriert. \nDer Standardwert ist \"false\"."
+                  }
+                }
+              },
+              "pipeTransportOptions": {
+                "type": "object",
+                "description": "Falls angegeben, weist diese Option den Debugger an, eine Verbindung mit einem Remotecomputer mithilfe einer anderen ausführbaren Datei als Pipe herzustellen, die Standardeingaben/-ausgaben zwischen Visual Studio \nund dem MI-fähigen Debugger weiterleitet (z. B. gdb).",
+                "properties": {
+                  "pipeCwd": {
+                    "type": "string",
+                    "description": "Der vollqualifizierte Pfad zum Arbeitsverzeichnis für das Pipeprogramm."
+                  },
+                  "pipeProgram": {
+                    "type": "string",
+                    "description": "Der vollqualifizierte auszuführende Pipebefehl."
+                  },
+                  "pipeArgs": {
+                    "type": "array",
+                    "description": "Befehlszeilenargumente, die zum Konfigurieren der Verbindung an das Pipeprogramm übergeben werden.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "pipeCmd": {
+                    "type": "Array",
+                    "description": "Argumente, die an die ausführbare Pipedatei übergeben werden, um einen UNIX-Remoteshellbefehl (z. B. \"bash\") auszuführen. Dies wird zum Ausführen von \"kill\" oder anderen Befehlen auf dem Remotesystem verwendet, die der Debugger möglicherweise benötigt. Wenn keine Angabe vorliegt, versucht der Debugger ohne Shell vorzugehen. Einige Features, z. B. das Festlegen von Haltepunkten im Ausführungsmodus, funktionieren möglicherweise nicht. Diese Zeichenfolge muss die Zeichenfolge \"{0}\" enthalten, die durch den auszuführenden Befehl ersetzt wird.",
+                    "items": {
+                      "type": "Zeichenfolge"
+                    }
+                  },
+                  "debuggerPath": {
+                    "type": "string",
+                    "description": "Der vollständige Pfad zum Debugger auf dem Zielcomputer, z. B. \"/usr/bin/gdb\"."
+                  },
+                  "pipeEnv": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "Umgebungsvariablen, die an das Pipeprogramm übergeben werden."
+                  },
+                  "quoteArgs": {
+                    "type": "boolean",
+                    "description": "Gibt an, ob der Befehl in Anführungszeichen gesetzt wird, wenn einzelne Argumente Zeichen enthalten (z. B. Leerräume oder Tabstopps). Bei \"false\" wird der Debuggerbefehl nicht mehr automatisch in Anführungszeichen gesetzt. \nDer Standardwert ist \"true\"."
+                  }
+                }
+              },
+              "sourceFileMapOptions": {
+                "type": "object",
+                "properties": {
+                  "editorPath": {
+                    "type": "string",
+                    "description": "Der Speicherort des Quellcodes, den der Editor sucht."
+                  },
+                  "useForBreakpoints": {
+                    "type": "boolean",
+                    "description": "Beim Festlegen von Haltepunkten sollte diese Quellzuordnung verwendet werden. \nBei \"false\" werden nur der Dateiname und die Zeilennummer zum Festlegen von Haltepunkten verwendet. \nBei \"true\" werden Haltepunkte nur dann mit dem vollständigen Pfad zur Datei und zur Zeilennummer festgelegt, wenn diese Quellzuordnung verwendet wird. Andernfalls werden nur der Dateiname und die Zeilennummer beim Festlegen von Haltepunkten verwendet. \nDer Standardwert ist \"true\"."
+                  }
+                }
+              },
+              "hardwareBreakpointsOptions": {
+                "type": "object",
+                "properties": {
+                  "require": {
+                    "type": "boolean",
+                    "description": "If true, always use hardware breakpoints. \nDefaults to false."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Optional limit on the number of available hardware breakpoints to use. Only enforced when \"require\" is true and \"limit\" is greater than 0. \nDefaults to 0."
+                  }
+                }
+              }
+            }
+          },
+          "cppTemplateLayout": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/default"
+              },
+              {
+                "$ref": "#/definitions/cpp_schema"
+              }
+            ]
+          }
+        },
+        "configuration": "#/definitions/cppTemplateLayout"
+      }
+    }
+  }
+}

@@ -12,6 +12,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <LLVMInstallDir Condition="'$(LLVMInstallDir)' == '' and '$(PlatformTarget)'=='x86'">$(VsInstallRoot)\VC\Tools\Llvm</LLVMInstallDir>
+    <LLVMInstallDir Condition="'$(LLVMInstallDir)' == '' and '$(PlatformTarget)'=='x64'">$(VsInstallRoot)\VC\Tools\Llvm\x64</LLVMInstallDir>
+
     <ClangTidyToolExe Condition="'$(ClangTidyToolExe)'==''">clang-tidy.exe</ClangTidyToolExe>
     <ClangTidyToolPath Condition="'$(ClangTidyToolPath)'==''">$(LLVMInstallDir)\bin</ClangTidyToolPath>
     

@@ -18,7 +18,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <WindowsSdkDir_10 Condition="'$(WindowsSdkDir_10)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\v10.0@InstallationFolder)</WindowsSdkDir_10>
     <!-- Set the WindowsSdkDir to windows 10 path -->
     <WindowsSdkDir Condition="'$(UseEnv)' != 'true'">$(WindowsSdkDir_10)</WindowsSdkDir>
-    
+
     <UniversalCRTSdkDir_10 Condition="'$(UniversalCRTSdkDir_10)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</UniversalCRTSdkDir_10>
     <UniversalCRTSdkDir_10 Condition="'$(UniversalCRTSdkDir_10)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</UniversalCRTSdkDir_10>
 
@@ -31,43 +31,63 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <FrameworkDir_110 Condition="'$(FrameworkDir_110)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework@InstallRoot)</FrameworkDir_110>
     <FrameworkDir_110 Condition="'$(FrameworkDir_110)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework@InstallRoot)</FrameworkDir_110>
 
+    <NETFXSDK_UseAnyInstalledVersion Condition="'$(NETFXSDK_Version)' == ''">true</NETFXSDK_UseAnyInstalledVersion>
     <NETFXSDK_Version Condition="'$(NETFXSDK_Version)' == ''">4.8</NETFXSDK_Version>
   </PropertyGroup>
 
   <!-- NETFX SDK locations -->
-  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.8'">
+  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.8' and '$(DisableRegistryUse)' != 'true'">
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.8@KitsInstallationFolder)</NETFXKitsDir>
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.8@KitsInstallationFolder)</NETFXKitsDir>
 
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.8@InstallationFolder)</NETFXSDKDir>
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.8@InstallationFolder)</NETFXSDKDir>
+
+    <NETFXSDK_Version Condition="('$(NETFXKitsDir)' == '' or '$(NETFXSDKDir)' == '') and '$(NETFXSDK_UseAnyInstalledVersion)' == 'true'">4.7.3</NETFXSDK_Version>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.7.3'">
+  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.7.3' and '$(DisableRegistryUse)' != 'true'">
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.7.3@KitsInstallationFolder)</NETFXKitsDir>
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.7.3@KitsInstallationFolder)</NETFXKitsDir>
 
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.7.3@InstallationFolder)</NETFXSDKDir>
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.7.3@InstallationFolder)</NETFXSDKDir>
+
+    <NETFXSDK_Version Condition="('$(NETFXKitsDir)' == '' or '$(NETFXSDKDir)' == '') and '$(NETFXSDK_UseAnyInstalledVersion)' == 'true'">4.7.2</NETFXSDK_Version>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.7.2'">
+  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.7.2' and '$(DisableRegistryUse)' != 'true'">
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.7.2@KitsInstallationFolder)</NETFXKitsDir>
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.7.2@KitsInstallationFolder)</NETFXKitsDir>
 
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.7.2@InstallationFolder)</NETFXSDKDir>
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.7.2@InstallationFolder)</NETFXSDKDir>
+
+    <NETFXSDK_Version Condition="('$(NETFXKitsDir)' == '' or '$(NETFXSDKDir)' == '') and '$(NETFXSDK_UseAnyInstalledVersion)' == 'true'">4.7.1</NETFXSDK_Version>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.7.1'">
+  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.7.1' and '$(DisableRegistryUse)' != 'true'">
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.7.1@KitsInstallationFolder)</NETFXKitsDir>
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.7.1@KitsInstallationFolder)</NETFXKitsDir>
 
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.7.1@InstallationFolder)</NETFXSDKDir>
     <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.7.1@InstallationFolder)</NETFXSDKDir>
+
+    <NETFXSDK_Version Condition="('$(NETFXKitsDir)' == '' or '$(NETFXSDKDir)' == '') and '$(NETFXSDK_UseAnyInstalledVersion)' == 'true'">4.6.2</NETFXSDK_Version>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.6.1'">
+  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.6.2' and '$(DisableRegistryUse)' != 'true'">
+    <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.6.2@KitsInstallationFolder)</NETFXKitsDir>
+    <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.6.2@KitsInstallationFolder)</NETFXKitsDir>
+
+    <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.6.2@InstallationFolder)</NETFXSDKDir>
+    <NETFXSDKDir Condition = "'$(NETFXSDKDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.6.2@InstallationFolder)</NETFXSDKDir>
+
+    <NETFXSDK_Version Condition="('$(NETFXKitsDir)' == '' or '$(NETFXSDKDir)' == '') and '$(NETFXSDK_UseAnyInstalledVersion)' == 'true'">4.6.1</NETFXSDK_Version>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition="'$(NETFXSDK_Version)' == '4.6.1' and '$(DisableRegistryUse)' != 'true'">
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\NETFXSDK\4.6.1@KitsInstallationFolder)</NETFXKitsDir>
     <NETFXKitsDir Condition="'$(NETFXKitsDir)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\NETFXSDK\4.6.1@KitsInstallationFolder)</NETFXKitsDir>
 
@@ -105,8 +125,17 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <TargetPlatformMinVersion Condition="'$(TargetPlatformMinVersion)' == ''">$(WindowsTargetPlatformMinVersion)</TargetPlatformMinVersion>
 
-    <TargetOsAndVersion Condition="'$(AppContainerApplication)' == 'true'">$([Microsoft.Build.Utilities.ToolLocationHelper]::GetPlatformSDKDisplayName($(SDKIdentifier), $(SDKVersion)))</TargetOsAndVersion>
     <RetargetAlwaysSupported Condition="'$(_ToolsetFound)' == 'true' and '$(SharedAssetsProject)' != 'true' and '$(RetargetAlwaysSupported)' == ''">true</RetargetAlwaysSupported>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(WindowsPackageType)'==''">
+    <TargetOsAndVersion Condition="'$(WindowsAppContainer)' == 'true'">$([Microsoft.Build.Utilities.ToolLocationHelper]::GetPlatformSDKDisplayName($(SDKIdentifier), $(SDKVersion)))</TargetOsAndVersion>
+    <TargetOsAndVersion Condition="'$(WindowsAppContainer)' == 'false' and '$(WindowsStoreApp)' == 'true'">Desktop</TargetOsAndVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(WindowsPackageType)'!=''">
+    <TargetOsAndVersion>Desktop</TargetOsAndVersion>
+    <AppxPackage Condition="'$(AppxPackage)'=='' and '$(WindowsPackageType)'!='None'">true</AppxPackage>
   </PropertyGroup>
 
 
@@ -124,7 +153,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <PropertyGroup>
     <UniversalCRTSdkDir>$(UniversalCRTSdkDir_10)</UniversalCRTSdkDir>
-    
+
     <!-- Fall back to 8.1 if windows 10 SDK is not found or WindowsTargetPlatformVersion is set to "8.1" or is not set at all -->
     <WindowsSdkDir Condition="'$(TargetPlatformVersion)' == '8.1'">$(WindowsSdkDir_81)</WindowsSdkDir>
     <WindowsSDKDir Condition="'$(DefineWindowsSDK_71A)' == 'true'">$(WindowsSdkDir_71A)</WindowsSDKDir>
@@ -137,7 +166,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <TargetUniversalCRTVersion Condition="'$(TargetUniversalCRTVersion)' == ''  and ('$(TargetPlatformVersion)' == '8.1' or '$(DefineWindowsSDK_71A)' == 'true')">10.0.10240.0</TargetUniversalCRTVersion>
     <UniversalCRT_PropsPath Condition="'$(UniversalCRT_PropsPath)' == ''">$(UniversalCRTSdkDir)\DesignTime\CommonConfiguration\Neutral\ucrt.props</UniversalCRT_PropsPath>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(TargetPlatformVersion)' == '8.1'">
     <SDKDisplayName>Windows</SDKDisplayName>
   </PropertyGroup>
@@ -163,14 +192,14 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <UniversalDebugCRT_ExecutablePath_x86>$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x86\ucrt</UniversalDebugCRT_ExecutablePath_x86>
     <UniversalDebugCRT_ExecutablePath_x64>$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\ucrt</UniversalDebugCRT_ExecutablePath_x64>
     <UniversalDebugCRT_ExecutablePath_ARM>$(WindowsSdkDir)bin\$(TargetPlatformVersion)\ARM\ucrt</UniversalDebugCRT_ExecutablePath_ARM>
-    <UniversalDebugCRT_ExecutablePath_ARM64>$(WindowsSdkDir)bin\$(TargetPlatformVersion)\ARM64\ucrt</UniversalDebugCRT_ExecutablePath_ARM64>  
+    <UniversalDebugCRT_ExecutablePath_ARM64>$(WindowsSdkDir)bin\$(TargetPlatformVersion)\ARM64\ucrt</UniversalDebugCRT_ExecutablePath_ARM64>
   </PropertyGroup>
 
   <PropertyGroup>
     <WindowsSDK_ExecutablePath_x86 Condition = "'$(NETFXSDKDir)' != ''">$(WindowsSDK_ExecutablePath_x86);$(NETFXSDKDir)bin\NETFX $(NETFXSDK_Version) Tools</WindowsSDK_ExecutablePath_x86>
     <WindowsSDK_ExecutablePath_x64 Condition = "'$(NETFXSDKDir)' != ''">$(WindowsSDK_ExecutablePath_x64);$(NETFXSDKDir)bin\NETFX $(NETFXSDK_Version) Tools\x64</WindowsSDK_ExecutablePath_x64>
     <WindowsSDK_IncludePath Condition = "'$(NETFXKitsDir)' != '' and '$(TargetPlatformVersion)' == '8.1'">$(WindowsSDK_IncludePath);$(NETFXKitsDir)Include\um</WindowsSDK_IncludePath>
-    
+
     <SDK_ExecutablePath_x86>$(WindowsSDK_ExecutablePath_x86)</SDK_ExecutablePath_x86>
     <SDK_ExecutablePath_x64>$(WindowsSDK_ExecutablePath_x64)</SDK_ExecutablePath_x64>
   </PropertyGroup>
@@ -202,9 +231,11 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </PropertyGroup>
 
   <!-- Project capabiltities are used to filter which Extension SDKs appear in the Add/Remove References dialog -->
-  <ItemGroup Condition="'$(SharedAssetsProject)' != 'true'">
+  <ItemGroup Condition="'$(SharedAssetsProject)' != 'true' and '$(WindowsPackageType)'==''">
     <ProjectCapability Include="WindowsAppContainer" Condition="'$(WindowsAppContainer)' == 'true'"/>
     <ProjectCapability Include="desktop" Condition="'$(WindowsAppContainer)' != 'true'"/>
   </ItemGroup>
-
+  <ItemGroup Condition="'$(SharedAssetsProject)' != 'true' and '$(WindowsPackageType)'!=''">
+    <ProjectCapability Include="desktop" />
+  </ItemGroup>
 </Project>

@@ -10,6 +10,7 @@
     <Category Name="Precompiled Headers" DisplayName="Vorkompilierte Header"/>
     <Category Name="Output Files" DisplayName="Ausgabedateien"/>
     <Category Name="Browse Information" DisplayName="Informationen durchsuchen"/>
+    <Category Name="External Includes" DisplayName="Externe Includes"/>
     <Category Name="Advanced" DisplayName="Erweitert"/>
     <Category Name="All Options" DisplayName="Alle Optionen" Subtype="Search"/>
     <Category Name="Command Line" DisplayName="Befehlszeile" Subtype="CommandLine"/>
@@ -17,10 +18,20 @@
   <Rule.DataSource>
     <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true"/>
   </Rule.DataSource>
-  <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Zusätzliche Includeverzeichnisse" Description="Gibt mindestens ein Verzeichnis an, das zum Includepfad hinzugefügt wird. Verwenden Sie bei mehr als einem Verzeichnis Semikolons als Trennzeichen.     (/I[Pfad])" Category="General" Switch="I" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalIncludeDirectories">
+  <StringListProperty Subtype="folder" Name="AdditionalIncludeDirectories" DisplayName="Zusätzliche Includeverzeichnisse" Description="Hiermit wird mindestens ein Verzeichnis angegeben, das dem Pfad hinzugefügt werden soll. Verwenden Sie das Trennzeichen &quot;;&quot;, wenn mehrere Verzeichnisse angegeben werden. (/I[path])" Category="General" Switch="I" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalIncludeDirectories">
   </StringListProperty>
-  <StringListProperty Subtype="folder" Name="AdditionalUsingDirectories" DisplayName="Zusätzliche #using-Verweise" Description="Gibt ein oder mehrere Verzeichnisse für die Suche an, um Namen aufzulösen, die an eine #using-Direktive übergeben werden (Verzeichnisnamen werden durch Semikolons getrennt).  (/AI[Pfad])" Category="General" Switch="AI" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalUsingDirectories">
+  <StringListProperty Subtype="folder" Name="AdditionalUsingDirectories" DisplayName="Zusätzliche #using-Verweise" Description="Hiermit wird mindestens ein Verzeichnis angegeben, das durchsucht werden soll, um die an eine #using-Direktive übergebenen Namen aufzulösen. Verwenden Sie das Trennzeichen &quot;;&quot;, wenn mehrere Verzeichnisse angegeben werden. (/AI[path])" Category="General" Switch="AI" F1Keyword="VC.Project.VCCLCompilerTool.AdditionalUsingDirectories">
   </StringListProperty>
+  <StringListProperty Subtype="folder" Name="AdditionalBMIDirectories" DisplayName="Zusätzliche BMI-Verzeichnisse" Description="Hiermit wird mindestens ein Verzeichnis angegeben, das durchsucht werden soll, um die an eine Importdirektive übergebenen Namen aufzulösen. Verwenden Sie das Trennzeichen &quot;;&quot;, wenn mehrere Verzeichnisse angegeben werden. (/ifcSearchDir[path])" Category="General" Switch="ifcSearchDir " F1Keyword="VC.Project.VCCLCompilerTool.AdditionalModuleDirectories">
+  </StringListProperty>
+  <StringListProperty Subtype="file" Name="AdditionalModuleDependencies" DisplayName="Zusätzliche Modulabhängigkeiten" Description="Hiermit wird mindestens ein Modul angegeben, das zum Auflösen der an eine Importdirektive übergebenen Namen verwendet werden soll. Verwenden Sie das Trennzeichen &quot;;&quot;, wenn mehrere Module angegeben werden. (/reference[[module_name=]path])" Category="General" Switch="reference " F1Keyword="VC.Project.VCCLCompilerTool.AdditionalModuleDependencies">
+  </StringListProperty>
+  <StringListProperty Subtype="file" Name="AdditionalHeaderUnitDependencies" DisplayName="Zusätzliche Headereinheitenabhängigkeiten" Description="Hiermit wird mindestens eine Headereinheit angegeben, die zum Auflösen der an eine Importheaderanweisung übergebenen Namen verwendet werden soll. Verwenden Sie ein Semikolon &quot;;&quot; als Trennzeichen, wenn mehrere Headereinheiten angegeben werden. (/headerUnit[header=path])" Category="General" Switch="headerUnit " F1Keyword="VC.Project.VCCLCompilerTool.AdditionalModuleDependencies">
+  </StringListProperty>
+  <BoolProperty Name="ScanSourceForModuleDependencies" DisplayName="Quellen auf Modulabhängigkeiten überprüfen" Description="Diese Einstellung bewirkt, dass der Build nicht nur die Modulschnittstelle und die Quellen der Headereinheit, sondern alle C++-Quellen auf Modulabhängigkeiten und Abhängigkeiten von Headereinheiten überprüft und ein vollständiges Abhängigkeitendiagramm erstellt." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCCLCompilerTool.ScanSourceForModuleDependencies">
+  </BoolProperty>
+  <BoolProperty Name="TranslateIncludes" DisplayName="Includes in Importe übersetzen" Description="Ermöglicht dem Compiler das Übersetzen von #include-Anweisungen in Importanweisungen für die verfügbaren Headereinheiten.  (/translateInclude)" Category="General" Switch="translateInclude" F1Keyword="VC.Project.VCCLCompilerTool.TranslateIncludes">
+  </BoolProperty>
   <EnumProperty Name="DebugInformationFormat" DisplayName="Debuginformationsformat" Description="Gibt den Typ der Debuginformationen an, die vom Compiler generiert werden.  Hierfür sind kompatible Linkereinstellungen erforderlich.    (/Z7, /Zi, /ZI)" Category="General" F1Keyword="VC.Project.VCCLCompilerTool.DebugInformationFormat">
     <EnumValue Name="None" Switch="" DisplayName="Keine" Description="Liefert keine Debuginformationen, deshalb ist die Kompilierung möglicherweise schneller.">
     </EnumValue>
@@ -86,7 +97,7 @@
   </IntProperty>
   <BoolProperty Name="ForceSynchronousPDBWrites" DisplayName="Synchrone PDB-Schreibvorgänge erzwingen" Description="Synchroner Schreibvorgang in PDB bei paralleler Erstellung." Category="General" Switch="FS" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.ForceSynchronousPDBWrites">
   </BoolProperty>
-  <BoolProperty Name="EnableASAN" DisplayName="AddressSanitizer aktivieren (experimentell)" Description="Kompiliert und verknüpft das Programm mit AddressSanitizer. Aktuell nur für x86-Releasebuilds (32 Bit) verfügbar." Category="General" Switch="fsanitize=address" F1Keyword="VC.Project.VCCLCompilerTool.EnableASAN">
+  <BoolProperty Name="EnableASAN" DisplayName="AddressSanitizer aktivieren" Description="Kompiliert und verknüpft das Programm mit AddressSanitizer. Derzeit nur für x86- und x64-Builds verfügbar." Category="General" Switch="fsanitize=address" F1Keyword="VC.Project.VCCLCompilerTool.EnableASAN">
     <BoolProperty.DataSource>
       <DataSource Persistence="ProjectFile" ItemType="" Label="Configuration" HasConfigurationCondition="true"/>
     </BoolProperty.DataSource>
@@ -144,6 +155,8 @@
   <BoolProperty Name="PreprocessSuppressLineNumbers" DisplayName="Unterdrückte Zeilennummern vorverarbeiten" Description="Ohne #line-Direktiven vorverarbeiten." Category="Preprocessor" Switch="EP" F1Keyword="VC.Project.VCCLCompilerTool.GeneratePreprocessedFileNoLines">
   </BoolProperty>
   <BoolProperty Name="PreprocessKeepComments" DisplayName="Kommentare beibehalten" Description="Unterdrückt das Entfernen von Kommentaren aus dem Quellcode. Erfordert die Aktivierung einer der Präprozessoroptionen.     (/C)" Category="Preprocessor" Switch="C" F1Keyword="VC.Project.VCCLCompilerTool.KeepComments">
+  </BoolProperty>
+  <BoolProperty ReverseSwitch="Zc:preprocessor-" Name="UseStandardPreprocessor" DisplayName="Mit Standards konformen Präprozessor verwenden" Description="Hiermit wird ein mit den Standards konformer Präprozessor (/Zc:preprocessor) verwendet. Derzeit wird dieser implizit durch /std:c11 und /std:c17 festgelegt. Legen Sie diese Eigenschaft auf &quot;No&quot; fest, um den Legacypräprozessor zu verwenden." Category="Preprocessor" Switch="Zc:preprocessor" F1Keyword="VC.Project.VCCLCompilerTool.PreprocessorStandard">
   </BoolProperty>
   <BoolProperty ReverseSwitch="GF-" Name="StringPooling" DisplayName="Stringpooling aktivieren" Description="Ermöglicht dem Compiler, eine einzige schreibgeschützte Kopie identischer Zeichenfolgen im Programmimage und im Speicher während der Ausführung zu erstellen, was zu kleineren Programmen führt - eine Optimierung mit dem Namen Stringpooling. /O1, /O2 und /ZI legen automatisch die /GF-Option fest. " Category="Code Generation" Switch="GF" F1Keyword="VC.Project.VCCLCompilerTool.StringPooling">
   </BoolProperty>
@@ -254,10 +267,20 @@
   </EnumProperty>
   <BoolProperty Name="IntelJCCErratum" DisplayName="Intel JCC-Fehlerkorrektur aktivieren" Description=" Softwarekorrektur für die Leistungsbeeinträchtigung durch das Intel JCC-Microcode-Update.       (/QIntel-jcc-erratum)" Category="Code Generation" Switch="QIntel-jcc-erratum" F1Keyword="VC.Project.VCCLCompilerTool.IntelJCCErratum">
   </BoolProperty>
+  <BoolProperty ReverseSwitch="guard:ehcont-" Name="GuardEHContMetadata" DisplayName="Metadaten zum Fortsetzen der Ausnahmebehandlung aktivieren" Description="Generiert eine sortierte Liste aller gültigen Fortsetzungsziele für die Ausnahmebehandlung für eine Binärdatei. Wird zur Laufzeit für die RIP-Überprüfung verwendet. Derzeit für x64-Builds verfügbar. (/guard:ehcont)" Category="Code Generation" Switch="guard:ehcont" F1Keyword="VC.Project.VCCLCompilerTool.GuardEHContMetadata">
+  </BoolProperty>
+  <BoolProperty ReverseSwitch="guard:signret-" Name="GuardSignedReturns" DisplayName="Signierte Rückgaben aktivieren" Description="Aktiviert signierte Rückgaben, wodurch Versuche zur Übergabe ungültiger Blöcke aus Funktionsrückgaben erkannt und verhindert werden können. Derzeit für ARM64-Builds verfügbar. (/guard:signret)" Category="Code Generation" Switch="guard:signret" F1Keyword="VC.Project.VCCLCompilerTool.GuardSignedReturns">
+  </BoolProperty>
   <BoolProperty Name="DisableLanguageExtensions" DisplayName="Spracherweiterungen deaktivieren" Description="Unterdrückt oder aktiviert Spracherweiterungen.     (/Za)" Category="Language" Switch="Za" F1Keyword="VC.Project.VCCLCompilerTool.DisableLanguageExtensions">
   </BoolProperty>
-  <BoolProperty Name="ConformanceMode" DisplayName="Konformitätsmodus" Description="Aktiviert oder unterdrückt den Konformitätsmodus.     (/ permissive-)" Category="Language" Switch="permissive-" F1Keyword="VC.Project.VCCLCompilerTool.ConformanceMode">
-  </BoolProperty>
+  <EnumProperty Name="ConformanceMode" DisplayName="Konformitätsmodus" Description="Aktiviert oder unterdrückt den Konformitätsmodus. (/permissive-, /permissive). " Category="Language" F1Keyword="VC.Project.VCCLCompilerTool.ConformanceMode">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard">
+    </EnumValue>
+    <EnumValue Name="true" Switch="permissive-" DisplayName="Ja">
+    </EnumValue>
+    <EnumValue Name="false" Switch="permissive" DisplayName="Nein">
+    </EnumValue>
+  </EnumProperty>
   <BoolProperty ReverseSwitch="Zc:wchar_t-" Name="TreatWChar_tAsBuiltInType" DisplayName="WChar_t als integrierten Typ behandeln" Description="Hierbei wird der Typ &quot;wchar_t&quot; zu einem nativen Typ, der auf dieselbe Art und Weise &quot;__wchar_t&quot; zugeordnet ist wie kurze Zuordnungen zu &quot;__int16&quot;. &quot;/Zc:wchar_t&quot; ist standardmäßig aktiviert." Category="Language" Switch="Zc:wchar_t" F1Keyword="VC.Project.VCCLCompilerTool.TreatWChar_tAsBuiltInType">
   </BoolProperty>
   <BoolProperty ReverseSwitch="Zc:forScope-" Name="ForceConformanceInForLoopScope" DisplayName="Übereinstimmung in einem For-Schleifenbereich erzwingen" Description="Wird verwendet, um C++-Standardverhalten für For-Anweisungsschleifen mit Microsoft-Erweiterungen zu implementieren (/Za, /Ze (Spracherweiterungen deaktivieren)). &quot;/Zc:forScope&quot; ist standardmäßig aktiviert." Category="Language" Switch="Zc:forScope" F1Keyword="VC.Project.VCCLCompilerTool.ForceConformanceInForLoopScope">
@@ -270,8 +293,8 @@
   </BoolProperty>
   <BoolProperty ReverseSwitch="openmp-" Name="OpenMPSupport" DisplayName="Open MP-Unterstützung" Description="Aktiviert OpenMP 2.0-Spracherweiterungen.     (/openmp)" Category="Language" Switch="openmp" F1Keyword="VC.Project.VCCLCompilerTool.OpenMP">
   </BoolProperty>
-  <EnumProperty Name="LanguageStandard" DisplayName="C++-Sprachstandard" Description="Bestimmt den C++-Sprachstandard, der vom Compiler erzwungen wird. Es wird empfohlen, die neueste Version zu verwenden. (/std:c++14, /std:c++17, /std:c++latest)" Category="Language" F1Keyword="VC.Project.VCCLCompilerTool.CppLanguageStandard">
-    <EnumValue Name="Default" Switch="" DisplayName="Standard">
+  <EnumProperty Name="LanguageStandard" DisplayName="C++-Sprachstandard" Description="Determines the C++ language standard the compiler will enforce. It is recommended to use the latest version when possible. (/std:c++14, /std:c++17, /std:c++latest)" Category="Language" F1Keyword="VC.Project.VCCLCompilerTool.CppLanguageStandard">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard (ISO C++14-Standard)">
     </EnumValue>
     <EnumValue Name="stdcpp14" Switch="std:c++14" DisplayName="ISO C++14-Standard">
     </EnumValue>
@@ -280,8 +303,18 @@
     <EnumValue Name="stdcpplatest" Switch="std:c++latest" DisplayName="Vorschau – Features aus dem aktuellen C++-Arbeitsentwurf">
     </EnumValue>
   </EnumProperty>
-  <BoolProperty Name="EnableModules" DisplayName="C++-Module aktivieren (experimentell)" Description="Experimentelle Unterstützung für die C++-Modules TS und die Standardbibliotheksmodule." Category="Language" Switch="experimental:module" F1Keyword="VC.Project.VCCLCompilerTool.ModulesSupport">
+  <EnumProperty Name="LanguageStandard_C" DisplayName="C-Sprachstandard" Description="Hiermit wird der C++-Sprachstandard bestimmt, der vom Compiler erzwungen wird. Es wird empfohlen, nach Möglichkeit die neueste Version zu verwenden. (/std:c11, /std:c17)" Category="Language" F1Keyword="VC.Project.VCCLCompilerTool.CLanguageStandard">
+    <EnumValue Name="Default" Switch="" DisplayName="Standard (Legacy-MSVC)">
+    </EnumValue>
+    <EnumValue Name="stdc11" Switch="std:c11" DisplayName="ISO C11-Standard">
+    </EnumValue>
+    <EnumValue Name="stdc17" Switch="std:c17" DisplayName="ISO C17 (2018)-Standard">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="EnableModules" DisplayName="Experimentelle C++-Standardbibliotheksmodule aktivieren" Description="Aktiviert die Unterstützung für experimentelle C++-Standardbibliotheksmodule." Category="Language" Switch="experimental:module" F1Keyword="VC.Project.VCCLCompilerTool.ModulesSupport">
   </BoolProperty>
+  <StringListProperty Subtype="folder" Name="StdIfcDirectory" Category="Language" Switch="stdIfcDir " Visible="false">
+  </StringListProperty>
   <EnumProperty Name="PrecompiledHeader" DisplayName="Vorkompilierter Header" Description="Vorkompilierten Header erstellen/verwenden : Aktiviert die Erstellung bzw. Verwendung eines vorkompilierten Headers während des Buildvorgangs.     (/Yc, /Yu)" Category="Precompiled Headers" F1Keyword="VC.Project.VCCLCompilerTool.UsePrecompiledHeader">
     <EnumValue Name="Create" Switch="Yc" DisplayName="Erstellen" Description="Weist den Compiler an, eine vorkompilierte Headerdatei (.pch) zu erstellen, die den Zustand der Kompilierung zu einem bestimmten Zeitpunkt darstellt.">
       <Argument Property="PrecompiledHeaderFile" IsRequired="false"/>
@@ -314,6 +347,13 @@
   </BoolProperty>
   <StringProperty Subtype="file" Name="AssemblerListingLocation" DisplayName="ASM-Listenspeicherort" Description="Gibt den relativen Pfad und/oder den Namen der ASM-Listingdatei an. Datei- oder Verzeichnisname möglich.     (/Fa[Name])" Category="Output Files" Switch="Fa" F1Keyword="VC.Project.VCCLCompilerTool.AssemblerListingLocation">
   </StringProperty>
+  <StringProperty Subtype="file" Name="ModuleOutputFile" DisplayName="Name der Modulausgabedatei" Description="Speicherort der Datei für die Modul- oder Headereinheitenausgabe (BMI). Hierbei kann es sich um einen Datei- oder Verzeichnisnamen handeln. (/ifcOutput[name])" Category="Output Files" Switch="ifcOutput " F1Keyword="VC.Project.VCCLCompilerTool.ModuleOutputFile">
+  </StringProperty>
+  <BoolProperty Name="GenerateModuleDependencies" DisplayName="Modulabhängigkeitsdatei generieren" Description="Hiermit wird eine JSON-Datei mit Informationen zu Modul- und Headereinheitenabhängigkeiten erstellt. (/sourceDependencies:directives)" Category="Output Files" Switch="sourceDependencies:directives " Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.GenerateModuleDependencies">
+    <Argument Property="ModuleDependenciesFile" IsRequired="false"/>
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="ModuleDependenciesFile" DisplayName="Name der Modulabhängigkeitsdatei" Description="Hiermit wird der Pfad und/oder der Name der generierten Modulabhängigkeitsdatei angegeben. (/sourceDependencies:directives[path])" Category="Output Files" F1Keyword="VC.Project.VCCLCompilerTool.ModuleDependenciesFile">
+  </StringProperty>
   <StringProperty Subtype="file" Name="ObjectFileName" DisplayName="Objektdateiname" Description="Gibt einen Namen an, der zum Überschreiben des Objekt-Standarddateinamens verwendet wird. Datei- oder Verzeichnisname möglich.     (/Fo[Name])" Category="Output Files" Switch="Fo" F1Keyword="VC.Project.VCCLCompilerTool.ObjectFile">
   </StringProperty>
   <StringProperty Subtype="file" Name="ProgramDataBaseFileName" DisplayName="Programmdatenbank-Dateiname" Description="Gibt einen Namen für eine vom Compiler generierte PDB-Datei und den Basisnamen für die vom Compiler generierte erforderliche IDB-Datei an. Datei- oder Verzeichnisname möglich.     (/Fd[Name])" Category="Output Files" Switch="Fd" F1Keyword="VC.Project.VCCLCompilerTool.ProgramDataBaseFileName">
@@ -323,11 +363,44 @@
   </BoolProperty>
   <StringProperty Subtype="file" Name="XMLDocumentationFileName" DisplayName="Name der XML-Dokumentationsdatei" Description="Gibt den Namen der generierten XML-Dokumentationsdateien an. Datei- oder Verzeichnisname möglich.     (/doc[Name])" Category="Output Files" F1Keyword="VC.Project.VCCLCompilerTool.XMLDocumentationFileName">
   </StringProperty>
+  <BoolProperty Name="GenerateSourceDependencies" DisplayName="Quellabhängigkeitsdatei generieren" Description="Hiermit wird eine JSON-Datei mit der Liste aller Dateien generiert, die der Compiler für die Kompilierung der Quelle verwendet hat. (/sourceDependencies)" Category="Output Files" Switch="sourceDependencies " F1Keyword="VC.Project.VCCLCompilerTool.GenerateSourceDependencies">
+    <Argument Property="SourceDependenciesFile" IsRequired="false"/>
+  </BoolProperty>
+  <StringProperty Subtype="file" Name="SourceDependenciesFile" DisplayName="Name der Quellabhängigkeitsdatei" Description="Hiermit wird der Pfad und/oder der Name der generierten Quellabhängigkeitsdatei angegeben. (/sourceDependencies[path])" Category="Output Files" F1Keyword="VC.Project.VCCLCompilerTool.SourceDependenciesFile">
+  </StringProperty>
   <BoolProperty Name="BrowseInformation" DisplayName="Durchsuchen der Informationen aktivieren" Description="Browseinformationen aktivieren : Gibt die Ebene der Browseinformationen in der BSC-Datei an.     (/FR)" Category="Browse Information" Switch="FR" F1Keyword="VC.Project.VCCLCompilerTool.BrowseInformation">
     <Argument Property="BrowseInformationFile" IsRequired="false"/>
   </BoolProperty>
   <StringProperty Subtype="file" Name="BrowseInformationFile" DisplayName="Browseinformationsdatei" Description="Browsedatei : Gibt den optionalen Namen für die Browseinformationsdatei an.     (/FR[Name])" Category="Browse Information" F1Keyword="VC.Project.VCCLCompilerTool.BrowseInformationFile">
   </StringProperty>
+  <StringListProperty Subtype="string" Name="ExternalDirectoriesEnv" DisplayName="Umgebungsvariablen für externe Verzeichnisse" Description="Gibt eine oder mehrere Umgebungsvariablen an, die Verzeichnisse mit externen Headern angeben. Falls es sich um mehrere Variablen handelt, trennen Sie sie durch Semikolons (;).   (/external:env[name])" Category="External Includes" Switch="external:env:" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.ExternalDirectoriesEnv">
+  </StringListProperty>
+  <BoolProperty Name="TreatAngleIncludeAsExternal" DisplayName="In spitze Klammern eingeschlossene Dateien als extern behandeln" Description="Gibt an, ob in spitze Klammern eingeschlossene Dateien als externe Dateien behandelt werden sollen.   (/external:anglebrackets)" Category="External Includes" Switch="external:anglebrackets" F1Keyword="VC.Project.VCCLCompilerTool.ExternalIncludeDirectories">
+  </BoolProperty>
+  <EnumProperty Name="ExternalWarningLevel" DisplayName="Warnstufe für externen Header" Description="Hiermit wählen Sie aus, wie strikt der Compiler im Hinblick auf Codefehler in externen Headern vorgehen soll.     (/external:W0 - /external:W4)" Category="External Includes" F1Keyword="VC.Project.VCCLCompilerTool.ExternalWarningLevel">
+    <EnumValue Name="TurnOffAllWarnings" Switch="external:W0" DisplayName="Alle Warnungen deaktivieren">
+    </EnumValue>
+    <EnumValue Name="Level1" Switch="external:W1" DisplayName="Stufe 1">
+    </EnumValue>
+    <EnumValue Name="Level2" Switch="external:W2" DisplayName="Stufe 2">
+    </EnumValue>
+    <EnumValue Name="Level3" Switch="external:W3" DisplayName="Stufe 3">
+    </EnumValue>
+    <EnumValue Name="Level4" Switch="external:W4" DisplayName="Stufe 4">
+    </EnumValue>
+    <EnumValue Name="InheritWarningLevel" Switch="" DisplayName="Projektwarnstufe erben">
+    </EnumValue>
+  </EnumProperty>
+  <BoolProperty Name="ExternalTemplatesDiagnostics" DisplayName="Vorlagendiagnose in externen Headern" Description="Gibt an, ob die Warnstufe für die Vorlageninstanziierungskette ausgewertet werden soll.   (/external:templates-)" Category="External Includes" Switch="external:templates-" F1Keyword="VC.Project.VCCLCompilerTool.TreatExternalTemplatesAsInternal">
+  </BoolProperty>
+  <BoolProperty Name="DisableAnalyzeExternal" DisplayName="Codeanalyse für externe Header deaktivieren" Description="Deaktiviert die Codeanalyse für externe Header.     (/analyze:external-)" Category="External Includes" Switch="analyze:external-" F1Keyword="VC.Project.VCCLCompilerTool.DisableAnalyzeExternal">
+  </BoolProperty>
+  <DynamicEnumProperty EnumProvider="CARuleset" Name="AnalyzeExternalRuleset" DisplayName="Analyseregelsatz für externe Header" Description="Gibt eine Regelsatz-Außerkraftsetzung bei der Codeanalyse für externe Header an. Wenn keine Angabe vorliegt, wird die Code Analysis-Einstellung verwendet.   (/analyze:external:ruleset[path])" Category="External Includes" F1Keyword="VC.Project.VCCLCompilerTool.AnalyzeExternalRuleset">
+    <DynamicEnumProperty.ValueEditors>
+      <ValueEditor EditorType="DefaultFilePropertyEditor" DisplayName="&lt;Durchsuchen...&gt;"/>
+      <ValueEditor EditorType="DefaultStringPropertyEditor" DisplayName="&lt;Bearbeiten...&gt;"/>
+    </DynamicEnumProperty.ValueEditors>
+  </DynamicEnumProperty>
   <EnumProperty Name="CallingConvention" DisplayName="Aufrufkonvention" Description="Wählen Sie die Standardaufrufkonvention für Ihre Anwendung aus (kann von einer Funktion überschrieben werden).     (/Gd, /Gr, /Gz, /Gv)" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.CallingConvention">
     <EnumValue Name="Cdecl" Switch="Gd" DisplayName="__cdecl" Description="Gibt die __cdecl-Anrufkonvention für alle Funktionen außer C++-Memberfunktionen sowie mit __stdcall oder __fastcall markierte Funktionen an.">
     </EnumValue>
@@ -338,12 +411,18 @@
     <EnumValue Name="VectorCall" Switch="Gv" DisplayName="__vectorcall" Description="Gibt die __vectorcall-Anrufkonvention für alle Funktionen außer C++-Memberfunktionen sowie mit __cdecl oder __stdcall markierte Funktionen an. Alle __vectorcall-Funktionen müssen Prototypen aufweisen.">
     </EnumValue>
   </EnumProperty>
-  <EnumProperty Name="CompileAs" DisplayName="Kompilierungsart" Description="Wählen Sie die Kompilierungssprachoption für C- und CPP-Dateien aus.     (/TC, /TP)" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.CompileAs">
+  <EnumProperty Name="CompileAs" DisplayName="Kompilierungsart" Description="Hiermit wird die Kompilierungssprachoption für C- und CPP-Dateien ausgewählt. (/TC, /TP, /interface, /internalPartition, /exportHeader)" Category="Advanced" F1Keyword="VC.Project.VCCLCompilerTool.CompileAs">
     <EnumValue Name="Default" Switch="" DisplayName="Standard" Description="Standard">
     </EnumValue>
     <EnumValue Name="CompileAsC" Switch="TC" DisplayName="Als C-Code kompilieren" Description="Als C-Code kompilieren.">
     </EnumValue>
     <EnumValue Name="CompileAsCpp" Switch="TP" DisplayName="Als C++-Code kompilieren" Description="Als C++-Code kompilieren.">
+    </EnumValue>
+    <EnumValue Name="CompileAsCppModule" Switch="interface " DisplayName="Als C++-Modulcode kompilieren" Description="Hiermit wird eine Kompilierung als C++-Modulschnittstelle durchgeführt.">
+    </EnumValue>
+    <EnumValue Name="CompileAsCppModuleInternalPartition" Switch="internalPartition " DisplayName="Als interne C++-Modulpartition kompilieren" Description="Hiermit wird eine Kompilierung als interne C++-Modulpartition durchgeführt.">
+    </EnumValue>
+    <EnumValue Name="CompileAsHeaderUnit" Switch="exportHeader " DisplayName="Als C++-Headereinheit kompilieren" Description="Hiermit wird eine Kompilierung als C++-Headereinheit durchgeführt.">
     </EnumValue>
   </EnumProperty>
   <StringListProperty Name="DisableSpecificWarnings" DisplayName="Bestimmte Warnungen deaktivieren" Description="Deaktiviert die gewünschten Warnungsnummern. Führen Sie die Nummern in einer durch Semikolons getrennten Liste auf.     (/wd[num])" Category="Advanced" Switch="wd" F1Keyword="VC.Project.VCCLCompilerTool.DisableSpecificWarnings">
@@ -354,9 +433,9 @@
   </StringListProperty>
   <BoolProperty Name="ShowIncludes" DisplayName="Includes anzeigen" Description="Generiert eine Liste von Includedateien mit Compilerausgabe.     (/showIncludes)" Category="Advanced" Switch="showIncludes" F1Keyword="VC.Project.VCCLCompilerTool.ShowIncludes">
   </BoolProperty>
-  <BoolProperty ReverseSwitch="analyze-" Name="EnablePREfast" DisplayName="Codeanalyse aktivieren" Description="Aktiviert die Codeanalysefunktionen, mit denen häufige Codefehler in C/C++-Code ermittelt werden.     (/analyze)" Category="Advanced" Switch="analyze" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
+  <BoolProperty ReverseSwitch="analyze-" Name="EnablePREfast" DisplayName="Code Analysis aktivieren" Description="Aktiviert die Codeanalysefunktionen, mit denen häufige Codefehler in C/C++-Code ermittelt werden.     (/analyze)" Category="Advanced" Switch="analyze" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
   </BoolProperty>
-  <StringProperty Subtype="file" Name="PREfastLog" DisplayName="Codeanalyseprotokoll" Description="Name der Ausgabedatei angeben.     (/analyze:log)" Category="Advanced" Switch="analyze:log " Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
+  <StringProperty Subtype="file" Name="PREfastLog" DisplayName="Code Analysis-Protokoll" Description="Name der Ausgabedatei angeben.     (/analyze:log)" Category="Advanced" Switch="analyze:log " Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
   </StringProperty>
   <StringProperty Name="PREfastProjectDirectory" DisplayName="Projektverzeichnis für Code Analysis" Description="Geben Sie den Namen des PREfast-Projektverzeichnisstamms an.     (/analyze:projectdirectory)" Category="Advanced" Switch="analyze:projectdirectory" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
   </StringProperty>
@@ -364,9 +443,9 @@
   </StringProperty>
   <StringProperty Subtype="file" Name="PREfastRulesetFile" DisplayName="Regelsatzdatei für Code Analysis" Description="Geben Sie den Namen der zu verwendenden Regelsatzdatei an.     (/analyze:ruleset)" Category="Advanced" Switch="analyze:ruleset" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.EnablePREfast">
   </StringProperty>
-  <StringListProperty Name="PREfastAdditionalOptions" DisplayName="Zusätzliche Optionen der nativen Codeanalyse" Description="Zusätzliche Optionen, die bei der Codeanalyse verwendet werden können." Category="Advanced" Switch="analyze:" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.PREfastAdditionalOptions">
+  <StringListProperty Name="PREfastAdditionalOptions" DisplayName="Zusätzliche native Code Analysis-Optionen" Description="Zusätzliche Optionen, die bei der Codeanalyse verwendet werden können." Category="Advanced" Switch="analyze:" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.PREfastAdditionalOptions">
   </StringListProperty>
-  <StringListProperty Name="PREfastAdditionalPlugins" DisplayName="Zusätzliche Plug-Ins der nativen Codeanalyse" Description="Zusätzliche Plug-Ins, die bei der Codeanalyse verwendet werden können.     (/analyze:plugin[plugin1.dll])" Category="Advanced" Switch="analyze:plugin" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.PREfastAdditionalPlugins">
+  <StringListProperty Name="PREfastAdditionalPlugins" DisplayName="Zusätzliche native Code Analysis-Plug-Ins" Description="Zusätzliche Plug-Ins, die bei der Codeanalyse verwendet werden können.     (/analyze:plugin[plugin1.dll])" Category="Advanced" Switch="analyze:plugin" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.PREfastAdditionalPlugins">
   </StringListProperty>
   <BoolProperty Name="UseFullPaths" DisplayName="Vollständige Pfade verwenden" Description="Verwenden Sie vollständige Pfade in Diagnosemeldungen.     (/FC)" Category="Advanced" Switch="FC" F1Keyword="VC.Project.VCCLCompilerTool.UseFullPaths">
   </BoolProperty>

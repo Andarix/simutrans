@@ -10,13 +10,21 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 ***********************************************************************************************
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
+  
+  <UsingTask TaskName="CheckVCToolsetVersion" AssemblyFile="$(MSBuildThisFileDirectory)Microsoft.Build.CppTasks.Common.dll" />
+  
   <Import Condition="'$(_ToolsetVCTargetsVersion)' == 'v150'" Project="$(VCTargetsPath)\Microsoft.Cpp.ToolsetLocation.targets"/>
   <Import Condition="'$(_ToolsetVCTargetsVersion)' != 'v150'" Project="$(VCTargetsPath)\Microsoft.Cpp.Redirect.14.targets"/>
 
   <!-- modification required for Dev16 from Dev15 -->
 
-  <!-- we want to use latest experimental unity build support for older toolsets -->
+  <ItemDefinitionGroup>
+    <ProjectReference>
+      <OutputItemType Condition="'%(ProjectReference.LinkLibraryDependencies)' == 'true' or ('$(ConfigurationType)' == 'StaticLibrary' and '$(DesignTimeBuild)' == 'true')">_ResolvedNativeProjectReferencePaths</OutputItemType>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+
+  <!-- we want to use latest unity build support for older toolsets -->
   <Import Condition="'$(_EnableUnitySupport)' == 'true'" Project="$(CurrentVCTargetsPath)\Microsoft.Cpp.Unity.targets" />
 
   <!-- Restore EnableUnitysupport property -->
@@ -49,6 +57,34 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <PropertyGroup>
       <RemoteDebuggerDeployDebugCppRuntime>false</RemoteDebuggerDeployDebugCppRuntime>
     </PropertyGroup>
+  </Target>
+
+  <PropertyGroup Condition="'$(_ToolsetVCTargetsVersion)' == 'v150' and $(DesignTimeBuild) != 'true'">
+    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);CheckVCToolsetVersion</PrepareForBuildDependsOn>
+    <CheckMSVCComponents Condition="'$(CheckMSVCComponents)' == '' and ('$(PlatformToolset)' == 'v141' or '$(PlatformToolset)' == 'v141_xp')">true</CheckMSVCComponents>
+  </PropertyGroup>
+
+  <Target Name="CheckVCToolsetVersion">
+    <!-- Error out VCToolsVersion is not installed or does not match MSVC PlatformToolset -->
+    <CheckVCToolsetVersion Condition="'$(DesignTimeBuild)'!='true' and '$(CheckMSVCComponents)'=='true'"
+      VCToolsVersion="$(VCToolsVersion)"
+      PlatformToolset="$(PlatformToolset)"
+      VCToolsInstallDir="$(VCToolsInstallDir)"/>
+  </Target>
+
+  <PropertyGroup>
+    <GetProjectInfoForReferenceDependsOn Condition="'$(DesignTimeBuild)' != 'true'">
+      $(GetProjectInfoForReferenceDependsOn);
+      AddLibrariesToProjectsInfoForReference;
+    </GetProjectInfoForReferenceDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="GetProjectInfoForReference" Returns="@(ProjectInfoForReference)" DependsOnTargets="$(GetProjectInfoForReferenceDependsOn)" />
+
+  <Target Name="AddLibrariesToProjectsInfoForReference" DependsOnTargets="GetResolvedLinkLibs">
+    <ItemGroup>
+      <ProjectInfoForReference Include="@(LibFullPath)" />
+    </ItemGroup>
   </Target>
 
 </Project>

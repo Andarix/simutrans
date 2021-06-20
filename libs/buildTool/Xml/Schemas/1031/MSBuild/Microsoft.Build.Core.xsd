@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://schemas.microsoft.com/developer/msbuild/2003" xmlns:msb="http://schemas.microsoft.com/developer/msbuild/2003" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <!-- ======================================================================================= -->
+    <xs:element name="Project">
+         <xs:annotation>
+            <xs:documentation><!-- _locID_text="Project" _locComment="" -->Ein MSBuild-Projekt.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:group ref="msb:ProjectLevelTagExceptTargetOrImportType" minOccurs="0" maxOccurs="unbounded"/>
+                <!-- must be at least one Target or Import tag-->
+                <xs:group ref="msb:TargetOrImportType"/>
+                <xs:group ref="msb:ProjectLevelTagType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="DefaultTargets" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation><!-- _locID_text="Project_DefaultTargets" _locComment="" -->Optionale, durch Semikolons getrennte Liste eines oder mehrerer Ziele, die erstellt wird, wenn keine Ziele anderweitig angegeben wurden.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="InitialTargets" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation><!-- _locID_text="Project_InitialTargets" _locComment="" -->Optionale, durch Semikolons getrennte Liste von Zielen, die immer vor allen anderen Zielen erstellt werden sollten.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Sdk" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation><!-- _locID_text="Project_Sdk" _locComment="" -->Optionale Zeichenfolge zum Beschreiben der MSBuild-SDKs, mit denen dieses Projekt erstellt werden soll.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="ToolsVersion" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:documentation><!-- _locID_text="Project_ToolsVersion" _locComment="" -->Optionale Zeichenfolge zum Beschreiben der Toolsetversion, mit der dieses Projekt normalerweise erstellt werden sollte.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <!-- ======================================================================================= -->
+    <xs:group name="ProjectLevelTagExceptTargetOrImportType">
+        <xs:choice>
+            <xs:element name="PropertyGroup" type="msb:PropertyGroupType"/>
+            <xs:element name="ItemGroup" type="msb:ItemGroupType"/>
+            <xs:element name="ItemDefinitionGroup" type="msb:ItemDefinitionGroupType"/>
+            <xs:element name="Choose" type="msb:ChooseType"/>
+            <xs:element name="UsingTask" type="msb:UsingTaskType"/>
+            <xs:element name="ProjectExtensions" type="msb:ProjectExtensionsType"/>
+        </xs:choice>
+    </xs:group>
+    <!-- ======================================================================================= -->    
+    <xs:group name="ProjectLevelTagType">
+        <xs:choice>
+            <xs:element name="PropertyGroup" type="msb:PropertyGroupType"/>
+            <xs:element name="ItemGroup" type="msb:ItemGroupType"/>
+            <xs:element name="ItemDefinitionGroup" type="msb:ItemDefinitionGroupType"/>
+            <xs:element name="Choose" type="msb:ChooseType"/>
+            <xs:element name="UsingTask" type="msb:UsingTaskType"/>
+            <xs:element name="Target" type="msb:TargetType"/>
+            <xs:element name="Import" type="msb:ImportType"/>
+            <xs:element name="ImportGroup" type="msb:ImportGroupType"/>
+            <xs:element name="ProjectExtensions" type="msb:ProjectExtensionsType"/>
+        </xs:choice>
+    </xs:group>
+    <!-- ======================================================================================= -->
+    <xs:group name="TargetOrImportType">
+        <xs:choice>
+            <xs:element name="Target" type="msb:TargetType"/>
+            <xs:element name="Import" type="msb:ImportType"/>
+            <xs:element name="ImportGroup" type="msb:ImportGroupType"/>
+        </xs:choice>
+    </xs:group>    
+    <!-- ======================================================================================= -->        
+    <xs:complexType name="TargetType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="TargetType" _locComment="" -->Gruppiert Aufgaben in einen Abschnitt des Buildprozesses.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="msb:Task"/>
+                    <xs:element name="PropertyGroup" type="msb:PropertyGroupType"/>
+                    <xs:element name="ItemGroup" type="msb:ItemGroupType"/>
+                </xs:choice>
+            </xs:sequence>
+            <xs:element name="OnError" type="msb:OnErrorType" minOccurs="0" maxOccurs="unbounded"/>
+            <!-- no elements are allowed under Target after an OnError element-->
+        </xs:sequence>
+        <xs:attribute name="Name" type="msb:non_empty_string" use="required">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_Name" _locComment="" -->Name des Ziels</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="DependsOnTargets" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_DependsOnTargets" _locComment="" -->Optionale, durch Semikolons getrennte Liste mit Zielen, die vor diesem Ziel ausgeführt werden sollten.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>            
+        <xs:attribute name="Inputs" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_Inputs" _locComment="" -->Optionale, durch Semikolons getrennte Liste mit Dateien, die Eingaben in diesem Ziel bilden. Ihre Zeitstempel werden mit den Zeitstempeln der Dateien in Ausgaben verglichen, um zu bestimmen, ob das Ziel aktuell ist.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>                
+        <xs:attribute name="Outputs" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_Outputs" _locComment="" -->Optionale, durch Semikolons getrennte Liste mit Dateien, die Ausgaben in diesem Ziel bilden. Ihre Zeitstempel werden mit den Zeitstempeln von Dateien in Eingaben verglichen, um zu bestimmen, ob das Ziel aktuell ist.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob das Ziel und die Ziele, von denen dieses Ziel abhängt, ausgeführt werden sollen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>            
+        <xs:attribute name="KeepDuplicateOutputs" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_KeepDuplicateOutputs" _locComment="" -->Optionaler Ausdruck, der ausgewertet wird, um zu bestimmen, ob doppelte Elemente in der Rückgabe des Ziels gelöscht werden sollen, bevor sie zurückgegeben werden. Standardmäßig werden doppelte Elemente nicht gelöscht.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Returns" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_Returns" _locComment="" -->Der optionale Ausdruck wurde ausgewertet, um zu bestimmen, welche vom Ziel generierten Elemente vom Ziel zurückgegeben werden sollen. Wenn in der Datei keine Rückgabeattribute für Ziele in der Datei enthalten sind, werden zu diesem Zweck die Ausgabeattribute verwendet.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="BeforeTargets" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_BeforeTargets" _locComment="" -->Optionale, durch Semikolons getrennte Liste mit Zielen, vor denen dieses Ziel ausgeführt werden soll.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>   
+        <xs:attribute name="AfterTargets" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TargetType_AfterTargets" _locComment="" -->Optionale, durch Semikolons getrennte Liste mit Zielen, nach denen dieses Ziel ausgeführt werden soll.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>     
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ImportType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->        
+    <xs:complexType name="PropertyGroupType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="PropertyGroupType" _locComment="" -->Gruppiert Eigenschaftendefinitionen.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="msb:Property"/>
+        </xs:sequence>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="PropertyGroupType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob PropertyGroup verwendet werden soll.</xs:documentation>
+            </xs:annotation> 
+        </xs:attribute>     
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="PropertyGroupType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->        
+    <xs:complexType name="ImportGroupType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="ImportGroupType" _locComment="" -->Definitionen für Gruppenimport</xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="Import" type="msb:ImportType"/>
+        </xs:sequence>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ImportGroupType_Condition" _locComment="" -->Der optionale Ausdruck wurde ausgewertet, um zu bestimmen, ob die ImportGroup verwendet werden soll.</xs:documentation>
+            </xs:annotation> 
+        </xs:attribute>     
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ImportGroupType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->        
+    <xs:complexType name="ItemGroupType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="ItemGroupType" _locComment="" -->Gruppiert Elementlistendefinitionen.</xs:documentation>
+        </xs:annotation>        
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="msb:Item"/>
+            <xs:element name="Link" type="msb:LinkItem"/>
+            <xs:element name="ResourceCompile" type="msb:ResourceCompile"/>
+            <xs:element name="PreBuildEvent" type="msb:PreBuildEventItem"/>
+            <xs:element name="PostBuildEvent" type="msb:PostBuildEventItem"/>
+        </xs:choice>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ItemGroupType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob ItemGroup verwendet werden soll.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>     
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ItemGroupType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->        
+    <xs:complexType name="ItemDefinitionGroupType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="ItemDefinitionGroupType" _locComment="" -->Gruppiert Elementmetadaten-Definitionen.</xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="msb:Item"/>
+            <xs:element name="Link" type="msb:LinkItem"/>
+            <xs:element name="ResourceCompile" type="msb:ResourceCompile"/>
+            <xs:element name="PreBuildEvent" type="msb:PreBuildEventItem"/>
+            <xs:element name="PostBuildEvent" type="msb:PostBuildEventItem"/>
+        </xs:choice>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+          <xs:annotation>
+             <xs:documentation><!-- _locID_text="ItemDefinitionGroupType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob ItemDefinitionGroup verwendet werden soll.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ItemDefinitionGroupType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->
+    <xs:complexType name="ChooseType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="ChooseType" _locComment="" -->Gruppiert When- und Otherwise-Elemente</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="When" type="msb:WhenType" maxOccurs="unbounded"/>
+            <xs:element name="Otherwise" type="msb:OtherwiseType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ChooseType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->
+    <xs:complexType name="WhenType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="WhenType" _locComment="" -->Gruppiert PropertyGroup- und/oder ItemGroup-Elemente.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:choice>
+                <xs:element name="PropertyGroup" type="msb:PropertyGroupType"/>
+                <xs:element name="ItemGroup" type="msb:ItemGroupType"/>
+                <xs:element name="Choose" type="msb:ChooseType"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="Condition" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="WhenType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob PropertyGroups (untergeordnet) und/oder ItemGroups (untergeordnet) verwendet werden soll.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->
+    <xs:complexType name="OtherwiseType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="OtherwiseType" _locComment="" -->Gruppiert PropertyGroup- und/oder ItemGroup-Elemente, die verwendet werden, wenn keine Bedingungen für gleichgeordnete When-Elemente als True ausgewertet werden.</xs:documentation>
+        </xs:annotation>        
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:choice>
+                <xs:element name="PropertyGroup" type="msb:PropertyGroupType"/>
+                <xs:element name="ItemGroup" type="msb:ItemGroupType"/>
+                <xs:element name="Choose" type="msb:ChooseType"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- ======================================================================================= -->        
+    <xs:complexType name="OnErrorType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="OnErrorType" _locComment="" -->Gibt Ziele an, die im Falle eines behebbaren Fehlers ausgeführt werden.</xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="OnErrorType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob die Ziele ausgeführt werden sollen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="ExecuteTargets" type="msb:non_empty_string" use="required">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="OnErrorType_ExecuteTargets" _locComment="" -->Durch Semikolons getrennte Liste mit auszuführenden Zielen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>    
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ImportType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>        
+    </xs:complexType>
+    <!-- ======================================================================================= -->    
+    <xs:complexType name="UsingTaskType">
+      <xs:annotation>
+        <xs:documentation><!-- _locID_text="UsingTaskType" _locComment="" -->Definiert die Assembly, die die Implementierung einer Aufgabe oder die Implementierung selbst enthält.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="ParameterGroup" type="msb:ParameterGroupType" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="Task" type="msb:UsingTaskBodyType" minOccurs="0" maxOccurs="1"/>    
+      </xs:sequence> 
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="UsingTaskType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob die Deklaration ausgewertet werden soll.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>          
+        <xs:attribute name="AssemblyName" type="msb:non_empty_string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="UsingTaskType_AssemblyName" _locComment="" -->Optionaler Name der Assembly, die die Aufgabe enthält. Es muss entweder AssemblyName oder AssemblyFile verwendet werden.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="AssemblyFile" type="msb:non_empty_string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="UsingTaskType_AssemblyFile" _locComment="" -->Optionaler Pfad zur Assembly, die die Aufgabe enthält. Es muss entweder AssemblyName oder AssemblyFile verwendet werden.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>            
+        <xs:attribute name="TaskName" type="msb:non_empty_string" use="required">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="UsingTaskType_TaskName" _locComment="" -->Name der Aufgabenklasse in der Assembly.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="TaskFactory" type="msb:non_empty_string" use="optional">
+          <xs:annotation>
+            <xs:documentation><!-- _locID_text="UsingTaskType_TaskFactory" _locComment="" -->Name der Aufgabenfactoryklasse in der Assembly</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Architecture" type="msb:architecture" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              <!-- _locID_text="UsingTaskType_Architecture" _locComment="" -->Definiert die Architektur des Aufgabenhosts, in dem diese Aufgabe ausgeführt werden soll. Derzeit werden folgende Werte unterstützt: x86, x64, CurrentArchitecture (aktuelle Architektur) und * (beliebig). Wenn kein Wert für die Architektur angegeben ist, wird die Aufgabe entweder innerhalb des MSBuild-Prozesses ausgeführt, oder der Aufgabenhost wird mit der Architektur des übergeordneten MSBuild-Prozesses ausgeführt.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Runtime" type="msb:runtime" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              <!-- _locID_text="UsingTaskType_Runtime" _locComment="" -->Definiert die .NET-Laufzeitversion des Aufgabenhosts, in dem diese Aufgabe ausgeführt werden soll. Derzeit werden folgende Werte unterstützt: CLR2, CLR4, CurrentRuntime (aktuelle Laufzeit) und * (beliebig). Wenn kein Wert für die Laufzeit angegeben ist, wird die Aufgabe entweder innerhalb des MSBuild-Prozesses ausgeführt, oder der Aufgabenhost wird mit der Architektur des übergeordneten MSBuild-Prozesses ausgeführt.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+    </xs:complexType> 
+    <!-- ======================================================================================= -->
+    <xs:complexType name="ParameterGroupType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="ParameterGroupType" _locComment="" -->Gruppenparameter, die nicht Teil einer Inline-Aufgabendefinition sind.</xs:documentation>
+        </xs:annotation> 
+        <!-- ParameterGroup contains parameter elements whose element names are the parameter names.
+             Attributes are:
+                  * ParameterType. Optional string. Type of the task parameter. Defaults to string type.
+                  * Output. Optional bool. Whether this task parameter can be retrieved as an output. Defaults to false.
+                  * Required. Optional bool. Whether this task parameter is required to be passed a value. Defaults to false.
+             It is not possible to validate attributes on elements with undefined names using XSD.
+          -->
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+           <xs:any processContents="skip"/>
+        </xs:sequence>
+    </xs:complexType>     
+    <!-- ======================================================================================= -->
+    <xs:complexType name="UsingTaskBodyType" mixed="true">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="UsingTaskBodyType" _locComment="" -->Enthält die Inline-Aufgabenimplementierung. Der Inhalt ist in MSBuild nicht sichtbar.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:any namespace="##any" processContents="skip"/>
+        </xs:sequence>        
+        <xs:attribute name="Evaluate" type="msb:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="UsingTaskBodyType_Evaluate" _locComment="" -->Gibt an, ob im Text vor der Verwendung Eigenschaften erweitert werden sollen. Standardmäßig wird "false" verwendet.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>        
+    </xs:complexType>     
+    <!-- ======================================================================================= -->  
+    <xs:complexType name="ImportType">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="ImportType" _locComment="" -->Deklariert, dass die Inhalte einer anderen Projektdatei an dieser Position eingefügt werden sollen.</xs:documentation>
+        </xs:annotation>        
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ImportType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob der Import eintreten soll.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>              
+        <xs:attribute name="Project" type="msb:non_empty_string" use="required">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ImportType_Project" _locComment="" -->Zu importierende Projektdatei</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>     
+        <xs:attribute name="Label" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="ImportType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Sdk" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    <!-- _locID_text="ImportType_Sdk" _locComment="" -->Name des SDKs, das die zu importierende Projektdatei enthält</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Version" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    <!-- _locID_text="ImportType_Version" _locComment="" -->Optionaler Ausdruck, der zum Angeben der SDK-Version verwendet wird, auf die dieser Import verweist </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="MinimumVersion" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>
+                    <!-- _locID_text="ImportType_MinimumVersion" _locComment="" -->Optionaler Ausdruck, der zum Angeben der für den verweisenden Import mindestens erforderlichen SDK-Version verwendet wird</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->  
+    <xs:complexType name="ProjectExtensionsType" mixed="true">
+        <xs:annotation>
+            <xs:documentation><!-- _locID_text="ProjectExtensionsType" _locComment="" -->Optionaler, von MSBuild-Hosts verwendeter Abschnitt, der möglicherweise willkürlichen XML-Inhalt enthält, der von MSBuild ignoriert wird.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:any processContents="skip"/>
+        </xs:sequence>
+    </xs:complexType>    
+    <!-- ======================================================================================= -->
+    <xs:element name="Item" type="msb:SimpleItemType" abstract="true"/>
+    <!-- ======================================================================================= -->   
+    <!-- convenience type for items that have no meta-data-->
+    <!-- note this allows Remove or no attribute instead of Include, which is too lax outside of Targets at present, but 
+         it's the best we can reasonably do with an XSD -->
+    <xs:complexType name="SimpleItemType">
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="SimpleItemType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob die Elemente ausgewertet werden sollen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Include" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="SimpleItemType_Include" _locComment="" -->Durch Semikolons getrennte Liste mit Dateien (Platzhalter zulässig) oder anderen Elementnamen, die in dieser Elementliste eingeschlossen werden sollen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>             
+        <xs:attribute name="Exclude" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="SimpleItemType_Exclude" _locComment="" -->Durch Semikolons getrennte Liste mit Dateien (Platzhalter zulässig) oder anderen Elementnamen, die aus der Include-Liste ausgeschlossen werden sollen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Remove" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="SimpleItemType_Remove" _locComment="" -->Durch Semikolons getrennte Liste mit Dateien (Platzhalter zulässig) oder anderen Elementnamen, die aus der Liste entfernt werden sollen.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Update" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="SimpleItemType_Remove" _locComment="" -->Durch Semikolons getrennte Liste mit Dateien (Platzhalter zulässig) oder anderen Elementnamen, die mit den in diesem XML-Element enthaltenen Metadaten aktualisiert werden sollen</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Label" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              <!-- _locID_text="ImportGroupType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->      
+    <!-- general utility type allowing an item type to be defined but not its child meta-data-->
+    <xs:complexType name="GenericItemType">
+        <xs:complexContent>
+            <xs:extension base="msb:SimpleItemType">
+                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xs:any namespace="##any" processContents="skip"/>  
+                </xs:sequence>      
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- ======================================================================================= -->  
+    <!-- no type declared on this abstract element, so either a simple or complex type can be substituted for it.-->
+    <xs:element name="Property" abstract="true"/>
+    <!-- ======================================================================================= -->      
+    <!-- convenience type for properties that just want to allow text and no elements in them-->
+    <xs:complexType name="StringPropertyType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="Condition" type="xs:string" use="optional">
+                    <xs:annotation>
+                        <xs:documentation><!-- _locID_text="StringPropertyType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob die Eigenschaft ausgewertet werden soll.</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Label" type="xs:string" use="optional">
+                  <xs:annotation>
+                    <xs:documentation>
+                      <!-- _locID_text="ImportGroupType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.
+                    </xs:documentation>
+                  </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <!-- ======================================================================================= -->      
+    <!-- general utility type allowing text and/or elements inside-->
+    <xs:complexType name="GenericPropertyType" mixed="true">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:any namespace="##any" processContents="skip"/>
+        </xs:sequence>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="GenericPropertyType_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob die Eigenschaft ausgewertet werden soll.</xs:documentation>
+            </xs:annotation>         
+        </xs:attribute>
+        <xs:attribute name="Label" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              <!-- _locID_text="ImportGroupType_Label" _locComment="" -->Optionaler Ausdruck. Dient zur Kennzeichnung oder Anordnung von System- und Benutzerelementen.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <!-- ======================================================================================= -->
+    <xs:element name="Task" type="msb:TaskType" abstract="true"/>
+    <!-- ======================================================================================= -->
+    <xs:complexType name="TaskType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Output">
+                <xs:annotation>
+                    <xs:documentation><!-- _locID_text="TaskType_Output" _locComment="" -->Optionales Element, das eine bestimmte zu erfassende Aufgabenausgabe angibt.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:attribute name="TaskParameter" type="msb:non_empty_string" use="required">
+                        <xs:annotation>
+                            <xs:documentation><!-- _locID_text="TaskType_Output_TaskParameter" _locComment="" -->Zu erfassender Aufgabenparameter. Stimmt mit dem Namen einer .NET-Eigenschaft auf der Aufgabenklasse überein, die ein [Output]-Attribut hat.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="ItemName" type="msb:non_empty_string" use="optional">
+                        <xs:annotation>
+                            <xs:documentation><!-- _locID_text="TaskType_Output_ItemName" _locComment="" -->Optionaler Name einer Elementliste, in die die erfassten Ausgaben eingefügt werden. Es muss entweder ItemName oder PropertyName angegeben werden.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="PropertyName" type="msb:non_empty_string" use="optional">
+                        <xs:annotation>
+                            <xs:documentation><!-- _locID_text="TaskType_Output_PropertyName" _locComment="" -->Optionaler Name einer Eigenschaft, in die die erfasste Ausgabe eingefügt wird. Es muss entweder PropertyName oder ItemName angegeben werden.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="Condition" type="xs:string" use="optional">
+                        <xs:annotation>
+                            <xs:documentation><!-- _locID_text="TaskType_Output_Condition" _locComment="" -->Optionaler ausgewerteter Ausdruck zum Bestimmen, ob die Ausgabe erfasst werden soll.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="Condition" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TaskType_Condition" _locComment="" -->Optionaler erfasster Ausdruck zum Bestimmen, ob die Aufgabe ausgeführt werden soll.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="ContinueOnError" type="msb:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation><!-- _locID_text="TaskType_ContinueOnError" _locComment="" -->Optionaler boolescher Wert, der angibt, ob ein behebbarer Aufgabenfehler ignoriert werden soll. Der Standardwert ist False.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Architecture" type="msb:architecture" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              <!-- _locID_text="TaskType_Architecture" _locComment="" -->Definiert die Bitness der Aufgabe, wenn diese explizit in einem 32-Bit- oder 64-Bit-Prozess ausgeführt werden muss. Wenn kein Wert angegeben ist, wird die Aufgabe mit der Bitness des Buildprozesses ausgeführt. Wenn in UsingTask mehrere Aufgaben mit demselben Namen, jedoch mit unterschiedlichen Attributwerten für die Architektur definiert sind, wird der Wert des an dieser Stelle angegebenen Attributs der Architektur verwendet, um die richtige Aufgabe auszuwählen.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Runtime" type="msb:runtime" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+              <!-- _locID_text="TaskType_Runtime" _locComment="" -->Definiert die .NET-Laufzeit der Aufgabe. Dieser Wert muss angegeben werden, wenn die Aufgabe mit einer bestimmten Version der .NET-Laufzeit ausgeführt werden muss. Wenn kein Wert angegeben ist, wird die Aufgabe mit der Laufzeit ausgeführt, die vom Buildprozess verwendet wird. Wenn in UsingTask mehrere Aufgaben mit demselben Namen, jedoch mit unterschiedlichen Attributwerten für die Laufzeit definiert sind, wird der Wert des an dieser Stelle angegebenen Laufzeitattributs verwendet, um die richtige Aufgabe auszuwählen.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <!-- We don't need the anyAttribute here because other types deriving from this type will add the right attributes.-->
+    </xs:complexType>
+    <!-- ======================================================================================= -->  
+    <!-- XSD considers an empty-valued attribute to satisfy use="required", but we want it to have a non-empty value in most cases, hence this utility type. -->
+    <xs:simpleType name="non_empty_string">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- This type causes intellisense to suggest "true" or "false", but doesn't actually constrain the value beyond msb:non_empty_string.
+    We can't constrain the value, because the project author might want to pass a property or item instead of a literal value.
+    Besides, MSBuild will accept other literal values, like "on" and "off", just as well. -->
+    <xs:simpleType name="boolean">
+        <xs:union memberTypes="msb:non_empty_string">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="true"/>
+                    <xs:enumeration value="false"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    <!-- Similar trick for Importance -->
+    <xs:simpleType name="importance">
+        <xs:union memberTypes="msb:non_empty_string">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="high"/>
+                    <xs:enumeration value="normal"/>
+                    <xs:enumeration value="low"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+    <!-- Similar trick for Architecture -->
+    <xs:simpleType name="architecture">
+      <xs:union memberTypes="msb:non_empty_string">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="*"/>
+            <xs:enumeration value="CurrentArchitecture"/>
+            <xs:enumeration value="x86"/>
+            <xs:enumeration value="x64"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:union>
+    </xs:simpleType>
+    <!-- Similar trick for Runtime -->
+    <xs:simpleType name="runtime">
+      <xs:union memberTypes="msb:non_empty_string">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="*"/>
+            <xs:enumeration value="CurrentRuntime"/>
+            <xs:enumeration value="CLR2"/>
+            <xs:enumeration value="CLR4"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:union>
+    </xs:simpleType>
+    <!-- ======================================================================================= -->  
+    <!-- These types are used to enable Tasks and TaskItems global elements to exist in the schema. 
+         They cannot both be declared as "Link" Elements of differing types in global scope. -->
+    <xs:complexType name="LinkItem">
+      <xs:complexContent>
+        <xs:extension base="msb:SimpleItemType">
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="AdditionalDependencies"/>
+            <xs:element name="OutputFile"/>
+            <xs:element name="AssemblyDebug"/>
+            <xs:element name="SubSystem"/>
+            <xs:element name="ShowProgress"/>
+            <xs:element name="GenerateDebugInformation"/>
+            <xs:element name="EnableCOMDATFolding"/>
+            <xs:element name="OptimizeReferences"/>
+            <xs:element name="Version"/>
+            <xs:element name="Driver"/>
+            <xs:element name="RandomizedBaseAddress"/>
+            <xs:element name="SuppressStartupBanner"/>
+            <xs:element name="AdditionalLibraryDirectories"/>
+            <xs:element name="Profile"/>
+            <xs:element name="LinkStatus"/>
+            <xs:element name="FixedBaseAddress"/>
+            <xs:element name="DataExecutionPrevention"/>
+            <xs:element name="SwapRunFromCD"/>
+            <xs:element name="SwapRunFromNET"/>
+            <xs:element name="RegisterOutput"/>
+            <xs:element name="AllowIsolation"/>
+            <xs:element name="EnableUAC"/>
+            <xs:element name="UACExecutionLevel"/>
+            <xs:element name="UACUIAccess"/>
+            <xs:element name="PreventDllBinding"/>
+            <xs:element name="IgnoreStandardIncludePath"/>
+            <xs:element name="GenerateMapFile"/>
+            <xs:element name="IgnoreEmbeddedIDL"/>
+            <xs:element name="TypeLibraryResourceID"/>
+            <xs:element name="LinkErrorReporting"/>
+            <xs:element name="MapExports"/>
+            <xs:element name="TargetMachine"/>
+            <xs:element name="TreatLinkerWarningAsErrors"/>
+            <xs:element name="ForceFileOutput"/>
+            <xs:element name="CreateHotPatchableImage"/>
+            <xs:element name="SpecifySectionAttributes"/>
+            <xs:element name="MSDOSStubFileName"/>
+            <xs:element name="IgnoreAllDefaultLibraries"/>
+            <xs:element name="IgnoreSpecificDefaultLibraries"/>
+            <xs:element name="ModuleDefinitionFile"/>
+            <xs:element name="AddModuleNamesToAssembly"/>
+            <xs:element name="EmbedManagedResourceFile"/>
+            <xs:element name="ForceSymbolReferences"/>
+            <xs:element name="DelayLoadDLLs"/>
+            <xs:element name="AssemblyLinkResource"/>
+            <xs:element name="AdditionalManifestDependencies"/>
+            <xs:element name="StripPrivateSymbols"/>
+            <xs:element name="MapFileName"/>
+            <xs:element name="MinimumRequiredVersion"/>
+            <xs:element name="HeapReserveSize"/>
+            <xs:element name="HeapCommitSize"/>
+            <xs:element name="StackReserveSize"/>
+            <xs:element name="StackCommitSize"/>
+            <xs:element name="LargeAddressAware"/>
+            <xs:element name="TerminalServerAware"/>
+            <xs:element name="FunctionOrder"/>
+            <xs:element name="ProfileGuidedDatabase"/>
+            <xs:element name="LinkTimeCodeGeneration"/>
+            <xs:element name="MidlCommandFile"/>
+            <xs:element name="MergedIDLBaseFileName"/>
+            <xs:element name="TypeLibraryFile"/>
+            <xs:element name="EntryPointSymbol"/>
+            <xs:element name="BaseAddress"/>
+            <xs:element name="ProgramDatabaseFile"/>
+            <xs:element name="SupportUnloadOfDelayLoadedDLL"/>
+            <xs:element name="SupportNobindOfDelayLoadedDLL"/>
+            <xs:element name="ImportLibrary"/>
+            <xs:element name="MergeSections"/>
+            <xs:element name="CLRThreadAttribute"/>
+            <xs:element name="CLRImageType"/>
+            <xs:element name="KeyFile"/>
+            <xs:element name="KeyContainer"/>
+            <xs:element name="DelaySign"/>
+            <xs:element name="CLRUnmanagedCodeCheck"/>
+            <xs:element name="SectionAlignment"/>
+            <xs:element name="CLRSupportLastError"/>
+            <xs:element name="ImageHasSafeExceptionHandlers"/>
+          </xs:choice>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ResourceCompile">
+      <xs:complexContent>
+        <xs:extension base="msb:SimpleItemType">
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Culture"/>
+            <xs:element name="PreprocessorDefinitions"/>
+            <xs:element name="UndefinePreprocessorDefinitions"/>
+            <xs:element name="AdditionalIncludeDirectories"/>
+            <xs:element name="IgnoreStandardIncludePath"/>
+            <xs:element name="ShowProgress"/>
+            <xs:element name="NullTerminateStrings"/>
+            <xs:element name="SuppressStartupBanner"/>
+            <xs:element name="ResourceOutputFileName"/>
+          </xs:choice>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PreBuildEventItem">
+      <xs:complexContent>
+        <xs:extension base="msb:SimpleItemType">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="Message"/>
+              <xs:element name="Command"/>
+            </xs:choice>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="PostBuildEventItem">
+      <xs:complexContent>
+        <xs:extension base="msb:SimpleItemType">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="Message"/>
+              <xs:element name="Command"/>
+            </xs:choice>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

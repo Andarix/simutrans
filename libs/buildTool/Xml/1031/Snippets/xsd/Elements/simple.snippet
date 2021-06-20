@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>
+      <!-- _locID_text="title" _locComment="" -->simpleType</Title>
+    <Author>Microsoft Corporation</Author>
+    <Shortcut>elsimple</Shortcut>
+    <Description>
+      <!-- _locID_text="description" _locComment="" -->XML-Ausschnitt für XSD simpleType-Element</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>name</ID>
+        <ToolTip>
+          <!-- _locID_text="tooltip1" _locComment="" -->Name des Elements.</ToolTip>
+        <Default>name</Default>
+      </Literal>
+      <Literal>
+        <ID>base</ID>
+        <ToolTip>
+          <!-- _locID_text="tooltip2" _locComment="" -->Einzuschränkender Typ.</ToolTip>
+        <Default>string</Default>
+      </Literal>
+      <Literal Editable="false">
+        <ID>prefix</ID>
+        <Function>LookupPrefix("http://www.w3.org/2001/XMLSchema")</Function>
+      </Literal>
+    </Declarations>
+    <Code Language="XML"><![CDATA[<xsd:element name="$name$" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:simpleType>
+    <xsd:restriction base="$prefix$$base$">$selected$$end$</xsd:restriction>
+    </xsd:simpleType>
+    </xsd:element>]]></Code>
+  </Snippet>
+</CodeSnippet>

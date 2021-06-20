@@ -53,6 +53,8 @@
     </EnumValue>
     <EnumValue Name="MachineARM64" Switch="MACHINE:ARM64" DisplayName="MachineARM64" Description="MachineARM64">
     </EnumValue>
+    <EnumValue Name="MachineARM64X" Switch="MACHINE:ARM64X" DisplayName="MachineARM64X" Description="MachineARM64X">
+    </EnumValue>
     <EnumValue Name="MachineEBC" Switch="MACHINE:EBC" DisplayName="MachineEBC" Description="MachineEBC">
     </EnumValue>
     <EnumValue Name="MachineIA64" Switch="MACHINE:IA64" DisplayName="MachineIA64" Description="MachineIA64">

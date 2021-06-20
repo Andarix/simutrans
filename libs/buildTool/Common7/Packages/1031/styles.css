@@ -1,0 +1,31 @@
+body {font-family: Tahoma, Verdana, Arial; background: #ffffff url("../watermark.jpg") no-repeat top right;margin-top:6;margin-left:6}
+a:link{color: #339933;text-decoration: underline;font-weight: bold}
+a:visited {color: #339933;text-decoration: underline;font-weight: bold}
+a:hover {color:#006600;text-decoration: underline;font-weight: bold}
+p {font-family: Tahoma;font-size: .7em;color: #000000;margin-top: 0px; margin-left:0px;margin-bottom: 15px;}
+p.listpage {font-size: .7em ;margin-bottom: 10px; margin-top: 10px}
+h1.listpage {font-family: Tahoma; color: #000000; font-size: 1.1em;margin-left:0px;margin-top:0px;margin-bottom:18px; font-weight:normal; }
+h2 {color: #003399;font-size: .8em; font-weight: bold; margin-top: 0px; margin-bottom: 10px;}
+h3 {font-family: Tahoma;font-size:.7em;font-weight:bold; margin-top:5px;margin-bottom:5px; }
+.heading1 {font-family: Tahoma;color: #ffffff; font-size: 20px; font-weight: normal; background-color: #003399; margin-top: -10px; margin-bottom: -10px; margin-left: -10px; padding-bottom: 0px; padding-top:150px;padding-left: 10px;}
+.heading2 {color: #990000;font-size: .9em;  border-top: silver 1pt solid;border-bottom: silver 1pt solid;font-weight: bold; padding-bottom:5px;margin-top: 5px;}
+ul {font-family: Tahoma; margin-left: 40px; }
+ul.wsdl {font-family: Tahoma;font-size: .7em;margin-top: -8px; margin-left: 40px; margin-bottom: 10px;}
+li {font-family: Tahoma;margin-bottom: 10px; line-height: 1.2em; list-style-type: square; color: #000000; }
+li.wsdl {font-family: Tahoma; margin-top: 8px;line-height: 1.2em;list-style-type:square;}
+table.listpage {background: #eeeeee; border:0px; margin-bottom:5px;border-collapse:collapse;}
+td {font-family: Verdana;color: #000000; font-size: .7em; }
+.helptext { font-size: .7em; font-weight: normal; color: #000000; padding-top: 10px; }
+.method {color: #80000;}
+.method_name {font-weight:bold;  }
+.method_type {color:blue; }
+.method_param {font-style:italic }
+.methoddescription { color: black;}
+.label {font-weight:normal;margin-bottom: 120px; }
+.frame {margin-left:-2;margin-top:-2;}
+.layouttable {background: white url("../topband.jpg") no-repeat top left; width:100%;}
+.servicelist { font-size: .7em; font-weight: normal; color: black; padding-top: 3px; }
+.header {font-family: Tahoma;font-size: .7em; font-weight: bold; color: white; background: #006600;padding-left: 5px;}
+.tbltext {font-family: Tahoma;line-height:1.3em;font-size: .7em; color: black; padding-top: 2px; padding-bottom: 8px}
+.spacer {font-size:5px;font-color:#ffffff;}
+.text {font-size: .7em; font-weight: normal; color: black; padding-top: 5px; padding-left: 10px;}

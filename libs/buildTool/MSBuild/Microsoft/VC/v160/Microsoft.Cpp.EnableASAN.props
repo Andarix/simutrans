@@ -13,8 +13,27 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <_PropertySheetDisplayName>Enable Address Sanitizer</_PropertySheetDisplayName>
-      <!-- ASAN is currently only available for x86 -->
-      <LocalDebuggerEnvironment Condition="'$(EnableASAN)' == 'true' and '$(LocalDebuggerEnvironment)' == '' and '$(PlatformTarget)' == 'x86'">PATH=$(VC_ExecutablePath_x86);%PATH%
-ASAN_SYMBOLIZER_PATH=$(VC_ExecutablePath_x86)</LocalDebuggerEnvironment>
+    <!-- need to add VC exe path to allow ASan RT libs to be picked up when debugging -->
+    
+    <LocalDebuggerEnvironment Condition="'$(EnableASAN)' == 'true' and '$(LocalDebuggerEnvironment)' == '' and '$(PlatformTarget)' == 'x86' and '$(AsanOptions)' != ''">PATH=$(VC_ExecutablePath_x86);%PATH%
+ASAN_SYMBOLIZER_PATH=$(VC_ExecutablePath_x86)
+ASAN_OPTIONS=$(AsanOptions)
+    </LocalDebuggerEnvironment>
+    
+    <LocalDebuggerEnvironment Condition="'$(EnableASAN)' == 'true' and '$(LocalDebuggerEnvironment)' == '' and '$(PlatformTarget)' == 'x86' and '$(AsanOptions)' == ''">PATH=$(VC_ExecutablePath_x86);%PATH%
+ASAN_SYMBOLIZER_PATH=$(VC_ExecutablePath_x86)
+    </LocalDebuggerEnvironment>
+
+
+    <LocalDebuggerEnvironment Condition="'$(EnableASAN)' == 'true' and '$(LocalDebuggerEnvironment)' == '' and '$(PlatformTarget)' == 'x64' and '$(AsanOptions)' != ''">PATH=$(VC_ExecutablePath_x64);%PATH%
+ASAN_SYMBOLIZER_PATH=$(VC_ExecutablePath_x64)
+ASAN_OPTIONS=$(AsanOptions)
+     </LocalDebuggerEnvironment>
+
+    <LocalDebuggerEnvironment Condition="'$(EnableASAN)' == 'true' and '$(LocalDebuggerEnvironment)' == '' and '$(PlatformTarget)' == 'x64' and '$(AsanOptions)' == ''">PATH=$(VC_ExecutablePath_x64);%PATH%
+ASAN_SYMBOLIZER_PATH=$(VC_ExecutablePath_x6
+    </LocalDebuggerEnvironment>
+
+
   </PropertyGroup>
 </Project>

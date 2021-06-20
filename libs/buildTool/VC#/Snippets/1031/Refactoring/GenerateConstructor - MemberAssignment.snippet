@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+    <CodeSnippet Format="1.0.0">
+        <Header>
+            <Title>Generate Constructor - Member Assignment</Title>
+            <Description>Ausschnitt für Memberzuweisungen, die während des RefactoringsEin vom Typ "Konstruktor generieren" hinzugefügt wurden.</Description>
+            <Author>Microsoft Corporation</Author>
+            <SnippetTypes>
+                <SnippetType>Refactoring</SnippetType>
+            </SnippetTypes>
+        </Header>
+        <Snippet>
+            <Declarations>
+                <Literal Editable="true">
+                    <ID>signature</ID>
+                    <Default>signature</Default>
+                </Literal>
+                <Literal Editable="true">
+                    <ID>parametername</ID>
+                    <Default>parametername</Default>
+                </Literal>
+            </Declarations>
+            <Code Language="csharp">
+                <![CDATA[$end$this.$signature$ = $parametername$;]]>
+            </Code>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>

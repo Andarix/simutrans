@@ -16,6 +16,15 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <!-- Add the CppCoreCheck extension  only if it wasn't explicitly set false in the project (allow project override) -->
     <!-- To disable CppCoreCheck, set property EnableCppCoreCheck=false in the project -->
     <EspXtensions Condition="'$(EnableCppCoreCheck)'!='false'">CppCoreCheck.dll;$(EspXtensions)</EspXtensions>
+    <!-- Add the EnumIndex extension  only if it wasn't explicitly set false in the project (allow project override) -->
+    <!-- To disable EnumIndex, set property EnableEnumIndex=false in the project -->
+    <EspXtensions Condition="'$(EnableEnumIndex)'!='false'">EnumIndex.dll;$(EspXtensions)</EspXtensions>
+    <!-- Add the HResultCheck extension  only if it wasn't explicitly set false in the project (allow project override) -->
+    <!-- To disable HResultCheck, set property EnableHResultCheck=false in the project -->
+    <EspXtensions Condition="'$(EnableHResultCheck)'!='false'">HResultCheck.dll;$(EspXtensions)</EspXtensions>
+    <!-- Add the VariantClear extension  only if it wasn't explicitly set false in the project (allow project override) -->
+    <!-- To disable VariantClear, set property EnableVariantClear=false in the project -->
+    <EspXtensions Condition="'$(EnableVariantClear)'!='false'">VariantClear.dll;$(EspXtensions)</EspXtensions>
     <!-- Add the ConcurrencyCheck extension  only if it wasn't explicitly set false in the project (allow project override) -->
     <!-- To disable ConcurrencyCheck, set property EnableConcurrencyCheck=false in the project -->
     <ConcurrencyCheckPath>$(VC_ExecutablePath_x86_x86)\ConcurrencyCheck.dll</ConcurrencyCheckPath>

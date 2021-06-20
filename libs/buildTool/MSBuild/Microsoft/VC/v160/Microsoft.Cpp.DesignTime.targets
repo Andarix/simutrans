@@ -68,8 +68,9 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </ItemGroup>
 
     <PropertyGroup>
-      <!-- Disable ref resolution if we know we won't get anything useful from it. Set ResolveReferencesDesignTime to true to override this behavior -->
+      <!-- Disable ref resolution if we know we won't get anything useful from it. Set AlwaysResolveReferencesDesignTime to true to override this behavior -->
       <ResolveReferencesDependsOn Condition="'$(WinMDAssembly)' != 'true' and '$(ManagedAssembly)' != 'true' and '$(AlwaysResolveReferencesDesignTime)' != 'true'"></ResolveReferencesDependsOn>
+      <ReferenceResolutionDisabled Condition="'$(ResolveReferencesDependsOn)' == ''">true</ReferenceResolutionDisabled>
     </PropertyGroup>
   </Target>
 
@@ -92,6 +93,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ClCompile>
         <!-- figure out obj file directory which IntelliSense needs for #import support, but we don't want to use '%(ClCompile.ObjectFileName)' as it breaks MsBuild batching -->
         <ObjectFileDirectory Condition="'%(ClCompile.ObjectFileName)' != ''">$([System.IO.Path]::GetDirectoryName('%(ClCompile.ObjectFileName))'))\</ObjectFileDirectory>
+        <ModuleOutputDirectory Condition="'%(ClCompile.ModuleOutputFile)' != ''">$([System.IO.Path]::GetDirectoryName('%(ClCompile.ModuleOutputFile))'))\</ModuleOutputDirectory>
 
         <!-- Option to include files that are excluded from build for IntelliSense. -->
         <ExcludedFromBuild Condition="'$(IgnoreExcludedFromBuild)' == 'true'" />
@@ -100,12 +102,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
     <CLCommandLine
             Condition                          ="'%(ClCompile.ExcludedFromBuild)' != 'true'"
-            BuildingInIDE                      ="$(BuildingInsideVisualStudio)"
+            BuildingInIDE                      ="true"
             Sources                            ="@(ClCompile)"
 
             ClangMode                          ="%(ClCompile.ClangMode)"
+            ClangClMode                        ="%(ClCompile.ClangClMode)"
 
+            AdditionalHeaderUnitDependencies   ="%(ClCompile.AdditionalHeaderUnitDependencies)"
             AdditionalIncludeDirectories       ="%(ClCompile.AdditionalIncludeDirectories)"
+            AdditionalModuleDependencies       ="%(ClCompile.AdditionalModuleDependencies)"
+            AdditionalBMIDirectories           ="%(ClCompile.AdditionalBMIDirectories)"
             AdditionalOptions                  ="%(ClCompile.AdditionalOptions)"
             AdditionalUsingDirectories         ="%(ClCompile.AdditionalUsingDirectories)"
             CallingConvention                  ="%(ClCompile.CallingConvention)"
@@ -121,6 +127,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
             ExceptionHandling                  ="%(ClCompile.ExceptionHandling)"
             ExcludedInputPaths                 ="$(ExcludePath)"
             ExpandAttributedSource             ="%(ClCompile.ExpandAttributedSource)"
+            ExternalTemplatesDiagnostics       ="%(ClCompile.ExternalTemplatesDiagnostics)"
             FloatingPointExceptions            ="%(ClCompile.FloatingPointExceptions)"
             FloatingPointModel                 ="%(ClCompile.FloatingPointModel)"
             ForceConformanceInForLoopScope     ="%(ClCompile.ForceConformanceInForLoopScope)"
@@ -130,6 +137,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
             InlineFunctionExpansion            ="%(ClCompile.InlineFunctionExpansion)"
             IntrinsicFunctions                 ="%(ClCompile.IntrinsicFunctions)"
             LanguageStandard                   ="%(ClCompile.LanguageStandard)"
+            LanguageStandard_C                 ="%(ClCompile.LanguageStandard_C)"
+            ModuleOutputFile                   ="%(ClCompile.ModuleOutputDirectory)" 
             OpenMPSupport                      ="%(ClCompile.OpenMPSupport)"
             ObjectFileName                     ="%(ClCompile.ObjectFileDirectory)"
             PrecompiledHeader                  ="%(ClCompile.PrecompiledHeader)"
@@ -142,12 +151,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
             ProcessorNumber                    ="%(ClCompile.ProcessorNumber)"
             RuntimeLibrary                     ="%(ClCompile.RuntimeLibrary)"
             SmallerTypeCheck                   ="%(ClCompile.SmallerTypeCheck)"
+            StdIfcDirectory                    ="%(ClCompile.StdIfcDirectory)"
             StructMemberAlignment              ="%(ClCompile.StructMemberAlignment)"
+            TranslateIncludes                  ="%(ClCompile.TranslateIncludes)"
+            TreatAngleIncludeAsExternal        ="%(ClCompile.TreatAngleIncludeAsExternal)"
             TreatSpecificWarningsAsErrors      ="%(ClCompile.TreatSpecificWarningsAsErrors)"
             TreatWarningAsError                ="%(ClCompile.TreatWarningAsError)"
             TreatWChar_tAsBuiltInType          ="%(ClCompile.TreatWChar_tAsBuiltInType)"
             UndefineAllPreprocessorDefinitions ="%(ClCompile.UndefineAllPreprocessorDefinitions)"
             UndefinePreprocessorDefinitions    ="%(ClCompile.UndefinePreprocessorDefinitions)"
+            UseStandardPreprocessor            ="%(ClCompile.UseStandardPreprocessor)"
             WarningLevel                       ="%(ClCompile.WarningLevel)"
             WinRTNoStdLib                      ="%(ClCompile.WinRTNoStdLib)"
 
@@ -156,6 +169,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
             UseShortEnums                      ="%(ClCompile.UseShortEnums)"
             MSExtensions                       ="%(ClCompile.MSExtensions)"
             MSCompatibility                    ="%(ClCompile.MSCompatibility)"
+            MSCVersion                         ="%(ClCompile.MSCVersion)"
+            ScanSourceForModuleDependencies    ="%(ClCompile.ScanSourceForModuleDependencies)"
 
             TrackerLogDirectory                ="%(ClCompile.TrackerLogDirectory)"
 
@@ -171,7 +186,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     </CLCommandLine>
 
     <CLCommandLine Condition="'@(FxCompile)' != ''"
-            BuildingInIDE                      ="$(BuildingInsideVisualStudio)"
+            BuildingInIDE                      ="true"
             Sources                            ="@(FxCompile)"
 
             AdditionalIncludeDirectories       ="%(FxCompile.AdditionalIncludeDirectories)"
@@ -180,6 +195,45 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <Output TaskParameter="CommandLines" ItemName="ClCommandLines"/>
     </CLCommandLine>
 
+    <ItemGroup>
+      <ClCommandLines>
+        <ContainsReferencedProjectsData Condition="'$(ResolveReferencesDependsOn)' != ''">true</ContainsReferencedProjectsData>
+      </ClCommandLines>
+    </ItemGroup>
+  </Target>
+
+  <PropertyGroup>
+    <GetClCommandLineForReferenceSupported>true</GetClCommandLineForReferenceSupported>
+  </PropertyGroup>
+
+  <!-- This target returns additional cl command line which projects that reference this project can use instead of using msbuild's resolve references  -->
+  <Target Name="GetClCommandLineForReference"
+        Returns="@(ClCommandLineForReference)"
+        DependsOnTargets="$(DesignTimeBuildInitTargets);$(GetClCommandLineForReferenceDependsOn)" >
+
+    <PropertyGroup Condition="'@(PublicIncludeDirectories)' != ''">
+      <CreateCommandLineForReference>true</CreateCommandLineForReference>
+    </PropertyGroup>
+    <ItemGroup Condition="'@(PublicIncludeDirectories)' != ''">
+      <ProjectDataForReference Include="__temp__.cpp">
+        <AdditionalIncludeDirectories>%(ProjectDataForReference.AdditionalIncludeDirectories);@(PublicIncludeDirectories->Metadata('FullPath'))</AdditionalIncludeDirectories>
+        <!--<ForcedUsingFiles Condition ="'$(WinMDAssembly)' == 'true'">@(GetResolvedWinMD)</ForcedUsingFiles>
+          <ForcedUsingFiles Condition ="'$(ManagedAssembly)' == 'true'">$(TargetPath)</ForcedUsingFiles>-->
+      </ProjectDataForReference>
+    </ItemGroup>
+
+    <CLCommandLine
+            Condition="'$(CreateCommandLineForReference)' == 'true'"
+            BuildingInIDE                      ="true"
+            Sources                            ="@(ProjectDataForReference)"
+
+            ClangMode                          ="false"
+            EmitCompileOnlySwitch              ="false"
+
+            AdditionalIncludeDirectories       ="%(ProjectDataForReference.AdditionalIncludeDirectories)"
+    >
+      <Output TaskParameter="CommandLines" ItemName="ClCommandLineForReference"/>
+    </CLCommandLine>
   </Target>
 
   <Target Name="GetProjectDirectories"
@@ -192,9 +246,15 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ReferencePath>$(LIBPATH)</ReferencePath>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(ConfigurationType)' == 'Makefile'">
+      <IncludePath>$(NMakeIncludeSearchPath);$(IncludePath)</IncludePath>
+      <ReferencePath>$(NMakeAssemblySearchPath);$(ReferencePath)</ReferencePath>
+    </PropertyGroup>
+ 
     <ItemGroup>
       <_ProjectDirectories Include="dummy">
         <IncludePath>$(IncludePath)</IncludePath>
+        <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
         <FrameworkIncludePath>$(FrameworkIncludePath)</FrameworkIncludePath>
         <ExcludePath>$(ExcludePath)</ExcludePath>
         <ReferencePath>$(ReferencePath);$(LibraryPath)</ReferencePath>
@@ -384,7 +444,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </Target>
 
   <Target Name="_PrintIntellisenseInfo"
-        DependsOnTargets="GetProjectDirectories;GetClCommandLines;GetGeneratedFiles;GetProjectReferencesInfo">
+        DependsOnTargets="GetProjectDirectories;GetClCommandLines;GetClCommandLineForReference;GetGeneratedFiles;GetProjectReferencesInfo">
     <Message Text="****** Configuration Settings:" Importance="High" />
     <Message Condition="'%(ClCommandLines.ConfigurationOptions)' == 'true'" Text="****** Files=%(ClCommandLines.Files)&#xA;****** CommandLine=%(ClCommandLines.Identity)&#xA;" Importance="High" />
     <Message Condition="'%(ClCommandLines.ConfigurationOptions)' != 'true'" Text="****** Files=%(ClCommandLines.Files)&#xA;****** CommandLine=%(ClCommandLines.Identity)&#xA;" Importance="High" />
@@ -402,6 +462,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
                    ReferencedProjectGuid=%(_ProjectReferencesInfo.Project)&#xA;
                    ReferencedProjectFile=%(_ProjectReferencesInfo.MsbuildSourceProjectFile)&#xA;"
              Importance="High" />
+
+    <Message Text="****** Command Line for referencing projects=%(ClCommandLineForReference.Identity)&#xA;" Importance="High" />
   </Target>
   
   <Target Name="_ValidatePathInfo"
@@ -451,7 +513,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   </Target>
 
   <Target Name="_PerfIntellisenseInfo"
-        DependsOnTargets="GetProjectDirectories;GetClCommandLines;GetGeneratedFiles;GetProjectReferencesInfo">
+        DependsOnTargets="GetProjectDirectories;GetClCommandLines;GetClCommandLineForReference;GetGeneratedFiles;GetProjectReferencesInfo">
   </Target>
 
   <Target Name="_PrintResolvedProjectReferences"

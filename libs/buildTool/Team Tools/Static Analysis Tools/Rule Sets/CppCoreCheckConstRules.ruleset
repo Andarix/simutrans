@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="C++ Core Check Const Rules" Description="These rules enforce const-related checks from the C++ Core Guidelines (http://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#con-constants-and-immutability)." ToolsVersion="10.0">
+  <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
+    <Name Resource="CppCoreCheckConstRules_Name" />
+    <Description Resource="CppCoreCheckConstRules_Description" />
+  </Localization>
+  <Rules AnalyzerId="Microsoft.Analyzers.NativeCodeAnalysis" RuleNamespace="Microsoft.Rules.Native">
+    <Rule Id="C26460" Action="Warning" />
+    <Rule Id="C26461" Action="Warning" />
+    <Rule Id="C26462" Action="Warning" />
+    <Rule Id="C26463" Action="Warning" />
+    <Rule Id="C26464" Action="Warning" />
+    <Rule Id="C26496" Action="Warning" />
+    <Rule Id="C26497" Action="Warning" />
+    <Rule Id="C26498" Action="Warning" />
+    <Rule Id="C26814" Action="Warning" />
+  </Rules>
+</RuleSet>

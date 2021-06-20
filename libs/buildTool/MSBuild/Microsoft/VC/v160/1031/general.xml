@@ -44,12 +44,22 @@
     <EnumProperty.DataSource>
       <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true"/>
     </EnumProperty.DataSource>
-    <EnumValue Name="Default" DisplayName="Standard"/>
-    <EnumValue Name="stdcpp14" Switch="std:c++14" DisplayName="ISO C++14-Standard"/>
-    <EnumValue Name="stdcpp17" Switch="std:c++17" DisplayName="ISO C++17-Standard"/>
-    <EnumValue Name="stdcpplatest" Switch="std:c++latest" DisplayName="Vorschau – Features aus dem aktuellen C++-Arbeitsentwurf"/>
+    <EnumValue Name="Default" DisplayName="Standard (ISO C++14-Standard)"/>
+    <EnumValue Name="stdcpp14" Switch="/std:c++14" DisplayName="ISO C++14-Standard"/>
+    <EnumValue Name="stdcpp17" Switch="/std:c++17" DisplayName="ISO C++17-Standard"/>
+    <!--<EnumValue Name="stdcpp20" Switch="/std:c++20" DisplayName="ISO C++20 Standard" />-->
+    <EnumValue Name="stdcpplatest" Switch="/std:c++latest" DisplayName="Vorschau – Features aus dem aktuellen C++-Arbeitsentwurf"/>
   </EnumProperty>
-  
+
+  <EnumProperty Name="LanguageStandard_C" DisplayName="C-Sprachstandard" Description="Hiermit wird der C++-Sprachstandard bestimmt, der vom Compiler erzwungen wird. Es wird empfohlen, nach Möglichkeit die neueste Version zu verwenden. (/std:c11, /std:c17)" Category="General" F1Keyword="VC.Project.VCCLCompilerTool.CppLanguageStandard">
+    <EnumProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="ClCompile" Label="" HasConfigurationCondition="true"/>
+    </EnumProperty.DataSource>
+    <EnumValue Name="Default" DisplayName="Standard (Legacy-MSVC)"/>
+    <EnumValue Name="stdc11" Switch="/std:c11" DisplayName="ISO C11-Standard"/>
+    <EnumValue Name="stdc17" Switch="/std:c17" DisplayName="ISO C17 (2018)-Standard"/>
+  </EnumProperty>
+
   <!-- invisible properties to keep backward compatibility if some code is using the rule to get/set properties -->
   <StringProperty Name="SDKDisplayName" DisplayName="Zielplattform" Description="Die aktuelle Zielplattform des Projekts" ReadOnly="true" Visible="false" Category="General" F1Keyword="VC.Project.VCConfiguration.AppSupport">
     <StringProperty.DataSource>

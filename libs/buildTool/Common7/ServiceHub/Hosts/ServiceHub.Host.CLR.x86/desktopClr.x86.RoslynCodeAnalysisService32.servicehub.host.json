@@ -1,0 +1,5 @@
+{
+  "$schema": "../../../schemas/servicehub.host.schema.json",
+  "hostExecutable": "./ServiceHub.RoslynCodeAnalysisService32.exe",
+  "hostArgs": [ "$HOSTID", "$PIPE", "$TELEMETRYSESSION" ]
+}

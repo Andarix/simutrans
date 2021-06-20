@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationGeneral" OverrideMode="Extend" xmlns="http://schemas.microsoft.com/build/2009/properties">
+  
+    <BoolProperty Name="BuildAsX" DisplayName="Projekt als ARM64X erstellen" Description="Führen Sie die ARM64- und ARM64EC-Binärausgaben dieses Projekts zu einer Ausgabe zusammen. Voraussetzung hierfür ist, dass das Projekt eine vorhandene ARM64-Konfiguration aufweist." F1Keyword="VC.Project.VCConfiguration.BuildAsX">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" Label=""/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+
+</Rule>

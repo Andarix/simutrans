@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="C++ Core Check Shared Pointer Rules" Description="These rules enforce resource-management checks related to types with shared pointer semantics from the C++ Core Guidelines (http://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#r-resource-management).." ToolsVersion="10.0">
+  <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
+    <Name Resource="CppCoreCheckSharedPointerRules_Name" />
+    <Description Resource="CppCoreCheckSharedPointerRules_Description" />
+  </Localization>
+  <Rules AnalyzerId="Microsoft.Analyzers.NativeCodeAnalysis" RuleNamespace="Microsoft.Rules.Native">
+    <Rule Id="C26414" Action="Warning" />
+    <Rule Id="C26415" Action="Warning" />
+    <Rule Id="C26416" Action="Warning" />
+    <Rule Id="C26417" Action="Warning" />
+    <Rule Id="C26418" Action="Warning" />
+  </Rules>
+</RuleSet>

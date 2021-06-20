@@ -1,0 +1,10 @@
+﻿{
+  "entryPoint": {
+    "assemblyPath": "Microsoft.VisualStudio.ThreadedWaitDialog.dll",
+    "fullClassName": "Microsoft.VisualStudio.ThreadedWaitDialog.ServiceHubEntryPoint",
+    "appBasePath": "%VSAPPIDDIR%",
+    "configPath": "%PkgDefApplicationConfigFile%"
+  },
+  "host": "desktopClr.x86",
+  "hostId": "ThreadedWaitDialog"
+}

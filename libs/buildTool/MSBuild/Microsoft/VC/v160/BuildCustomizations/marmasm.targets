@@ -3,7 +3,7 @@
   <ItemGroup>
     <PropertyPageSchema
       Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
-      <AvailableItemName Include="ARMASM">
+      <AvailableItemName Include="MARMASM">
         <Targets>_MARMASM</Targets>
       </AvailableItemName>
   </ItemGroup>

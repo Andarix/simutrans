@@ -15,17 +15,29 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-   <PropertyGroup>
-      <GenerateTargetFrameworkAttribute Condition="'$(CLRSupport)' == '' or '$(CLRSupport)' == 'false'">false</GenerateTargetFrameworkAttribute>
+  <PropertyGroup>
+    <GenerateTargetFrameworkAttribute Condition="'$(CLRSupport)' == '' or '$(CLRSupport)' == 'false'">false</GenerateTargetFrameworkAttribute>
+    <AssemblyName Condition="'$(CLRSupport)' == 'netcore' and '$(TargetName)' != ''">$(TargetName)</AssemblyName>
 
-      <!-- By default we do not want to build project to project references if they are disabled in the solution configuration -->
-      <OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration Condition="'$(OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration)' == ''">true</OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration>
-      <_BuildActionType Condition="'$(_BuildActionType)' == ''">Build</_BuildActionType>
-   </PropertyGroup>
+    <!-- By default we do not want to build project to project references if they are disabled in the solution configuration -->
+    <OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration Condition="'$(OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration)' == ''">true</OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration>
+    <_BuildActionType Condition="'$(_BuildActionType)' == ''">Build</_BuildActionType>
+  </PropertyGroup>
 
-   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.Targets" />
+  <!-- disable intermediate pdb copy to output dir by msbuild common targets, it should never be done for C++ build -->
+  <PropertyGroup>
+    <_DebugTypeOld>$(DebugType)</_DebugTypeOld>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
 
-    <!--
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.Targets" />
+
+  <PropertyGroup>
+    <!-- Restore the property in case it is used by some extensons -->
+    <DebugType>$(_DebugTypeOld)</DebugType>
+  </PropertyGroup>
+
+  <!--
     ============================================================
                                         GenerateTargetFrameworkMonikerAttribute
 
@@ -65,6 +77,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
               <!-- Cleanup ForcedIncludeFiles as PrecompiledHeader might be using /FI and we don't want to pick up any random temp files -->
               <ForcedIncludeFiles></ForcedIncludeFiles>
               <!-- The appropriate CompileAsManaged setting will automatically be set depending on the current CLRSupport value -->
+             <IncludeInUnityFile>false</IncludeInUnityFile>
            </ClCompile>
         </ItemGroup>
 
@@ -84,6 +97,16 @@ Copyright (C) Microsoft Corporation. All rights reserved.
        Each step can be executed separately. Populate BuildSteps with one or more steps
        before importing this project to build only particular steps. -->
   <PropertyGroup>
+    <!-- Due to circular dependency, "Build" target can't depend on "BuildGenerateSources;BuildCompile;BuildLink". -->
+    <BuildSteps Condition="'$(BuildSteps)' == '' and ('$(BuildPassReferences)' == 'true' or '$(AllowParallelCompileInReferencedProjects)' == 'true')">
+      ResolveReferences;
+      PrepareForBuild;
+      InitializeBuildStatus;
+      _BuildGenerateSourcesAction;
+      _BuildCompileAction;
+      _BuildLinkAction;
+    </BuildSteps>
+
     <BuildSteps Condition="'$(BuildSteps)' == ''">
       ResolveReferences;
       PrepareForBuild;
@@ -187,8 +210,10 @@ Copyright (C) Microsoft Corporation. All rights reserved.
 
   <PropertyGroup>
     <!-- TLogLocation requires trailing slash. -->
-    <TLogLocation Condition="'$(TLogLocation)' == '' and '$(ProjectName)' != '' and '$(ProjectGuid)' != '' and '$(ProjectName.Length)' &gt; '16'">$(IntDir)$(ProjectName.Substring(0,8)).$(ProjectGuid.Substring(1,8)).tlog\</TLogLocation>
-    <TLogLocation Condition="'$(TLogLocation)' == ''">$(IntDir)$(ProjectName).tlog\</TLogLocation>
+    <_TLogProjectName>$(ProjectName)</_TLogProjectName>
+    <_TLogProjectName Condition="'$(ProjectName)' != '' and '$(ProjectGuid)' != '' and '$(ProjectName.Length)' &gt; '16'">$(ProjectName.Substring(0,8)).$(ProjectGuid.Substring(1,8))</_TLogProjectName>
+    <TLogLocation Condition="'$(TLogLocation)' == ''">$(IntDir)$(_TLogProjectName).tlog\</TLogLocation>
+    <TLogLocation_ModuleDependencies Condition="'$(TLogLocation_ModuleDependencies)' == ''">$(IntDir)$(_TLogProjectName)_MD.tlog\</TLogLocation_ModuleDependencies>
     <LastBuildUnsuccessful>$(TLogLocation)unsuccessfulbuild</LastBuildUnsuccessful>
     <LastBuildState>$(TLogLocation)$(ProjectName).lastbuildstate</LastBuildState>
   </PropertyGroup>

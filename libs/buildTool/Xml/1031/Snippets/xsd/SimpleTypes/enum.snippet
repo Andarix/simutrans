@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>
+      <!-- _locID_text="title" _locComment="" -->enumeration</Title>
+    <Author>Microsoft Corporation</Author>
+    <Shortcut>stenum</Shortcut>
+    <Description>
+      <!-- _locID_text="description" _locComment="" -->XML-Codeausschnitt für XSD-simpleType-Enumeration</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal Editable="false">
+        <ID>prefix</ID>
+        <Function>LookupPrefix("http://www.w3.org/2001/XMLSchema")</Function>
+      </Literal>
+      <Literal>
+        <ID>name</ID>
+        <Default>name</Default>
+      </Literal>
+      <Literal>
+        <ID>type</ID>
+        <Default>string</Default>
+      </Literal>
+      <Literal>
+        <ID>value</ID>
+        <Default>value</Default>
+      </Literal>
+    </Declarations>
+    <Code Language="XML"><![CDATA[<xsd:simpleType name="$name$" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:restriction base="$prefix$$type$">
+    <xsd:enumeration value="$value$"/>$selected$$end$
+    </xsd:restriction>
+    </xsd:simpleType>]]></Code>
+  </Snippet>
+</CodeSnippet>

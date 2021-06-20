@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://schemas.microsoft.com/vstudio/debugger/jmc/2013" xmlns="http://schemas.microsoft.com/vstudio/debugger/jmc/2013" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="FunctionType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Namen einer Funktion an, die als IDE-generierter Code behandelt werden soll. Es können Platzhalter enthalten sein.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Name" type="xs:string" use="required"/>
+    <xs:attribute name="Module" type="xs:string" use="optional"/>
+    <xs:attribute name="Company" type="xs:string" use="optional"/>
+    <xs:attribute name="ExceptionImplementation" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="ModuleType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Namen eines Moduls an, das als IDE-generierter Code behandelt werden soll.  Es können Platzhalter enthalten sein, und es kann ein Dateiname oder ein vollständiger Pfad angegeben werden.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Name" type="xs:string" use="optional"/>
+    <xs:attribute name="Company" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="FileType">
+    <xs:annotation>
+      <xs:documentation>Gibt den Namen einer Quelldatei an, die als IDE-generierter Code behandelt werden soll. Es können Platzhalter enthalten sein, und es kann ein Dateiname oder ein vollständiger Pfad angegeben werden.</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="Name" type="xs:string" use="required"/>
+    <xs:attribute name="Module" type="xs:string" use="optional"/>
+    <xs:attribute name="Company" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:element name="NonUserCode">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="Module" type="ModuleType"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="File" type="FileType"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="Function" type="FunctionType"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

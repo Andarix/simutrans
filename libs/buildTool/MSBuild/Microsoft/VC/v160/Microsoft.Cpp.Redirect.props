@@ -18,7 +18,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <_CppCommonExtensionTargets Condition="'$(_CppCommonExtensionTargets)' == ''">$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.Cpp.targets</_CppCommonExtensionTargets>
   </PropertyGroup>
 
-  <Import Condition="'$(MinSupportedVCTargetsVersion)' != 'v160'" Project="$(VCTargetsPathActual)\Microsoft.Cpp.Redirect.16.props" />
+  <Import Condition="'$(MinSupportedVCTargetsVersion)' != 'v160'" Project="$(CurrentVCTargetsPath)\Microsoft.Cpp.Redirect.16.props" />
 
   <PropertyGroup>
     <_Redirect>$(_ToolsetFound)</_Redirect>

@@ -19,7 +19,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <ClCompile>
       <EnablePREfast Condition="'%(ClCompile.EnablePREfast)' == ''">false</EnablePREfast>
       <OmitFramePointers Condition="'%(ClCompile.OmitFramePointers)' == ''">false</OmitFramePointers>
-      <DebugInformationFormat  Condition="'$(UseDebugLibraries)' == 'true' and ('$(CLRSupport)' == '' or '$(CLRSupport)' == 'false')">EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat  Condition="'%(ClCompile.DebugInformationFormatDefined)' != 'true' and '$(UseDebugLibraries)' == 'true' and ('$(CLRSupport)' == '' or '$(CLRSupport)' == 'false')">EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
       <TargetMachine Condition="'%(Link.TargetMachine)' == ''">MachineX86</TargetMachine>

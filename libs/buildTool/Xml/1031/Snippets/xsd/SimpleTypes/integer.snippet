@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>
+      <!-- _locID_text="title" _locComment="" -->integer restriction</Title>
+    <Author>Microsoft Corporation</Author>
+    <Shortcut>stint</Shortcut>
+    <Description>
+      <!-- _locID_text="description" _locComment="" -->XML-Ausschnitt für XSD simpleType Integer</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>name</ID>
+        <ToolTip>
+          <!-- _locID_text="tooltip" _locComment="" -->Name des Elements.</ToolTip>
+        <Default>name</Default>
+      </Literal>
+      <Literal>
+        <ID>type</ID>
+        <Default>integer</Default>
+      </Literal>
+      <Literal Editable="false">
+        <ID>prefix</ID>
+        <Function>LookupPrefix("http://www.w3.org/2001/XMLSchema")</Function>
+      </Literal>
+    </Declarations>
+    <Code Language="XML"><![CDATA[<xsd:simpleType name="$name$" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:restriction base="$prefix$$type$">$selected$$end$</xsd:restriction>
+    </xsd:simpleType>]]></Code>
+  </Snippet>
+</CodeSnippet>

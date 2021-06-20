@@ -28,13 +28,15 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Common.props" />
 
   <!-- properties  common for all platforms -->
-  <PropertyGroup> 
+  <PropertyGroup>
     <IncludePath Condition="'$(IncludePath)' == ''">$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <ExternalIncludePath Condition="'$(ExternalIncludePath)' == ''">$(VC_IncludePath);$(WindowsSDK_IncludePath);</ExternalIncludePath>
     <LibraryWPath Condition="'$(LibraryWPath)' == ''">$(WindowsSDK_MetadataPath);</LibraryWPath>
     <SourcePath Condition="'$(SourcePath)' == ''">$(VC_SourcePath);</SourcePath>
 
     <CommonExecutablePath>$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</CommonExecutablePath>
     <CommonExcludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VC_ExecutablePath_Loc);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(FxCopDir);$(MSBuildToolsPath);$(MSBuildFrameworkToolsPath);$(MSBuild_ExecutablePath);$(SystemRoot)</CommonExcludePath>
+    <CheckMSVCComponents Condition="'$(CheckMSVCComponents)' == ''">true</CheckMSVCComponents>
   </PropertyGroup>
 
 </Project>

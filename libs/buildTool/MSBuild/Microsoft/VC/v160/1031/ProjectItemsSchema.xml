@@ -29,6 +29,9 @@
     <ContentType Name="CppControl" DisplayName="C++-Steuerelement" ItemType="ClCompile">
     </ContentType>
 
+    <ContentType Name="CppModule" DisplayName="C++-Modulschnittstelleneinheit" ItemType="ClCompile">
+    </ContentType>
+
     <ContentType Name="Text" DisplayName="Textdatei" ItemType="Text">
     </ContentType>
 
@@ -187,7 +190,9 @@
     <FileExtension Name=".cc" ContentType="CppCode"/>
     <FileExtension Name=".c++" ContentType="CppCode"/>
     <FileExtension Name=".cpp" ContentType="CppCode"/>
+    <FileExtension Name=".cppm" ContentType="CppModule"/>
     <FileExtension Name=".cxx" ContentType="CppCode"/>
+    <FileExtension Name=".ixx" ContentType="CppModule"/>
 
     <FileExtension Name=".h" ContentType="CppHeader"/>
     <FileExtension Name=".h++" ContentType="CppHeader"/>

@@ -76,7 +76,6 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         <DisableLanguageExtensions />
         <DisableSpecificWarnings />
         <EnableFiberSafeOptimizations />
-        <EnableModules />
         <MultiProcessorCompilation />
         <EnableParallelCodeGeneration />
         <EnablePREfast />
@@ -134,7 +133,6 @@ Copyright (C) Microsoft Corporation. All rights reserved.
         DisableSpecificWarnings            ="%(ClCompile.DisableSpecificWarnings)"
         EnableEnhancedInstructionSet       ="%(ClCompile.EnableEnhancedInstructionSet)"
         EnableFiberSafeOptimizations       ="%(ClCompile.EnableFiberSafeOptimizations)"
-        EnableModules                      ="%(ClCompile.EnableModules)"
         EnableParallelCodeGeneration       ="%(ClCompile.EnableParallelCodeGeneration)"
         EnablePREfast                      ="%(ClCompile.EnablePREfast)"
         EnforceTypeConversionRules         ="%(ClCompile.EnforceTypeConversionRules)"

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <Header>
+    <Title>
+      <!-- _locID_text="title" _locComment="" -->pattern restriction</Title>
+    <Author>Microsoft Corporation</Author>
+    <Shortcut>atpattern</Shortcut>
+    <Description>
+      <!-- _locID_text="description" _locComment="" -->XML-Ausschnitt zum Definieren eines XSD-Attributs vom Typ simpleType mit Pattern</Description>
+    <SnippetTypes>
+      <SnippetType>SurroundsWith</SnippetType>
+      <SnippetType>Expansion</SnippetType>
+    </SnippetTypes>
+  </Header>
+  <Snippet>
+    <Declarations>
+      <Literal>
+        <ID>name</ID>
+        <ToolTip>
+          <!-- _locID_text="tooltip1" _locComment="" -->Name des Attributs.</ToolTip>
+        <Default>name</Default>
+      </Literal>
+      <Literal>
+        <ID>value</ID>
+        <ToolTip>
+          <!-- _locID_text="tooltip2" _locComment="" -->Pattern-Ausdruck.</ToolTip>
+        <Default>\d\d\d</Default>
+      </Literal>
+      <Literal>
+        <ID>type</ID>
+        <ToolTip>
+          <!-- _locID_text="tooltip3" _locComment="" -->Einzuschränkender Typ.</ToolTip>
+        <Default>string</Default>
+      </Literal>
+      <Literal Editable="false">
+        <ID>prefix</ID>
+        <Function>LookupPrefix("http://www.w3.org/2001/XMLSchema")</Function>
+      </Literal>
+    </Declarations>
+    <Code Language="XML"><![CDATA[<xsd:attribute name="$name$" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+     <xsd:simpleType>
+      <xsd:restriction base="$prefix$$type$">
+       <xsd:pattern value="$value$"/>$selected$$end$
+      </xsd:restriction>
+     </xsd:simpleType>
+    </xsd:attribute>]]></Code>
+  </Snippet>
+</CodeSnippet>

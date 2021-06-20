@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="C++ Core Check Function Rules" Description="These rules enforce checks related to functions from the C++ Core Guidelines (http://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#f-functions)." ToolsVersion="10.0">
+  <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
+    <Name Resource="CppCoreCheckFuncRules_Name" />
+    <Description Resource="CppCoreCheckFuncRules_Description" />
+  </Localization>
+  <Rules AnalyzerId="Microsoft.Analyzers.NativeCodeAnalysis" RuleNamespace="Microsoft.Rules.Native">
+    <Rule Id="C26439" Action="Warning" />
+    <Rule Id="C26440" Action="Warning" />
+    <Rule Id="C26447" Action="Warning" />
+    <Rule Id="C26455" Action="Warning" />
+  </Rules>
+</RuleSet>

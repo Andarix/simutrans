@@ -32,4 +32,8 @@ Copyright (C) Microsoft Corporation. All rights reserved.
     <UnitTestPlatformVersion Condition="'$(UnitTestPlatformVersion)' == '14.0'">15.0</UnitTestPlatformVersion>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(ProjectSubType)' == 'NativeUnitTestProject'">
+    <CopyAsanBinariesToOutDir>true</CopyAsanBinariesToOutDir>
+  </PropertyGroup>
+  
 </Project>

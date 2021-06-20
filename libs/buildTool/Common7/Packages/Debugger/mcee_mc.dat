@@ -1,0 +1,280 @@
+; -------------------------------------
+; auto-expansion rules for the managed EE [mcee.dll]
+; -------------------------------------
+; grammar meta symbols:
+; -------------------------------------
+; -> : derivation direction
+; | : union
+; -------------------------------------
+; grammar symbols:
+; -------------------------------------
+; = : separation between <type-expr> and value-term
+; < : open angle bracket that delimits either type-expr or identifier-expr
+; > : close angle bracket that delimits either type-expr or identifier-expr
+; alphanumeric: valid variable name
+; punctuator: valid operator/punctuator except < and >
+; -------------------------------------
+; The grammar for auto-expansion rules:
+; -------------------------------------
+; <type-expr> = value-term
+; value-term = literal
+; value-term = literal <identifier-expr>
+; value-term = value-term value-term
+; <type-expr> = literal <identifier-expr>
+;
+; type-expr -> alphanumeric
+; type-expr -> alphanumeric.type-expr
+; type-expr -> type-expr, type-modifier
+;
+; type-modifier -> + | -
+;
+; literal -> alphnumeric | punctuator
+;
+; punctuators -> = | { +, -, *, /, .... }
+;
+; identifier-expr -> alphanumeric
+; identifier-expr -> identifier-expr, identifier-modifier
+;
+; identifier-modifier -> d | o | h
+; -------------------------------------
+;
+; type-expr : the name of type that is considered intrinsic to the language [CSharp/managed C++]
+; type-modifier + : allow manual expansion of children
+; type-modifier - : disallow manual expansion of children
+;
+; literal : the literal string to be concatenated with <identifier-expr> and
+			to be displayed on value-field of the debugger window
+; identifier-expr : the name of child of a variable of type: <type-expr>
+;
+; identifier-modifier d : request decimal value representation
+; identifier-modifier o : request octal value representation
+; identifier-modifier h : request hexadecimal value representation
+; -------------------------------------
+; some real world examples:
+;
+; // declared class
+; class CRect {
+;	int m_x;
+;	int m_y;
+;	int m_width;
+;	int m_height;
+; };
+;
+; // runtime values: {m_x = 1, m_y = 2, m_width = 10, m_height = 20}
+;
+; <CRect>=m_x=<m_x>
+;	auto-expansion: {m_x=1}
+;
+; <CRect> = m_x <m_x>
+;	auto-expansion: {m_x=1}
+;
+; <CRect>=m_x<m_x> m_y<m_y>
+;	auto-expansion: {m_x=1 m_y=2}
+;
+; <CRect,->=m_x<m_x> m_y<m_y>
+;	auto-expansion: {m_x=1 m_y=2} // same as above, however, manual expansion is disallowed
+;
+; <CRect,+>=m_x<m_x, h> m_y<m_y, o>
+;	auto-expansion: {m_x=0x1 m_y=02}
+
+; Managed C++ Language Intrinsics
+<System::DateTime>=<Day>/<Month>/<Year> <Hour>:<Minute>:<Second> System.DateTime
+
+; Exceptions
+<System::Exception> = <Message>
+
+; URT framework
+<System::Drawing::Point>=X=<x> Y=<y>
+<System::Drawing::Size>=Width=<width> Height=<height>
+<System::Drawing::Rectangle>=X=<x> Y=<y> Width=<width> Height=<height>
+<System::ComponentModel::MemberDescriptor>=Name=<name>
+<System::ComponentModel::PropertyDescriptor>=Name=<name>
+<System::Drawing::Font>=Name=<entry.name> Size=<entry.size>
+<System::Drawing::Color>=RGB=<value,h>
+<System::WinForms::Control>=X=<x> Y=<y> Width=<width> Height=<height> Handle=<handle>
+<System::Int16>=<m_value>
+<System::UInt16>=<m_value>
+<System::Int32>=<m_value>
+<System::UInt32>=<m_value>
+<System::Int64>=<m_value>
+<System::UInt64>=<m_value>
+<System::IntPtr>=<m_value>
+<System::UIntPtr>=<m_value>
+<System::Single>=<m_value>
+<System::Double>=<m_value>
+<System::Char>=<m_value>
+<System::Byte>=<m_value>
+<System::SByte>=<m_value>
+<System::UByte>=<m_value>
+<System::Boolean>=<m_value>
+
+[Visualizer]
+; This section contains visualizers for STL and BCL containers
+; DO NOT MODIFY
+
+gcroot<*>{
+	children(
+		#(
+			handle: $c._handle,
+			value: __gchandle($c._handle)
+		)
+ 	)
+}
+
+
+System.Collections.ArrayList{
+	children(
+	        #array(
+				expr :	($c._items)[$i],
+				size :	$c._size
+				))
+}
+
+System.Collections.Stack{
+	children(
+	        #array(
+				expr :	($c._array)[$i],
+				size :	$c._size
+				))
+}
+
+System.Collections.Queue{
+	children(
+	        #array(
+				expr :	($c._array)[$i],
+				size :	$c._size
+				))
+}
+
+System.Collections.SortedList{
+	children(
+	        #array(
+				expr :	$i,
+				size :	$c._size
+				) : #($c.keys[$e], $c.values[$e])
+				)
+}
+
+System.Collections.Hashtable.bucket{
+	children(
+		#if($e.hash_coll == 0)
+		(
+			#(
+				[empty bucket]:
+			)
+		)
+		#else
+		(
+			#(
+				key: $e.key ,
+				val: $e.val
+			)
+		)
+	)
+}
+
+System.Collections.Hashtable{
+	children(#(buckets: $c.buckets))
+}
+
+System.Collections.Specialized.BitVector32 {
+	children( #(data : $c.data ))
+}
+
+;------------------------------------------------------------------------------
+;  Microsoft.VisualC.StlClr.GenericPair
+;  cliext::pair
+;------------------------------------------------------------------------------
+Microsoft.VisualC.StlClr.GenericPair|cliext.pair<*>{
+	children
+	(
+		#(
+			first  : $c.first,
+			second : $c.second
+		)
+	)
+}
+
+;------------------------------------------------------------------------------
+;  cliext::vector
+;  cliext::deque
+;------------------------------------------------------------------------------
+cliext.vector<*>|cliext.deque<*>{
+	children
+	(
+		#array
+		(
+			expr : $c[$i],
+			size : $c._Mysize
+		)
+	)
+}
+
+;------------------------------------------------------------------------------
+;  cliext::queue
+;  cliext::priority_queue
+;  cliext::stack
+;------------------------------------------------------------------------------
+cliext.queue<*>|cliext.priority_queue<*>|cliext.stack<*>{
+	children
+	(
+		#array
+		(
+			expr : $c.c[$i],
+			size : $c.c._Mysize
+		)
+	)
+}
+
+;------------------------------------------------------------------------------
+;  cliext::map
+;  cliext::multimap
+;  cliext::set
+;  cliext::multiset
+;------------------------------------------------------------------------------
+cliext.map<*>|cliext.multimap<*>|cliext.set<*>|cliext.multiset<*>{
+	children
+	(
+		#tree
+		(
+			head  : $c._Myhead->_Parent,
+			skip  : $c._Myhead,
+			left  : _Left,
+			right : _Right,
+			size  : $c._Mysize
+		) : $e._Myval
+	)
+}
+
+;------------------------------------------------------------------------------
+;  cliext::list
+;------------------------------------------------------------------------------
+cliext.list<*>{
+	children
+	(
+		#list
+		(
+			head : $c._Myhead->_Next,
+			size : $c._Mysize,
+			next : _Next
+		) : $e._Myval
+	)
+}
+
+;------------------------------------------------------------------------------
+;  cliext::hash_map
+;  cliext::hash_multimap
+;  cliext::hash_set
+;  cliext::hash_multiset
+;------------------------------------------------------------------------------
+cliext.hash_map<*>|cliext.hash_multimap<*>|cliext.hash_set<*>|cliext.hash_multiset<*>{
+	children
+	(
+		#list
+		(
+			head : $c._Mylist._Myhead->_Next,
+			size : $c._Mylist._Mysize,
+			next : _Next
+		) : $e._Myval
+	)
+}

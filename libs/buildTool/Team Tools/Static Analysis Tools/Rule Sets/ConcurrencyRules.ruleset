@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="C++ Concurrency Rules" Description="Comprises concurrency rules from C++ Core Guidelines and Win32 concurrency patterns." ToolsVersion="10.0">
+  <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
+    <Name Resource="ConcurrencyRules_Name" />
+    <Description Resource="ConcurrencyRules_Description" />
+  </Localization>
+  <Include Path="ConcurrencyCheckRules.ruleset" Action="Default" />
+  <Include Path="CppCoreCheckConcurrencyRules.ruleset" Action="Default" />
+</RuleSet>

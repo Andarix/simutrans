@@ -58,6 +58,12 @@
       <EnumValue Name="Library" Switch="lib" DisplayName="Bibliothek">
         <Argument Property="ShaderModel" IsRequired="true" Separator="_"/>
       </EnumValue>
+      <EnumValue Name="Mesh" Switch="ms" DisplayName="Meshshader">
+        <Argument Property="ShaderModel" IsRequired="true" Separator="_"/>
+      </EnumValue>
+      <EnumValue Name="Amplification" Switch="as" DisplayName="Verstärkungsshader">
+        <Argument Property="ShaderModel" IsRequired="true" Separator="_"/>
+      </EnumValue>
       <EnumValue Name="RootSignature" Switch="" DisplayName="Stammsignaturobjekt generieren">
         <Argument Property="ShaderModel" IsRequired="true" Separator=" "/>
       </EnumValue>

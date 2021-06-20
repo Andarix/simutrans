@@ -42,9 +42,11 @@
       <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
     </BoolProperty.DataSource>
   </BoolProperty>
+  <StringProperty Subtype="file" Name="IncrementalLinkDatabaseFile" DisplayName="Datenbankdatei für inkrementelle Links" Description="Gibt den Speicherort der Datenbankdatei für inkrementelle Links an. (/ILK:[name])" Category="General" Switch="ILK:" F1Keyword="VC.Project.VCLinkerTool.IncrementalLinkDatabaseFile">
+  </StringProperty>
   <BoolProperty Name="SuppressStartupBanner" DisplayName="Startbanner unterdrücken" Description="Die /NOLOGO-Option verhindert die Anzeige der Copyrightmeldung und der Versionsnummer. " Category="General" Switch="NOLOGO" F1Keyword="VC.Project.VCLinkerTool.SuppressStartupBanner">
   </BoolProperty>
-  <BoolProperty Name="IgnoreImportLibrary" DisplayName="Importbibliothek ignorieren" Description="Gibt an, dass die von dieser Konfiguration generierte Importbibliothek nicht in abhängige Projekte importiert wird." Category="General" F1Keyword="VC.Project.VCLinkerTool.IgnoreImportLibrary">
+  <BoolProperty Name="IgnoreImportLibrary" DisplayName="Importbibliothek ignorieren" Description="Gibt an, dass die von dieser Konfiguration generierte Importbibliothek nicht in abhängige Projekte importiert wird." Category="General" IncludeInCommandLine="false" F1Keyword="VC.Project.VCLinkerTool.IgnoreImportLibrary">
     <BoolProperty.DataSource>
       <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
     </BoolProperty.DataSource>
@@ -244,6 +246,8 @@
     <EnumValue Name="PGUpdate" Switch="LTCG:PGUpdate" DisplayName="Profilgesteuerte Optimierung (PGO) - Aktualisieren" Description="Ermöglicht eine Auflistung der Eingabedateien, die gemäß der Angaben in der :PGINSTRUMENT-Phase hinzugefügt oder geändert werden sollen, und verfolgt diese nach.">
     </EnumValue>
   </EnumProperty>
+  <StringProperty Subtype="file" Name="LinkTimeCodeGenerationObjectFile" DisplayName="Objektdatei für die Link-Zeitcodegenerierung" Description="Gibt den Speicherort für IOBJ-Dateien an. (/LTCGOUT:[name])" Category="Optimization" Switch="LTCGOUT:" F1Keyword="VC.Project.VCLinkerTool.LinkTimeCodeGenerationObjectFile">
+  </StringProperty>
   <StringProperty Subtype="file" Name="MidlCommandFile" DisplayName="MIDL-Befehle" Description="MIDL-Befehlszeilenoptionen angeben. (/MIDL:@Antwortdatei)" Category="Embedded IDL" Switch="MIDL" Separator=":@" F1Keyword="VC.Project.VCLinkerTool.MidlCommandFile">
   </StringProperty>
   <BoolProperty Name="IgnoreEmbeddedIDL" DisplayName="Eingebettetes IDL ignorieren" Description="Die /IGNOREIDL-Option gibt an, dass IDL-Attribute im Quellcode nicht in einer IDL-Datei verarbeitet werden sollen." Category="Embedded IDL" Switch="IGNOREIDL" F1Keyword="VC.Project.VCLinkerTool.IgnoreEmbeddedIDL">
@@ -313,6 +317,10 @@
     <EnumValue Name="MachineARM" Switch="MACHINE:ARM" DisplayName="MachineARM">
     </EnumValue>
     <EnumValue Name="MachineARM64" Switch="MACHINE:ARM64" DisplayName="MachineARM64">
+    </EnumValue>
+    <EnumValue Name="MachineARM64EC" Switch="MACHINE:ARM64EC" DisplayName="MachineARM64EC">
+    </EnumValue>
+    <EnumValue Name="MachineARM64X" Switch="MACHINE:ARM64X" DisplayName="MachineARM64X">
     </EnumValue>
     <EnumValue Name="MachineEBC" Switch="MACHINE:EBC" DisplayName="MachineEBC">
     </EnumValue>
@@ -401,15 +409,35 @@
     <EnumValue Name="SystemDlls" Switch="CLRSupportLastError:SYSTEMDLL" DisplayName="Nur System-DLLs" Description="CLRSupportLastError nur für System-DLLs aktivieren.">
     </EnumValue>
   </EnumProperty>
+  <BoolProperty ReverseSwitch="CETCOMPAT:NO" Name="CETCompat" DisplayName="Kompatibel mit CET-Schattenstapel" Description="Gibt an, ob ein ausführbares Image als kompatibel mit dem CET-Schattenstapel (Control-flow Enforcement Technology) gekennzeichnet wird." Category="Advanced" Switch="CETCOMPAT" F1Keyword="VC.Project.VCLinkerTool.CETCompat">
+  </BoolProperty>
   <BoolProperty ReverseSwitch="SAFESEH:NO" Name="ImageHasSafeExceptionHandlers" DisplayName="Image weist sichere Ausnahmehandler auf." Description="Wenn /SAFESEH angegeben ist, erstellt der Linker nur dann ein Image, wenn auch eine Tabelle mit den sicheren Ausnahmehandlern des Images erstellt werden kann. In dieser Tabelle ist für das Betriebssystem angegeben, welche Ausnahmehandler für das Image gültig sind." Category="Advanced" Switch="SAFESEH" F1Keyword="VC.Project.VCLinkerTool.ImageHasSafeExceptionHandlers">
   </BoolProperty>
-  <EnumProperty Name="LinkControlFlowGuard" DisplayName="Ablaufsteuerungsschutz" Description="Die Sicherheitsüberprüfung hilft bei der Erkennung zusätzlicher Versuche des Absendens an illegale Codeblöcke. (/guard:cf)" Category="Advanced" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.LinkControlFlowGuard">
+  <EnumProperty Name="LinkControlFlowGuard" DisplayName="Control Flow Guard" Description="The security check helps detect additional attempts to dispatch to illegal block of code.  (/guard:cf)" Category="Advanced" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.LinkControlFlowGuard">
     <EnumProperty.DataSource>
       <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
     </EnumProperty.DataSource>
-    <EnumValue Name="Guard" Switch="guard:cf" DisplayName="Sicherheitsprüfung mit Schutz aktivieren" Description="Sicherheitsüberprüfung mit Schutz aktivieren (/guard:cf)">
+    <EnumValue Name="Guard" Switch="guard:cf">
+    </EnumValue>
+    <EnumValue Name="True" Switch="guard:cf">
+    </EnumValue>
+    <EnumValue Name="False" Switch="">
     </EnumValue>
   </EnumProperty>
+  <BoolProperty Name="LinkGuardEHContMetadata" DisplayName="Metadaten zum Fortsetzen der Ausnahmebehandlung aktivieren" Description="Generiert eine sortierte Liste aller gültigen Fortsetzungsziele für die Ausnahmebehandlung für eine Binärdatei. Wird zur Laufzeit für die RIP-Überprüfung verwendet. Derzeit für x64-Builds verfügbar. (/guard:ehcont)" Category="Advanced" Switch="guard:ehcont" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.LinkGuardEHContMetadata">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <BoolProperty ReverseSwitch="guard:nodelayloadsignret" Name="LinkGuardSignedReturns" DisplayName="Signierte Rückgaben aktivieren" Description="Aktiviert signierte Rückgaben in vom Linker generierten delayload-Thunks. Derzeit für ARM64-Builds verfügbar. (/guard:delayloadsignret; /guard:nodelayloadsignret)" Category="Advanced" Switch="guard:delayloadsignret" Visible="false" F1Keyword="VC.Project.VCCLCompilerTool.LinkGuardSignedReturns">
+    <BoolProperty.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="" Label="" HasConfigurationCondition="true"/>
+    </BoolProperty.DataSource>
+  </BoolProperty>
+  <IntProperty Name="PdbThreads" Category="Advanced" Switch="pdbthreads:" Visible="false">
+  </IntProperty>
+  <IntProperty Name="CgThreads" Category="Advanced" Switch="cgthreads:" Visible="false">
+  </IntProperty>
   <StringProperty Name="AdditionalOptions" DisplayName="Zusätzliche Optionen" Description="Zusätzliche Optionen." Category="Command Line" F1Keyword="vc.project.AdditionalOptionsPage">
   </StringProperty>
   <BoolProperty Name="LinkDLL" Switch="DLL" Visible="false">

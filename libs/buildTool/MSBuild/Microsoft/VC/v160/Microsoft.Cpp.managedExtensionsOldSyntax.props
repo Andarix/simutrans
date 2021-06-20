@@ -19,7 +19,7 @@ Copyright (C) Microsoft Corporation. All rights reserved.
       <ExceptionHandling>Async</ExceptionHandling>
       <CompileAsManaged>OldSyntax</CompileAsManaged>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat Condition="'%(ClCompile.DebugInformationFormatDefined)' != 'true'">ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
       <MinimalRebuild></MinimalRebuild>
     </ClCompile>

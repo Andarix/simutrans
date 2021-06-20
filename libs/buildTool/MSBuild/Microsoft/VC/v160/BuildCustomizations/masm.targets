@@ -68,6 +68,7 @@
       Importance="High"
       Text="%(MASM.ExecutionDescription)" />
     <MASM
+      Condition="'@(MASM)' != '' and '%(MASM.ExcludedFromBuild)' != 'true'"
       CommandLineTemplate="%(MASM.CommandLineTemplate)"
       NoLogo="%(MASM.NoLogo)"
       GeneratePreprocessedSourceListing="%(MASM.GeneratePreprocessedSourceListing)"
