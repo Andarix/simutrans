@@ -54,7 +54,7 @@
       <DisableSpecificWarnings>4250;4373;4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\libs/libz-static.lib;..\libs\libpng16.lib;..\libs\libbz2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\libs\libz-static.lib;..\libs\libpng16.lib;..\libs\libbz2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -128,11 +128,11 @@
     <ClCompile Include="..\utils\searchfolder.cc" />
     <ClCompile Include="..\utils\simstring.cc" />
     <ClCompile Include="..\io\raw_image.cc" />
-    <ClCompile Include="..\simio.cc" />
     <ClInclude Include="..\io\classify_file.cc" />
     <ClCompile Include="..\io\raw_image_bmp.cc" />
     <ClCompile Include="..\io\raw_image_png.cc" />
     <ClCompile Include="..\io\raw_image_ppm.cc" />
+    <ClCompile Include="..\simio.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\macros.h" />
@@ -216,12 +216,12 @@
     <ClInclude Include="..\utils\sha1.h" />
     <ClInclude Include="..\utils\simrandom.h" />
     <ClInclude Include="..\utils\simstring.h" />
-    <ClInclude Include="..\simio.h" />
     <ClInclude Include="..\io\classify_file.h" />
     <ClInclude Include="..\io\raw_image.h" />
     <ClInclude Include="..\io\raw_image_bmp.h" />
     <ClInclude Include="..\io\raw_image_png.h" />
     <ClInclude Include="..\io\raw_image_ppm.h" />
+    <ClInclude Include="..\simio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
