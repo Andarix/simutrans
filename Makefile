@@ -246,13 +246,14 @@ ifdef WITH_REVISION
          $(info Revision is $(REV))
       endif
     endif
-
-    ifneq ($(REV),)
-      CFLAGS  += -DREVISION=$(REV)
-    else
-      echo "#define REVISION\n" >revision.h
-    endif
   endif
+endif
+
+ifneq ($(REV),)
+  CFLAGS  += -DREVISION=$(REV)
+  DUMMY := $(shell rm -f revision.h)
+else
+  DUMMY := $(shell echo '\#define REVISION\n' > revision.h)
 endif
 
 
@@ -774,7 +775,7 @@ ifeq ($(OSTYPE),mingw)
   ifneq ($(REV),)
     WINDRES ?= windres -DREVISION=$(REV)
   else
-    WINDRES ?= windres -DREVISION 
+    WINDRES ?= windres -DREVISION
   endif
 endif
 
