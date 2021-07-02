@@ -4801,7 +4801,7 @@ const char *tool_build_station_t::work( player_t *player, koord3d pos )
 		}
 
 		default:
-			dbg->warning("tool_build_station_t::work()","tool called for illegal desc \"%\"", default_param );
+			dbg->warning("tool_build_station_t::work()","tool called for illegal desc \"%s\"", default_param );
 			msg = "Illegal station tool";
 	}
 	return msg;
@@ -5403,10 +5403,16 @@ image_id tool_build_depot_t::get_icon(player_t *player) const
 
 bool tool_build_depot_t::init( player_t *player )
 {
-	building_desc_t const* desc = hausbauer_t::find_tile(default_param, 0)->get_desc();
+	if (default_param == NULL) {
+		return false;
+	}
+
+	const building_tile_desc_t *tile_desc = hausbauer_t::find_tile(default_param, 0);
+	building_desc_t const* desc = tile_desc ? tile_desc->get_desc() : NULL;
 	if (desc == NULL) {
 		return false;
 	}
+
 	// no depots for player 1
 	if(player!=welt->get_public_player()) {
 		cursor = desc->get_cursor()->get_image_id(0);
@@ -5494,11 +5500,15 @@ const char *tool_build_depot_t::work( player_t *player, koord3d pos )
  */
 bool tool_build_house_t::init( player_t * )
 {
+	if (default_param && strlen(default_param) < 3) {
+		return false;
+	}
+
 	if (can_use_gui() && !strempty(default_param)) {
 		const char *c = default_param+2;
 		const building_tile_desc_t *tile = hausbauer_t::find_tile(c,0);
 		if(tile!=NULL) {
-			int rotation = (default_param[1]-'0') % tile->get_desc()->get_all_layouts();
+			const int rotation = (default_param[1]-'0') % tile->get_desc()->get_all_layouts();
 			cursor_area = tile->get_desc()->get_size(rotation);
 		}
 	}

@@ -18,7 +18,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release'">
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -54,7 +54,7 @@
       <DisableSpecificWarnings>4250;4373;4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\libs\libz-static.lib;..\libs\libpng16.lib;..\libs\libbz2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\libs\zlib.lib;..\libs\libpng16.lib;..\libs\libbz2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -78,15 +78,16 @@
       <DebugInformationFormat />
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <PreprocessorDefinitions>MAKEOBJ;NDEBUG</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\libs\zlib-1.2.11;..\libs\lpng1637;..\libs\bzip2-1.0.6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <IgnoreAllDefaultLibraries Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -127,8 +128,8 @@
     <ClCompile Include="..\utils\log.cc" />
     <ClCompile Include="..\utils\searchfolder.cc" />
     <ClCompile Include="..\utils\simstring.cc" />
+    <ClCompile Include="..\io\classify_file.cc" />
     <ClCompile Include="..\io\raw_image.cc" />
-    <ClInclude Include="..\io\classify_file.cc" />
     <ClCompile Include="..\io\raw_image_bmp.cc" />
     <ClCompile Include="..\io\raw_image_png.cc" />
     <ClCompile Include="..\io\raw_image_ppm.cc" />
@@ -224,5 +225,6 @@
     <ClInclude Include="..\simio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>
