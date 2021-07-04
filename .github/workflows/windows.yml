@@ -17,6 +17,7 @@ jobs:
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\makeobj\Makeobj.vcxproj /p:Configuration=Release
+				cd $Env:GITHUB_WORKSPACE\
 
     - name: zip result
       run: Compress-Archive build\makeobj\Release\Makeobj.exe build\makeobj\Release\makeobj_windows-nightly.zip
@@ -42,6 +43,7 @@ jobs:
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-GDI.vcxproj /p:Configuration=git_actions
+				cd  $Env:GITHUB_WORKSPACE\
         copy Simutrans_GDI.exe simutrans\Simutrans.exe
 
     - name: load translate files
@@ -81,6 +83,7 @@ jobs:
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-SDL2.vcxproj /p:Configuration=git_actions
+				cd $Env:GITHUB_WORKSPACE\
         copy Simutrans_SDL2.exe simutrans\Simutrans.exe
         copy libs\SDL2.dll simutrans\SDL2.dll
 
@@ -121,6 +124,7 @@ jobs:
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-Server.vcxproj /p:Configuration=git_actions
+				cd $Env:GITHUB_WORKSPACE\
         copy Simutrans_Server.exe simutrans\Simutrans-Server.exe
 
     - name: load translate files
@@ -160,6 +164,7 @@ jobs:
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\nettools\Nettool.vcxproj /p:Configuration=release
+				cd $Env:GITHUB_WORKSPACE\
 
     - name: zip result
       run: Compress-Archive nettools\Nettool.exe nettools\nettool_windows-nightly.zip
