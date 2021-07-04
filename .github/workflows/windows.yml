@@ -152,7 +152,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: compile simutrans nettool
-      run: libs\buildTool\MSBuild\Current\Bin\MSBuild.exe nettools\Nettool.vcxproj -property:Configuration=git_actions
+      run: libs\buildTool\MSBuild\Current\Bin\MSBuild.exe nettools\Nettool.vcxproj -property:Configuration=release
 
     - name: zip result
       run: Compress-Archive nettools\Nettool.exe nettools\nettool_windows-nightly.zip
