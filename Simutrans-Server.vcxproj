@@ -91,7 +91,7 @@
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>libcmtd.lib</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
