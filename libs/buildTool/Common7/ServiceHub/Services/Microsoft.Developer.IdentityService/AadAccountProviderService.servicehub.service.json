@@ -1,9 +1,0 @@
-﻿{
-  "host": "desktopClr.x86",
-  "hostId": "IdentityHost",
-  "entryPoint":
-  {
-    "assemblyPath": "Microsoft.Developer.IdentityService.dll",
-    "fullClassName": "Microsoft.Developer.IdentityService.AccountProvider.AadAccountProviderService"
-  }
-}
