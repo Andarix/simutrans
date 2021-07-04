@@ -1,6 +1,6 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Id="Microsoft.VisualStudio.LanguageServer" Version="16.10.1220.63002" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.VisualStudio.LanguageServer" Version="16.10.1222.62071" Language="en-US" Publisher="Microsoft" />
     <DisplayName>Language Server Protocol Client</DisplayName>
     <Description xml:space="preserve">The support for the Language Server Protocol for Visual Studio.</Description>
     <Tags>Microsoft Visual Studio Language Server Protocol</Tags>

@@ -7,20 +7,20 @@
   "targets": {
     ".NETCoreApp,Version=v5.0": {},
     ".NETCoreApp,Version=v5.0/win10-x64": {
-      "InteractiveHost64/3.10.0-4.21269.26": {
+      "InteractiveHost64/3.10.0-4.21318.11": {
         "dependencies": {
-          "Microsoft.CodeAnalysis.CSharp": "3.10.0-4.21269.26",
-          "Microsoft.CodeAnalysis.CSharp.Scripting": "3.10.0-4.21269.26",
-          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21269.26",
-          "Microsoft.CodeAnalysis.InteractiveHost": "3.10.0-4.21269.26",
+          "Microsoft.CodeAnalysis.CSharp": "3.10.0-4.21318.11",
+          "Microsoft.CodeAnalysis.CSharp.Scripting": "3.10.0-4.21318.11",
+          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21318.11",
+          "Microsoft.CodeAnalysis.InteractiveHost": "3.10.0-4.21318.11",
           "Microsoft.CodeAnalysis.NetAnalyzers": "6.0.0-preview1.21054.10",
           "Microsoft.CodeAnalysis.PerformanceSensitiveAnalyzers": "3.3.3-beta1.21105.3",
-          "Microsoft.CodeAnalysis.Scripting.Common": "3.10.0-4.21269.26",
+          "Microsoft.CodeAnalysis.Scripting.Common": "3.10.0-4.21318.11",
           "Microsoft.DiaSymReader.Pdb2Pdb": "1.1.0-beta1-62506-02",
           "Microsoft.Net.Compilers.Toolset": "3.10.0-3.21223.23",
           "Microsoft.SourceLink.AzureRepos.Git": "1.1.0-beta-20206-02",
           "Microsoft.SourceLink.GitHub": "1.1.0-beta-20206-02",
-          "Microsoft.VisualStudio.Threading.Analyzers": "16.10.41-alpha",
+          "Microsoft.VisualStudio.Threading.Analyzers": "16.10.56",
           "RichCodeNav.EnvVarDump": "0.1.1643-alpha",
           "Roslyn.Diagnostics.Analyzers": "3.3.3-beta1.21105.3",
           "XliffTasks": "1.0.0-beta.21224.1"
@@ -109,7 +109,7 @@
       "Microsoft.VisualStudio.Threading/16.8.55": {
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "5.0.0",
-          "Microsoft.VisualStudio.Threading.Analyzers": "16.10.41-alpha",
+          "Microsoft.VisualStudio.Threading.Analyzers": "16.10.56",
           "Microsoft.VisualStudio.Validation": "16.8.33",
           "Microsoft.Win32.Registry": "4.7.0",
           "System.Threading.Tasks.Extensions": "4.5.4"
@@ -162,7 +162,7 @@
           }
         }
       },
-      "Microsoft.VisualStudio.Threading.Analyzers/16.10.41-alpha": {},
+      "Microsoft.VisualStudio.Threading.Analyzers/16.10.56": {},
       "Microsoft.VisualStudio.Validation/16.8.33": {
         "runtime": {
           "lib/netstandard2.1/Microsoft.VisualStudio.Validation.dll": {
@@ -931,7 +931,7 @@
       "System.Threading.Tasks.Dataflow/5.0.0": {},
       "System.Threading.Tasks.Extensions/4.5.4": {},
       "XliffTasks/1.0.0-beta.21224.1": {},
-      "Microsoft.CodeAnalysis.Common/3.10.0-4.21269.26": {
+      "Microsoft.CodeAnalysis.Common/3.10.0-4.21318.11": {
         "dependencies": {
           "Microsoft.CodeAnalysis.Analyzers": "3.3.2",
           "System.Collections.Immutable": "5.0.0",
@@ -986,9 +986,9 @@
           }
         }
       },
-      "Microsoft.CodeAnalysis.CSharp/3.10.0-4.21269.26": {
+      "Microsoft.CodeAnalysis.CSharp/3.10.0-4.21318.11": {
         "dependencies": {
-          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21269.26"
+          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21318.11"
         },
         "runtime": {
           "Microsoft.CodeAnalysis.CSharp.dll": {}
@@ -1035,12 +1035,12 @@
           }
         }
       },
-      "Microsoft.CodeAnalysis.CSharp.Scripting/3.10.0-4.21269.26": {
+      "Microsoft.CodeAnalysis.CSharp.Scripting/3.10.0-4.21318.11": {
         "dependencies": {
           "Microsoft.CSharp": "4.3.0",
-          "Microsoft.CodeAnalysis.CSharp": "3.10.0-4.21269.26",
-          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21269.26",
-          "Microsoft.CodeAnalysis.Scripting.Common": "3.10.0-4.21269.26"
+          "Microsoft.CodeAnalysis.CSharp": "3.10.0-4.21318.11",
+          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21318.11",
+          "Microsoft.CodeAnalysis.Scripting.Common": "3.10.0-4.21318.11"
         },
         "runtime": {
           "Microsoft.CodeAnalysis.CSharp.Scripting.dll": {}
@@ -1087,10 +1087,10 @@
           }
         }
       },
-      "Microsoft.CodeAnalysis.InteractiveHost/3.10.0-4.21269.26": {
+      "Microsoft.CodeAnalysis.InteractiveHost/3.10.0-4.21318.11": {
         "dependencies": {
-          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21269.26",
-          "Microsoft.CodeAnalysis.Scripting.Common": "3.10.0-4.21269.26",
+          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21318.11",
+          "Microsoft.CodeAnalysis.Scripting.Common": "3.10.0-4.21318.11",
           "StreamJsonRpc": "2.7.67"
         },
         "runtime": {
@@ -1138,9 +1138,9 @@
           }
         }
       },
-      "Microsoft.CodeAnalysis.Scripting.Common/3.10.0-4.21269.26": {
+      "Microsoft.CodeAnalysis.Scripting.Common/3.10.0-4.21318.11": {
         "dependencies": {
-          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21269.26"
+          "Microsoft.CodeAnalysis.Common": "3.10.0-4.21318.11"
         },
         "runtime": {
           "Microsoft.CodeAnalysis.Scripting.dll": {}
@@ -1190,7 +1190,7 @@
     }
   },
   "libraries": {
-    "InteractiveHost64/3.10.0-4.21269.26": {
+    "InteractiveHost64/3.10.0-4.21318.11": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -1321,12 +1321,12 @@
       "path": "microsoft.visualstudio.threading/16.8.55",
       "hashPath": "microsoft.visualstudio.threading.16.8.55.nupkg.sha512"
     },
-    "Microsoft.VisualStudio.Threading.Analyzers/16.10.41-alpha": {
+    "Microsoft.VisualStudio.Threading.Analyzers/16.10.56": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-LQuBal33lgAAnZXacm3oAgeXOEOfM4XLHncKMO2kB+8431l/zpL9+bFq4CnQEuSLbSc0h5yiXxXVkMgVcGAcgw==",
-      "path": "microsoft.visualstudio.threading.analyzers/16.10.41-alpha",
-      "hashPath": "microsoft.visualstudio.threading.analyzers.16.10.41-alpha.nupkg.sha512"
+      "sha512": "sha512-uTvu9fbmHTtRFY5xUgG45waU+ARad0JxyG/2btOC9Su6RTo3PrGVXKU2vHDtVELqlJsnKImhMaPH3YR0XCVwDg==",
+      "path": "microsoft.visualstudio.threading.analyzers/16.10.56",
+      "hashPath": "microsoft.visualstudio.threading.analyzers.16.10.56.nupkg.sha512"
     },
     "Microsoft.VisualStudio.Validation/16.8.33": {
       "type": "package",
@@ -2028,27 +2028,27 @@
       "path": "xlifftasks/1.0.0-beta.21224.1",
       "hashPath": "xlifftasks.1.0.0-beta.21224.1.nupkg.sha512"
     },
-    "Microsoft.CodeAnalysis.Common/3.10.0-4.21269.26": {
+    "Microsoft.CodeAnalysis.Common/3.10.0-4.21318.11": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.CodeAnalysis.CSharp/3.10.0-4.21269.26": {
+    "Microsoft.CodeAnalysis.CSharp/3.10.0-4.21318.11": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.CodeAnalysis.CSharp.Scripting/3.10.0-4.21269.26": {
+    "Microsoft.CodeAnalysis.CSharp.Scripting/3.10.0-4.21318.11": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.CodeAnalysis.InteractiveHost/3.10.0-4.21269.26": {
+    "Microsoft.CodeAnalysis.InteractiveHost/3.10.0-4.21318.11": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Microsoft.CodeAnalysis.Scripting.Common/3.10.0-4.21269.26": {
+    "Microsoft.CodeAnalysis.Scripting.Common/3.10.0-4.21318.11": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

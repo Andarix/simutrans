@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Id="8EAF6C8E-1283-4EEE-AB6E-F0F087BFCBFD" Version="16.10.31408.198" Language="en-us" Publisher="Microsoft"/>
+    <Identity Id="8EAF6C8E-1283-4EEE-AB6E-F0F087BFCBFD" Version="16.10.31415.396" Language="en-us" Publisher="Microsoft"/>
     <DisplayName>Visual Studio Product Updates</DisplayName>
     <Description>Updates to Visual Studio</Description>
   </Metadata>

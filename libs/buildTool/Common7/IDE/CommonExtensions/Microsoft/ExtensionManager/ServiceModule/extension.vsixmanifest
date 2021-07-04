@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Microsoft.VisualStudio.ExtensionManager.ServiceModule" Version="16.10.1055.51886" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.VisualStudio.ExtensionManager.ServiceModule" Version="16.10.1056.38773" Language="en-US" Publisher="Microsoft" />
     <DisplayName>Microsoft.VisualStudio.ExtensionManager.ServiceModule</DisplayName>
     <Description xml:space="preserve">Service Module for ExtensionManager</Description>
     <AllowClientRole>true</AllowClientRole>
