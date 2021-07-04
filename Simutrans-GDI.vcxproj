@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="git action|Win32">
+      <Configuration>git action</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -18,6 +22,8 @@
     <ProjectGuid>{0621B295-BEB7-4767-82F1-F27995610323}</ProjectGuid>
     <RootNamespace>Simutrans</RootNamespace>
     <ProjectName>Simutrans GDI</ProjectName>
+    <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
+    <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
     <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -26,7 +32,10 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
-    <WholeProgramOptimization>PGInstrument</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="Shared">
@@ -47,23 +56,19 @@
     <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <TargetName>Simutrans_GDI</TargetName>
+    <TargetName>$(ProjectName) Debug</TargetName>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <TargetName>$(ProjectName) Nightly</TargetName>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='git action'">
     <TargetName>Simutrans_GDI</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Stable'">
     <GenerateManifest>false</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Linkage-bzip2>static</Linkage-bzip2>
-    <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -75,28 +80,28 @@
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib;msvcrtd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Manifest>
-      <EnableDPIAwareness>true</EnableDPIAwareness>
+      <EnableDPIAwareness>PerMonitorHighDPIAware</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;DEBUG=3;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;DEBUG=3;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/zstdlib.lib;Xaudio2.lib</AdditionalDependencies>
-      <IgnoreSpecificDefaultLibraries>libcmtd.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;miniupnpc.lib;Xaudio2.lib;iphlpapi.lib</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libcmtd.lib</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
-      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <VerboseOutput>true</VerboseOutput>
@@ -104,8 +109,28 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;DEBUG=3;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='git action'">
+    <ClCompile>
+      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">libs/zstd-1.4.4/lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;libs/lpng1637;libs/miniupnpc-2.2.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">true</MultiProcessorCompilation>
+      <EnableParallelCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">false</EnableParallelCodeGeneration>
+      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">false</WholeProgramOptimization>
+      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">true</BufferSecurityCheck>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">MultiThreadedDLL</RuntimeLibrary>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">MaxSpeed</Optimization>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib;ws2_32.lib;Winmm.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">Default</LinkTimeCodeGeneration>
+      <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">false</GenerateDebugInformation>
+      <EnableCOMDATFolding Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">true</EnableCOMDATFolding>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Stable'">
     <ClCompile>
@@ -118,39 +143,25 @@
       <Message>Obtain SVN revision number</Message>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libs\zstd-1.4.4\lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Speed</FavorSizeOrSpeed>
-      <UndefinePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</MultiProcessorCompilation>
     </ClCompile>
-    <ProjectReference>
-      <UseLibraryDependencyInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</UseLibraryDependencyInputs>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <ClCompile>
       <DebugInformationFormat />
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs/zstd-1.4.4\lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;libs/lpng1637;libs/miniupnpc-2.2.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <UndefinePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">true</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;miniupnpc.lib;Xaudio2.lib;iphlpapi.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <TerminalServerAware Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</TerminalServerAware>
     </Link>
-    <ProjectReference>
-      <UseLibraryDependencyInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ResourceCompile>
-      <IgnoreStandardIncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IgnoreStandardIncludePath>
-    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="display\simgraph16.cc" />
@@ -159,9 +170,7 @@
     <ClCompile Include="sys\clipboard_w32.cc" />
     <ClCompile Include="sys\simsys_w.cc" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="sys\simsys_w32_png.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>

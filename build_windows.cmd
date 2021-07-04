@@ -5,9 +5,9 @@ set /p string=<status.txt
 echo #define REVISION %string:~1,5% > revision.h
 
 libs\buildTool\MSBuild\Current\Bin\MSBuild.exe makeobj\Makeobj.vcxproj -property:Configuration=Release
-libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-GDI.vcxproj -property:Configuration=Release
-libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-SDL2.vcxproj -property:Configuration=Release
-libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-Server.vcxproj -property:Configuration=Release
+libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-GDI.vcxproj -property:Configuration=git_actions
+libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-SDL2.vcxproj -property:Configuration=git_actions
+libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-Server.vcxproj -property:Configuration=git_actions
 
 copy Simutrans_GDI.exe simutrans\Simutrans_GDI.exe
 copy Simutrans_SDL2.exe simutrans\Simutrans_SDL2.exe

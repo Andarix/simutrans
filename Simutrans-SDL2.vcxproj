@@ -5,8 +5,8 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="git action GDI|Win32">
-      <Configuration>git action GDI</Configuration>
+    <ProjectConfiguration Include="git action|Win32">
+      <Configuration>git action</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
@@ -41,7 +41,7 @@
   </ImportGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir>$(SolutionDir)build\SDL2\</OutDir>
+    <OutDir>$(SolutionDir)</OutDir>
     <IntDir>$(SolutionDir)build\SDL2\$(Configuration)\</IntDir>
     <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
     <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
@@ -58,11 +58,11 @@
     <TargetName>$(ProjectName) Nightly</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='git action GDI'">
-    <TargetName>$(ProjectName) Nightly</TargetName>
+  <PropertyGroup Condition="'$(Configuration)'=='Stable'">
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Stable'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">
+    <TargetName>Simutrans_SDL2</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -71,18 +71,18 @@
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='git action GDI|Win32'" Label="Vcpkg">
-    <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
-  </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">
     <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <StringPooling>false</StringPooling>
+      <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <DisableSpecificWarnings>4250;4373;4800;4996;26812;26451</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4250;4373;4800;4996;4244;26812;26451</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">libs/zstd-1.4.4/lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;libs/lpng1637;libs/miniupnpc-2.2.2;libs/SDL2-2.0.14;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">true</MultiProcessorCompilation>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
@@ -90,9 +90,10 @@
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='git action|Win32'">libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/libzstd_static.lib;libs/miniupnpc.lib;libs/sdl2.lib;libs/libpng16.lib;libs/freetype.lib;ws2_32.lib;Winmm.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
-      <EnableDPIAwareness>true</EnableDPIAwareness>
+      <EnableDPIAwareness>PerMonitorHighDPIAware</EnableDPIAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -119,13 +120,6 @@
       <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='git action GDI'">
-    <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='git action GDI|Win32'">Disabled</Optimization>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='git action GDI|Win32'">false</BufferSecurityCheck>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Stable'">
     <ClCompile>
       <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
@@ -148,7 +142,6 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git action GDI|Win32'">true</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
