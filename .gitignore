@@ -37,6 +37,7 @@ Simutrans_SDL2.exp
 Simutrans_SDL2.lib
 /libs/lpng1637/projects
 /libs/miniupnpc-2.2.1
+/libs/miniupnpc-2.2.2/Release
 /libs/miniupnpc-2.1
 /libs/miniupnpc-master
 /packages

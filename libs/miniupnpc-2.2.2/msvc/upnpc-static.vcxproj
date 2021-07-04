@@ -133,6 +133,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;$(Configuration)\miniupnpc.lib;IPHlpApi.Lib;%(AdditionalDependencies)</AdditionalDependencies>
