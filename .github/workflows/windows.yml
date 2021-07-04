@@ -15,7 +15,8 @@ jobs:
 
     - name: compile makeobj
       run: |
-        "%programfiles(x86)%\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe" $Env:GITHUB_WORKSPACE\makeobj\Makeobj.vcxproj -property:Configuration=Release
+        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+        .\MSBuild.exe $Env:GITHUB_WORKSPACE\makeobj\Makeobj.vcxproj /p:Configuration=Release
 
     - name: zip result
       run: Compress-Archive build\makeobj\Release\Makeobj.exe build\makeobj\Release\makeobj_windows-nightly.zip
