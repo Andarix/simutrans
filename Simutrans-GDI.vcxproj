@@ -129,7 +129,7 @@
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib;ws2_32.lib;Winmm.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">Default</LinkTimeCodeGeneration>
       <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">false</GenerateDebugInformation>
-      <EnableCOMDATFolding Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">true</EnableCOMDATFolding>
+      <EnableCOMDATFolding Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">false</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Stable'">

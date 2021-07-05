@@ -47,3 +47,4 @@ Simutrans_SDL2.lib
 /libs/SDL2-2.0.14/VisualC/Win32/Release
 /libs/freetype-2.10.1/objs/Win32/Release Static
 /status.txt
+/libs/zstd-1.5.0
