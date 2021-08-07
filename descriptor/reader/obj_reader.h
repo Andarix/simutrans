@@ -62,6 +62,15 @@ inline uint32 decode_uint32(char * &data)
 #define decode_sint32(data)  (sint32)decode_uint32(data)
 
 
+#define OBJ_READER_DEF(classname, ty, ty_name) \
+	public: \
+		classname() { register_reader(); } \
+		obj_type get_type() const OVERRIDE { return ty; } \
+		const char *get_type_name() const OVERRIDE { return ty_name; } \
+		static classname *instance() { return &the_instance; } \
+	private: \
+		static classname the_instance
+
 
 class obj_reader_t
 {
@@ -95,8 +104,15 @@ protected:
 	static void xref_to_resolve(obj_type type, const char *name, obj_desc_t **dest, bool fatal);
 	static void resolve_xrefs();
 
-	virtual obj_desc_t* read_node(FILE* fp, obj_node_info_t& node) = 0;
-	virtual void register_obj(obj_desc_t *&/*data*/) {}
+	/// Read a descriptor from @p fp. Does version check and compatibility transformations.
+	/// @returns The descriptor on success, or NULL on failure
+	virtual obj_desc_t *read_node(FILE *fp, obj_node_info_t &node) = 0;
+
+	/// Register descriptor so the object described by the descriptor can be built in-game.
+	virtual void register_obj(obj_desc_t *&/*desc*/) {}
+
+	/// Does post-loading checks.
+	/// @returns true if everything ok
 	virtual bool successfully_loaded() const { return true; }
 
 	void register_reader();
