@@ -231,14 +231,27 @@ char const *difftick_to_string( sint32 ticks, bool round_to_quaters )
 	}
 
 	uint32 hours, minuten;
-	if (env_t::show_month > env_t::DATE_FMT_MONTH) {
-		hours = (((sint64)ticks*31) >> (welt_modell->ticks_per_world_month_shift-16));
+	if( env_t::show_month > env_t::DATE_FMT_MONTH ) {
+		if( welt_modell->ticks_per_world_month_shift>=16 ) {
+			hours = (((sint64)ticks*31) >> (welt_modell->ticks_per_world_month_shift-16));
+		}
+		else {
+			hours = (((sint64)ticks*31) << (16-welt_modell->ticks_per_world_month_shift));
+		}
 		minuten = (((hours*3) % 8192)*60)/8192;
 		hours = ((hours*3) / 8192)%24;
 	}
 	else {
-		hours = (ticks * 24) >> welt_modell->ticks_per_world_month_shift;
-		minuten = ((ticks * 24 * 60) >> welt_modell->ticks_per_world_month_shift) % 60;
+		if( welt_modell->ticks_per_world_month_shift>=16 ) {
+			uint32 precision = round_to_quaters ? 0 : 15;
+			hours = (((sint64)ticks * 3) >> (welt_modell->ticks_per_world_month_shift-16)) + precision;
+		}
+		else {
+			uint32 precision = round_to_quaters ? 0 : 15 >> (16-welt_modell->ticks_per_world_month_shift);
+			hours = (((sint64)ticks * 3) << (16-welt_modell->ticks_per_world_month_shift)) + precision;
+		}
+		minuten = (((hours*3) % 8192)*60)/8192;
+		hours = ((hours*3) / 8192)%24;
 	}
 
 	// maybe round minutes
@@ -278,16 +291,10 @@ char const *difftick_to_string( sint32 ticks, bool round_to_quaters )
 	switch(env_t::show_month) {
 	case env_t::DATE_FMT_GERMAN:
 	case env_t::DATE_FMT_GERMAN_NO_SEASON:
+	case env_t::DATE_FMT_US:
+	case env_t::DATE_FMT_US_NO_SEASON:
 		sprintf(time, "%s%2d:%02dh", days, hours, minuten);
 		break;
-
-	case env_t::DATE_FMT_US:
-	case env_t::DATE_FMT_US_NO_SEASON: {
-		uint32 hours_ = hours % 12;
-		if (hours_ == 0) hours_ = 12;
-		sprintf(time, "%s%2d:%02d%s", days, hours_, minuten, hours < 12 ? "am" : "pm");
-		break;
-	}
 
 	case env_t::DATE_FMT_JAPANESE:
 	case env_t::DATE_FMT_JAPANESE_NO_SEASON:
