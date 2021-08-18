@@ -6,6 +6,8 @@ env:
 
 on:
   push:
+    tags:
+      - 'Nightly'
 
 jobs:
   build:
@@ -44,7 +46,7 @@ jobs:
         unzip commandlinetools-linux-7583922_latest.zip
         rm commandlinetools-linux-7583922_latest.zip
         mv cmdline-tools latest
-        mkdir cmdline-tools 
+        mkdir cmdline-tools
         mv latest cmdline-tools/latest
         echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
