@@ -54,6 +54,7 @@ static button_t buttons[COLORS_MAX_BUTTONS];
 
 /**
 * class to visualize station names
+	IDBTN_SHOW_FACTORY_STORAGE,
 */
 class gui_label_stationname_t : public gui_label_t
 {
@@ -222,11 +223,25 @@ map_settings_t::map_settings_t()
 	scrollspeed.add_listener( this );
 	add_component( &scrollspeed );
 
-	// Toggle simple drawing for debugging
 #ifdef DEBUG
+	// Toggle simple drawing for debugging
 	buttons[IDBTN_SIMPLE_DRAWING].init(button_t::square_state, "Simple drawing");
 	add_component(buttons+IDBTN_SIMPLE_DRAWING, 2);
 #endif
+
+	// Set date format
+	new_component<gui_label_t>( "Date format" );
+	time_setting.set_focusable( false );
+	uint8 old_show_month = env_t::show_month;
+	sint32 current_tick = world()->get_ticks();
+	for( env_t::show_month = 0; env_t::show_month<8; env_t::show_month++ ) {
+		tstrncpy( time_str[env_t::show_month], tick_to_string( current_tick ), 64 );
+		time_setting.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( time_str[env_t::show_month], SYSCOL_TEXT );
+	}
+	env_t::show_month = old_show_month;
+	time_setting.set_selection( old_show_month );
+	add_component( &time_setting );
+	time_setting.add_listener( this );
 
 	end_table();
 }
@@ -238,17 +253,21 @@ bool map_settings_t::action_triggered( gui_action_creator_t *comp, value_t v )
 		env_t::daynight_level = (sint8)v.i;
 	}
 	// Scroll speed edit
-	if( &scrollspeed == comp ) {
+	else if( &scrollspeed == comp ) {
 		env_t::scroll_multi = (sint16)(buttons[ IDBTN_SCROLL_INVERSE ].pressed ? -v.i : v.i);
 	}
 	// underground slice edit
-	if( comp == &inp_underground_level ) {
+	else if( comp == &inp_underground_level ) {
 		if( grund_t::underground_mode == grund_t::ugm_level ) {
 			grund_t::underground_level = inp_underground_level.get_value();
 
 			// calc new images
 			world()->update_underground();
 		}
+	}
+	else if( comp == &time_setting ) {
+		env_t::show_month = v.i;
+		return true;
 	}
 	return true;
 }
@@ -285,6 +304,16 @@ transparency_settings_t::transparency_settings_t()
 	cursor_hide_range.add_listener( this );
 	add_component( &cursor_hide_range );
 
+	new_component<gui_label_t>( "Industry overlay" )->set_tooltip( translator::translate( "Display bars above factory to show the status" ) );
+	factory_tooltip.set_focusable( false );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Do not show" ), SYSCOL_TEXT );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "On mouseover" ), SYSCOL_TEXT );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Served by me" ), SYSCOL_TEXT );
+	factory_tooltip.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( translator::translate( "Show always" ), SYSCOL_TEXT );
+	factory_tooltip.set_selection( env_t::show_factory_storage_bar );
+	add_component( &factory_tooltip );
+	factory_tooltip.add_listener( this );
+
 	end_table();
 }
 
@@ -298,6 +327,12 @@ bool transparency_settings_t::action_triggered( gui_action_creator_t *comp, valu
 	if( &hide_buildings == comp ) {
 		env_t::hide_buildings = (uint8)v.i;
 		world()->set_dirty();
+	}
+	if( comp == &factory_tooltip ) {
+		env_t::show_factory_storage_bar = (uint8)v.i;
+		world()->set_dirty();
+
+		return true;
 	}
 	return true;
 }
@@ -462,7 +497,7 @@ color_gui_t::color_gui_t() :
 	for( int i = 0; i < COLORS_MAX_BUTTONS; i++ ) {
 		buttons[ i ].add_listener( this );
 	}
-	gui_settings.toolbar_pos.add_listener(this);
+	gui_settings.toolbar_pos.add_listener( this );
 	gui_settings.reselect_closes_tool.add_listener(this);
 
 	set_resizemode(diagonal_resize);
@@ -471,7 +506,7 @@ color_gui_t::color_gui_t() :
 	resize( scr_coord( 0, 0 ) );
 }
 
-bool color_gui_t::action_triggered( gui_action_creator_t *comp, value_t )
+bool color_gui_t::action_triggered( gui_action_creator_t *comp, value_t)
 {
 	if(  comp == &gui_settings.toolbar_pos  ) {
 		env_t::menupos++;
@@ -541,10 +576,8 @@ bool color_gui_t::action_triggered( gui_action_creator_t *comp, value_t )
 	case IDBTN_UNDERGROUND_VIEW:
 		// see simtool.cc::tool_show_underground_t::init
 		grund_t::set_underground_mode( buttons[ IDBTN_UNDERGROUND_VIEW ].pressed ? grund_t::ugm_none : grund_t::ugm_all, map_settings.inp_underground_level.get_value() );
-
 		// calc new images
 		welt->update_underground();
-
 		// renew toolbar
 		tool_t::update_toolbars();
 		break;

@@ -795,18 +795,17 @@ void dr_notify_input_pos(int x, int y)
 
 const char* dr_get_locale()
 {
-	static char LanguageCode[5] = "";
 #if SDL_VERSION_ATLEAST(2, 0, 14)
+	static char LanguageCode[5] = "";
 	SDL_Locale *loc = SDL_GetPreferredLocales();
 	if( loc ) {
 		strncpy( LanguageCode, loc->language, 2 );
 		LanguageCode[2] = 0;
+		DBG_MESSAGE( "dr_get_locale()", "%2s", LanguageCode );
+		return LanguageCode;
 	}
-#elif defined(_WIN32)
-	GetLocaleInfoA( GetUserDefaultUILanguage(), LOCALE_SISO639LANGNAME, LanguageCode, lengthof( LanguageCode ) );
 #endif
-	DBG_MESSAGE( "dr_get_locale()", "%2s", LanguageCode );
-	return LanguageCode;
+	return NULL;
 }
 
 

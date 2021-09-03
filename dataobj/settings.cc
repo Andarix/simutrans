@@ -8,6 +8,7 @@
 
 #include "settings.h"
 #include "environment.h"
+#include "../pathes.h"
 #include "../simconst.h"
 #include "../simtypes.h"
 #include "../simdebug.h"
@@ -952,12 +953,16 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 	}
 #endif
 
-	//check for fontname, must be a valid name!
-	const char *fname = contents.get_string( "fontname", env_t::fontname.c_str() );
-	if( FILE *f = fopen( fname, "r" ) ) {
-		fclose( f );
-		env_t::fontname = fname;
+	// check for fontname, must be a valid name!
+	if( !env_t::fontname.compare( FONT_PATH_X "prop.fnt" ) ) {
+		// will be only changed if default!
+		std::string fname = trim( contents.get_string( "fontname", env_t::fontname.c_str() ) );
+		if( FILE* f = fopen( fname.c_str(), "r" ) ) {
+			fclose( f );
+			env_t::fontname = fname;
+		}
 	}
+	env_t::fontsize  = contents.get_int( "fontsize", env_t::fontsize );
 
 	env_t::water_animation           = contents.get_int_clamped( "water_animation_ms",          env_t::water_animation,           0, INT_MAX);
 	env_t::ground_object_probability = contents.get_int_clamped( "random_grounds_probability",  env_t::ground_object_probability, 0, INT_MAX);
@@ -1334,7 +1339,10 @@ void settings_t::parse_simuconf( tabfile_t& simuconf, sint16& disp_width, sint16
 		const vector_tpl<sint64> test = contents.get_sint64s( name );
 
 		// two arguments, and then factor natural number
-		if( test.get_count() != 2 ) {
+		if( test.empty() ) {
+			continue;
+		}
+		else if( test.get_count() != 2 ) {
 			// invalid entry
 			dbg->warning("settings_t::parse_simuconf", "Parameter locality_factor[%i] has wrong syntax (Parameter ignored)", i);
 		}
