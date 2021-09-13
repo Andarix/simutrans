@@ -744,11 +744,11 @@ void fabrik_t::rem_lieferziel(koord ziel)
 
 fabrik_t::fabrik_t(loadsave_t* file)
 {
-	transformer = NULL;
 	owner = NULL;
 	prodfactor_electric = 0;
 	lieferziele_active_last_month = 0;
 	pos = koord3d::invalid;
+	transformers.clear();
 
 	rdwr(file);
 
@@ -779,7 +779,6 @@ fabrik_t::fabrik_t(loadsave_t* file)
 
 fabrik_t::fabrik_t(koord3d pos_, player_t* owner, const factory_desc_t* factory_desc, sint32 initial_prod_base) :
 	desc(factory_desc),
-	transformer(NULL),
 	pos(pos_)
 {
 	this->pos.z = welt->max_hgt(pos.get_2d());
@@ -801,7 +800,6 @@ fabrik_t::fabrik_t(koord3d pos_, player_t* owner, const factory_desc_t* factory_
 	menge_remainder = 0;
 	activity_count = 0;
 	currently_requiring_power = false;
-	transformer = NULL;
 	currently_producing = false;
 	total_input = total_transit = total_output = 0;
 	status = STATUS_NOTHING;
@@ -1619,9 +1617,15 @@ uint32 fabrik_t::scale_output_production(const uint32 product, uint32 menge) con
 	return menge;
 }
 
+
+/************** TODO: properly handle more than one transformer! *******************************/
+
 void fabrik_t::set_power_supply(uint32 supply)
 {
-	pumpe_t *const trans = dynamic_cast<pumpe_t *>(transformer);
+	if( transformers.empty() ) {
+		return;
+	}
+	pumpe_t *const trans = dynamic_cast<pumpe_t *>(transformers.front());
 	if(  trans == NULL  ) {
 		return;
 	}
@@ -1630,7 +1634,10 @@ void fabrik_t::set_power_supply(uint32 supply)
 
 uint32 fabrik_t::get_power_supply() const
 {
-	pumpe_t *const trans = dynamic_cast<pumpe_t *>(transformer);
+	if( transformers.empty() ) {
+		return 0;
+	}
+	pumpe_t *const trans = dynamic_cast<pumpe_t *>(transformers.front());
 	if(  trans == NULL  ) {
 		return 0;
 	}
@@ -1639,7 +1646,10 @@ uint32 fabrik_t::get_power_supply() const
 
 sint32 fabrik_t::get_power_consumption() const
 {
-	pumpe_t *const trans = dynamic_cast<pumpe_t *>(transformer);
+	if( transformers.empty() ) {
+		return 0;
+	}
+	pumpe_t *const trans = dynamic_cast<pumpe_t *>(transformers.front());
 	if(  trans == NULL  ) {
 		return 0;
 	}
@@ -1648,7 +1658,10 @@ sint32 fabrik_t::get_power_consumption() const
 
 void fabrik_t::set_power_demand(uint32 demand)
 {
-	senke_t *const trans = dynamic_cast<senke_t *>(transformer);
+	if( transformers.empty() ) {
+		return;
+	}
+	senke_t *const trans = dynamic_cast<senke_t *>(transformers.front());
 	if(  trans == NULL  ) {
 		return;
 	}
@@ -1657,7 +1670,10 @@ void fabrik_t::set_power_demand(uint32 demand)
 
 uint32 fabrik_t::get_power_demand() const
 {
-	senke_t *const trans = dynamic_cast<senke_t *>(transformer);
+	if( transformers.empty() ) {
+		return 0;
+	}
+	senke_t *const trans = dynamic_cast<senke_t *>(transformers.front());
 	if(  trans == NULL  ) {
 		return 0;
 	}
@@ -1666,7 +1682,10 @@ uint32 fabrik_t::get_power_demand() const
 
 sint32 fabrik_t::get_power_satisfaction() const
 {
-	senke_t *const trans = dynamic_cast<senke_t *>(transformer);
+	if( transformers.empty() ) {
+		return 0;
+	}
+	senke_t *const trans = dynamic_cast<senke_t *>(transformers.front());
 	if(  trans == NULL  ) {
 		return 0;
 	}
@@ -3234,16 +3253,21 @@ bool fabrik_t::add_supplier(fabrik_t* fab)
 
 void fabrik_t::get_tile_list( vector_tpl<koord> &tile_list ) const
 {
-	tile_list.clear();
+	gebaeude_t *gb = welt->lookup( pos )->find<gebaeude_t>();
+	koord size = get_desc()->get_building()->get_size( gb->get_tile()->get_layout() );
+	const koord3d pos0 = gb->get_pos() - gb->get_tile()->get_offset(); // get origin
+	koord k;
 
-	koord pos_2d = pos.get_2d();
-	koord size = this->get_desc()->get_building()->get_size(this->get_rotate());
-	koord test;
-	// Which tiles belong to the fab?
-	for( test.x = 0; test.x < size.x; test.x++ ) {
-		for( test.y = 0; test.y < size.y; test.y++ ) {
-			if( fabrik_t::get_fab( pos_2d+test ) == this ) {
-				tile_list.append( pos_2d+test );
+	tile_list.clear();
+	// add all tiles
+	for( k.y = 0; k.y < size.y; k.y++ ) {
+		for( k.x = 0; k.x < size.x; k.x++ ) {
+			if( grund_t* gr = welt->lookup( pos0+k ) ) {
+				if( gebaeude_t* const add_gb = obj_cast<gebaeude_t>(gr->first_obj()) ) {
+					if( add_gb->get_fabrik()==this ) {
+						tile_list.append( (pos0+k).get_2d() );
+					}
+				}
 			}
 		}
 	}
@@ -3316,7 +3340,7 @@ void fabrik_t::display_status(sint16 xpos, sint16 ypos)
 {
 	const sint16 count = input.get_count()+output.get_count();
 
-	ypos -= D_LABEL_HEIGHT / 2 + D_WAITINGBAR_WIDTH;
+	ypos += -D_WAITINGBAR_WIDTH - LINESPACE/6;
 	xpos -= (count * D_WAITINGBAR_WIDTH - get_tile_raster_width()) / 2;
 
 	if( input.get_count() ) {
