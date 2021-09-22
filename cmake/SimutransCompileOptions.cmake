@@ -15,7 +15,7 @@ if (CMAKE_USE_PTHREADS_INIT)
 else (CMAKE_USE_PTHREADS_INIT)
 	set(SIMUTRANS_MULTI_THREAD OFF)
 endif (CMAKE_USE_PTHREADS_INIT)
-
+\
 if (NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
 	option(SIMUTRANS_BUILD_32BIT "Build 32 or 64 bit executable" OFF)
 endif ()
@@ -118,6 +118,10 @@ if (MSVC)
 	add_definitions(-DNOMINMAX)
 	add_definitions(-DWIN32_LEAN_AND_MEAN)
 
+	if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+		add_link_options(/LARGEADDRESSAWARE)
+	endif ()
+
 else (MSVC) # Assume GCC/Clang
 	SIMUTRANS_CHECK_CXX_COMPILER_FLAGS(SIMUTRANS_COMMON_COMPILE_OPTIONS
 		-Wall
@@ -140,6 +144,13 @@ else (MSVC) # Assume GCC/Clang
 		-Wno-cast-align              # for squirrel
 		-Wno-return-std-move         # for squirrel
 	)
+
+	# only add large address linking to 32 bin windows programs
+	if (WIN32)
+		if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+			add_link_options(/LARGEADDRESSAWARE)
+		endif ()
+	endif ()
 
 	if (SIMUTRANS_PROFILE)
 		SIMUTRANS_CHECK_CXX_COMPILER_FLAGS(SIMUTRANS_COMMON_COMPILE_OPTIONS
