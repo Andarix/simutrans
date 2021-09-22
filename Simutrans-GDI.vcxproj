@@ -5,25 +5,17 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
+    <ProjectConfiguration Include="git_actions|Win32">
+      <Configuration>git_actions</Configuration>
+      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Stable|Win32">
       <Configuration>Stable</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Stable|x64">
-      <Configuration>Stable</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -90,8 +82,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib</IgnoreSpecificDefaultLibraries>
       <SubSystem>Windows</SubSystem>
-      <TargetMachine>
-      </TargetMachine>
+      <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Manifest>
       <EnableDPIAwareness>PerMonitorHighDPIAware</EnableDPIAwareness>
@@ -153,11 +144,7 @@
     </PreBuildEvent>
     <ClCompile>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</MultiProcessorCompilation>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</MultiProcessorCompilation>
     </ClCompile>
-    <Link>
-      <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LargeAddressAware>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <ClCompile>
@@ -167,16 +154,13 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</MultiProcessorCompilation>
+      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">true</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</MultiProcessorCompilation>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|x64'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;miniupnpc.lib;Xaudio2.lib;iphlpapi.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LargeAddressAware>
-      <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</LargeAddressAware>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
