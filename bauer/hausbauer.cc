@@ -426,7 +426,7 @@ void hausbauer_t::remove( player_t *player, gebaeude_t *gb )
 		const koord newk = gr->get_pos().get_2d();
 		sint8 new_hgt = gr->get_pos().z;
 		const uint8 new_slope = welt->recalc_natural_slope(newk, new_hgt);
-		
+
 		if (new_hgt < welt->get_water_hgt(newk) || (new_hgt == welt->get_water_hgt(newk) && new_slope == slope_t::flat)) {
 			wasser_t* sea = new wasser_t(koord3d(newk, new_hgt));
 			welt->access(newk)->kartenboden_setzen(sea);
@@ -436,7 +436,6 @@ void hausbauer_t::remove( player_t *player, gebaeude_t *gb )
 		else {
 			boden_t* bd = new boden_t(koord3d(newk, new_hgt), new_slope);
 			welt->access(newk)->kartenboden_setzen(bd);
-			recalc_boden.append(bd);
 			// climate is stored in planquadrat, and hence automatically preserved
 		}
 
@@ -447,7 +446,7 @@ void hausbauer_t::remove( player_t *player, gebaeude_t *gb )
 		if (grund_t* gr = welt->lookup_kartenboden(newk + koord::south)) {
 			gr->calc_image();
 		}
-		welt->set_grid_hgt(newk, gr->get_pos().z + corner_nw(new_slope));
+		welt->set_grid_hgt(newk, new_hgt + corner_nw(new_slope));
 	}
 
 }
