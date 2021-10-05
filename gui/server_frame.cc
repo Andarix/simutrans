@@ -361,6 +361,8 @@ bool server_frame_t::update_serverlist ()
 			}
 		}
 
+		serverdns2.clear();
+
 		// Fifth field is server online/offline status (use for colour-coding)
 		cbuffer_t serverstatus;
 		ret = csvdata.get_next_field( serverstatus );
@@ -369,6 +371,10 @@ bool server_frame_t::update_serverlist ()
 		uint32 status = 0;
 		if(  ret > 0  ) {
 			status = atol( serverstatus.get_str() );
+
+			// sixth field on new list the alt dns, if there is one
+			ret = csvdata.get_next_field(serverdns2);
+			dbg->message("server_frame_t::update_serverlist", "altdns: %s", serverdns2.get_str());
 		}
 
 		// Only show offline servers if the checkbox is set
@@ -377,7 +383,7 @@ bool server_frame_t::update_serverlist ()
 			if(  pakset  &&  !strstart( serverpakset.get_str(), pakset )  ) {
 				color = SYSCOL_OBSOLETE;
 			}
-			serverlist.new_component<server_scrollitem_t>( servername, serverdns, status, color ) ;
+			serverlist.new_component<server_scrollitem_t>( servername, serverdns, serverdns2, status, color );
 			dbg->message( "server_frame_t::update_serverlist", "Appended %s (%s) to list", servername.get_str(), serverdns.get_str() );
 		}
 
@@ -415,6 +421,11 @@ bool server_frame_t::action_triggered (gui_action_creator_t *comp, value_t p)
 			if(  item->online()  ) {
 				display_show_load_pointer(1);
 				const char *err = network_gameinfo( ((server_scrollitem_t*)serverlist.get_element( p.i ))->get_dns(), &gi );
+				if(  err  &&  *((server_scrollitem_t*)serverlist.get_element(p.i))->get_altdns()  ) {
+					item->set_color(MONEY_MINUS);
+					update_error(err);
+					err = network_gameinfo(((server_scrollitem_t*)serverlist.get_element(p.i))->get_altdns(), &gi);
+				}
 				if(  err == NULL  ) {
 					item->set_color( update_info() );
 				}
