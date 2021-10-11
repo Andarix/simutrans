@@ -42,7 +42,7 @@ jobs:
     - name: compile simutrans
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
-        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-GDI.vcxproj /p:Configuration=git_actions
+        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-GDI.vcxproj /p:Configuration=git_actions_x86
         cd  $Env:GITHUB_WORKSPACE\
         copy Simutrans_GDI.exe simutrans\Simutrans.exe
 
@@ -60,15 +60,15 @@ jobs:
       shell: pwsh
 
     - name: zip result
-      run: Compress-Archive simutrans build\simuwin_GDI-nightly.zip
+      run: Compress-Archive simutrans build\simuwin_GDI-nightly_x86.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: build/simuwin_GDI-nightly.zip
-        asset_name: simuwin_GDI-nightly.zip
+        file: build/simuwin_GDI-nightly_x86.zip
+        asset_name: simuwin_GDI-nightly_x86.zip
         tag: Nightly
         overwrite: true
 
@@ -82,7 +82,7 @@ jobs:
     - name: compile simutrans
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
-        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-SDL2.vcxproj /p:Configuration=git_actions
+        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-SDL2.vcxproj /p:Configuration=git_actions_x86
         cd $Env:GITHUB_WORKSPACE\
         copy Simutrans_SDL2.exe simutrans\Simutrans.exe
         copy libs\SDL2.dll simutrans\SDL2.dll
@@ -101,15 +101,15 @@ jobs:
       shell: pwsh
 
     - name: zip result
-      run: Compress-Archive simutrans build\simuwin_SDL2-nightly.zip
+      run: Compress-Archive simutrans build\simuwin_SDL2-nightly_x86.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: build/simuwin_SDL2-nightly.zip
-        asset_name: simuwin_SDL2-nightly.zip
+        file: build/simuwin_SDL2-nightly_x86.zip
+        asset_name: simuwin_SDL2-nightly_x86.zip
         tag: Nightly
         overwrite: true
 
@@ -123,7 +123,7 @@ jobs:
     - name: compile simutrans server
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
-        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-Server.vcxproj /p:Configuration=git_actions
+        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-Server.vcxproj /p:Configuration=git_actions_x86
         cd $Env:GITHUB_WORKSPACE\
         copy Simutrans_Server.exe simutrans\Simutrans-Server.exe
 
@@ -141,15 +141,15 @@ jobs:
       shell: pwsh
 
     - name: zip result
-      run: Compress-Archive simutrans build\simuwin_server-nightly.zip
+      run: Compress-Archive simutrans build\simuwin_server-nightly_x86.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: build/simuwin_server-nightly.zip
-        asset_name: simuwin_server-nightly.zip
+        file: build/simuwin_server-nightly_x86.zip
+        asset_name: simuwin_server-nightly_x86.zip
         tag: Nightly
         overwrite: true
 
