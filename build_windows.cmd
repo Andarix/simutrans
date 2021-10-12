@@ -4,15 +4,16 @@ set /p string=<status.txt
 
 echo #define REVISION %string:~1,5% > revision.h
 
-libs\buildTool\MSBuild\Current\Bin\MSBuild.exe makeobj\Makeobj.vcxproj -property:Configuration=Release
-libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-GDI.vcxproj -property:Configuration=git_actions
-libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-SDL2.vcxproj -property:Configuration=git_actions
-libs\buildTool\MSBuild\Current\Bin\MSBuild.exe Simutrans-Server.vcxproj -property:Configuration=git_actions
+rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" makeobj\Makeobj.vcxproj -property:Configuration=Release
+rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj -property:Configuration=git_actions
+rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-SDL2.vcxproj -property:Configuration=git_actions
+rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-Server.vcxproj -property:Configuration=git_actions
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=git_actions
 
-copy Simutrans_GDI.exe simutrans\Simutrans_GDI.exe
-copy Simutrans_SDL2.exe simutrans\Simutrans_SDL2.exe
-copy Simutrans_Server.exe simutrans\Simutrans_SDL2.exe
-copy libs/SDL2.dll simutrans\SDL2.dll
+rem copy Simutrans_GDI.exe simutrans\Simutrans_GDI.exe
+rem copy Simutrans_SDL2.exe simutrans\Simutrans_SDL2.exe
+rem copy Simutrans_Server.exe simutrans\Simutrans_SDL2.exe
+rem copy libs/SDL2.dll simutrans\SDL2.dll
 
 
 rem libs\curl\curl.exe https://translator.simutrans.com/script/main.php?page=wrap
