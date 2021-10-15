@@ -382,6 +382,11 @@ void dr_textur(int xp, int yp, int w, int h)
 	}
 }
 
+bool dr_has_fullscreen()
+{
+	return true;
+}
+
 sint16 dr_get_fullscreen()
 {
 	return fullscreen;
@@ -392,10 +397,12 @@ sint16 dr_toggle_borderless()
 	if (fullscreen == WINDOWED) {
 		SetWindowLongPtr(hwnd, GWL_STYLE, WS_EX_TOPMOST);
 		SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+		fullscreen = BORDERLESS;
 	}
 	else if (fullscreen == BORDERLESS) {
 		SetWindowLongPtr(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 		SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+		fullscreen = WINDOWED;
 	}
 	return fullscreen;
 }
