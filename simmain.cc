@@ -240,7 +240,7 @@ void modal_dialogue( gui_frame_t *gui, ptrdiff_t magic, karte_t *welt, bool (*qu
 		welt->reset_interaction();
 		welt->reset_timer();
 
-		uint32 ms_pause = max( 25, 1000/env_t::fps );
+		const uint32 ms_per_frame = 1000/env_t::fps;
 		uint32 last_step = dr_time();
 		uint step_count = 5;
 
@@ -248,16 +248,19 @@ void modal_dialogue( gui_frame_t *gui, ptrdiff_t magic, karte_t *welt, bool (*qu
 			do {
 				DBG_DEBUG4("modal_dialogue", "calling win_poll_event");
 				win_poll_event(&ev);
+
 				x = ev.mx;
 				y = ev.my;
 				win_clamp_xywh_position(x, y, scr_size(1, 1), false );
 				ev.mx = x;
 				ev.my = y;
+
 				x = ev.cx;
 				y = ev.cy;
 				win_clamp_xywh_position(x, y, scr_size(1, 1), false);
 				ev.cx = x;
 				ev.cy = y;
+
 				if(  ev.ev_class == EVENT_KEYBOARD  &&  ev.ev_code == SIM_KEY_F1  ) {
 					if(  gui_frame_t *win = win_get_top()  ) {
 						if(  const char *helpfile = win->get_help_filename()  ) {
@@ -273,10 +276,10 @@ void modal_dialogue( gui_frame_t *gui, ptrdiff_t magic, karte_t *welt, bool (*qu
 					break;
 				}
 				dr_sleep(5);
-			} while(  dr_time() - last_step < ms_pause );
+			} while(  dr_time() - last_step < ms_per_frame );
 
 			DBG_DEBUG4("modal_dialogue", "calling welt->sync_step");
-			welt->sync_step( ms_pause, true, true );
+			welt->sync_step( ms_per_frame, true, true );
 
 			if(  step_count--==0  ) {
 				DBG_DEBUG4("modal_dialogue", "calling welt->step");
@@ -284,7 +287,7 @@ void modal_dialogue( gui_frame_t *gui, ptrdiff_t magic, karte_t *welt, bool (*qu
 				welt->step();
 				step_count = 5;
 			}
-			last_step += ms_pause;
+			last_step += ms_per_frame;
 		}
 	}
 	else {
@@ -756,6 +759,11 @@ int simu_main(int argc, char** argv)
 	if(  args.has_arg("-freeplay")  ) {
 		env_t::default_settings.set_freeplay( true );
 	}
+
+#ifdef __ANDROID__
+	// always save and reload on Android
+	env_t::reload_and_save_on_quit = true;
+#endif
 
 	// now set the desired objectfilename (override all previous settings)
 	if(  const char *fn = args.gimme_arg("-objects", 1)  ) {
