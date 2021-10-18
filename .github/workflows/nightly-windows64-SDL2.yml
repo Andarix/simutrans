@@ -3,7 +3,7 @@ name: Nightly Built Windows
 on:
   push:
     tags:
-      - 'Nightly_'
+      - 'Nightly'
 
 jobs:
   winSDL2-64:
@@ -39,7 +39,7 @@ jobs:
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./simuwin64-SDL2-nightly.zip
-          asset_name: simuwin64-SDL2-nightly.zip
+          file: ./simuwin-SDL2-nightly_x64.zip
+          asset_name: simuwin-SDL2-nightly_x64.zip
           tag: Nightly
           overwrite: true

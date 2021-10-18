@@ -2,7 +2,11 @@
 # CI for running tests
 #
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly'
+
 name: Automated Tests
 
 jobs:
