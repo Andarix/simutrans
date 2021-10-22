@@ -519,7 +519,7 @@ static int conv_mouse_buttons(Uint8 const state)
 }
 
 
-static void internal_GetEvents(bool const wait)
+static void internal_GetEvents()
 {
 	// Apparently Cocoa SDL posts key events that meant to be used by IM...
 	// Ignoring SDL_KEYDOWN during preedit seems to work fine.
@@ -533,36 +533,14 @@ static void internal_GetEvents(bool const wait)
 
 	SDL_Event event;
 	event.type = 1;
-	if(  wait  ) {
-		int n;
-		do {
-			SDL_WaitEvent( &event );
-			n = SDL_PollEvent( NULL );
-		} while(  n != 0  &&  event.type == SDL_MOUSEMOTION  );
-	}
-	else {
-		int n;
-		bool got_one = false;
-		do {
-			n = SDL_PollEvent( &event );
-			if(  n != 0  ) {
-				got_one = true;
-				if(  event.type == SDL_MOUSEMOTION  ) {
-					sys_event.mx   = SCREEN_TO_TEX_X(event.motion.x);
-					sys_event.my   = SCREEN_TO_TEX_Y(event.motion.y);
-					sys_event.type = SIM_MOUSE_MOVE;
-					sys_event.code = SIM_MOUSE_MOVED;
-					sys_event.mb   = conv_mouse_buttons( event.motion.state );
-				}
-			}
-		} while(  n != 0  &&  event.type == SDL_MOUSEMOTION  );
-		if(  !got_one  ) {
-			return;
-		}
+	if (SDL_PollEvent(&event) == 0) {
+		return;
 	}
 
 	static char textinput[SDL_TEXTINPUTEVENT_TEXT_SIZE];
+	dbg->message("SDL_EVENT", "0x%X", event.type);
 	switch(  event.type  ) {
+
 		case SDL_WINDOWEVENT:
 			if(  event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED  ) {
 				sys_event.new_window_size_w = SCREEN_TO_TEX_X(event.window.data1);
@@ -631,13 +609,12 @@ static void internal_GetEvents(bool const wait)
 			/* just reset scroll state, since another finger may touch down next
 			 * The button down events will be from fingr move and the coordinate will be set from mouse up: enough
 			 */
-			DBG_MESSAGE("SDL_FINGERDOWN", "fingerID=%x FirstFingerId=%x Finger %i", (int)event.tfinger.fingerId, (int)FirstFingerId, SDL_GetNumTouchFingers(event.tfinger.touchId));
+	DBG_MESSAGE("SDL_FINGERDOWN", "fingerID=%x FirstFingerId=%x Finger %i", (int)event.tfinger.fingerId, (int)FirstFingerId, SDL_GetNumTouchFingers(event.tfinger.touchId));
 			{
 				int mx = SCREEN_TO_TEX_X((event.tfinger.x) * screen->w);
 				int my = SCREEN_TO_TEX_Y((event.tfinger.y) * screen->h);
 				int tx = event.tfinger.x * display_get_width();
 				int ty = event.tfinger.y * display_get_height();
-				DBG_MESSAGE("SDL_FINGERDOWN", "screencood (%x,%i), texturecord (%i,%i)", mx, my, tx, ty );
 			}
 			if (!in_finger_handling) {
 				dLastDist = 0.0;
@@ -652,10 +629,8 @@ static void internal_GetEvents(bool const wait)
 			break;
 
 		case SDL_FINGERMOTION:
-			DBG_MESSAGE("SDL_FINGERMOTION", "fingerID=%x FirstFingerId=%x Finger %i", (int)event.tfinger.fingerId, (int)FirstFingerId, SDL_GetNumTouchFingers(event.tfinger.touchId));
 			// move whatever
 			if(  screen  &&  previous_multifinger_touch==0  &&  FirstFingerId==event.tfinger.fingerId) {
-				DBG_MESSAGE("SDL_FINGERMOTION", "handling it!");
 				if (dLastDist == 0.0) {
 					// not yet a finger down event before => we send one
 					dLastDist = 1e-99;
@@ -663,12 +638,14 @@ static void internal_GetEvents(bool const wait)
 					sys_event.code = SIM_MOUSE_LEFTBUTTON;
 					sys_event.mx = event.tfinger.x * display_get_width();
 					sys_event.my = event.tfinger.y * display_get_height();
+	DBG_MESSAGE("SDL_FINGERMOTION", "SIM_MOUSE_LEFTBUTTON at %i,%i", sys_event.mx, sys_event.my);
 				}
 				else {
 					sys_event.type = SIM_MOUSE_MOVE;
 					sys_event.code = SIM_MOUSE_MOVED;
 					sys_event.mx = event.tfinger.x * display_get_width();
 					sys_event.my = event.tfinger.y * display_get_height();
+	DBG_MESSAGE("SDL_FINGERMOTION", "SIM_MOUSE_MOVED at %i,%i", sys_event.mx, sys_event.my);
 				}
 				sys_event.mb = 1;
 				sys_event.key_mod = ModifierKeys();
@@ -677,26 +654,43 @@ static void internal_GetEvents(bool const wait)
 			break;
 
 		case SDL_FINGERUP:
-			DBG_MESSAGE("SDL_FINGERUP", "fingerID=%x FirstFingerId=%x Finger %i", (int)event.tfinger.fingerId, (int)FirstFingerId, (int)SDL_GetNumTouchFingers(event.tfinger.touchId));
 			if (screen  &&  in_finger_handling) {
-				DBG_MESSAGE("SDL_FINGERUP", "Finger %i, previous_multifinger_touch = %i", SDL_GetNumTouchFingers(event.tfinger.touchId), previous_multifinger_touch);
 				if (FirstFingerId==event.tfinger.fingerId  ||  SDL_GetNumTouchFingers(event.tfinger.touchId)==0) {
 					if(!previous_multifinger_touch) {
 						if (dLastDist == 0.0) {
+							dLastDist = 1e-99;
+#if 0
+							// return a press event
+							sys_event.type = SIM_MOUSE_BUTTONS;
+							sys_event.code = SIM_MOUSE_LEFTBUTTON;
+							sys_event.mb = 1;
+							sys_event.key_mod = ModifierKeys();
+#endif
+							sys_event.mx = event.tfinger.x * display_get_width();
+							sys_event.my = event.tfinger.y * display_get_height();
 							// not yet moved -> set click origin or click will be at last position ...
-							set_click_xy(
-								(event.tfinger.x + event.tfinger.dx) * display_get_width(),
-								(event.tfinger.y + event.tfinger.dy) * display_get_height()
-							);
-							dLastDist = fabs(event.tfinger.x + event.tfinger.dx) + fabs(event.tfinger.x + event.tfinger.dx);
+							set_click_xy(sys_event.mx, sys_event.my);
+#if 0
+							// and queue the relese event
+							event_t* nev = new event_t(EVENT_RELEASE);
+							nev->ev_code = MOUSE_LEFTBUTTON;
+							nev->mx = sys_event.mx;
+							nev->my = sys_event.my;
+							nev->button_state = 0;
+							nev->ev_key_mod = ModifierKeys();
+							queue_event(nev);
+		DBG_MESSAGE("SDL_FINGERUP", "SIM_MOUSE_LEFTDOWN+UP at %i,%i", sys_event.mx, sys_event.my);
+#endif
 						}
-						sys_event.type = SIM_MOUSE_BUTTONS;
-						sys_event.code = SIM_MOUSE_LEFTUP;
-						sys_event.mb = 0;
-						sys_event.mx = (event.tfinger.x + event.tfinger.dx) * display_get_width();
-						sys_event.my = (event.tfinger.y + event.tfinger.dy) * display_get_height();
-						sys_event.key_mod = ModifierKeys();
-						DBG_MESSAGE("SDL_FINGERUP", "Actual FIngerup event send");
+						else {
+							sys_event.type = SIM_MOUSE_BUTTONS;
+							sys_event.code = SIM_MOUSE_LEFTUP;
+							sys_event.mb = 0;
+							sys_event.mx = (event.tfinger.x + event.tfinger.dx) * display_get_width();
+							sys_event.my = (event.tfinger.y + event.tfinger.dy) * display_get_height();
+							sys_event.key_mod = ModifierKeys();
+		DBG_MESSAGE("SDL_FINGERUP", "SIM_MOUSE_LEFTUP at %i,%i", sys_event.mx, sys_event.my);
+						}
 					}
 					previous_multifinger_touch = 0;
 					in_finger_handling = 0;
@@ -896,16 +890,7 @@ static void internal_GetEvents(bool const wait)
 
 void GetEvents()
 {
-	internal_GetEvents( true );
-}
-
-
-void GetEventsNoWait()
-{
-	sys_event.type = SIM_NOEVENT;
-	sys_event.code = 0;
-
-	internal_GetEvents( false );
+	internal_GetEvents();
 }
 
 
