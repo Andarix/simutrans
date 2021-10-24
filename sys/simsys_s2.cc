@@ -35,6 +35,8 @@ extern char **__argv;
 #include "../gui/simwin.h"
 #include "../gui/components/gui_component.h"
 #include "../gui/components/gui_textinput.h"
+#include "../simintr.h"
+#include "../simworld.h"
 
 
 // Maybe Linux is not fine too, had critical bugs...
@@ -174,6 +176,46 @@ bool dr_auto_scale(bool on_off )
 	}
 }
 
+static int SDLCALL my_event_filter(void* userdata, SDL_Event* event)
+{
+	if (event->type == SDL_APP_TERMINATING) {
+		// quitting immediate, save settings and game without visual feedback
+		intr_disable();
+		if (env_t::reload_and_save_on_quit && !env_t::networkmode) {
+			// save current game, if not online
+			bool old_restore_UI = env_t::restore_UI;
+			env_t::restore_UI = true;
+
+			// construct from pak name an autosave if requested
+			std::string pak_name("autosave-");
+			pak_name.append(env_t::objfilename);
+			pak_name.erase(pak_name.length() - 1);
+			pak_name.append(".sve");
+
+			world()->save(pak_name.c_str(), true, SAVEGAME_VER_NR, true);
+			env_t::restore_UI = old_restore_UI;
+		}
+		// save settings
+		{
+			dr_chdir(env_t::user_dir);
+			loadsave_t settings_file;
+			if (settings_file.wr_open("settings.xml", loadsave_t::xml, 0, "settings only/", SAVEGAME_VER_NR) == loadsave_t::FILE_STATUS_OK) {
+				env_t::rdwr(&settings_file);
+				env_t::default_settings.rdwr(&settings_file);
+				settings_file.close();
+			}
+		}
+		// at this point there is no UI active anymore, and we have no time to die, so just exit and leeve the cleanup to the OS
+		SDL_Quit();
+		exit(0);
+
+		// in priciple we need to return 0, since we handled this alread ...
+		return 0;
+	}
+	return 1;  // let all events be added to the queue since we always return 1.
+}
+
+
 /*
  * Hier sind die Basisfunktionen zur Initialisierung der
  * Schnittstelle untergebracht
@@ -200,6 +242,9 @@ bool dr_os_init(const int* parameter)
 	SDL_EventState( SDL_MULTIGESTURE, SDL_ENABLE );
 	SDL_EventState( SDL_CLIPBOARDUPDATE, SDL_DISABLE );
 	SDL_EventState( SDL_DROPFILE, SDL_DISABLE );
+
+	// termination event: save current map and settings
+	SDL_SetEventFilter(my_event_filter, 0);
 
 	has_soft_keyboard = SDL_HasScreenKeyboardSupport();
 	if (has_soft_keyboard  &&  !env_t::hide_keyboard) {
@@ -659,7 +704,7 @@ static void internal_GetEvents()
 					if(!previous_multifinger_touch) {
 						if (dLastDist == 0.0) {
 							dLastDist = 1e-99;
-#if 0
+#if 1
 							// return a press event
 							sys_event.type = SIM_MOUSE_BUTTONS;
 							sys_event.code = SIM_MOUSE_LEFTBUTTON;
@@ -670,12 +715,14 @@ static void internal_GetEvents()
 							sys_event.my = event.tfinger.y * display_get_height();
 							// not yet moved -> set click origin or click will be at last position ...
 							set_click_xy(sys_event.mx, sys_event.my);
-#if 0
+#if 1
 							// and queue the relese event
 							event_t* nev = new event_t(EVENT_RELEASE);
-							nev->ev_code = MOUSE_LEFTBUTTON;
+							nev->ev_code = SIM_MOUSE_LEFTUP;
 							nev->mx = sys_event.mx;
 							nev->my = sys_event.my;
+							nev->cx = sys_event.mx;
+							nev->cy = sys_event.my;
 							nev->button_state = 0;
 							nev->ev_key_mod = ModifierKeys();
 							queue_event(nev);
