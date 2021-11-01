@@ -37,6 +37,7 @@ extern char **__argv;
 #include "../gui/components/gui_textinput.h"
 #include "../simintr.h"
 #include "../simworld.h"
+#include "../music/music.h"
 
 
 // Maybe Linux is not fine too, had critical bugs...
@@ -176,9 +177,33 @@ bool dr_auto_scale(bool on_off )
 	}
 }
 
-static int SDLCALL my_event_filter(void* userdata, SDL_Event* event)
+static int SDLCALL my_event_filter(void* /*userdata*/, SDL_Event* event)
 {
-	if (event->type == SDL_APP_TERMINATING) {
+	DBG_MESSAGE("my_event_filter", "%i", event->type);
+	switch (event->type)
+	{
+	case SDL_APP_DIDENTERBACKGROUND:
+		intr_disable();
+		// save settings
+		{
+			dr_chdir(env_t::user_dir);
+			loadsave_t settings_file;
+			if (settings_file.wr_open("settings.xml", loadsave_t::xml, 0, "settings only/", SAVEGAME_VER_NR) == loadsave_t::FILE_STATUS_OK) {
+				env_t::rdwr(&settings_file);
+				env_t::default_settings.rdwr(&settings_file);
+				settings_file.close();
+			}
+		}
+		dr_stop_midi();
+		return 0;
+
+	case SDL_APP_DIDENTERFOREGROUND:
+		dr_stop_textinput();
+		intr_enable();
+		//reanable midi
+		return 0;
+
+	case SDL_APP_TERMINATING:
 		// quitting immediate, save settings and game without visual feedback
 		intr_disable();
 		if (env_t::reload_and_save_on_quit && !env_t::networkmode) {
@@ -206,11 +231,13 @@ static int SDLCALL my_event_filter(void* userdata, SDL_Event* event)
 			}
 		}
 		// at this point there is no UI active anymore, and we have no time to die, so just exit and leeve the cleanup to the OS
+		dr_stop_midi();
 		SDL_Quit();
+		dr_os_close();
 		exit(0);
-
-		// in priciple we need to return 0, since we handled this alread ...
+		// we never reach here tough ...
 		return 0;
+
 	}
 	return 1;  // let all events be added to the queue since we always return 1.
 }
@@ -583,7 +610,8 @@ static void internal_GetEvents()
 	}
 
 	static char textinput[SDL_TEXTINPUTEVENT_TEXT_SIZE];
-	dbg->message("SDL_EVENT", "0x%X", event.type);
+	DBG_MESSAGE("SDL_EVENT", "0x%X", event.type);
+
 	switch(  event.type  ) {
 
 		case SDL_WINDOWEVENT:
@@ -595,7 +623,7 @@ static void internal_GetEvents()
 			}
 			// Ignore other window events.
 			break;
-		
+
 		case SDL_MOUSEBUTTONDOWN:
 			dLastDist = 0.0;
 			if (event.button.which != SDL_TOUCH_MOUSEID) {
@@ -655,12 +683,7 @@ static void internal_GetEvents()
 			 * The button down events will be from fingr move and the coordinate will be set from mouse up: enough
 			 */
 	DBG_MESSAGE("SDL_FINGERDOWN", "fingerID=%x FirstFingerId=%x Finger %i", (int)event.tfinger.fingerId, (int)FirstFingerId, SDL_GetNumTouchFingers(event.tfinger.touchId));
-			{
-				int mx = SCREEN_TO_TEX_X((event.tfinger.x) * screen->w);
-				int my = SCREEN_TO_TEX_Y((event.tfinger.y) * screen->h);
-				int tx = event.tfinger.x * display_get_width();
-				int ty = event.tfinger.y * display_get_height();
-			}
+
 			if (!in_finger_handling) {
 				dLastDist = 0.0;
 				FirstFingerId = event.tfinger.fingerId;
