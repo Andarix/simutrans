@@ -71,7 +71,7 @@ banner_t::banner_t() : gui_frame_t("")
 	new_component<gui_label_t>("Version " VERSION_NUMBER " " VERSION_DATE
 #endif
 #ifdef GIT_HASH
-		"hash " QUOTEME(GIT_HASH)
+		" hash " QUOTEME(GIT_HASH)
 #endif
 		L_DEBUG_TEXT, SYSCOL_TEXT_HIGHLIGHT, gui_label_t::left)->set_shadow(SYSCOL_TEXT_SHADOW, true);
 
@@ -186,14 +186,6 @@ bool banner_t::action_triggered( gui_action_creator_t *comp, value_t)
 	return true;
 }
 
-
-void banner_t::draw(scr_coord pos, scr_size size )
-{
-	gui_frame_t::draw( pos, size );
-
-	// add white line on top since this frame has no title bar.
-	display_fillbox_wh_clip_rgb(pos.x, pos.y, size.w, 1, color_idx_to_rgb(COL_GREY6), false);
-}
 
 void banner_text_t::draw(scr_coord offset)
 {
