@@ -510,6 +510,9 @@ DBG_MESSAGE("convoi_t::finish_rd()","next_stop_index=%d", next_stop_index );
 	if(  state==LOADING  ) {
 		// the fully the shorter => register again as older convoi
 		wait_lock = 2000-loading_level*20;
+		if (distance_since_last_stop > 0) {
+			calc_gewinn();
+		}
 	}
 	// when saving with open window, this can happen
 	if(  state==EDIT_SCHEDULE  ) {
@@ -1623,6 +1626,8 @@ void convoi_t::ziel_erreicht()
 		halthandle_t halt = haltestelle_t::get_halt(schedule->get_current_entry().pos,owner);
 		if(  halt.is_bound() &&  gr->get_weg_ribi(v->get_waytype())!=0  ) {
 			// seems to be a stop, so book the money for the trip
+			calc_gewinn();
+
 			akt_speed = 0;
 			halt->book(1, HALT_CONVOIS_ARRIVED);
 			state = LOADING;
@@ -2815,14 +2820,11 @@ void convoi_t::laden()
 	// just wait a little longer if this is a non-bound halt
 	wait_lock = (WTT_LOADING*2)+(self.get_id())%1024;
 
+	// find station (ours or public)
 	halthandle_t halt = haltestelle_t::get_halt(schedule->get_current_entry().pos,owner);
-	// eigene haltestelle ?
 	if(  halt.is_bound()  ) {
-		const player_t* halt_owner = halt->get_owner();
-		if(  halt_owner == get_owner()  ||  halt_owner == welt->get_public_player()  ) {
-			// loading/unloading ...
-			halt->request_loading( self );
-		}
+		// queue for (un)loading, does (un)loading once per step
+		halt->request_loading( self );
 	}
 }
 
@@ -2891,23 +2893,25 @@ uint32 convoi_t::get_departure_ticks(uint32 ticks_at_arrival) const
  */
 void convoi_t::hat_gehalten(halthandle_t halt)
 {
-	grund_t *gr=welt->lookup(fahr[0]->get_pos());
-
 	// now find out station length
 	uint16 vehicles_loading = 0;
-	if(  gr->is_water()  ||  gr->hat_weg( water_wt )  ) {
+	if(fahr[0]->get_desc()->get_waytype() == water_wt) {
 		// harbour and river stop load any size
 		vehicles_loading = anz_vehikel;
 	}
+	else if (anz_vehikel == 1  &&  CARUNITS_PER_TILE >= fahr[0]->get_desc()->get_length()) {
+		vehicles_loading = 1;
+		// one vehicle, which fits into one tile
+	}
 	else {
-		// calculate real station length
-		// and numbers of vehicles that can be (un)loaded
-		koord zv = koord( ribi_t::backward(fahr[0]->get_direction()) );
-		koord3d pos = fahr[0]->get_pos();
-		// start on bridge?
-		pos.z += gr->get_weg_yoff() / TILE_HEIGHT_STEP;
 		// difference between actual station length and vehicle lenghts
 		sint16 station_length = -fahr[vehicles_loading]->get_desc()->get_length();
+		// iterate through tiles in straight line and look for station
+		koord zv = koord( ribi_t::backward(fahr[0]->get_direction()) );
+		koord3d pos = fahr[0]->get_pos();
+		grund_t *gr=welt->lookup(pos);
+		// start on bridge?
+		pos.z += gr->get_weg_yoff() / TILE_HEIGHT_STEP;
 		do {
 			// advance one station tile
 			station_length += CARUNITS_PER_TILE;
@@ -2977,7 +2981,6 @@ station_tile_search_ready: ;
 	bool changed_loading_level = false;
 	unloading_state = true;
 	uint32 time = 0; // min time for loading/unloading
-	sint64 gewinn = 0;
 
 	uint32 current_tick = welt->get_ticks();
 	if (fahr[0]->last_stop_pos != fahr[0]->get_pos()  ||  last_load_tick==0) {
@@ -2993,15 +2996,6 @@ station_tile_search_ready: ;
 
 	for(unsigned i=0; i<vehicles_loading; i++) {
 		vehicle_t* v = fahr[i];
-
-		// we need not to call this on the same position
-		if(  v->last_stop_pos != v->get_pos()  ) {
-			sint64 tmp;
-			// calc_revenue
-			gewinn += tmp = v->calc_revenue(v->last_stop_pos, v->get_pos() );
-			owner->book_revenue(tmp, fahr[0]->get_pos().get_2d(), get_schedule()->get_waytype(), v->get_cargo_type()->get_index());
-			v->last_stop_pos = v->get_pos();
-		}
 
 		// has no freight ...
 		if (fahr[i]->get_cargo_max() == 0) {
@@ -3054,68 +3048,39 @@ station_tile_search_ready: ;
 	}
 	loading_limit = schedule->get_current_entry().minimum_loading;
 
-	// update statistics of average speed
-	if(  distance_since_last_stop  ) {
-		financial_history[0][CONVOI_MAXSPEED] *= maxspeed_average_count;
-		financial_history[0][CONVOI_MAXSPEED] += get_speedbonus_kmh();
-		maxspeed_average_count ++;
-		financial_history[0][CONVOI_MAXSPEED] /= maxspeed_average_count;
-	}
-	distance_since_last_stop = 0;
-	sum_speed_limit = 0;
-
-	if(gewinn) {
-		jahresgewinn += gewinn;
-
-		book(gewinn, CONVOI_PROFIT);
-		book(gewinn, CONVOI_REVENUE);
-	}
-
+	assert(time > 0  ||  !wants_more);
+	// time == 0 => wants_more == false, can only happen if all vehicles in station have no transport capacity (i.e., locomotives)
 	wait_lock = time;
 
-	// if we check here we will continue loading even if the departure is delayed
-	if (wants_more  &&  !welt->get_settings().get_departures_on_time()) {
-		// not yet fully unloaded/loaded
-		if( time == 0 ) {
-			wait_lock = WTT_LOADING;
+	// check if departure time is reached
+	bool departure_time_reached = false;
+	if (schedule->get_current_entry().get_absolute_departures()) {
+
+		sint32 ticks_until_departure = get_departure_ticks() - welt->get_ticks();
+		if(  ticks_until_departure <= 0  ) {
+			// depart if forced due to welt->get_settings().get_departures_on_time()==true or nothing to load (wants_more==false)
+			departure_time_reached = welt->get_settings().get_departures_on_time()  ||  !wants_more;
+			wants_more = !departure_time_reached;
 		}
-		return;
-	}
-
-	// find out if there is a times departure pending => depart
-	if(  schedule->get_current_entry().get_absolute_departures()  ) {
-
-		uint32 dt = get_departure_ticks();
-		uint32 ct = welt->get_ticks();
-		if(  ct > dt ) {
-
-			// add available capacity after loading(!) to statistics
-			for (unsigned i = 0; i < anz_vehikel; i++) {
-				book(get_vehikel(i)->get_cargo_max() - get_vehikel(i)->get_total_cargo(), CONVOI_CAPACITY);
+		else {
+			// else continue loading (even if full) until departure time reached
+			if (wait_lock==0) {
+				// no loading time imposed, make sure we do not wait too long if the departure is imminent
+				wait_lock = min( WTT_LOADING, ticks_until_departure );
 			}
-
-			// Advance schedule
-			schedule->advance();
-			state = ROUTING_1;
-			loading_limit = 0;
-			wait_lock = 0;
+			wants_more = true;
 		}
-		else if(wait_lock==0) {
-			// no loading time imposed, make sure we do not wait too long if the departure is imminent
-			wait_lock = min( WTT_LOADING, dt-ct );
-		}
-
-		// else continue loading (even if full until departure time reached)
-		return;
 	}
 
+	// continue loading
 	if (wants_more) {
-		// not yet fully unloaded/loaded => continue loading
+		//  there might be still cargo available (or cnv has to wait until departure)
 		return;
 	}
 
 	// loading is finished => maybe drive on
 	if(  loading_level >= loading_limit  ||  no_load
+		||  departure_time_reached
 		||  (schedule->get_current_entry().waiting_time > 0  &&  (welt->get_ticks() - arrived_time) > schedule->get_current_entry().get_waiting_ticks()  )  ) {
 
 		if(  withdraw  &&  (loading_level == 0  ||  goods_catg_index.empty())  ) {
@@ -3138,7 +3103,6 @@ station_tile_search_ready: ;
 	}
 
 	INT_CHECK("convoi_t::hat_gehalten");
-
 }
 
 
