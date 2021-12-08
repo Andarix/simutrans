@@ -23,9 +23,11 @@ jobs:
     - name: detect revision
       run: |
         set /p string=<revision.h
-        echo "revision=%string:~17,5%" >> $env:GITHUB_ENV
+        echo $string
+        revision=%string:~17,5%
+        echo "revision=$revision" >> $env:GITHUB_ENV
         echo $env:revision
-      shell: cmd
+      shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
