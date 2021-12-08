@@ -22,7 +22,7 @@ jobs:
 
     - name: detect revision
       run: |
-        $text = cs "$Env:GITHUB_WORKSPACE\revision.h"
+        $text = gc "$Env:GITHUB_WORKSPACE\revision.h"
         echo $string
         $revision=$text.Substring(17,5)
         echo "revision=$revision" >> $env:GITHUB_ENV
