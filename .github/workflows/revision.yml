@@ -32,5 +32,5 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/makeobj/Release/makeobj_windows-nightly.zip
         asset_name: makeobj_windows-nightly_r$env.revision.zip
-        tag: Nightly
+        tag: rev_test
         overwrite: true
