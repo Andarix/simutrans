@@ -35,7 +35,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/makeobj/Release/makeobj_windows-nightly.zip
-        asset_name: makeobj_windows-nightly_r$env:revision.zip
+        asset_name: makeobj_windows-nightly_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
@@ -82,7 +82,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simuwin_GDI-nightly_x86.zip
-        asset_name: simuwin_GDI-nightly_x86_r$env:revision.zip
+        asset_name: simuwin_GDI-nightly_x86_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
@@ -130,7 +130,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simuwin_SDL2-nightly_x86.zip
-        asset_name: simuwin_SDL2-nightly_x86_r$env:revision.zip
+        asset_name: simuwin_SDL2-nightly_x86_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
@@ -177,7 +177,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simuwin_server-nightly_x86.zip
-        asset_name: simuwin_server-nightly_x86_r$env:revision.zip
+        asset_name: simuwin_server-nightly_x86_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
@@ -210,6 +210,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: nettools/nettool_windows-nightly.zip
-        asset_name: nettool_windows-nightly_r$env:revision.zip
+        asset_name: nettool_windows-nightly_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true

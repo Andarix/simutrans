@@ -33,6 +33,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/makeobj/Release/makeobj_windows-nightly.zip
-        asset_name: makeobj_windows-nightly_r{{$revision}}.zip
+        asset_name: makeobj_windows-nightly_r${{ env.revision }}.zip
         tag: rev_test
         overwrite: true
