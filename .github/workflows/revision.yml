@@ -22,9 +22,9 @@ jobs:
 
     - name: detect revision
       run: |
-        set /p string=<revision.h
+        $text = cs "$Env:GITHUB_WORKSPACE\revision.h"
         echo $string
-        revision=%string:~17,5%
+        $revision=$text.Substring(17,5)
         echo "revision=$revision" >> $env:GITHUB_ENV
         echo $env:revision
       shell: pwsh
