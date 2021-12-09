@@ -186,13 +186,13 @@ jobs:
           cd nettools
           zip -r -9 nettool_linux-x64-nightly.zip nettool
 
-       - name: detect revision
+      - name: detect revision
         run: |
           read text < ./revision.h
           revision=${text:17:5}
           echo "revision=$revision" >> $GITHUB_ENV
 
-     - name: Update binaries of Nightly Release
+      - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
