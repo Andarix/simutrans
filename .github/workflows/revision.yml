@@ -69,12 +69,12 @@ jobs:
           cd makeobj
           zip -r -9 makeobj_linux-x64-nightly.zip makeobj
 
-    - name: detect revision
-      run: |
-        read text < "$Env:GITHUB_WORKSPACE\revision.h"
-        $revision=$(text:17:5)
-        echo "revision=$revision" >> $GITHUB_ENV
-        echo $env:revision
+      - name: detect revision
+        run: |
+          read text < ./revision.h
+          $revision=$(text:17:5)
+          echo "revision=$revision" >> $GITHUB_ENV
+          echo $env:revision
 
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
