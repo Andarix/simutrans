@@ -36,3 +36,51 @@ jobs:
         asset_name: makeobj_windows-nightly_r${{ env.revision }}.zip
         tag: rev_test
         overwrite: true
+
+  makeobj_linux-x64-nightly:
+    name: makeobj
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: install_dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -ym install autoconf
+          sudo apt-get -ym install libpng-dev
+          sudo apt-get -ym install libbz2-dev
+
+      - name: setup
+        run: |
+          autoconf
+          ./configure
+          echo "STATIC = 1" >>config.default
+          cat config.default >>/dev/stderr
+
+      - name: make makeobj
+        run: |
+          cd makeobj
+          make
+
+      - name: zip result
+        run: |
+          cd makeobj
+          zip -r -9 makeobj_linux-x64-nightly.zip makeobj
+
+    - name: detect revision
+      run: |
+        read text < "$Env:GITHUB_WORKSPACE\revision.h"
+        $revision=$(text:17:5)
+        echo "revision=$revision" >> $GITHUB_ENV
+        echo $env:revision
+
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: makeobj/makeobj_linux-x64-nightly.zip
+          asset_name: makeobj_linux-x64-nightly_r${{ env.revision }}.zip
+          tag: rev_test
+          overwrite: true
