@@ -71,7 +71,7 @@ jobs:
 
       - name: detect revision
         run: |
-          read text < $Env:GITHUB_WORKSPACE/revision.h
+          read text < ./revision.h
           revision=$(echo $text | grep -Po '(?<=_)\d+')
           echo "revision=$revision" >> $GITHUB_ENV
           echo $env:revision
