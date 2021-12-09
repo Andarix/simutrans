@@ -1,6 +1,9 @@
 name: Nightly build
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly_'
 
 jobs:
   makeobj_windows-nightly:
@@ -109,6 +112,6 @@ jobs:
           asset_name: makeobj_macos-x86-nightly_r${{ env.revision }}.zip
           #name: ${{ github.job }}-nightly
           #path: build/default/makeobj/makeobj
-          tag: Nightly
+          tag: rev_test
           overwrite: true
 

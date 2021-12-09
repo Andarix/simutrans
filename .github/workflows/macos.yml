@@ -24,12 +24,17 @@ jobs:
           make OSX/getversion
       - name: Build Zip
         run: sh distribute.sh
+      - name: detect revision
+        run: |
+          read text < ./revision.h
+          revision=${text:17:5}
+          echo "revision=$revision" >> $GITHUB_ENV
       - name: Upload Artifact (CI)
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: simumac.zip
-          asset_name: simumac_SDL2-nightly.zip
+          asset_name: simumac_SDL2-x86-nightly_r${{ env.revision }}.zip
           #name: ${{ github.job }}-nightly
           #path:
           tag: Nightly
@@ -49,12 +54,17 @@ jobs:
         run: make -j2 makeobj
       - name: zip result
         run: zip -r -9 makeobj_macos-nightly.zip build/default/makeobj/makeobj
+      - name: detect revision
+        run: |
+          read text < ./revision.h
+          revision=${text:17:5}
+          echo "revision=$revision" >> $GITHUB_ENV
       - name: Upload Artifact (CI)
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: makeobj_macos-nightly.zip
-          asset_name: makeobj_macos-nightly.zip
+          asset_name: makeobj_macos-x86-nightly_r${{ env.revision }}.zip
           #name: ${{ github.job }}-nightly
           #path: build/default/makeobj/makeobj
           tag: Nightly
@@ -74,12 +84,17 @@ jobs:
         run: make -j2 nettool
       - name: zip result
         run: zip -r -9 nettool_mac-nightly.zip build/default/nettool/nettool
+      - name: detect revision
+        run: |
+          read text < ./revision.h
+          revision=${text:17:5}
+          echo "revision=$revision" >> $GITHUB_ENV
       - name: Upload Artifact (CI)
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: nettool_mac-nightly.zip
-          asset_name: nettool_mac-nightly.zip
+          asset_name: nettool_mac-x86-nightly_r${{ env.revision }}.zip
           #name: ${{ github.job }}-nightly
           #path: build/default/nettool/nettool
           tag: Nightly
