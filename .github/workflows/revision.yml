@@ -71,7 +71,7 @@ jobs:
       - name: detect revision
         run: |
           read text < ./revision.h
-          revision=$(echo $text | grep -Po '(?<=_)\d+')
+          revision=${$text:17:5}
           echo "revision=$revision" >> $GITHUB_ENV
 
       - name: Update binaries of Nightly Release
