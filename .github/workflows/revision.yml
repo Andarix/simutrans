@@ -71,7 +71,7 @@ jobs:
       - name: detect revision
         run: |
           read text < ./revision.h
-          revision=${$text:17:5}
+          revision=${text:17:5}
           echo "revision=$revision" >> $GITHUB_ENV
 
       - name: Update binaries of Nightly Release
@@ -82,3 +82,33 @@ jobs:
           asset_name: makeobj_linux-x64-nightly_r${{ env.revision }}.zip
           tag: rev_test
           overwrite: true
+
+  makeobj-mac:
+    name: makeobj macOS x86
+    runs-on: macos-11.0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Configure
+        run: cp configs/config.${{ github.job }} config.default
+      - name: Build
+        run: make -j2 makeobj
+      - name: zip result
+        run: zip -r -9 makeobj_macos-nightly.zip build/default/makeobj/makeobj
+      - name: detect revision
+        run: |
+          read text < ./revision.h
+          revision=${text:17:5}
+          echo "revision=$revision" >> $GITHUB_ENV
+      - name: Upload Artifact (CI)
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: makeobj_macos-nightly.zip
+          asset_name: makeobj_macos-x86-nightly_r${{ env.revision }}.zip
+          #name: ${{ github.job }}-nightly
+          #path: build/default/makeobj/makeobj
+          tag: Nightly
+          overwrite: true
+
