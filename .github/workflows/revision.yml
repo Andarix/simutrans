@@ -1,10 +1,10 @@
-name: Nightly build Windows
+name: Nightly build
 
 on: [push]
 
 jobs:
   makeobj_windows-nightly:
-    name: makeobj
+    name: makeobj Windows
     runs-on: windows-2019
 
     steps:
@@ -38,7 +38,7 @@ jobs:
         overwrite: true
 
   makeobj_linux-x64-nightly:
-    name: makeobj
+    name: makeobj Linux
     runs-on: ubuntu-18.04
 
     steps:
@@ -72,7 +72,7 @@ jobs:
       - name: detect revision
         run: |
           read text < ./revision.h
-          $revision=$(text:17:5)
+          $revision=$(echo $text | grep -Po '(?<=_)\d+')
           echo "revision=$revision" >> $GITHUB_ENV
           echo $env:revision
 
