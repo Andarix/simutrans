@@ -25,7 +25,6 @@ jobs:
         $text = gc "$Env:GITHUB_WORKSPACE\revision.h"
         $revision=$text.Substring(17,5)
         echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-        echo $env:revision
       shell: pwsh
 
     - name: Update binaries of Nightly Release
@@ -74,7 +73,6 @@ jobs:
           read text < ./revision.h
           revision=$(echo $text | grep -Po '(?<=_)\d+')
           echo "revision=$revision" >> $GITHUB_ENV
-          echo $env:revision
 
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
