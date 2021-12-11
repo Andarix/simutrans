@@ -154,6 +154,10 @@ depot_frame_t::depot_frame_t(depot_t* depot) :
 	scrolly_waggons(&waggons),
 	line_selector(line_scrollitem_t::compare)
 {
+
+	old_vehicle_count = depot->get_vehicle_list().get_count() + 1;
+	old_veh_type = NULL;
+
 	if (depot) {
 		init(depot);
 	}
@@ -822,10 +826,6 @@ void depot_frame_t::update_data()
 	if(  last_selected_line.is_bound()  ) {
 		line_selector.new_component<line_scrollitem_t>( last_selected_line ) ;
 	}
-	if(  !selected_line.is_bound()  ) {
-		// select "create new schedule"
-		line_selector.set_selection( 0 );
-	}
 	line_selector.new_component<gui_scrolled_list_t::const_text_scrollitem_t>( line_seperator, SYSCOL_TEXT ) ;
 
 	// check all matching lines
@@ -834,6 +834,7 @@ void depot_frame_t::update_data()
 	}
 	vector_tpl<linehandle_t> lines;
 	get_line_list(depot, &lines);
+	// select "create new schedule"
 	line_selector.set_selection( 0 );
 	FOR(  vector_tpl<linehandle_t>,  const line,  lines  ) {
 		line_selector.new_component<line_scrollitem_t>(line) ;
@@ -1410,22 +1411,26 @@ void depot_frame_t::open_schedule_editor()
 void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 {
 	// number of convoys
-	switch(  const uint32 count = depot->get_vehicle_list().get_count()  ) {
-		case 0: {
-			lb_convoi_count.buf().append(translator::translate("Keine Einzelfahrzeuge im Depot"));
-			break;
+	if (old_vehicle_count != depot->get_vehicle_list().get_count()) {
+		const uint32 count = depot->get_vehicle_list().get_count();
+		switch (count) {
+			case 0: {
+				lb_convoi_count.buf().append(translator::translate("Keine Einzelfahrzeuge im Depot"));
+				break;
+			}
+			case 1: {
+				lb_convoi_count.buf().append("1 Einzelfahrzeug im Depot");
+				break;
+			}
+			default: {
+				lb_convoi_count.buf().printf( translator::translate("%d Einzelfahrzeuge im Depot"), count );
+				break;
+			}
 		}
-		case 1: {
-			lb_convoi_count.buf().append("1 Einzelfahrzeug im Depot");
-			break;
-		}
-		default: {
-			lb_convoi_count.buf().printf( translator::translate("%d Einzelfahrzeuge im Depot"), count );
-			break;
-		}
+		old_vehicle_count = count;
+		lb_convoi_count.update();
+		cont_veh_action->set_size(cont_veh_action->get_size());
 	}
-	lb_convoi_count.update();
-	cont_veh_action->set_size(cont_veh_action->get_size());
 
 	// Find vehicle under mouse cursor
 	gui_component_t const* const tab = tabs.get_aktives_tab();
@@ -1468,7 +1473,7 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 		}
 	}
 
-	if(  veh_type  ) {
+	if(  veh_type  &&  veh_type != old_veh_type) {
 
 		labels[LB_VEH_NAME]->buf().printf( "%s", translator::translate( veh_type->get_name(), welt->get_settings().get_name_language_id() ) );
 
@@ -1544,18 +1549,21 @@ void depot_frame_t::update_vehicle_info_text(scr_coord pos)
 			convoi_pics[convoi_number]->count = convoi_number;
 		}
 	}
-	else {
+	else if (veh_type == NULL) {
 		new_vehicle_length_sb = 0;
 		for(uint32 i=LB_CNV_ALL; i<LB_MAX; i++) {
 			labels[i]->buf().clear();
 		}
 	}
 
-	// update labels and size
-	for(uint32 i=LB_CNV_ALL; i<LB_MAX; i++) {
-		labels[i]->update();
+	if (veh_type != old_veh_type) {
+		old_veh_type = veh_type;
+		// update labels and size
+		for(uint32 i=LB_CNV_ALL; i<LB_MAX; i++) {
+			labels[i]->update();
+		}
+		cont_vehicle_labels->set_size(cont_vehicle_labels->get_size());
 	}
-	cont_vehicle_labels->set_size(cont_vehicle_labels->get_size());
 }
 
 
