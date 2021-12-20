@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Get Dependencies
         run: |
           brew install autoconf automake freetype libpng pkg-config sdl2
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Configure
         run: cp configs/config.${{ github.job }} config.default
       - name: Build
@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Configure
         run: cp configs/config.${{ github.job }} config.default
       - name: Build
