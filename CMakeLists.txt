@@ -132,8 +132,16 @@ else ()
 	endif ()
 	if (APPLE)
 		target_sources(simutrans PRIVATE OSX/translocation.m)
-		set(BACKUP_SOUND sound/AVF_core-audio_sound.mm sound/core-audio_sound.mm)
-		set(BACKUP_MUSIC music/AVF_core-audio_midi.mm music/core-audio_midi.mm)
+		#Darwin kernel version is used to identify macOS version (16->10.12/Sierra)
+		if (CMAKE_HOST_SYSTEM_VERSION VERSION_GREATER_EQUAL 16) #AVF
+			set(BACKUP_SOUND sound/AVF_core-audio_sound.mm)
+			#AVF MIDI currently crash Simutrans
+			#set(BACKUP_MUSIC music/AVF_core-audio_midi.mm)
+			set(BACKUP_MUSIC music/no_midi.cc)
+		else () #QTKit
+			set(BACKUP_SOUND sound/core-audio_sound.mm)
+			set(BACKUP_MUSIC music/core-audio_midi.mm)
+		endif ()
 	else ()
 		set(BACKUP_SOUND sound/no_sound.cc)
 		set(BACKUP_MUSIC music/no_midi.cc)
@@ -325,7 +333,7 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/simutrans" DESTINATION "${CMAKE_BINARY_DI
 
 # download language files
 if (MSVC)
-	# MSVC has no variable on teh install target path at execution time, which is why we expand the directories at creation time!
+	# MSVC has no variable on the install target path at execution time, which is why we expand the directories at creation time!
 	install(CODE "execute_process(COMMAND powershell -ExecutionPolicy Bypass -File ${CMAKE_SOURCE_DIR}/get_lang_files.ps1 WORKING_DIRECTORY ${simutrans_BINARY_DIR})")
 	if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 		install(CODE "execute_process(COMMAND powershell -Command \"Remove-Item \'${simutrans_BINARY_DIR}/simutrans/simutrans.pdb\')")
