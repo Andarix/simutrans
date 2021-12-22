@@ -102,17 +102,17 @@ citybuilding_edit_frame_t::citybuilding_edit_frame_t(player_t* player_) :
 	bt_res.init( button_t::square_state, "residential house");
 	bt_res.add_listener(this);
 	bt_res.pressed = true;
-	cont_filter.add_component(&bt_res);
+	cont_filter.add_component(&bt_res,3);
 
 	bt_com.init( button_t::square_state, "shops and stores");
 	bt_com.add_listener(this);
 	bt_com.pressed = true;
-	cont_filter.add_component(&bt_com);
+	cont_filter.add_component(&bt_com,3);
 
 	bt_ind.init( button_t::square_state, "industrial building");
 	bt_ind.add_listener(this);
 	bt_ind.pressed = true;
-	cont_filter.add_component(&bt_ind);
+	cont_filter.add_component(&bt_ind,3);
 
 	// add to sorting selection
 	cb_sortedby.new_component<gui_sorting_item_t>(gui_sorting_item_t::BY_LEVEL_PAX);
@@ -251,7 +251,29 @@ void citybuilding_edit_frame_t::change_item_info(sint32 entry)
 			buf.append("\n\n");
 			buf.append( translator::translate( desc->get_name() ) );
 
-			buf.printf("\n\n%s: %i\n",translator::translate("Passagierrate"),desc->get_level());
+			buf.trim();
+			buf.append("\n\n");
+
+			// climates
+			buf.append( translator::translate("allowed climates:\n") );
+			uint16 cl = desc->get_allowed_climate_bits();
+			if(cl==0) {
+				buf.append( translator::translate("none") );
+				buf.append("\n");
+			}
+			else {
+				for(uint16 i=0;  i<=arctic_climate;  i++  ) {
+					if(cl &  (1<<i)) {
+						buf.append(" - ");
+						buf.append(translator::translate(ground_desc_t::get_climate_name_from_bit((climate)i)));
+						buf.append("\n");
+					}
+				}
+			}
+			buf.append("\n");
+
+
+			buf.printf("%s: %i\n",translator::translate("Passagierrate"),desc->get_level());
 			buf.printf("%s: %i\n",translator::translate("Postrate"),desc->get_mail_level());
 
 			buf.printf("%s%u", translator::translate("\nBauzeit von"), desc->get_intro_year_month() / 12);

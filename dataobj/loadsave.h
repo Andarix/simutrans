@@ -196,16 +196,29 @@ public:
 			x = (X)int_x;
 		}
 	}
+
+	friend class compare_loadsave_t; // to access stream
 };
 
 
-#if defined(HEAVY_MODE) && HEAVY_MODE >= 1
+/**
+ * Class used to produce hash of savegame_version
+ */
 class stream_loadsave_t : public loadsave_t
 {
 public:
 	stream_loadsave_t(rdwr_stream_t *stream);
 };
-#endif
+
+/**
+ * Class used to compare two savegames
+ */
+class compare_loadsave_t : public loadsave_t
+{
+public:
+	compare_loadsave_t(loadsave_t *file1, loadsave_t *file2);
+	~compare_loadsave_t();
+};
 
 // this produces semi-automatic hierarchies
 class xml_tag_t

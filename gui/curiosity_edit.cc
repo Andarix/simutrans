@@ -99,16 +99,16 @@ curiosity_edit_frame_t::curiosity_edit_frame_t(player_t* player_) :
 	bt_city_attraction.init( button_t::square_state, "City attraction");
 	bt_city_attraction.add_listener(this);
 	bt_city_attraction.pressed = true;
-	cont_filter.add_component(&bt_city_attraction);
+	cont_filter.add_component(&bt_city_attraction,3);
 
 	bt_land_attraction.init( button_t::square_state, "Land attraction");
 	bt_land_attraction.add_listener(this);
 	bt_land_attraction.pressed = true;
-	cont_filter.add_component(&bt_land_attraction);
+	cont_filter.add_component(&bt_land_attraction,3);
 
 	bt_monuments.init( button_t::square_state, "Monument");
 	bt_monuments.add_listener(this);
-	cont_filter.add_component(&bt_monuments);
+	cont_filter.add_component(&bt_monuments,3);
 
 	// add to sorting selection
 	cb_sortedby.new_component<gui_sorting_item_t>(gui_sorting_item_t::BY_LEVEL_PAX);
@@ -246,7 +246,28 @@ void curiosity_edit_frame_t::change_item_info(sint32 entry)
 			buf.append("\n\n");
 			buf.append( translator::translate( desc->get_name() ) );
 
-			buf.printf("\n\n%s: %i\n",translator::translate("Passagierrate"),desc->get_level());
+			buf.trim();
+			buf.append("\n\n");
+
+			// climates
+			buf.append( translator::translate("allowed climates:\n") );
+			uint16 cl = desc->get_allowed_climate_bits();
+			if(cl==0) {
+				buf.append( translator::translate("none") );
+				buf.append("\n");
+			}
+			else {
+				for(uint16 i=0;  i<=arctic_climate;  i++  ) {
+					if(cl &  (1<<i)) {
+						buf.append(" - ");
+						buf.append(translator::translate(ground_desc_t::get_climate_name_from_bit((climate)i)));
+						buf.append("\n");
+					}
+				}
+			}
+			buf.append("\n");
+
+			buf.printf("%s: %i\n",translator::translate("Passagierrate"),desc->get_level());
 			if(desc->get_type()==building_desc_t::attraction_land) {
 				// same with passengers
 				buf.printf("%s: %i\n",translator::translate("Postrate"),desc->get_level());

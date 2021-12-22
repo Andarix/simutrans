@@ -67,6 +67,7 @@
 
 #include "utils/simstring.h"
 #include "utils/searchfolder.h"
+#include "io/rdwr/compare_file_rd_stream.h"
 
 #include "network/network.h" // must be before any "windows.h" is included via bzlib2.h ...
 #include "dataobj/loadsave.h"
@@ -396,6 +397,7 @@ void print_help()
 		" -server_dns FQDN/IP FQDN or IP address of server for announcements\n"
 		" -server_name NAME   Name of server for announcements\n"
 		" -server_admin_pw PW password for server administration\n"
+		" -heavy NUM          enables heavy-mode debugging for network games. VERY SLOW!\n"
 		" -set_workdir WD     Use WD as directory containing all data.\n"
 		" -singleuser         Save everything in data directory (portable version)\n"
 #ifdef DEBUG
@@ -718,6 +720,12 @@ int simu_main(int argc, char** argv)
 			// no announce for clients ...
 			env_t::server_announce = 0;
 		}
+	}
+	// enabling heavy-mode for debugging network games
+	env_t::network_heavy_mode = 0;
+	if(  args.has_arg("-heavy")  ) {
+		int heavy = atoi(args.gimme_arg("-heavy", 1));
+		env_t::network_heavy_mode = clamp(heavy, 0, 2);
 	}
 
 	DBG_MESSAGE("simu_main()", "Version:    " VERSION_NUMBER "  Date: " VERSION_DATE);
@@ -1211,6 +1219,27 @@ int simu_main(int argc, char** argv)
 		dbg->message("simu_main()", "Loading savegame \"%s\"", name );
 		loadgame = buf;
 		new_world = false;
+	}
+
+	// compare two savegames
+	if (!new_world  &&  strstart(loadgame.c_str(), "net:")==NULL  &&  args.has_arg("-compare")) {
+		cbuffer_t buf;
+		dr_chdir( env_t::user_dir );
+
+		const char *name = args.gimme_arg("-compare", 1);
+		buf.printf( SAVE_PATH_X "%s", searchfolder_t::complete(name, "sve").c_str() );
+		// open both files
+		loadsave_t file1, file2;
+		if (file1.rd_open(loadgame.c_str()) == loadsave_t::FILE_STATUS_OK  &&  file2.rd_open(buf) == loadsave_t::FILE_STATUS_OK) {
+			karte_t *welt = new karte_t();
+
+			compare_loadsave_t compare(&file1, &file2);
+			welt->load(&compare);
+
+			delete welt;
+			file1.close();
+			file2.close();
+		}
 	}
 
 	// recover last server game
