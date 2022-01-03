@@ -285,7 +285,7 @@ class industry_manager_t extends manager_t
 
 			foreach(index, line in link.lines) {
 				//gui.add_message_at(player_x(our_player.nr), "####### line check " + line.get_name(), world.get_time())
-				if ( line.get_owner().nr == our_player.nr ) {
+				if ( line.is_valid() && line.get_owner().nr == our_player.nr ) {
 					line_ai_count++
 					pl_lines.append(line)
 				}
