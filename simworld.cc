@@ -4704,7 +4704,8 @@ bool karte_t::play_sound_area_clipped(koord const k, uint16 const idx, sound_typ
 
 void karte_t::save(const char *filename, bool autosave, const char *version_str, bool silent )
 {
-DBG_MESSAGE("karte_t::save()", "saving game to '%s'", filename);
+	dbg->message("karte_t::save", "%s game to '%s', version=%s, ticks=%u", autosave ? "Auto-saving" : "Saving", filename, version_str, ticks);
+
 	loadsave_t  file;
 	std::string savename = filename;
 	savename[savename.length()-1] = '_';
@@ -4715,14 +4716,14 @@ DBG_MESSAGE("karte_t::save()", "saving game to '%s'", filename);
 
 	if(  file.wr_open( savename.c_str(), mode, save_level, env_t::objfilename.c_str(), version_str ) != loadsave_t::FILE_STATUS_OK  ) {
 		create_win(new news_img("Kann Spielstand\nnicht speichern.\n"), w_info, magic_none);
-		dbg->error("karte_t::save()","cannot open file for writing! check permissions!");
+		dbg->error("karte_t::save", "Cannot open file '%s' for writing! Check permissions!", savename.c_str());
 	}
 	else {
 		save(&file,silent);
-		const char *success = file.close();
-		if(success) {
+		const char *save_err = file.close();
+		if(save_err) {
 			static char err_str[512];
-			sprintf( err_str, translator::translate("Error during saving:\n%s"), success );
+			sprintf( err_str, translator::translate("Error during saving:\n%s"), save_err );
 			create_win( new news_img(err_str), w_time_delete, magic_none);
 		}
 		else {
@@ -4762,7 +4763,7 @@ DBG_MESSAGE("karte_t::save(loadsave_t *file)", "start");
 			needs_redraw = true;
 		}
 		if(  nosave  ) {
-			dbg->error( "karte_t::save()","Map cannot be saved in any rotation!" );
+			dbg->error( "karte_t::save()", "Map cannot be saved in any rotation!" );
 			create_win( new news_img("Map may be not saveable in any rotation!"), w_info, magic_none);
 			// still broken, but we try anyway to save it ...
 		}
@@ -4970,7 +4971,7 @@ bool karte_t::load(const char *filename)
 	// clear hash table with missing paks (may cause some small memory loss though)
 	missing_pak_names.clear();
 
-	DBG_MESSAGE("karte_t::load", "loading game from '%s'", filename);
+	dbg->message("karte_t::load", "Loading game from '%s'", filename);
 
 	// reloading same game? Remember pos
 	const koord oldpos = settings.get_filename()[0]>0  &&  strncmp(filename,settings.get_filename(),strlen(settings.get_filename()))==0 ? viewport->get_world_position() : koord::invalid;
@@ -5006,7 +5007,7 @@ bool karte_t::load(const char *filename)
 				sprintf( fn, "server%d-network.sve", env_t::server );
 				if(  strcmp(filename, fn) != 0  ) {
 					// stay in networkmode, but disconnect clients
-					dbg->warning("karte_t::load","disconnecting all clients");
+					dbg->warning("karte_t::load", "Disconnecting all clients");
 				}
 				else {
 					// read password hashes from separate file
@@ -5249,8 +5250,8 @@ void karte_t::load(loadsave_t *file)
 	tile_counter = 0;
 	simloops = 60;
 
-	// jetzt geht das laden los
-	dbg->warning("karte_t::load", "Fileversion: %u", file->get_version_int());
+	// jetzt geht das Laden los
+	dbg->message("karte_t::load", "File version: %u", file->get_version_int());
 
 	rdwr_gamestate(file, &ls);
 
@@ -7486,10 +7487,18 @@ bool karte_t::interactive(uint32 quit_month)
 						// broadcast sync info regularly and when lagged
 						const sint64 timelag = (sint32)dr_time() - (sint32)next_step_time;
 						if(  (network_frame_count == 0  &&  timelag > fix_ratio_frame_time * settings.get_server_frames_ahead() / 2)  ||  (sync_steps % env_t::server_sync_steps_between_checks) == 0  ) {
-							if(  timelag > fix_ratio_frame_time * settings.get_frames_per_step()  ) {
-								// log when server is lagged more than one step
-								dbg->warning("karte_t::interactive", "server lagging by %lli", timelag );
+							const sint64 time_per_step = fix_ratio_frame_time * settings.get_frames_per_step();
+							static sint64 previous_lag = 0;
+
+							if(  timelag > 1*time_per_step  ) {
+								// log when server is lagged more than one step, but only if it gets worse (don't spam log)
+
+								if (timelag/time_per_step > previous_lag/time_per_step) {
+									dbg->warning("karte_t::interactive", "Server lagging by %lli ms (%d steps)", timelag, (sint32)(timelag/time_per_step) );
+								}
 							}
+
+							previous_lag = timelag;
 
 							nwc_check_t* nwc = new nwc_check_t(sync_steps + 1, map_counter, LCHKLST(sync_steps), sync_steps);
 							network_send_all(nwc, true);
