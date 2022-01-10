@@ -17,6 +17,11 @@
 #include <imm.h>
 #include <commdlg.h>
 
+#include <shellapi.h>
+#include <shlobj.h>
+
+#include <string>
+
 #ifdef __CYGWIN__
 extern int __argc;
 extern char **__argv;
@@ -395,18 +400,44 @@ sint16 dr_get_fullscreen()
 sint16 dr_toggle_borderless()
 {
 	if (fullscreen == WINDOWED) {
-		SetWindowLongPtr(hwnd, GWL_STYLE, WS_EX_TOPMOST);
+		SetWindowLongPtr(hwnd, GWL_STYLE, WS_POPUP);
 		SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 		fullscreen = BORDERLESS;
 	}
 	else if (fullscreen == BORDERLESS) {
 		SetWindowLongPtr(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-		SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+		SetWindowPos(hwnd, HWND_NOTOPMOST, 10, 10, GetSystemMetrics(SM_CXSCREEN)-20, GetSystemMetrics(SM_CYSCREEN)-20, SWP_SHOWWINDOW);
 		fullscreen = WINDOWED;
 	}
 	return fullscreen;
 }
 
+sint16 dr_suspend_fullscreen()
+{
+	int was_fullscreen = 0;
+	if(  hwnd  &&  fullscreen  ) {
+		SetWindowLongPtr(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+		SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+		was_fullscreen = fullscreen;
+		fullscreen = WINDOWED;
+	}
+	else {
+		ShowWindow(hwnd, SW_SHOWMINNOACTIVE);
+	}
+	return was_fullscreen;
+}
+
+void dr_restore_fullscreen(sint16 was_fullscreen)
+{
+	if(  hwnd  &&  was_fullscreen  ) {
+		SetWindowLongPtr(hwnd, GWL_STYLE, WS_EX_TOPMOST);
+		SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+		was_fullscreen = fullscreen;
+	}
+	else {
+		ShowWindow(hwnd, SW_RESTORE);
+	}
+}
 
 // move cursor to the specified location
 void move_pointer(int x, int y)

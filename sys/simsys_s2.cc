@@ -1060,16 +1060,37 @@ sint16 dr_get_fullscreen()
 
 sint16 dr_toggle_borderless()
 {
-
 	if ( fullscreen ) {
 		SDL_SetWindowFullscreen(window, 0);
+		SDL_SetWindowPosition(window, 10, 10);
 		fullscreen = WINDOWED;
 	}
 	else {
+		SDL_SetWindowPosition(window, 0, 0);
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		fullscreen = BORDERLESS;
 	}
 	return fullscreen;
+}
+
+sint16 dr_suspend_fullscreen()
+{
+	int was_fullscreen = fullscreen;
+	if (fullscreen) {
+		SDL_SetWindowFullscreen(window, 0);
+		fullscreen = WINDOWED;
+	}
+	SDL_MinimizeWindow(window);
+	return fullscreen;
+}
+
+void dr_restore_fullscreen(sint16 was_fullscreen)
+{
+	SDL_RestoreWindow(window);
+	if(was_fullscreen) {
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		fullscreen = BORDERLESS;
+	}
 }
 
 #ifdef _MSC_VER
