@@ -80,7 +80,7 @@ private:
 //		const bool operator < (const fabconnection_t & k) { return (abs(fab1.x)+abs(fab1.y)) - (abs(k.fab1.x)+abs(k.fab1.y)) < 0; }
 	};
 
-	slist_tpl<fabconnection_t*> forbidden_connections;
+	slist_tpl<fabconnection_t *> forbidden_connections;
 
 	// return true, if this a route to avoid (i.e. we did a construction without success here ...)
 	bool is_forbidden( fabrik_t *fab1, fabrik_t *fab2, const goods_desc_t *w ) const;
@@ -98,14 +98,14 @@ private:
 
 	bool suche_platz1_platz2(fabrik_t *qfab, fabrik_t *zfab, int length);
 
-	int baue_bahnhof(const koord* p, int anz_vehikel);
+	int baue_bahnhof(const koord* p, int vehicle_count);
 
 	bool create_simple_rail_transport();
 
 	// create way and stops for these routes
-	bool create_ship_transport_vehikel(fabrik_t *qfab, int anz_vehikel);
-	void create_road_transport_vehikel(fabrik_t *qfab, int anz_vehikel);
-	void create_rail_transport_vehikel(const koord pos1,const koord pos2, int anz_vehikel, int minimum_loading);
+	bool create_ship_transport_vehicle(fabrik_t *qfab, int vehicle_count);
+	void create_road_transport_vehikel(fabrik_t *qfab, int vehicle_count);
+	void create_rail_transport_vehikel(const koord pos1,const koord pos2, int vehicle_count, int minimum_loading);
 
 public:
 	ai_goods_t(uint8 nr);

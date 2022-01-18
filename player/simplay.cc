@@ -62,19 +62,19 @@ static pthread_mutex_t load_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 player_t::player_t(uint8 nr) :
-	simlinemgmt()
+	finance(new finance_t(this, welt)),
+	player_age(0),
+	player_color_1(0),
+	player_color_2(0),
+	player_nr(nr),
+	active(false),
+	locked(false),
+	unlock_pending(false),
+	simlinemgmt(),
+	undo_type(invalid_wt),
+	headquarter_level(0),
+	headquarter_pos(koord::invalid)
 {
-	finance = new finance_t(this, welt);
-	player_nr = nr;
-	player_age = 0;
-	active = false; // Don't start as an AI player
-	locked = false; // allowed to change anything
-	unlock_pending = false;
-
-	headquarter_pos = koord::invalid;
-	headquarter_level = 0;
-
-
 	welt->get_settings().set_player_color_to_default(this);
 
 	// we have different AI, try to find out our type:
@@ -408,7 +408,7 @@ void player_t::calc_assets()
 		}
 	}
 
-	// all vehikels stored in depot not part of a convoi
+	// all vehicles stored in depot not part of a convoi
 	FOR(slist_tpl<depot_t*>, const depot, depot_t::get_depot_list()) {
 		if(  depot->get_owner_nr() == player_nr  ) {
 			FOR(slist_tpl<vehicle_t*>, const veh, depot->get_vehicle_list()) {
