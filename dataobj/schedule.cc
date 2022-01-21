@@ -141,7 +141,17 @@ bool schedule_t::append(const grund_t* gr, uint8 minimum_loading, uint16 waiting
 
 
 // cleanup a schedule
-void schedule_t::cleanup()
+void schedule_t::make_valid()
+{
+	remove_double_entries();
+	if(  entries.get_count() == 1 ) {
+		// schedules with one entry not allowed
+		entries.clear();
+	}
+	make_current_stop_valid();
+}
+
+void schedule_t::remove_double_entries()
 {
 	if(  entries.get_count() < 2  ) {
 		return; // nothing to check
@@ -167,7 +177,6 @@ void schedule_t::cleanup()
 			lastpos = entries[i].pos;
 		}
 	}
-	make_current_stop_valid();
 }
 
 
@@ -209,8 +218,19 @@ void schedule_t::move_entry_forward( uint8 cur )
 		entries.remove_at( cur+1 );
 	}
 
-	current_stop = (current_stop + 1) % entries.get_count();
-	make_current_stop_valid();
+	// if cur was not at end of list then cur and other changed places
+	uint8 other = (cur + entries.get_count() + 1 ) % entries.get_count();
+
+	if (cur == entries.get_count()-1) {
+		// all entries moved down one index
+		current_stop = (current_stop + 1 + entries.get_count()) % entries.get_count();
+	}
+	else if (current_stop == other) {
+		current_stop = cur;
+	}
+	else if (current_stop == cur) {
+		current_stop = other;
+	}
 }
 
 
@@ -231,9 +251,19 @@ void schedule_t::move_entry_backward( uint8 cur )
 		entries.insert_at( cur-1, entries[ cur ] );
 		entries.remove_at( cur+1 );
 	}
+	// if cur was not at start of list then cur and other changed places
+	uint8 other = (cur + entries.get_count() - 1 ) % entries.get_count();
 
-	current_stop = (current_stop + entries.get_count() - 1 ) % entries.get_count();
-	make_current_stop_valid();
+	if (cur == 0) {
+		// all entries moved up one index
+		current_stop = (current_stop - 1 + entries.get_count()) % entries.get_count();
+	}
+	else if (current_stop == other) {
+		current_stop = cur;
+	}
+	else if (current_stop == cur) {
+		current_stop = other;
+	}
 }
 
 
@@ -539,7 +569,11 @@ bool schedule_t::sscanf_schedule( const char *ptr )
 		// ok, now we have a complete entry
 		entries.append(schedule_entry_t(koord3d(values[0], values[1], (sint8)values[2]), (uint8)values[3], (uint16)values[4]));
 	}
-	return true;
+	make_valid();
+	if (get_count() <= 1) {
+		dbg->error( "schedule_t::sscanf_schedule()", "schedule contains less than two entries!" );
+	}
+	return get_count() > 1;
 }
 
 
