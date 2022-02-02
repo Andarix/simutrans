@@ -29,7 +29,6 @@ karte_ptr_t interaction_t::world;
 
 void interaction_t::move_view( const event_t &ev )
 {
-	static scr_coord_val old_move_dx=0, old_move_dy=0;
 	koord new_ij = viewport->get_world_position();
 
 	sint16 new_xoff = viewport->get_x_off() - (ev.mx - ev.cx) * env_t::scroll_multi;
@@ -331,20 +330,22 @@ bool interaction_t::process_event( event_t &ev )
 		catch_dragging();
 		move_view(ev);
 	}
-	else if(  (left_drag  ||  world->get_tool(world->get_active_player_nr())->get_id() == (TOOL_QUERY | GENERAL_TOOL))  &&  IS_LEFTDRAG(&ev)  ) {
-		/* ok, we have the query tool selected, and we have a left drag or left release event with an actual difference
-		 * => move the map */
-		if(  !left_drag  ) {
-			display_show_pointer(false);
-			left_drag = true;
+	else if(  IS_LEFTDRAG(&ev)  &&  IS_LEFT_BUTTON_PRESSED(&ev)  &&  (left_drag  ||  !world->get_tool(world->get_active_player_nr())->move_has_effects())  ) {
+		/* ok, we have a general tool selected, and we have a left drag or left release event with an actual difference
+		 * => move the map, if we are beyond a threshold */
+		if(  left_drag  ||  abs(ev.cx-ev.mx)+abs(ev.cy-ev.my)>=env_t::scroll_threshold  ) {
+			if (!left_drag) {
+				display_show_pointer(false);
+				left_drag = true;
+			}
+			world->get_viewport()->set_follow_convoi(convoihandle_t());
+			catch_dragging();
+			move_view(ev);
+			ev.ev_code = IGNORE_EVENT;
 		}
-		world->get_viewport()->set_follow_convoi( convoihandle_t() );
-		catch_dragging();
-		move_view(ev);
-		ev.ev_code = IGNORE_EVENT;
 	}
 
-	if(  IS_LEFTRELEASE(&ev)  &&  left_drag  ) {
+	if( !IS_LEFT_BUTTON_PRESSED(&ev)  &&  left_drag  ) {
 		// show the mouse and swallow this event if we were dragging before
 		ev.ev_code = IGNORE_EVENT;
 		display_show_pointer(true);
