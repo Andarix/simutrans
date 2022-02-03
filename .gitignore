@@ -49,3 +49,4 @@ Simutrans_SDL2.lib
 /libs/freetype-2.10.1/objs/Win32/Release Static
 /status.txt
 /libs/zstd-1.5.0
+/src/build

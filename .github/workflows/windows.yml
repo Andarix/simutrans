@@ -16,7 +16,7 @@ jobs:
     - name: compile makeobj
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
-        .\MSBuild.exe $Env:GITHUB_WORKSPACE\makeobj\Makeobj.vcxproj /p:Configuration=Release
+        .\MSBuild.exe $Env:GITHUB_WORKSPACE\src\makeobj\Makeobj.vcxproj /p:Configuration=Release
         cd $Env:GITHUB_WORKSPACE\
 
     - name: zip result
@@ -191,11 +191,11 @@ jobs:
     - name: compile simutrans nettool
       run: |
         cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
-        .\MSBuild.exe $Env:GITHUB_WORKSPACE\nettools\Nettool.vcxproj /p:Configuration=release
+        .\MSBuild.exe $Env:GITHUB_WORKSPACE\src\nettools\Nettool.vcxproj /p:Configuration=release
         cd $Env:GITHUB_WORKSPACE\
 
     - name: zip result
-      run: Compress-Archive nettools\Nettool.exe nettools\nettool_windows-nightly.zip
+      run: Compress-Archive src\nettools\Nettool.exe src\nettools\nettool_windows-nightly.zip
       shell: pwsh
 
     - name: detect revision
@@ -209,7 +209,7 @@ jobs:
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: nettools/nettool_windows-nightly.zip
+        file: src\nettools/nettool_windows-nightly.zip
         asset_name: nettool_windows-nightly_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true

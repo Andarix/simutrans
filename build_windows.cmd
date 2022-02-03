@@ -2,12 +2,12 @@ git svn log --oneline --limit=1 > status.txt
 
 set /p string=<status.txt
 
-echo #define REVISION %string:~1,5% > revision.h
+echo #define REVISION %string:~1,5% > src/simutrans/revision.h
 
-rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" makeobj\Makeobj.vcxproj -property:Configuration=Release
-rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj -property:Configuration=git_actions
-rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-SDL2.vcxproj -property:Configuration=git_actions
-rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-Server.vcxproj -property:Configuration=git_actions
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" src\makeobj\Makeobj.vcxproj /p:Configuration=Release
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=git_actions
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-SDL2.vcxproj /p:Configuration=git_actions
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-Server.vcxproj /p:Configuration=git_actions
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=git_actions
 
 rem copy Simutrans_GDI.exe simutrans\Simutrans_GDI.exe
