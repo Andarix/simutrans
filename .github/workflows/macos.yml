@@ -17,7 +17,7 @@ jobs:
         run: |
           autoreconf -ivf
           ./configure CC=clang
-          echo "CFLAGS += -std=c++1y" >>config.default
+          echo "CFLAGS += -std=gnu++14" >>config.default
           make BACKEND=sdl2 MULTI_THREAD=1 OPTIMISE=1 OSTYPE=mac USE_FREETYPE=1 USE_UPNP=0 USE_ZSTD=0 AV_FOUNDATION=1
           make src/OSX/getversion
       - name: Build Zip
