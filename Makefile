@@ -81,7 +81,7 @@ else ifeq ($(OSTYPE),mingw)
 else ifeq ($(OSTYPE),linux)
   LD_FLAGS += "-Wl,-Bstatic"
 else ifeq ($(OSTYPE),mac)
-  SOURCES += src/simutrans/OSX/translocation.m
+  SOURCES += src/OSX/translocation.m
   LDFLAGS += -framework Cocoa
 endif
 

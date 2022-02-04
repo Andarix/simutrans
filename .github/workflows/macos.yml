@@ -20,6 +20,7 @@ jobs:
         run: |
           autoreconf -ivf
           ./configure CC=clang
+          echo "CFLAGS += -Wc++14 " >>config.default
           make BACKEND=sdl2 MULTI_THREAD=1 OPTIMISE=1 OSTYPE=mac USE_FREETYPE=1 USE_UPNP=0 USE_ZSTD=0 AV_FOUNDATION=1
           make src/OSX/getversion
       - name: Build Zip
@@ -53,7 +54,7 @@ jobs:
       - name: Build
         run: make -j2 makeobj
       - name: zip result
-        run: zip -r -9 makeobj_macos-nightly.zip src/build/default/makeobj/makeobj
+        run: zip -r -9 makeobj_macos-nightly.zip build/default/makeobj/makeobj
       - name: detect revision
         run: |
           read text < ./src/simutrans/revision.h
@@ -83,7 +84,7 @@ jobs:
       - name: Build
         run: make -j2 nettool
       - name: zip result
-        run: zip -r -9 nettool_mac-nightly.zip src/build/default/nettool/nettool
+        run: zip -r -9 nettool_mac-nightly.zip build/default/nettool/nettool
       - name: detect revision
         run: |
           read text < ./src/simutrans/revision.h
