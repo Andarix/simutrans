@@ -1,6 +1,9 @@
 name: Nightly build MacOS
 
-on: push
+on:
+  push:
+    tags:
+      - 'Nightly'
 
 jobs:
   sim-mac-sdl2:
