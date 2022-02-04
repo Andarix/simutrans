@@ -1,5 +1,5 @@
 #!/bin/sh
-# build SDL2 simutrans nightly
+# build SDL2 simutrans nightly x64
 
 # libbrotli static is broken in MinGW for freetype2
 for f in libbrotlidec libbrotlienc libbrotlicommon; do
@@ -23,5 +23,5 @@ echo "STATIC = 1" >>config.default
 echo "VERBOSE = 1" >>config.default
 echo "LDFLAGS   += $(pkg-config --libs --static SDL2) " >>config.default
 make
-sh ./distribute.sh
+sh ./tools/distribute.sh
 mv simu*.zip simuwin-SDL2-nightly_x64.zip

@@ -94,7 +94,7 @@ jobs:
         echo $CURRENT_BRANCH
         echo $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/$CURRENT_BRANCH
         git clone -b $CURRENT_BRANCH $GITHUB_SERVER_URL/$GITHUB_REPOSITORY project/jni/application/simutrans/simutrans
-        chmod +755 project/jni/application/simutrans/simutrans/get_revision.sh
+        chmod +755 project/jni/application/simutrans/simutrans/tools/get_revision.sh
         echo $(ls -al project/jni/application/simutrans/simutrans/android)
         cp -f project/jni/application/simutrans/simutrans/android/AndroidAppSettings.cfg project/jni/application/simutrans/
         cp -f project/jni/application/simutrans/simutrans/android/AndroidBuild.sh project/jni/application/simutrans/
@@ -130,7 +130,7 @@ jobs:
         asset_name: simutrans-nightly.aab
         tag: Nightly
         overwrite: true
-        
+
     - name: Update binaries of Nightly Release apk
       uses: svenstaro/upload-release-action@v1-release
       with:

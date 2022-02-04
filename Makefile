@@ -785,7 +785,7 @@ PROG     ?= sim
 include common.mk
 
 ifeq ($(OSTYPE),mac)
-  include OSX/osx.mk
+  include src/OSX/osx.mk
 endif
 
 all: simutrans makeobj nettool

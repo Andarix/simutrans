@@ -30,17 +30,17 @@ jobs:
 
       - name: make makeobj
         run: |
-          cd makeobj
+          cd src/makeobj
           make
 
       - name: zip result
         run: |
-          cd makeobj
+          cd src/makeobj
           zip -r -9 makeobj_linux-x64-nightly.zip makeobj
 
       - name: detect revision
         run: |
-          read text < ./revision.h
+          read text < ./src/simutrans/revision.h
           revision=${text:17:5}
           echo "revision=$revision" >> $GITHUB_ENV
 
@@ -48,7 +48,7 @@ jobs:
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: makeobj/makeobj_linux-x64-nightly.zip
+          file: src/makeobj/makeobj_linux-x64-nightly.zip
           asset_name: makeobj_linux-x64-nightly_r${{ env.revision }}.zip
           tag: Nightly
           overwrite: true
@@ -76,7 +76,7 @@ jobs:
           cd ../../../
           autoconf
           ./configure
-          echo "CFLAGS += -std=c++11 " >>config.default
+          echo "CFLAGS += -std=c++14 " >>config.default
           echo "STATIC := 1" >>config.default
           cat config.default >>/dev/stderr
 
@@ -84,14 +84,14 @@ jobs:
         run: make
 
       - name: distribute
-        run: sh ./distribute.sh
+        run: sh tools/distribute.sh
 
       - name: Rename result
         run:  mv ./simu*.zip ./simulinux-x64-nightly.zip
 
       - name: detect revision
         run: |
-          read text < ./revision.h
+          read text < ./src/simutrans/revision.h
           revision=${text:17:5}
           echo "revision=$revision" >> $GITHUB_ENV
 
@@ -125,7 +125,7 @@ jobs:
           cd ../../../
           autoconf
           ./configure
-          echo "CFLAGS += -std=c++11 " >>config.default
+          echo "CFLAGS += -std=c++14 " >>config.default
           echo "STATIC := 1" >>config.default
           echo "BACKEND = posix" >>config.default
           cat config.default >>/dev/stderr
@@ -136,14 +136,14 @@ jobs:
 
       - name: distribute
         run: |
-          sh ./distribute.sh
+          sh tools/distribute.sh
 
       - name: Rename result
         run:  mv ./simu*.zip ./simulinux_posix-x64-nightly.zip
 
       - name: detect revision
         run: |
-          read text < ./revision.h
+          read text < ./src/simutrans/revision.h
           revision=${text:17:5}
           echo "revision=$revision" >> $GITHUB_ENV
 
@@ -178,17 +178,17 @@ jobs:
 
       - name: make
         run: |
-          cd nettools
+          cd src/nettool
           make
 
       - name: zip result
         run: |
-          cd nettools
+          cd src/nettool
           zip -r -9 nettool_linux-x64-nightly.zip nettool
 
       - name: detect revision
         run: |
-          read text < ./revision.h
+          read text < ./src/simutrans/revision.h
           revision=${text:17:5}
           echo "revision=$revision" >> $GITHUB_ENV
 
@@ -196,7 +196,7 @@ jobs:
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: nettools/nettool_linux-x64-nightly.zip
+          file: src/nettool/nettool_linux-x64-nightly.zip
           asset_name: nettool_linux-x64-nightly_r${{ env.revision }}.zip
           tag: Nightly
           overwrite: true
