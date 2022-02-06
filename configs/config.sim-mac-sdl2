@@ -11,7 +11,7 @@ AV_FOUNDATION=1
 DEBUG=0
 OPTIMISE=1
 
-FLAGS = -DUSE_C -fno-delete-null-pointer-checks -fno-strict-aliasing -std=c++11
+FLAGS = -DUSE_C -fno-delete-null-pointer-checks -fno-strict-aliasing -std=c++14
 
 CFLAGS  += -F /Library/Frameworks
 LDFLAGS += -framework SDL2 -F /Library/Frameworks -I /Library/Frameworks/SDL2.framework/Headers
