@@ -295,10 +295,66 @@ SOCKET network_open_address(char const* cp, char const*& err)
 
 				DBG_MESSAGE( "network_open_address()", "Potential remote address: %s", ipstr_remote );
 
-				if (  connect( my_client_socket, walk_remote->ai_addr, (socklen_t)walk_remote->ai_addrlen ) != 0  ) {
-					DBG_MESSAGE( "network_open_address()", "Could not connect using this socket. Error: \"%s\"", strerror(GET_LAST_ERROR()) );
+#ifdef WIN32
+				// put socked in non-blocking mode...
+				u_long block = 1;
+				if(  ioctlsocket(my_client_socket, FIONBIO, &block) != 0  )	{
+					my_client_socket = INVALID_SOCKET;
 					continue;
 				}
+#else
+				fcntl(sockfd, F_SETFL, O_NONBLOCK);
+#endif
+
+				if (connect(my_client_socket, walk_remote->ai_addr, (socklen_t)walk_remote->ai_addrlen) != 0) {
+
+					if(  GET_LAST_ERROR() != EINPROGRESS) {
+						// connection failed
+						closesocket(my_client_socket);
+						continue;
+					}
+
+					// connection pending
+					fd_set setW, setE;
+
+					FD_ZERO(&setW);
+					FD_SET(my_client_socket, &setW);
+					FD_ZERO(&setE);
+					FD_SET(my_client_socket, &setE);
+
+					timeval time_out = { 0 };
+					time_out.tv_sec = 2; // 2 seconds or joining a server would not make sense
+					time_out.tv_usec = 0;
+
+					int ret = select(0, NULL, &setW, &setE, &time_out);
+					if (ret <= 0) {
+						// select() failed or connection timed out
+						DBG_MESSAGE("network_open_address()", "Could not connect using this socket. select() Error: \"%s\"", strerror(GET_LAST_ERROR()));
+						closesocket(my_client_socket);
+						continue;
+					}
+
+					if(  FD_ISSET(my_client_socket, &setE)  ) {
+						// connection failed
+						DBG_MESSAGE("network_open_address()", "Could not connect FD_ISSET failed.");
+						closesocket(my_client_socket);
+						continue;
+					}
+					// connection successful
+#ifdef WIN32
+					// put socket in blocking mode...
+					block = 0;
+					if(  ioctlsocket(my_client_socket, FIONBIO, &block) != 0  ) {
+						DBG_MESSAGE("network_open_address()", "Could not reset to non-blocking.");
+						closesocket(my_client_socket);
+						continue;
+					}
+#else
+					// put socket in blocking mode...
+					fcntl(sockfd, F_SETFL, O_BLOCK);
+#endif
+				}
+
 				connected = true;
 			}
 			// If no connection throw away this socket and try the next one
