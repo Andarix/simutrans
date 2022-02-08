@@ -5,46 +5,26 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-<<<<<<< HEAD
-    <ProjectConfiguration Include="git_actions|Win32">
-      <Configuration>git_actions</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="git_action_x64|Win32">
-      <Configuration>git_action_x64</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="git_action_x86|Win32">
-      <Configuration>git_action_x86</Configuration>
-      <Platform>Win32</Platform>
-=======
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
->>>>>>> refs/remotes/origin/trunk
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-<<<<<<< HEAD
-=======
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
->>>>>>> refs/remotes/origin/trunk
     <ProjectConfiguration Include="Stable|Win32">
       <Configuration>Stable</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-<<<<<<< HEAD
-=======
     <ProjectConfiguration Include="Stable|x64">
       <Configuration>Stable</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
->>>>>>> refs/remotes/origin/trunk
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0621B295-BEB7-4767-82F1-F27995610323}</ProjectGuid>
@@ -52,35 +32,15 @@
     <ProjectName>Simutrans GDI</ProjectName>
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
-<<<<<<< HEAD
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
-=======
->>>>>>> refs/remotes/origin/trunk
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-<<<<<<< HEAD
-    <PlatformToolset>v140</PlatformToolset>
-=======
     <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
->>>>>>> refs/remotes/origin/trunk
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-<<<<<<< HEAD
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'" Label="Configuration">
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'" Label="Configuration">
-    <WholeProgramOptimization>false</WholeProgramOptimization>
-  </PropertyGroup>
-=======
->>>>>>> refs/remotes/origin/trunk
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <EnableASAN>true</EnableASAN>
   </PropertyGroup>
@@ -93,11 +53,7 @@
   </ImportGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-<<<<<<< HEAD
-    <OutDir>$(SolutionDir)</OutDir>
-=======
     <OutDir>$(SolutionDir)build\GDI\</OutDir>
->>>>>>> refs/remotes/origin/trunk
     <IntDir>$(SolutionDir)build\GDI\$(Configuration)\</IntDir>
     <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
     <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
@@ -114,52 +70,22 @@
     <TargetName>$(ProjectName) Nightly</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
-<<<<<<< HEAD
-  <PropertyGroup Condition="'$(Configuration)'=='git_actions'">
-    <TargetName>Simutrans_GDI</TargetName>
-    <GenerateManifest>false</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='git_action_x86'">
-    <TargetName>Simutrans_GDI</TargetName>
-    <GenerateManifest>false</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='git_action_x64'">
-    <TargetName>Simutrans_GDI</TargetName>
-    <GenerateManifest>false</GenerateManifest>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Stable'">
-    <GenerateManifest>false</GenerateManifest>
-  </PropertyGroup>
-=======
   <PropertyGroup Condition="'$(Configuration)'=='Stable'">
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <VcpkgHostTriplet>x86-windows-static</VcpkgHostTriplet>
   </PropertyGroup>
->>>>>>> refs/remotes/origin/trunk
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-<<<<<<< HEAD
-      <DisableSpecificWarnings>4250;4373;4800;4996;4244;26812;26451</DisableSpecificWarnings>
-=======
       <DisableSpecificWarnings>4250;4373;4800;4996;26812;26451</DisableSpecificWarnings>
->>>>>>> refs/remotes/origin/trunk
     </ClCompile>
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-<<<<<<< HEAD
-      <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <SubSystem>Windows</SubSystem>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <Manifest>
-      <EnableDPIAwareness>PerMonitorHighDPIAware</EnableDPIAwareness>
-=======
       <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>
@@ -167,7 +93,6 @@
     </Link>
     <Manifest>
       <EnableDPIAwareness>true</EnableDPIAwareness>
->>>>>>> refs/remotes/origin/trunk
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -194,69 +119,6 @@
       <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
-<<<<<<< HEAD
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='git_actions'">
-    <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">libs/zstd-1.4.4/lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;libs/lpng1637;libs/miniupnpc-2.2.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">true</MultiProcessorCompilation>
-      <EnableParallelCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">false</EnableParallelCodeGeneration>
-      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">false</WholeProgramOptimization>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">true</BufferSecurityCheck>
-      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">MultiThreadedDLL</RuntimeLibrary>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">MaxSpeed</Optimization>
-      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib;ws2_32.lib;Winmm.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <LinkTimeCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">Default</LinkTimeCodeGeneration>
-      <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">false</GenerateDebugInformation>
-      <EnableCOMDATFolding Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">false</EnableCOMDATFolding>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='git_action_x86'">
-    <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">libs/zstd-1.4.4/lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;libs/lpng1637;libs/miniupnpc-2.2.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">true</MultiProcessorCompilation>
-      <EnableParallelCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">false</EnableParallelCodeGeneration>
-      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">false</WholeProgramOptimization>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">true</BufferSecurityCheck>
-      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">MultiThreadedDLL</RuntimeLibrary>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">MaxSpeed</Optimization>
-      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib;ws2_32.lib;Winmm.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <LinkTimeCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">Default</LinkTimeCodeGeneration>
-      <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">false</GenerateDebugInformation>
-      <EnableCOMDATFolding Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">false</EnableCOMDATFolding>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='git_action_x64'">
-    <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">libs/zstd-1.4.4/lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;libs/lpng1637;libs/miniupnpc-2.2.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">true</MultiProcessorCompilation>
-      <EnableParallelCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">false</EnableParallelCodeGeneration>
-      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">false</WholeProgramOptimization>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">true</BufferSecurityCheck>
-      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">MultiThreadedDLL</RuntimeLibrary>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">MaxSpeed</Optimization>
-      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <Link>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib;ws2_32.lib;Winmm.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <LinkTimeCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">Default</LinkTimeCodeGeneration>
-      <GenerateDebugInformation Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">false</GenerateDebugInformation>
-      <EnableCOMDATFolding Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">false</EnableCOMDATFolding>
-    </Link>
-  </ItemDefinitionGroup>
-=======
->>>>>>> refs/remotes/origin/trunk
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Stable'">
     <ClCompile>
       <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
@@ -269,15 +131,11 @@
     </PreBuildEvent>
     <ClCompile>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</MultiProcessorCompilation>
-<<<<<<< HEAD
-    </ClCompile>
-=======
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LargeAddressAware>
     </Link>
->>>>>>> refs/remotes/origin/trunk
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <ClCompile>
@@ -287,26 +145,16 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
-<<<<<<< HEAD
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">true</MultiProcessorCompilation>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_action_x86|Win32'">true</MultiProcessorCompilation>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_action_x64|Win32'">true</MultiProcessorCompilation>
-      <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</MultiProcessorCompilation>
-=======
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|x64'">true</MultiProcessorCompilation>
->>>>>>> refs/remotes/origin/trunk
     </ClCompile>
     <Link>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;miniupnpc.lib;Xaudio2.lib;iphlpapi.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-<<<<<<< HEAD
-=======
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LargeAddressAware>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</LargeAddressAware>
->>>>>>> refs/remotes/origin/trunk
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
