@@ -11,6 +11,8 @@ LIBS :=
 SOURCES :=
 STATIC := 0
 
+DYNAMICSTART = 
+DYNAMICEND = 
 
 CFG ?= default
 -include config.$(CFG)
@@ -19,14 +21,13 @@ CFG ?= default
 HOSTCC  ?=$(CC)
 HOSTCXX ?=$(CXX)
 
-SDL_CONFIG       ?= sdl-config
 SDL2_CONFIG      ?= pkg-config sdl2
 #SDL2_CONFIG     ?= sdl2-config
 FREETYPE_CONFIG  ?= pkg-config freetype2
 #FREETYPE_CONFIG ?= freetype-config
 
-BACKENDS  := gdi sdl sdl2 mixer_sdl mixer_sdl2 posix
-OSTYPES   := amiga beos freebsd haiku linux mac mingw openbsd
+BACKENDS  := gdi sdl2 mixer_sdl2 posix
+OSTYPES   := amiga freebsd haiku linux mac mingw openbsd
 
 
 ifeq ($(findstring $(BACKEND), $(BACKENDS)),)
@@ -41,6 +42,30 @@ ifeq ($(BACKEND),posix)
   COLOUR_DEPTH := 0
 else
   COLOUR_DEPTH := 16
+endif
+
+# since threads are needed to be linked dynamically on most systems
+ifdef MULTI_THREAD
+  ifeq ($(shell expr $(MULTI_THREAD) \>= 1), 1)
+    CFLAGS += -DMULTI_THREAD
+    ifneq ($(OSTYPE),mingw)
+      ifneq ($(OSTYPE),haiku)
+        # mingw has already added pthread statically
+        ifneq ($(OSTYPE),mingw)
+	  LDFLAGS += -lpthread
+        endif
+      endif
+    endif
+  else
+    ifneq ($(OSTYPE),mingw)
+      ifeq ($(BACKEND),sdl2)
+        LDFLAGS += -lpthread
+      endif
+      ifeq ($(BACKEND),mixer_sdl2)
+        LDFLAGS += -lpthread
+      endif
+    endif
+  endif
 endif
 
 ifeq ($(OSTYPE),amiga)
@@ -79,7 +104,11 @@ else ifeq ($(OSTYPE),mingw)
     LDFLAGS += -mwindows
   endif
 else ifeq ($(OSTYPE),linux)
-  LD_FLAGS += "-Wl,-Bstatic"
+  ifeq ($(shell expr $(STATIC) \>= 1), 1)
+    LDFLAGS +=  -Wl,-Bstatic -lm
+    DYNAMICSTART = -Wl,-Bdynamic 
+    DYNAMICEND = -Wl,-Bstatic 
+  endif
 else ifeq ($(OSTYPE),mac)
   SOURCES += src/OSX/translocation.m
   LDFLAGS += -framework Cocoa
@@ -149,7 +178,7 @@ ifdef USE_FREETYPE
         # since static is not supported by slightly old freetype versions
         FTF := $(shell $(FREETYPE_CONFIG) --libs --static)
         ifneq ($(FTF),)
-          LDFLAGS += $(FTF)
+          LDFLAGS += $(subst -lm ,,$(FTF))
         else
           LDFLAGS += $(shell $(FREETYPE_CONFIG) --libs)
         endif
@@ -198,10 +227,11 @@ ifdef USE_FLUIDSYNTH_MIDI
     CFLAGS  += -DUSE_FLUIDSYNTH_MIDI
     SOURCES += src/simutrans/music/fluidsynth.cc
     SOURCES += src/simutrans/gui/loadsoundfont_frame.cc
-    LDFLAGS += -lfluidsynth
+    LDFLAGS += $(DYNAMICSTART)-lfluidsynth $(DYNAMICEND)
     ifeq ($(OSTYPE),mingw)
       # fluidsynth.pc doesn't properly list dependant libraries, unable to use pkg-config. Manually listed below. Only valid for fluidsynth built with options: "-DBUILD_SHARED_LIBS=0 -Denable-aufile=0 -Denable-dbus=0 -Denable-ipv6=0 -Denable-jack=0 -Denable-ladspa=0 -Denable-midishare=0 -Denable-opensles=0 -Denable-oboe=0 -Denable-oss=0 -Denable-readline=0 -Denable-winmidi=0 -Denable-waveout=0 -Denable-libsndfile=0 -Denable-network=0 -Denable-pulseaudio=0 Denable-dsound=1 -Denable-sdl2=0"
       LDFLAGS += -lglib-2.0 -lintl -liconv -ldsound -lole32
+    else
     endif
   endif
 else
@@ -219,18 +249,6 @@ ifdef PROFILE
       endif
     endif
     LDFLAGS  += -pg
-  endif
-endif
-
-ifdef MULTI_THREAD
-  ifeq ($(shell expr $(MULTI_THREAD) \>= 1), 1)
-    CFLAGS += -DMULTI_THREAD
-    ifneq ($(OSTYPE),haiku)
-      # mingw has already added pthread statically
-      ifneq ($(OSTYPE),mingw)
-        LDFLAGS += -lpthread
-      endif
-    endif
   endif
 endif
 
@@ -619,52 +637,6 @@ ifeq ($(BACKEND),gdi)
   endif
 endif
 
-ifeq ($(BACKEND),sdl)
-  SOURCES += src/simutrans/sys/simsys_s.cc
-  ifeq ($(OSTYPE),mac)
-    AV_FOUNDATION ?= 0
-    ifeq ($(shell expr $(AV_FOUNDATION) \>= 1), 1)
-      # Core Audio (AVFoundation) base sound system routines
-      SOURCES += src/simutrans/sound/AVF_core-audio_sound.mm
-      SOURCES += src/simutrans/music/AVF_core-audio_midi.mm
-      LIBS    += -framework Foundation -framework AVFoundation
-    else
-      # Core Audio (Quicktime) base sound system routines
-      SOURCES += src/simutrans/sound/core-audio_sound.mm
-      SOURCES += src/simutrans/music/core-audio_midi.mm
-      LIBS    += -framework Foundation -framework QTKit
-    endif
-  else
-    SOURCES += src/simutrans/sound/sdl_sound.cc
-    ifneq ($(OSTYPE),mingw)
-      ifeq ($(USE_FLUIDSYNTH_MIDI), 0)
-        SOURCES += src/simutrans/music/no_midi.cc
-      endif
-    else
-      SOURCES += src/simutrans/music/w32_midi.cc
-    endif
-  endif
-
-  ifeq ($(SDL_CONFIG),)
-    ifeq ($(OSTYPE),mac)
-      SDL_CFLAGS  := -I/Library/Frameworks/SDL.framework/Headers -Dmain=SDL_main
-      SDL_LDFLAGS := -framework SDL -framework Cocoa -I/Library/Frameworks/SDL.framework/Headers OSX/SDLMain.m
-    else
-      SDL_CFLAGS  := -I$(MINGDIR)/include/SDL -Dmain=SDL_main
-      SDL_LDFLAGS := -lSDLmain -lSDL
-    endif
-  else
-    SDL_CFLAGS    := $(shell $(SDL_CONFIG) --cflags)
-    ifeq ($(shell expr $(STATIC) \>= 1), 1)
-      SDL_LDFLAGS := $(shell $(SDL_CONFIG) --static-libs)
-    else
-      SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
-    endif
-  endif
-  CFLAGS += $(SDL_CFLAGS)
-  LIBS   += $(SDL_LDFLAGS)
-endif
-
 ifeq ($(BACKEND),sdl2)
   SOURCES += src/simutrans/sys/simsys_s2.cc
   ifeq ($(OSTYPE),mac)
@@ -705,10 +677,11 @@ ifeq ($(BACKEND),sdl2)
     endif
   else
     SDL_CFLAGS    := $(shell $(SDL2_CONFIG) --cflags)
+    SDL_LDFLAGS   := $(DYNAMICSTART) $(shell $(SDL2_CONFIG) --libs) $(DYNAMICEND)
     ifeq ($(shell expr $(STATIC) \>= 1), 1)
-      SDL_LDFLAGS := $(shell $(SDL2_CONFIG) --static --libs)
-    else
-      SDL_LDFLAGS := $(shell $(SDL2_CONFIG) --libs)
+      ifeq ($(OSTYPE),mingw)
+        SDL_LDFLAGS = $(shell $(SDL2_CONFIG) --static --libs)
+      endif
     endif
   endif
   CFLAGS += $(SDL_CFLAGS)
@@ -729,29 +702,15 @@ ifeq ($(BACKEND),mixer_sdl2)
     SOURCES += src/simutrans/sound/sdl_mixer_sound.cc
     SOURCES += src/simutrans/music/sdl_midi.cc
     SDL_CFLAGS    := $(shell $(SDL2_CONFIG) --cflags)
+    SDL_LDFLAGS   := $(DYMANICSTART) $(shell $(SDL2_CONFIG) --libs) -lSDL2_mixer $(DYNAMICEND)
     ifeq ($(shell expr $(STATIC) \>= 1), 1)
-      SDL_LDFLAGS := $(shell $(SDL2_CONFIG) --static-libs)
-    else
-      SDL_LDFLAGS := $(shell $(SDL2_CONFIG) --libs)
+      ifeq ($(OSTYPE),mingw)
+        SDL_LDFLAGS = $(shell $(SDL2_CONFIG) --static --libs) -lSDL2_mixer
+      endif
     endif
   endif
   CFLAGS += $(SDL_CFLAGS)
-  LIBS   += $(SDL_LDFLAGS) -lSDL2_mixer
-endif
-
-ifeq ($(BACKEND),mixer_sdl)
-  SOURCES += src/simutrans/sys/simsys_s.cc
-  SOURCES += src/simutrans/sound/sdl_mixer_sound.cc
-  SOURCES += src/simutrans/music/sdl_midi.cc
-  ifeq ($(SDL_CONFIG),)
-    SDL_CFLAGS  := -I$(MINGDIR)/include/SDL -Dmain=SDL_main
-    SDL_LDFLAGS := -lmingw32 -lSDLmain -lSDL
-  else
-    SDL_CFLAGS  := $(shell $(SDL_CONFIG) --cflags)
-    SDL_LDFLAGS := $(shell $(SDL_CONFIG) --libs)
-  endif
-  CFLAGS += $(SDL_CFLAGS)
-  LIBS   += $(SDL_LDFLAGS) -lSDL_mixer
+  LIBS   += $(SDL_LDFLAGS)
 endif
 
 ifeq ($(BACKEND),posix)
@@ -773,6 +732,16 @@ endif
 
 CCFLAGS  += $(CFLAGS)
 CXXFLAGS += $(CFLAGS)
+
+# static linking everything but SDL2 works is the best one can do on Linux ...
+ifeq ($(OSTYPE),linux)
+  ifeq ($(shell expr $(STATIC) \>= 1), 1)
+    LIBS += -static-libgcc -static-libstdc++
+    ifeq ($(BACKEND),posix)
+      LIBS += -static
+    endif
+  endif
+endif
 
 BUILDDIR ?= build/$(CFG)
 PROGDIR  ?= $(BUILDDIR)
