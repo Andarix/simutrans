@@ -90,7 +90,7 @@ jobs:
     - name: Setup Android SDL working folder to host Simutrans (current branch)
       working-directory: /android-sdl
       run: |
-        CURRENT_BRANCH=${GITHUB_REF##*/}
+        CURRENT_BRANCH=$GITHUB_REF_NAME
         echo $CURRENT_BRANCH
         echo $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/$CURRENT_BRANCH
         git clone -b $CURRENT_BRANCH $GITHUB_SERVER_URL/$GITHUB_REPOSITORY project/jni/application/simutrans/simutrans
