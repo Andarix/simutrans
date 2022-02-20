@@ -8,14 +8,14 @@ on:
 jobs:
   makeobj_windows-nightly:
     name: makeobj
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v2
 
     - name: compile makeobj
       run: |
-        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+        cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\src\makeobj\Makeobj.vcxproj /p:Configuration=Release
         cd $Env:GITHUB_WORKSPACE\
 
@@ -41,14 +41,14 @@ jobs:
 
   windows_GDI-nightly:
     name: Simutrans Windows GDI
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v2
 
     - name: compile simutrans
       run: |
-        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+        cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-GDI.vcxproj /p:Configuration=git_actions
         cd  $Env:GITHUB_WORKSPACE\
         copy Simutrans_GDI.exe simutrans\Simutrans.exe
@@ -88,14 +88,14 @@ jobs:
 
   windows_SDL2-nightly:
     name: Simutrans Windows SDL2
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v2
 
     - name: compile simutrans
       run: |
-        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+        cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-SDL2.vcxproj /p:Configuration=git_actions
         cd $Env:GITHUB_WORKSPACE\
         copy Simutrans_SDL2.exe simutrans\Simutrans.exe
@@ -136,14 +136,14 @@ jobs:
 
   windows_server-nightly:
     name: Simutrans Windows Server
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v2
 
     - name: compile simutrans server
       run: |
-        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+        cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-Server.vcxproj /p:Configuration=git_actions
         cd $Env:GITHUB_WORKSPACE\
         copy Simutrans_Server.exe simutrans\Simutrans-Server.exe
@@ -183,14 +183,14 @@ jobs:
 
   windows_nettool:
     name: Simutrans Nettool
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v2
 
     - name: compile simutrans nettool
       run: |
-        cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+        cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\src\nettool\Nettool.vcxproj /p:Configuration=release
         cd $Env:GITHUB_WORKSPACE\
 
