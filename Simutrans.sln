@@ -20,10 +20,6 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		git_action_x64|x64 = git_action_x64|x64
-		git_action_x64|x86 = git_action_x64|x86
-		git_action_x86|x64 = git_action_x86|x64
-		git_action_x86|x86 = git_action_x86|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 		Stable|x64 = Stable|x64
@@ -32,23 +28,7 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0621B295-BEB7-4767-82F1-F27995610323}.Debug|x64.ActiveCfg = Debug|x64
 		{0621B295-BEB7-4767-82F1-F27995610323}.Debug|x86.ActiveCfg = Debug|Win32
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-		{0621B295-BEB7-4767-82F1-F27995610323}.git_action_x64|x64.ActiveCfg = git_action_x64|Win32
-		{0621B295-BEB7-4767-82F1-F27995610323}.git_action_x64|x86.ActiveCfg = git_action_x64|Win32
-		{0621B295-BEB7-4767-82F1-F27995610323}.git_action_x64|x86.Build.0 = git_action_x64|Win32
-		{0621B295-BEB7-4767-82F1-F27995610323}.git_action_x86|x64.ActiveCfg = git_action_x86|Win32
-		{0621B295-BEB7-4767-82F1-F27995610323}.git_action_x86|x86.ActiveCfg = git_action_x86|Win32
-		{0621B295-BEB7-4767-82F1-F27995610323}.git_action_x86|x86.Build.0 = git_action_x86|Win32
-=======
 		{0621B295-BEB7-4767-82F1-F27995610323}.Debug|x86.Build.0 = Debug|Win32
->>>>>>> refs/remotes/origin/trunk
-=======
->>>>>>> refs/remotes/origin/trunk
-=======
-		{0621B295-BEB7-4767-82F1-F27995610323}.Debug|x86.Build.0 = Debug|Win32
->>>>>>> refs/remotes/origin/trunk
 		{0621B295-BEB7-4767-82F1-F27995610323}.Release|x64.ActiveCfg = Release|x64
 		{0621B295-BEB7-4767-82F1-F27995610323}.Release|x64.Build.0 = Release|x64
 		{0621B295-BEB7-4767-82F1-F27995610323}.Release|x86.ActiveCfg = git_actions|Win32
@@ -58,28 +38,12 @@ Global
 		{0621B295-BEB7-4767-82F1-F27995610323}.Stable|x86.Build.0 = Stable|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Debug|x64.ActiveCfg = Debug|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Debug|x86.ActiveCfg = Debug|Win32
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Debug|x86.Build.0 = Debug|Win32
-		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.git_action_x64|x64.ActiveCfg = git_action_x64|Win32
-		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.git_action_x64|x86.ActiveCfg = git_action_x64|Win32
-		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.git_action_x64|x86.Build.0 = git_action_x64|Win32
-		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.git_action_x86|x64.ActiveCfg = git_action_x86|Win32
-		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.git_action_x86|x86.ActiveCfg = git_action_x86|Win32
-		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.git_action_x86|x86.Build.0 = git_action_x86|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Release|x64.ActiveCfg = Release|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Release|x86.ActiveCfg = git_actions|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Release|x86.Build.0 = git_actions|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Stable|x64.ActiveCfg = Stable|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Debug|x86.Build.0 = Debug|Win32
-=======
->>>>>>> refs/remotes/origin/trunk
-=======
-		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Debug|x86.Build.0 = Debug|Win32
->>>>>>> refs/remotes/origin/trunk
-=======
->>>>>>> refs/remotes/origin/trunk
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Release|x64.ActiveCfg = Release|x64
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Release|x86.ActiveCfg = Release|Win32
 		{E74757E8-C2FD-44AD-87BD-3D55F4709484}.Release|x86.Build.0 = Release|Win32
@@ -89,12 +53,6 @@ Global
 		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.Debug|x64.ActiveCfg = Debug|Win32
 		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.Debug|x86.ActiveCfg = Debug|Win32
 		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.Debug|x86.Build.0 = Debug|Win32
-		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.git_action_x64|x64.ActiveCfg = git_action_x64|Win32
-		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.git_action_x64|x86.ActiveCfg = git_action_x64|Win32
-		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.git_action_x64|x86.Build.0 = git_action_x64|Win32
-		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.git_action_x86|x64.ActiveCfg = git_action_x86|Win32
-		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.git_action_x86|x86.ActiveCfg = git_action_x86|Win32
-		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.git_action_x86|x86.Build.0 = git_action_x86|Win32
 		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.Release|x64.ActiveCfg = Release|Win32
 		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.Release|x86.ActiveCfg = git_actions|Win32
 		{0EE7EB1C-43C6-4548-9C60-B79F4D781B4C}.Release|x86.Build.0 = git_actions|Win32
