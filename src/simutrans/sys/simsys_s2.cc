@@ -253,7 +253,7 @@ static int SDLCALL my_event_filter(void* /*userdata*/, SDL_Event* event)
 
 			// construct from pak name an autosave if requested
 			std::string pak_name("autosave-");
-			pak_name.append(env_t::objfilename);
+			pak_name.append(env_t::pak_name);
 			pak_name.erase(pak_name.length() - 1);
 			pak_name.append(".sve");
 
@@ -644,6 +644,7 @@ static void internal_GetEvents()
 	static double dLastDist = 0.0;
 
 	static bool has_queued_finger_release = false;
+	static bool has_queued_zero_mouse_move = false;
 	static sint32 last_mx, last_my; // last finger down pos
 
 	if (has_queued_finger_release) {
@@ -656,6 +657,19 @@ static void internal_GetEvents()
 		sys_event.my = last_my;
 		sys_event.key_mod = ModifierKeys();
 		DBG_MESSAGE("SDL_FINGERUP for queue", "SIM_MOUSE_LEFTUP at %i,%i", sys_event.mx, sys_event.my);
+		return;
+	}
+
+	if (has_queued_zero_mouse_move) {
+		// we need to send a finger release, which was not done yet
+		has_queued_zero_mouse_move = false;
+		sys_event.type = SIM_MOUSE_MOVE;
+		sys_event.code = 0;
+		sys_event.mb = 0;
+		sys_event.mx = last_mx;
+		sys_event.my = last_my;
+		sys_event.key_mod = ModifierKeys();
+		DBG_MESSAGE("SDL_FINGERUP for queue", "SIM_MOUSE_MOVE at %i,%i", sys_event.mx, sys_event.my);
 		return;
 	}
 

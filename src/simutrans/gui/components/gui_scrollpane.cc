@@ -156,14 +156,9 @@ bool gui_scrollpane_t::infowin_event(const event_t *ev)
 		if(  ev->ev_class < EVENT_CLICK  ||  IS_WHEELUP(ev)  ||  IS_WHEELDOWN(ev)  ) {
 			b_is_dragging = false;
 		}
+
 		// we will handle dragging ourselves inf not prevented
-		else if(  b_can_drag  &&  (ev->ev_class == EVENT_CLICK  ||  ev->ev_class == EVENT_DRAG)  ||  (b_is_dragging  &&  ev->ev_class < INFOWIN)  ) {
-			// init dragging? (Android SDL starts dragging without preceeding click!)
-			if(  ev->ev_class == EVENT_CLICK  ||  !b_is_dragging  ) {
-				origin = scr_coord(ev->mx, ev->my);
-				b_is_dragging = true;
-				return true;
-			}
+		if(  b_is_dragging  &&  ev->ev_class < INFOWIN  ) {
 			// now drag: scrollbars are not in pixel, but we will scroll one unit per pixels ...
 			scroll_x.set_knob_offset(scroll_x.get_knob_offset() - (ev->mx - origin.x));
 			scroll_y.set_knob_offset(scroll_y.get_knob_offset() - (ev->my - origin.y));
@@ -181,6 +176,7 @@ bool gui_scrollpane_t::infowin_event(const event_t *ev)
 				return true;
 			}
 		}
+
 		// translate according to scrolled position
 		event_t ev2 = *ev;
 		const scr_coord offset(scroll_x.get_knob_offset(), scroll_y.get_knob_offset());
@@ -190,8 +186,28 @@ bool gui_scrollpane_t::infowin_event(const event_t *ev)
 		// hand event to component
 		swallow = comp->infowin_event(&ev2);
 
+		// now process wheel-events that are not swallowed by component, scroll the pane
+		if(!swallow) {
+			if(  (IS_WHEELUP(ev)  ||  IS_WHEELDOWN(ev))
+				 &&  (((b_show_scroll_y  &&  scroll_y.is_visible())  &&  !IS_SHIFT_PRESSED(ev))  ||  ((b_show_scroll_x  &&  scroll_x.is_visible())  &&  IS_SHIFT_PRESSED(ev)))  ) {
+				// otherwise these events are only registered where directly over the scroll region
+				// (and sometime even not then ... )
+				return IS_SHIFT_PRESSED(ev) ? scroll_x.infowin_event(ev) : scroll_y.infowin_event(ev);
+			}
+		}
+
+		if(  !swallow  &&  b_can_drag  &&  (ev->ev_class == EVENT_CLICK || ev->ev_class == EVENT_DRAG)  ) {
+			// init dragging? (Android SDL starts dragging without preceeding click!)
+			if(!b_is_dragging) {
+				origin = scr_coord(ev->mx, ev->my);
+				b_is_dragging = true;
+				return true;
+			}
+		}
+
 		// check if we need to scroll to the focused component
-		if(  get_focus()  &&  focused != get_focus()  ) {
+		gui_component_t *new_focus = get_focus();
+		if(new_focus &&  focused != new_focus) {
 			show_focused();
 		}
 
@@ -200,16 +216,7 @@ bool gui_scrollpane_t::infowin_event(const event_t *ev)
 		if(  old_comp_size!=comp->get_size()  ) {
 			recalc_sliders(get_size());
 		}
-	}
 
-	// now process wheel-events that are not swallowed by component, scroll the pane
-	if (!swallow) {
-		if((IS_WHEELUP(ev)  ||  IS_WHEELDOWN(ev))
-			&&  (((b_show_scroll_y  &&  scroll_y.is_visible())  &&  !IS_SHIFT_PRESSED(ev))  ||  ((b_show_scroll_x  &&  scroll_x.is_visible())  &&  IS_SHIFT_PRESSED(ev)))) {
-			// otherwise these events are only registered where directly over the scroll region
-			// (and sometime even not then ... )
-			return IS_SHIFT_PRESSED(ev) ? scroll_x.infowin_event(ev) : scroll_y.infowin_event(ev);
-		}
 	}
 	return swallow;
 }
