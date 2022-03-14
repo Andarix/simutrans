@@ -95,6 +95,7 @@ jobs:
         echo $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/$CURRENT_BRANCH
         git clone -b $CURRENT_BRANCH $GITHUB_SERVER_URL/$GITHUB_REPOSITORY project/jni/application/simutrans/simutrans
         chmod +755 project/jni/application/simutrans/simutrans/tools/get_revision.sh
+        chmod +755 project/jni/application/simutrans/simutrans/tools/get_lang_files.sh
         echo $(ls -al project/jni/application/simutrans/simutrans/android)
         cp -f project/jni/application/simutrans/simutrans/src/android/AndroidAppSettings.cfg project/jni/application/simutrans/
         cp -f project/jni/application/simutrans/simutrans/src/android/AndroidBuild.sh project/jni/application/simutrans/
