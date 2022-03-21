@@ -205,7 +205,7 @@ static int display_gadget_box(sint8 code,
 		else if(  code == SKIN_GADGET_PINNED  ) {
 			gadget_text = "S";
 		}
-		display_proportional_rgb( x+4, y+4, gadget_text, ALIGN_LEFT, color_idx_to_rgb(SYSCOL_TEXT), false );
+		display_proportional_rgb( x+4, y+4, gadget_text, ALIGN_LEFT, SYSCOL_TEXT, false );
 	}
 
 	int side = x+REVERSE_GADGETS*D_GADGET_WIDTH-1;
@@ -977,6 +977,7 @@ static bool destroy_framed_win(simwin_t *wins)
 	if(  wl  ) {
 		wl->set_background_dirty();
 	}
+	tooltip_text = 0;
 	return r;
 }
 

@@ -204,8 +204,8 @@ void savegame_frame_t::add_section(std::string &name){
  *
  * @param path  A nul terminated path to include in the search.
  */
-void savegame_frame_t::add_path(const char * path){
-
+void savegame_frame_t::add_path(const char * path)
+{
 	if (!this->searchpath_defined) {
 		sprintf(this->searchpath, "%s", path);
 		this->searchpath_defined = true;

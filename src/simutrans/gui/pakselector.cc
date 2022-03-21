@@ -48,9 +48,13 @@ pakselector_t::pakselector_t() :
 		add_path( env_t::install_dir );
 	}
 	dr_chdir( env_t::user_dir );
-	if(  !strstr(env_t::install_dir,env_t::user_dir)  &&  dr_chdir(USER_PAK_PATH)){
+	if(  !dr_chdir(USER_PAK_PATH)  ) {
 		char dummy[PATH_MAX];
-		add_path( dr_getcwd(dummy,lengthof(dummy)) );
+		dr_getcwd(dummy, lengthof(dummy) - 2);
+		strcat(dummy, PATH_SEPARATOR);
+		if(  strcmp(env_t::install_dir, dummy)  ) {
+			add_path(dummy);
+		}
 	}
 }
 
@@ -73,7 +77,8 @@ bool pakselector_t::del_action(const char *fullpath)
 {
 	// cannot delete set => use this for selection
 	env_t::pak_dir = fullpath;
-	env_t::pak_name = get_filename(fullpath)+"/";
+	env_t::pak_dir += PATH_SEPARATOR;
+	env_t::pak_name = get_filename(fullpath)+PATH_SEPARATOR;
 	env_t::default_settings.set_with_private_paks( true );
 	return true;
 }

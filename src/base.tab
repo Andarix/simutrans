@@ -921,10 +921,7 @@ obj=program_text
 name=Happy
 -
 obj=program_text
-name=Helligk.
--
-obj=program_text
-name=Helligk. u. Farben
+name=Display settings
 -
 obj=program_text
 name=Help
@@ -4234,6 +4231,16 @@ note=button/tool tooltip on removing signals
 obj=program_text
 name=transparent background
 --
+obj=program_text
+name=Show networks
+--
+obj=program_text
+name=Shows buttons on network overlay.
+note=tooltip to Show networks
+--
+
+
+
 #obj=help_text
 #name=Lower values mean more local sounds
 #note=tooltip in sound frame
@@ -4450,4 +4457,7 @@ name=transparent background
 #-
 #obj=error_text
 #name=No soundfont found!\n\nMusic won't play until you load a soundfont from the sound options menu.
+#-
+#obj=program_text
+#name=Helligk.
 #-
