@@ -109,9 +109,9 @@ jobs:
     - name: (Temporary) Patch Android SDL and replace version
       working-directory: /android-sdl
       run: |
-        if [ -f $GITHUB_WORKSPACE/.github/android/*.patch ]; then cp -r $GITHUB_WORKSPACE/.github/android/*.patch .; fi;
-        if [ -f *.patch ]; then git apply *.patch; fi;
-        sed -i "s/^AppVersionCode=[0-9]\+/AppVersionCode=$(cd project/jni/application/simutrans/simutrans; tools/get_revision.sh)/" ./project/jni/application/simutrans/AndroidAppSettings.cfg
+        read text < project/jni/application/simutrans/simutrans/src/simutrans/revision.h
+        revision=${text:17:5}
+        sed -i "s/^AppVersionCode=[0-9]\+/AppVersionCode=$revision/" ./project/jni/application/simutrans/AndroidAppSettings.cfg
         sed -i "s/^AppVersionName=\"[0-9]\+.[0-9]\+\"/AppVersionName=\"r$(cd project/jni/application/simutrans/simutrans; tools/get_revision.sh)\"/" ./project/jni/application/simutrans/AndroidAppSettings.cfg
 
     - name: Build Simutrans Bundle
@@ -128,7 +128,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: /android-sdl/project/app/build/outputs/bundle/release/simutrans-nightly.aab
-        asset_name: simutrans-nightly.aab
+        asset_name: simutrans-nightly_r${{ env.revision }}.aab
         tag: Nightly
         overwrite: true
 
@@ -137,6 +137,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: /android-sdl/project/app/build/outputs/bundle/release/simuandroid-multi-nightly.apk
-        asset_name: simuandroid-multi-nightly.apk
+        asset_name: simuandroid-multi-nightly_r${{ env.revision }}.apk
         tag: Nightly
         overwrite: true

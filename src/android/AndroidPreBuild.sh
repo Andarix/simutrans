@@ -3,10 +3,13 @@
 if [ -e simutrans ]; then
 	echo Simutrans SVN already downloaded
 else
-	svn checkout https://github.com/aburch/simutrans/trunk simutrans || exit 1
+	svn checkout https://github.com/Andarix/simutrans simutrans || exit 1
 fi
 	cd simutrans || exit 1
 	tools/get_lang_files.sh || exit 1
+  rm simutrans/config/simuconf.tab
+  cp simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
+  rm simutrans/config/simuconf_android.tab
 	cd ..
 
 echo "Adding assets"
