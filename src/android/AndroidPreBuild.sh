@@ -8,8 +8,7 @@ fi
 	cd simutrans || exit 1
 	tools/get_lang_files.sh || exit 1
   rm simutrans/config/simuconf.tab
-  cp simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
-  rm simutrans/config/simuconf_android.tab
+  mv simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
 	cd ..
 
 echo "Adding assets"
