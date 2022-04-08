@@ -7,6 +7,6 @@ set "tablet=emulator-5554"
 cd C:\temp\platform-tools
 adb -s %tablet% shell stop
 adb -s %tablet% shell setprop log.redirect-stdio true
-adb -s %tablet% shell am start com.simutrans-germany/.MainActivity --es args "'-log -debug 3"'
+adb -s %tablet% shell am start com.simutrans.germany.simutrans/.MainActivity --es args "'-log -debug 3"'
 adb -s %tablet% shell start
-adb -s %tablet% logcat com.simutrans:V *:S
+adb -s %tablet% logcat com.simutrans.germany.simutrans:V *:S

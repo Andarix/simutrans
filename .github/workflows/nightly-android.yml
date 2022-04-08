@@ -90,7 +90,7 @@ jobs:
     - name: Setup Android SDL working folder to host Simutrans (current branch)
       working-directory: /android-sdl
       run: |
-        CURRENT_BRANCH=$GITHUB_REF_NAME
+        CURRENT_BRANCH="master"
         echo $CURRENT_BRANCH
         echo $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/$CURRENT_BRANCH
         git clone -b $CURRENT_BRANCH $GITHUB_SERVER_URL/$GITHUB_REPOSITORY project/jni/application/simutrans/simutrans
@@ -123,20 +123,11 @@ jobs:
         chmod 555 ./signBundle.sh
         ./build.sh -b simutrans
 
-    - name: Update binaries of Nightly Release aab
-      uses: svenstaro/upload-release-action@v1-release
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: /android-sdl/project/app/build/outputs/bundle/release/simutrans-nightly.aab
-        asset_name: simutrans-nightly_r${{ env.revision }}.aab
-        tag: Nightly
-        overwrite: true
-
     - name: Update binaries of Nightly Release apk
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: /android-sdl/project/app/build/outputs/bundle/release/simuandroid-multi-nightly.apk
-        asset_name: simuandroid-multi-nightly_r${{ env.revision }}.apk
+        asset_name: simuandroid-multi-nightly_r.apk
         tag: Nightly
         overwrite: true
