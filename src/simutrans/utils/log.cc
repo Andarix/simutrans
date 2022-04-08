@@ -40,7 +40,7 @@
 #ifdef __ANDROID__
 #include <android/log.h>
 #include "cbuffer.h"
-#define  LOG_TAG    "com.simutrans"
+#define  LOG_TAG    "com.simutrans-germany/simutrans"
 #endif
 
 /**
