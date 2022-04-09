@@ -7,9 +7,14 @@ else
 fi
 	cd simutrans || exit 1
 	tools/get_lang_files.sh || exit 1
-  rm simutrans/config/simuconf.tab
-  mv simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
+	rm simutrans/config/simuconf.tab
+	mv simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
 	cd ..
+
+echo "Updating translations"
+cd simutrans || exit 1
+tools/get_lang_files.sh || exit 1
+cd ..
 
 echo "Adding assets"
 
