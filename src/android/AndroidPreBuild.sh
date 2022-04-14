@@ -5,16 +5,12 @@ if [ -e simutrans ]; then
 else
 	svn checkout https://github.com/Andarix/simutrans simutrans || exit 1
 fi
+echo "Updating translations"
 	cd simutrans || exit 1
 	tools/get_lang_files.sh || exit 1
 	rm simutrans/config/simuconf.tab
 	mv simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
 	cd ..
-
-echo "Updating translations"
-cd simutrans || exit 1
-tools/get_lang_files.sh || exit 1
-cd ..
 
 echo "Adding assets"
 
