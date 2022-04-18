@@ -20,7 +20,7 @@ echo FLAGS ?= -DUSE_OWN_PAKINSTALL >> config.$1.txt
 
 cmake -E copy_if_different config.$1.txt config.$1
 
-cp ../../revision.h ./revision.h
+#cp ../../revision.h ./revision.h
 #echo "#define REVISION `svn info --show-item revision`" > revision.h.txt
 #cmake -E copy_if_different revision.h.txt revision.h
 
