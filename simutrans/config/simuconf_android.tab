@@ -20,7 +20,7 @@
 # ATTENTION!
 # will be only used if this file is located in the program directory at config/simuconf.tab!
 #
-singleuser_install = 1
+singleuser_install = 0
 #
 #################################program stuff##################################
 #
