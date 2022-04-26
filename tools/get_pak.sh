@@ -317,10 +317,10 @@ if [ "$#" -gt 0 ] && [ "$1" = '-generate_h' ]; then
 	done
 	echo "SectionGroupEnd\n\n" >> "../pakset.nsh"
 	echo "};" >> "paksetinfo.h"
-	
+
 	cd ..
 	rm -rf tmp
-	
+
 	exit 0
 fi
 
