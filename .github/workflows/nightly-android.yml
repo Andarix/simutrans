@@ -3,7 +3,7 @@ name: Nightly build Android
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_a'
 
 jobs:
   build:
