@@ -77,7 +77,7 @@ bool pak_can_download(const paksetinfo_t *pi)
 #ifdef __ANDROID__
 	// no https for Android for now
 	if (strncmp(pi->url, "https://",8)==0) {
-		return false;
+		return true;
 	}
 #endif
 #endif

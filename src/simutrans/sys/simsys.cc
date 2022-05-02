@@ -400,6 +400,9 @@ char const *dr_query_homedir()
 		if (p) {
 		  //strcpy(buffer, p);
 
+      size_t p_len;
+      p_len = strlen(p);
+
       DIR *pDir;
       bool bExists = false;
 
@@ -410,11 +413,19 @@ char const *dr_query_homedir()
             strcpy(buffer, "/storage/sdcard1/simutrans");
       }
       if (bExists == false) {
-      pDir = opendir ("/mnt/sdcard");
+        pDir = opendir ("/mnt/sdcard");
         if (pDir != NULL){
             bExists = true;
             closedir (pDir);
             strcpy(buffer, "/mnt/sdcard/simutrans");
+        }
+      }
+      if (bExists == false) {
+        pDir = opendir ("/storage/external_sd");
+        if (pDir != NULL){
+            bExists = true;
+            closedir (pDir);
+            strcpy(buffer, "/storage/external_sd/simutrans");
         }
       }
 
