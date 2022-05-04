@@ -2181,7 +2181,7 @@ void karte_t::set_tool_api( tool_t *tool_in, player_t *player, bool& suspended, 
 		return;
 	}
 	// check for password-protected players
-	if(  (!tool_in->is_init_network_safe()  ||  !tool_in->is_work_network_safe())  &&  needs_check  &&
+	if(  (!tool_in->is_init_keeps_game_state()  ||  !tool_in->is_work_keeps_game_state())  &&  needs_check  &&
 		 !(tool_in->get_id()==(TOOL_CHANGE_PLAYER|SIMPLE_TOOL)  ||  tool_in->get_id()==(TOOL_ADD_MESSAGE | GENERAL_TOOL))  &&
 		 player  &&  player->is_locked()  ) {
 		// player is currently password protected => request unlock first
@@ -2189,8 +2189,8 @@ void karte_t::set_tool_api( tool_t *tool_in, player_t *player, bool& suspended, 
 		return;
 	}
 	tool_in->flags |= (event_get_last_control_shift() ^ tool_t::control_invert);
-	if(!env_t::networkmode  ||  tool_in->is_init_network_safe()  ) {
-		if (called_from_script  ||  tool_in->is_init_network_safe()) {
+	if(!env_t::networkmode  ||  tool_in->is_init_keeps_game_state()  ) {
+		if (called_from_script  ||  tool_in->is_init_keeps_game_state()) {
 			local_set_tool(tool_in, player);
 		}
 		else {
@@ -2216,7 +2216,7 @@ void karte_t::local_set_tool( tool_t *tool_in, player_t * player )
 	// now call init
 	bool init_result = tool_in->init(player);
 	// for unsafe tools init() must return false
-	assert(tool_in->is_init_network_safe()  ||  !init_result);
+	assert(tool_in->is_init_keeps_game_state()  ||  !init_result);
 
 	if (player  &&  init_result  &&  !tool_in->is_scripted()) {
 
@@ -5698,7 +5698,7 @@ const char* karte_t::call_work_api(tool_t *tool, player_t *player, koord3d pos, 
 {
 	suspended = false;
 	const char *err = NULL;
-	bool network_safe_tool = tool->is_work_network_safe() || tool->is_work_here_network_safe(player, pos);
+	bool network_safe_tool = tool->is_work_keeps_game_state() || tool->is_work_here_keeps_game_state(player, pos);
 	if(  !env_t::networkmode  ||  network_safe_tool  ) {
 		// do the work
 		tool->flags |= tool_t::WFL_LOCAL;
@@ -5739,6 +5739,12 @@ const char* karte_t::call_work_api(tool_t *tool, player_t *player, koord3d pos, 
 
 
 static slist_tpl<network_world_command_t*> command_queue;
+static koord3d next_deferred_move_to = koord3d::invalid;
+
+void karte_t::set_deferred_move_to(koord3d k)
+{
+	next_deferred_move_to = k;
+}
 
 void karte_t::command_queue_append(network_world_command_t* nwc) const
 {
@@ -6053,6 +6059,16 @@ bool karte_t::interactive(uint32 quit_month)
 		// events are now checked during each screen update for quicker feedback on scrolling etc.
 		if (env_t::quit_simutrans){
 			break;
+		}
+
+		if (next_deferred_move_to != koord3d::invalid) {
+			// some tool movement is expensive (like route search) and must be done outsied sync_step
+			// to avoid calling a the non-reentrant route search twice
+			const char* err = scenario->is_work_allowed_here(active_player, selected_tool[active_player_nr]->get_id(), selected_tool[active_player_nr]->get_waytype(), next_deferred_move_to);
+			if (err == NULL) {
+				selected_tool[active_player_nr]->move(active_player, true, next_deferred_move_to);
+			}
+			next_deferred_move_to = koord3d::invalid;
 		}
 
 		if(  env_t::networkmode  ) {
