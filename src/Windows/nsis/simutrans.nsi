@@ -12,6 +12,12 @@
 ; untgz
 ; ShellLink
 
+!define VERSION "0.123.0.1"
+
+VIProductVersion "${VERSION}"
+VIFileVersion "${VERSION}"
+VIAddVersionKey "FileVersion" "${VERSION}"
+
 Unicode true
 
 ; Request application privileges for Windows Vista
@@ -205,7 +211,7 @@ test_for_pak:
   IntOp $R0 $R0 & ${SF_SELECTED}
   IntCmp $R0 ${SF_SELECTED} show_not
   ; not pak selected!
-  MessageBox MB_OK|MB_ICONSTOP "At least on pak set must be selected!"
+  MessageBox MB_OK|MB_ICONSTOP "At least 1 pak set must be selected!" /SD IDOK
 show_not:
 FunctionEnd
 

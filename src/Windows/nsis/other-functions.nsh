@@ -57,6 +57,7 @@ PageExEnd
 
 ; If not installed to program dir, ask for a portable installation
 Function CheckForPortableInstall
+  StrCpy $PAKDIR $INSTDIR
   ; defaults in progdir, and ending with simutrans
   StrCpy $installinsimutransfolder "1"
   StrCpy $multiuserinstall "1"
@@ -83,7 +84,7 @@ PortableSpaceSkip:
 
 PortableUnknown:
   ; ask whether this is a portable installation
-  MessageBox MB_YESNO|MB_ICONINFORMATION "Should this be a portable installation?" IDYES YesPortable
+  MessageBox MB_YESNO|MB_ICONINFORMATION "Should this be a portable installation?" /SD IDNO IDYES YesPortable
   StrCpy $multiuserinstall "1"
 YesPortable:
   Goto AllSetPortable
@@ -339,7 +340,7 @@ Function .oninit
  System::Call 'kernel32::CreateMutexA(i 0, i 0, t "SimutransMutex") i .r1 ?e'
  Pop $R0
  StrCmp $R0 0 +3
-   MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
+   MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running." /SD IDOK
    Abort
 
   ; now find out, whether there is an old installation
@@ -385,11 +386,11 @@ Function ConnectInternet
      IfErrors noie3
      Pop $R0
      StrCmp $R0 "online" connected
-       MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet."
+       MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet." /SD IDOK
        Quit ;This will quit the installer. You might want to add your own error handling.
      noie3:
      ; IE3 not installed
-     MessageBox MB_OK|MB_ICONINFORMATION "Please connect to the internet now."
+     MessageBox MB_OK|MB_ICONINFORMATION "Please connect to the internet now." /SD IDOK
      connected:
    Pop $R0
 FunctionEnd
@@ -437,7 +438,7 @@ DownloadInstallZipDo:
   inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
   Pop $0
   StrCmp $0 "OK" +3
-     MessageBox MB_OK "Download of $archievename failed: $R0"
+     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
      Quit
 
   ; remove all old files before!
@@ -449,7 +450,7 @@ DownloadInstallZipDo:
     nsisunz::Unzip "$TEMP\$archievename" "$TEMP"
   Pop $R0 ;Get the return value
   StrCmp $R0 "success" +4
-    MessageBox MB_OK|MB_ICONINFORMATION "$R0"
+    MessageBox MB_OK|MB_ICONINFORMATION "$R0" /SD IDOK
     RMdir /r "$TEMP\simutrans"
     Quit
 
@@ -476,7 +477,8 @@ Function DownloadInstallNoRemoveZip
   inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
   Pop $0
   StrCmp $0 "OK" +3
-     MessageBox MB_OK "Download of $archievename failed: $R0"
+     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+     SetErrorLevel 3
      Quit
 
   ; we need the magic with temporary copy only if the folder does not end with simutrans ...
@@ -486,8 +488,9 @@ Function DownloadInstallNoRemoveZip
     nsisunz::Unzip "$TEMP\$archievename" "$TEMP"
   Pop $R0 ;Get the return value
   StrCmp $R0 "success" +4
-    MessageBox MB_OK|MB_ICONINFORMATION "$R0"
+    MessageBox MB_OK|MB_ICONINFORMATION "$R0" /SD IDOK
     RMdir /r "$TEMP\simutrans"
+    SetErrorLevel 5
     Quit
 
   Delete "$Temp\$archievename"
@@ -513,15 +516,17 @@ Function DownloadInstallAddonZip
 ;     Quit
   inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
   Pop $0
-  StrCmp $0 "OK" +3
-     MessageBox MB_OK "Download of $archievename failed: $R0"
+  StrCmp $0 "OK" +4
+     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+     SetErrorLevel 3
      Quit
 
   nsisunz::Unzip "$TEMP\$archievename" "$DOCUMENTS"
   Pop $R0 ;Get the return value
-  StrCmp $R0 "success" +4
+  StrCmp $R0 "success" +5
     DetailPrint "$0" ;print error message to log
     Delete "$TEMP\$archievename"
+    SetErrorLevel 5
     Quit
 
   Delete "$Temp\$archievename"
@@ -543,7 +548,8 @@ Function DownloadInstallAddonZipPortable
   inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
   Pop $0
   StrCmp $0 "OK" +3
-     MessageBox MB_OK "Download of $archievename failed: $R0"
+     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+     SetErrorLevel 3
      Quit
 
   nsisunz::Unzip "$TEMP\$archievename" "$OUTDIR\.."
@@ -551,6 +557,7 @@ Function DownloadInstallAddonZipPortable
   StrCmp $R0 "success" +4
     DetailPrint "$0" ;print error message to log
     Delete "$TEMP\$archievename"
+    SetErrorLevel 5
     Quit
 
   Delete "$Temp\$archievename"
@@ -577,7 +584,8 @@ DownloadInstallZipWithoutSimutransDo:
   inetc::get /WEAKSECURITY $downloadlink "$Temp\$archievename" /END
   POP $0
   StrCmp $0 "OK" +3
-     MessageBox MB_OK "Download of $archievename failed: $R0"
+     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+     SetErrorLevel 3
      Quit
 
   ; remove all old files before!
@@ -588,6 +596,7 @@ DownloadInstallZipWithoutSimutransDo:
   StrCmp $R0 "success" +4
     Delete "$Temp\$archievename"
     DetailPrint "$0" ;print error message to log
+    SetErrorLevel 5
     Quit
 
   Delete "$Temp\$archievename"
@@ -612,7 +621,8 @@ DownloadInstallCabWithoutSimutransDo:
   Pop $R0 ;Get the return value
   StrCmp $R0 "success" +4
     DetailPrint "$R0" ;print error message to log
-     MessageBox MB_OK "Download of $archievename failed: $R0"
+     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+     SetErrorLevel 3
      Quit
 
   ; not supported with Unicode
@@ -630,6 +640,7 @@ DownloadInstallCabWithoutSimutransDo:
     DetailPrint "$0" ;print error message to log
     RMdir /r "$TEMP\simutrans"
     Delete "$Temp\$archievename"
+    SetErrorLevel 5
     Quit
 
   Delete "$Temp\$archievename"
@@ -645,7 +656,8 @@ Function DownloadInstallTgzWithoutSimutrans
   NSISdl::download $downloadlink "$Temp\$archievename"
   Pop $R0 ;Get the return value
   StrCmp $R0 "success" +3
-     MessageBox MB_OK "Download of $archievename failed: $R0"
+     MessageBox MB_OK "Download of $archievename failed: $R0" /SD IDOK
+     SetErrorLevel 3
      Quit
 
   CreateDirectory "$OUTDIR"
@@ -654,7 +666,8 @@ Function DownloadInstallTgzWithoutSimutrans
   untgz::extract -d "$OUTDIR" "$TEMP\$archievename"
   StrCmp $R0 "success" +4
     Delete "$Temp\$archievename"
-    MessageBox MB_OK "Extraction of $archievename failed: $R0"
+    MessageBox MB_OK "Extraction of $archievename failed: $R0" /SD IDOK
+    SetErrorLevel 5
     Quit
 
   Delete "$Temp\$archievename"
