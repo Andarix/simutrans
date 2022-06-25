@@ -3,7 +3,7 @@
 #define OBSOLETE_FROM (10)
 paksetinfo_t pakinfo[PAKSET_COUNT] = {
 	{ "http://downloads.sourceforge.net/project/simutrans/pak64/123-0/simupak64-123-0.zip", "pak", "pak64 123 r2102", 15634},
-	{ "http://simutrans-germany.com/pak.german/pak64.german_0-123-0-0-2_full.zip", "pak64.german", "pak64.german 0.123.0.0.4", 25558},
+	{ "http://simutrans-germany.com/pak.german/pak64.german_0-123-0-0-5_full.zip", "pak64.german", "pak64.german 0.123.0.0.5", 25558},
 	{ "http://downloads.sourceforge.net/project/simutrans/pak64.japan/123-0/simupak64.japan-123-0.zip", "pak.japan", "pak64.japan 123 r2101", 10072},
 	{ "http://github.com/wa-st/pak-nippon/releases/download/v0.5.0/pak.nippon-v0.5.0.zip", "pak.nippon", "pak.nippon v0.5.0", 49229},
 	{ "https://github.com/Varkalandar/pak48.Excentrique/releases/download/v0.19_RC3/pak48.excentrique_v019rc3.zip", "pak48.Excentrique", "pak48.Excentrique v0.19", 1980},
