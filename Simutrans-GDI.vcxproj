@@ -153,7 +153,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='git_actions'">
     <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ZSTD=1;USE_FREETYPE=1;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=0;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">libs/zstd-1.4.4/lib;libs/bzip2-1.0.6;libs/zlib-1.2.11;libs/freetype-2.10.1/include;libs/libpthreadVC3;libs/lpng1637;libs/miniupnpc-2.2.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">true</MultiProcessorCompilation>
       <EnableParallelCodeGeneration Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">false</EnableParallelCodeGeneration>
@@ -241,7 +241,7 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;miniupnpc.lib;Xaudio2.lib;iphlpapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib;ws2_32.lib;Winmm.lib;Imm32.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LargeAddressAware>
