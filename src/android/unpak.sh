@@ -14,5 +14,3 @@ else
 	rm -rf simutrans
 fi
 rm -rf "$pakzippath"
-
-
