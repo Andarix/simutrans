@@ -73,7 +73,7 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir>$(SolutionDir)</OutDir>
     <IntDir>$(SolutionDir)build\GDI\$(Configuration)\</IntDir>
-    <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
+    <IncludePath>$(SimIncludePath);$(SolutionDir)\libs\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
@@ -165,6 +165,7 @@
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">stdcpp17</LanguageStandard>
       <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">stdc17</LanguageStandard_C>
+      <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'" />
     </ClCompile>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='git_actions|Win32'">libs/libz-static.lib;libs/libbz2.lib;libs/libpthreadVC3.lib;libs/freetype.lib;libs/libzstd_static.lib;libs/libpng16.lib;Xaudio2.lib;libs/miniupnpc.lib;ws2_32.lib;Winmm.lib;Imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
