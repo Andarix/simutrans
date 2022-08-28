@@ -59,14 +59,14 @@ void searchfolder_t::clear_list()
 }
 
 
-int searchfolder_t::search(const std::string &filepath, const std::string &extension, const bool only_directories, const bool prepend_path, const int max_depth )
+int searchfolder_t::search(const std::string &filepath, const std::string &extension, const search_flags_t search_flags, const int max_depth )
 {
 	clear_list();
-	return prepare_search(filepath, extension, only_directories, prepend_path, max_depth);
+	return prepare_search(filepath, extension, search_flags, max_depth);
 }
 
 
-int searchfolder_t::prepare_search(const std::string &filepath, const std::string &extension, const bool only_directories, const bool prepend_path, const int max_depth )
+int searchfolder_t::prepare_search(const std::string &filepath, const std::string &extension, const search_flags_t search_flags, const int max_depth )
 {
 	std::string path(filepath);
 	std::string name;
@@ -108,14 +108,17 @@ int searchfolder_t::prepare_search(const std::string &filepath, const std::strin
 			path = path.substr(0, slash + 1);
 		}
 	}
-	search_path(path, name, ext, only_directories, prepend_path, max_depth);
+	search_path(path, name, ext, search_flags, max_depth);
 
 	return files.get_count();
 }
 
-void searchfolder_t::search_path(const std::string path, const std::string name, const std::string ext, const bool only_directories, const bool prepend_path, const int max_depth ){
-
+void searchfolder_t::search_path(const std::string path, const std::string name, const std::string ext, const search_flags_t search_flags, const int max_depth )
+{
 	std::string lookfor;
+	const bool only_directories = (search_flags & SF_ONLYDIRS) != 0;
+	const bool prepend_path     = (search_flags & SF_PREPEND_PATH) != 0;
+
 #ifdef _WIN32
 	lookfor = path + name + ext;
 
@@ -139,6 +142,10 @@ void searchfolder_t::search_path(const std::string path, const std::string name,
 		char *const entry_name = new char[entry_name_size];
 		WideCharToMultiByte( CP_UTF8, 0, entry.name, -1, entry_name, entry_name_size, NULL, NULL );
 		if( entry_name[0]!='.' || (entry_name[1]!='.' && entry_name[1]!=0) ) {
+			if ((entry.attrib & _A_SUBDIR) && (search_flags&SF_NOADDONS) && !STRICMP(entry_name, "addons")) {
+				continue;
+			}
+
 			if(  filename_matches_pattern(entry_name, lookfor.c_str()) ) {
 				if(only_directories && ((entry.attrib & _A_SUBDIR)==0)) {
 					delete[] entry_name;
@@ -147,7 +154,7 @@ void searchfolder_t::search_path(const std::string path, const std::string name,
 				add_entry(path,entry_name,prepend_path);
 			}
 			if( ( (entry.attrib & _A_SUBDIR) ) && ( max_depth > 0 ) ) {
-				search_path(path + entry_name + '/', name, ext, only_directories, prepend_path, max_depth - 1);
+				search_path(path + entry_name + '/', name, ext, search_flags, max_depth - 1);
 			}
 		}
 		delete[] entry_name;
@@ -162,7 +169,11 @@ void searchfolder_t::search_path(const std::string path, const std::string name,
 
 		while (dirent const* const entry = readdir(dir)) {
 			if(entry->d_name[0]!='.' || (entry->d_name[1]!='.' && entry->d_name[1]!=0)) {
-				if ( only_directories) {
+				if (entry->d_type == DT_DIR && (search_flags&SF_NOADDONS) && !STRICMP(entry->d_name, "addons")) {
+					continue;
+				}
+
+				if (only_directories) {
 					if( entry->d_type == DT_DIR ) {
 						add_entry(path, entry->d_name, prepend_path);
 					}
@@ -170,7 +181,7 @@ void searchfolder_t::search_path(const std::string path, const std::string name,
 					add_entry(path, entry->d_name, prepend_path);
 				}
 				if( entry->d_type == DT_DIR && max_depth > 0) {
-					search_path(path + entry->d_name + '/', name, ext, only_directories, prepend_path, max_depth - 1);
+					search_path(path + entry->d_name + '/', name, ext, search_flags, max_depth - 1);
 				}
 
 			}

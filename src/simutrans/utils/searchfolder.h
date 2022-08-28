@@ -14,7 +14,17 @@
 /**
  * Searches a disk folder for files matching certain restrictions.
  */
-class searchfolder_t {
+class searchfolder_t
+{
+public:
+	enum search_flags_t : uint8
+	{
+		SF_NONE         = 0,
+		SF_ONLYDIRS     = 1 << 0, ///< Extra restriction, will only consider directory entries. If not specified, will search both file and directory entries.
+		SF_PREPEND_PATH = 1 << 1, ///< Will force prepending the base path to the output on each entry.
+		SF_NOADDONS     = 1 << 2  ///< If set, subdrectories named "addons" will not be searched.
+	};
+
 public:
 	~searchfolder_t();
 
@@ -27,7 +37,7 @@ public:
 	 * @param max_depth Maximum depth of recursive search (0=search only the directory given by @p filepath).
 	 * @returns Number of files that matched the search parameters.
 	 */
-	int search(const std::string &filepath, const std::string &extension, const bool only_directories = false, const bool prepend_path = true, const int max_depth = 0);
+	int search(const std::string &filepath, const std::string &extension, search_flags_t flags = SF_PREPEND_PATH, const int max_depth = 0);
 
 	/**
 	 * Appends the extension to the file name if it's not a directory
@@ -58,7 +68,7 @@ private:
 	 * @param prepend_path Will force prepending the base path to the output on each entry.
 	 * @param max_depth Maximum depth of recursive search.
 	 */
-	int prepare_search(const std::string &filepath, const std::string &extension, const bool only_directories = false, const bool prepend_path = true, const int max_depth = 0);
+	int prepare_search(const std::string &filepath, const std::string &extension, search_flags_t search_flags, const int max_depth = 0);
 
 	/**
 	 * Real implementation of the search. It will call itself recursively to search in subdirectories when a max_depth is given.
@@ -69,7 +79,7 @@ private:
 	 * @param prepend_path Will force prepending the base path to the output on each entry.
 	 * @param max_depth Maximum depth of recursive search.
 	 */
-	void search_path(const std::string path, const std::string name, const std::string ext, const bool only_directories = false, const bool prepend_path = true, const int max_depth = 0 );
+	void search_path(const std::string path, const std::string name, const std::string ext, search_flags_t search_flags, const int max_depth = 0 );
 
 	/**
 	 * We store the result of the search on this list
@@ -95,5 +105,9 @@ private:
 	 */
 	void clear_list();
 };
+
+
+ENUM_BITSET(searchfolder_t::search_flags_t);
+
 
 #endif
