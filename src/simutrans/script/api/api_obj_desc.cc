@@ -195,7 +195,7 @@ bool can_be_last(const vehicle_desc_t *desc)
 
 bool is_coupling_allowed(const vehicle_desc_t *desc1, const vehicle_desc_t *desc2)
 {
-	return desc1->can_lead(desc2)  &&  desc2->can_follow(desc1);
+	return desc1  &&  desc2  &&  desc1->can_lead(desc2)  &&  desc2->can_follow(desc1);
 }
 
 const vector_tpl<const vehicle_desc_t*>& get_predecessors(const vehicle_desc_t *desc)
@@ -587,7 +587,7 @@ void export_goods_desc(HSQUIRRELVM vm)
 	 * Entries are of type @ref building_desc_x.
 	 * @param type building type from @ref building_desc_x::building_type
 	 * @param wt waytype (can be wt_all to ignore waytype of desc)
-	 * @param freight station should accept this freight (if null then return all buildings)
+	 * @param freight station should accept this freight (if equal to {}, i.e., empty table, then return all buildings)
 	 * @returns the list
 	 */
 	STATIC register_method(vm, &get_available_stations, "get_available_stations", false, true);
