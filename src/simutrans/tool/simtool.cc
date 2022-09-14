@@ -1051,6 +1051,12 @@ const char *tool_restoreslope_t::check_pos( player_t *, koord3d pos)
 	return NULL;
 }
 
+void tool_setslope_t::rdwr_custom_data(memory_rw_t *packet)
+{
+	tool_t::rdwr_custom_data(packet);
+	packet->rdwr_bool(old_slope_compatibility_mode);
+}
+
 const char *tool_setslope_t::tool_set_slope_work( player_t *player, koord3d pos, int new_slope, bool old_slope_compatibility, bool just_check )
 {
 	if(  !ground_desc_t::double_grounds  &&  old_slope_compatibility  ) {
@@ -1792,7 +1798,9 @@ const char *tool_change_city_size_t::work( player_t *, koord3d pos )
 {
 	stadt_t *city = welt->find_nearest_city(pos.get_2d());
 	if(city!=NULL) {
-		city->change_size( atoi(default_param) );
+		const int delta = std::atoi(default_param);
+		city->change_size( delta );
+
 		// update the links from other cities to this city
 		for(stadt_t* const c : welt->get_cities()) {
 			c->remove_target_city(city);
@@ -2164,6 +2172,26 @@ char const* tool_plant_tree_t::move(player_t* const player, uint16 const b, koor
 	else {
 		return work( player, pos );
 	}
+}
+
+
+bool tool_plant_tree_t::init(player_t*)
+{
+	if (!tree_builder_t::has_trees()) {
+		return false;
+	}
+	else if (default_param == NULL || default_param[0] == 0) {
+		return true;
+	}
+
+	char ignore_cl,random_age,dummy;
+	if (std::sscanf(default_param, "%c%c,%c", &ignore_cl, &random_age, &dummy) != 3) {
+		return false;
+	}
+
+	return
+		(ignore_cl == '0' || ignore_cl == '1') &&
+		(random_age == '0' || random_age == '1');
 }
 
 

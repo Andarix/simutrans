@@ -9,6 +9,7 @@
 //
 
 include("tests/test_building")
+include("tests/test_city")
 include("tests/test_climate")
 include("tests/test_depot")
 include("tests/test_dir")
@@ -36,10 +37,20 @@ include("tests/test_wayobj")
 all_tests <- [
 	test_building_build_house,
 	test_building_build_multi_tile_sloped,
+	test_building_buy_house_invalid_param,
+	test_building_buy_house_from_public_player,
+	test_building_buy_house_attraction,
 	test_building_rotate_house,
 	test_building_rotate_harbour,
 	test_building_rotate_station,
 	test_building_rotate_factory,
+	test_city_add_invalid,
+	test_city_add_cannot_afford,
+	test_city_add_by_public_player,
+	test_city_add_on_existing_townhall,
+	test_city_add_near_map_border,
+	test_city_change_size_invalid_params,
+	test_city_change_size_to_minimum
 	test_climate_invalid,
 	test_climate_flat,
 	test_climate_cliff,
@@ -88,6 +99,7 @@ all_tests <- [
 	test_halt_make_public_single,
 	test_halt_make_public_multi_tile,
 	test_halt_make_public_underground,
+	test_halt_move_stop_invalid_param,
 	test_headquarters_build_flat,
 	test_label,
 	test_player_cash,
@@ -96,10 +108,12 @@ all_tests <- [
 	test_player_name,
 	test_player_lines,
 	test_powerline_connect,
-	test_powerline_bridge,
+	test_powerline_build_below_powerbridge,
+	test_powerline_build_powerbridge_above_powerline,
 	test_powerline_build_transformer,
 	test_powerline_build_over_transformer,
 	test_powerline_build_transformer_multiple,
+	test_powerline_remove_powerbridge,
 	test_powerline_ways,
 	test_reservation_clear_ground,
 	test_reservation_clear_road,
@@ -130,7 +144,16 @@ all_tests <- [
 	test_terraform_raise_lower_land_at_water_edge,
 	test_terraform_raise_lower_land_below_way,
 	test_terraform_raise_lower_water_level,
-	test_trees_plant_single,
+	test_trees_plant_single_invalid_pos,
+	test_trees_plant_single_invalid_param,
+	test_trees_plant_single_null_param,
+	test_trees_plant_single_empty_param,
+	test_trees_plant_single_invalid_desc,
+	test_trees_plant_single_when_disabled,
+	test_trees_plant_single_random_age,
+	test_trees_plant_single_ignore_climate,
+	test_trees_plant_single_max_per_square,
+	test_trees_plant_single_occupied,
 	test_trees_plant_forest,
 	test_way_bridge_build_ground,
 	test_way_bridge_build_at_slope,
