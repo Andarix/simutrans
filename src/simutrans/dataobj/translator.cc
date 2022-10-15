@@ -158,12 +158,14 @@ static char *recode(const char *src, bool translate_from_utf, bool translate_to_
 				}
 				else if(  translate_from_utf  ) {
 					// make latin from UTF8 (ignore overflows!)
+					const utf8 *p = reinterpret_cast<const utf8 *>(src);
 					if(  !is_latin2  ) {
-						*dst++ = c = (uint8)utf8_decoder_t::decode((utf8 const *&)src);
+						*dst++ = c = (uint8)utf8_decoder_t::decode(p);
 					}
 					else {
-						*dst++ = c = unicode_to_latin2(utf8_decoder_t::decode((utf8 const *&)src));
+						*dst++ = c = unicode_to_latin2(utf8_decoder_t::decode(p));
 					}
+					src = reinterpret_cast<const char *>(p);
 				}
 			}
 			else if(c>=13) {
@@ -759,7 +761,7 @@ const char* translator::get_month_date( uint16 month, uint16 day )
 
 const char* translator::get_day_date(uint16 day)
 {
-	char const* const day_sym = strcmp("ORDINAL_DAR_SYMBOL", translate("ORDINAL_DAR_SYMBOL")) ? translate("ORDINAL_DAR_SYMBOL") : "th ";
+	char const* const day_sym = strcmp("ORDINAL_DAY_SYMBOL", translate("ORDINAL_DAY_SYMBOL")) ? translate("ORDINAL_DAY_SYMBOL") : "th ";
 	static char date[256];
 	switch( env_t::show_month ) {
 	case env_t::DATE_FMT_GERMAN:

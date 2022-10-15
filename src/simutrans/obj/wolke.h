@@ -55,7 +55,7 @@ public:
 	static void sync_handler(uint32 delta_t) { fl.sync_step(delta_t); }
 
 	const char* get_name() const OVERRIDE { return "Wolke"; }
-	typ get_typ() const OVERRIDE { return sync_wolke; }
+	typ get_typ() const OVERRIDE { return cloud; }
 
 	image_id get_image() const OVERRIDE { return IMG_EMPTY; }
 
@@ -84,7 +84,7 @@ class async_wolke_t : public obj_t
 {
 public:
 	async_wolke_t(loadsave_t *file);
-	typ get_typ() const OVERRIDE { return async_wolke; }
+	typ get_typ() const OVERRIDE { return old_async_wolke; }
 	image_id get_image() const OVERRIDE { return IMG_EMPTY; }
 };
 
@@ -92,7 +92,7 @@ class raucher_t : public obj_t
 {
 public:
 	raucher_t(loadsave_t *file);
-	typ get_typ() const OVERRIDE { return raucher; }
+	typ get_typ() const OVERRIDE { return old_raucher; }
 	image_id get_image() const OVERRIDE { return IMG_EMPTY; }
 };
 

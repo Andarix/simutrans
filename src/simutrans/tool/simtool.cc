@@ -46,6 +46,7 @@
 #include "../gui/minimap.h" // to update map after construction of new industry
 #include "../gui/depot_frame.h"
 #include "../gui/player_frame.h"
+#include "../gui/scenario_info.h"
 #include "../gui/schedule_list.h"
 #include "../gui/signal_spacing.h"
 #include "../gui/city_info.h"
@@ -2215,7 +2216,7 @@ const char *tool_plant_tree_t::work( player_t *player, koord3d pos )
 		const tree_desc_t *desc = NULL;
 		bool check_climates = true;
 		bool random_age = true;
-		if(default_param==NULL  ||  strlen(default_param)==0  ) {
+		if(default_param==NULL  ||  strlen(default_param)<5  ) {
 			// just a random tree to the limit
 			if( tree_builder_t::plant_tree_on_coordinate( k, welt->get_settings().get_max_no_of_trees_on_square(), 1 )  ) {
 				player_t::book_construction_costs( player, cost, k, ignore_wt );
@@ -2258,6 +2259,22 @@ char const* tool_plant_groundobj_t::move(player_t* const player, uint16 const b,
 }
 
 
+bool tool_plant_groundobj_t::init(player_t *)
+{
+	if (groundobj_t::get_count() == 0) {
+		return false;
+	}
+	else if (strempty(default_param)) {
+		return true;
+	}
+	else if (strlen(default_param) < 4) {
+		return false;
+	}
+
+	return default_param[0] == '0' || default_param[0] == '1';
+}
+
+
 const char *tool_plant_groundobj_t::work( player_t *player, koord3d pos )
 {
 	koord k(pos.get_2d());
@@ -2267,7 +2284,8 @@ const char *tool_plant_groundobj_t::work( player_t *player, koord3d pos )
 
 		const groundobj_desc_t *desc = NULL;
 		bool check_climates = true;
-		if(default_param==NULL  ||  strlen(default_param)==0) {
+
+		if (strempty(default_param)) {
 			desc = groundobj_t::random_groundobj_for_climate( welt->get_climate( k ) );
 			if (desc == NULL) {
 				return NULL;
@@ -2279,7 +2297,7 @@ const char *tool_plant_groundobj_t::work( player_t *player, koord3d pos )
 		}
 
 		// disable placing groundobj on slopes unless they have extra phases (=moving or for slopes)
-		if( !(gr->get_grund_hang() == sint8(0))  &&  desc->get_phases() == 2 ) {
+		if( gr->get_grund_hang() != slope_t::flat  &&  desc->get_phases() == 2 ) {
 			return NULL;
 		}
 
@@ -4611,28 +4629,37 @@ DBG_MESSAGE("tool_station_aux()", "building %s on square %d,%d for waytype %x", 
 	return NULL;
 }
 
+
 // gives the description and sets the rotation value
 const building_desc_t *tool_build_station_t::get_desc( sint8 &rotation ) const
 {
+	if (strempty(default_param)) {
+		return NULL;
+	}
+
 	char *building = strdup( default_param );
 	const building_tile_desc_t *tdsc = NULL;
+
 	if(  building  ) {
 		char *p = strrchr( building, ',' );
 		if(  p  ) {
 			*p++ = 0;
-			rotation = atoi( p );
+			if (std::sscanf(p, "%hhd", &rotation) != 1 || rotation < -1 || rotation > 15) {
+				free(building);
+				return NULL;
+			}
 		}
 		else {
 			rotation = -1;
 		}
-		tdsc = hausbauer_t::find_tile(building,0);
+
+		tdsc = hausbauer_t::find_tile(building, 0);
 		free( building );
 	}
-	if(  tdsc==NULL  ) {
-		return NULL;
-	}
-	return tdsc->get_desc();
+
+	return tdsc ? tdsc->get_desc() : NULL;
 }
+
 
 bool tool_build_station_t::init( player_t * )
 {
@@ -7040,8 +7067,15 @@ bool tool_rotate90_t::init( player_t * )
 
 bool tool_quit_t::init( player_t * )
 {
-	destroy_all_win( true );
-	welt->stop( true );
+	if (!strempty(default_param)) {
+		// new world
+		destroy_all_win(true);
+		welt->stop(false);
+	}
+	else {
+		// totally quit
+		welt->stop(true);
+	}
 	return false;
 }
 
@@ -7219,6 +7253,9 @@ bool tool_change_convoi_t::init( player_t *player )
 				else {
 					// could not read schedule, do not assign
 					delete schedule;
+					// but clear editing flag
+					cnv->get_schedule()->finish_editing();
+					cnv->set_schedule( cnv->get_schedule() );
 				}
 			}
 			break;
@@ -8075,6 +8112,46 @@ bool tool_recolour_t::init(player_t *)
 	dbg->error( "wkz_recolour_t::init", "could not perform (%s)", default_param );
 	return false;
 }
+
+
+bool tool_load_scenario_t::init(player_t*)
+{
+	if (strempty(default_param)  ||  strlen(default_param)<3  ||  default_param[1]!=','  ) {
+		// no valid scenario parameter
+		return false;
+	}
+
+	bool easy_server = default_param[0] == '1';
+
+	// since loading a scenario may not init the world
+	welt->switch_server(easy_server, true);
+
+	scenario_t* scn = new scenario_t(welt);
+
+	const char* err = scn->init(str_get_basename(default_param+2).c_str(), str_get_filename(default_param + 2,true).c_str(), welt);
+	if (err == NULL) {
+		// start the game
+		welt->set_pause(false);
+		// open scenario info window
+		destroy_win(magic_scenario_info);
+		create_win(new scenario_info_t(), w_info, magic_scenario_info);
+		tool_t::update_toolbars();
+		if (env_t::server) {
+			welt->announce_server(karte_t::SERVER_ANNOUNCE_HELLO);
+		}
+	}
+	else {
+		if (env_t::server) {
+			welt->switch_server(false, true);
+		}
+		create_win(new news_img(err), w_info, magic_none);
+		delete scn;
+	}
+
+	return true;
+}
+
+
 
 /*
  * Add a message to the message queue

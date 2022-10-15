@@ -139,7 +139,8 @@ public:
 	char const* get_tooltip(player_t const*) const OVERRIDE { return tooltip_with_price("Built artifical slopes", welt->get_settings().cst_set_slope); }
 	bool is_init_keeps_game_state() const OVERRIDE { return true; }
 	char const* check_pos(player_t*, koord3d) OVERRIDE;
-	char const* work(player_t* const player, koord3d const k) OVERRIDE { return tool_set_slope_work(player, k, atoi(default_param), old_slope_compatibility_mode); }
+	char const* work(player_t* const player, koord3d const k) OVERRIDE { return tool_set_slope_work(player, k, default_param ? atoi(default_param) : 0, old_slope_compatibility_mode); }
+	bool init(player_t*) OVERRIDE { return default_param != NULL; }
 };
 
 class tool_restoreslope_t : public tool_t {
@@ -252,7 +253,7 @@ public:
 	tool_plant_groundobj_t() : kartenboden_tool_t(TOOL_PLANT_GROUNDOBJ | GENERAL_TOOL) {}
 	image_id get_icon(player_t *) const OVERRIDE { return groundobj_t::get_count() > 0 ? icon : IMG_EMPTY; }
 	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate( "Plant groundobj" ); }
-	bool init(player_t*) OVERRIDE { return groundobj_t::get_count() > 0; }
+	bool init(player_t*) OVERRIDE;
 	char const* move(player_t* const player, uint16 const b, koord3d const k) OVERRIDE;
 	bool move_has_effects() const OVERRIDE { return true; }
 	char const* work(player_t*, koord3d) OVERRIDE;
@@ -940,6 +941,17 @@ public:
 	bool is_work_keeps_game_state() const OVERRIDE { return true; }
 };
 
+class tool_load_scenario_t : public tool_t {
+	// internal tool to start a scenario
+	// command i.filename
+	// if i==1, start as easyserver
+public:
+	tool_load_scenario_t() : tool_t(TOOL_LOAD_SCENARIO | SIMPLE_TOOL) {}
+	bool init(player_t*) OVERRIDE;
+	bool is_init_keeps_game_state() const OVERRIDE { return false; }
+	bool is_work_keeps_game_state() const OVERRIDE { return false; }
+};
+
 class tool_rotate90_t : public tool_t {
 public:
 	tool_rotate90_t() : tool_t(TOOL_ROTATE90 | SIMPLE_TOOL) {}
@@ -952,12 +964,13 @@ public:
 };
 
 class tool_quit_t : public tool_t {
+	// default_parameter not empty: start new game
 public:
-	tool_quit_t() : tool_t(TOOL_QUIT | SIMPLE_TOOL) {}
+	tool_quit_t() : tool_t(TOOL_QUIT | SIMPLE_TOOL) { flags = WFL_LOCAL | WFL_NO_CHK; }
 	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("Beenden"); }
 	bool init( player_t * ) OVERRIDE;
-	bool is_init_keeps_game_state() const OVERRIDE { return true; }
-	bool is_work_keeps_game_state() const OVERRIDE { return true; }
+	bool is_init_keeps_game_state() const OVERRIDE { return false; }
+	bool is_work_keeps_game_state() const OVERRIDE { return false; }
 };
 
 // step size by default_param
