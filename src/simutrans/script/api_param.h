@@ -16,6 +16,7 @@
 #include "../utils/cbuffer.h"
 
 class baum_t;
+class bruecke_t;
 class convoi_t;
 class fabrik_t;
 class factory_supplier_desc_t;
@@ -34,6 +35,7 @@ class loadsave_t;
 struct schedule_entry_t;
 struct my_ribi_t;
 struct my_slope_t;
+struct my_koord3d;
 class planquadrat_t;
 class plainstring;
 class scenario_t;
@@ -42,6 +44,7 @@ class settings_t;
 class simline_t;
 class player_t;
 class stadt_t;
+class tunnel_t;
 class tool_t;
 class ware_production_t;
 class weg_t;
@@ -381,6 +384,7 @@ namespace script_api {
 
 	declare_specialized_param(koord, "t|x|y", "coord");
 	declare_specialized_param(koord3d, "t|x|y", "coord3d");
+	declare_specialized_param(my_koord3d, "t|x|y", "coord3d");
 
 	declare_specialized_param(convoi_t*, "t|x|y", "convoy_x");
 	declare_specialized_param(fabrik_t*, "t|x|y", "factory_x");
@@ -416,6 +420,8 @@ namespace script_api {
 	declare_specialized_param(weg_t*, "t|x|y", "way_x");
 	declare_specialized_param(field_t*, "t|x|y", "field_x");
 	declare_specialized_param(wayobj_t*, "t|x|y", "wayobj_x");
+	declare_specialized_param(bruecke_t*, "t|x|y", "bridge_x");
+	declare_specialized_param(tunnel_t*, "t|x|y", "tunnel_x");
 
 	/**
 	 * Returns the player associated to the script

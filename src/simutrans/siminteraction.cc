@@ -369,10 +369,6 @@ void interaction_t::check_events()
 {
 	event_t ev;
 
-	if(  env_t::networkmode  ) {
-		set_random_mode( INTERACTIVE_RANDOM );
-	}
-
 	win_poll_event(&ev);
 
 	event_t deferred_ev;
@@ -408,10 +404,6 @@ void interaction_t::check_events()
 		// process pending drag events
 		process_event(deferred_ev);
 		deferred_ev.ev_class = EVENT_NONE;
-	}
-
-	if(  env_t::networkmode  ) {
-		clear_random_mode( INTERACTIVE_RANDOM );
 	}
 }
 

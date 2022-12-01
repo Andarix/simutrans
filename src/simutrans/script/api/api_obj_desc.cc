@@ -422,11 +422,11 @@ void export_goods_desc(HSQUIRRELVM vm)
 	 */
 	register_method(vm, &can_be_last, "can_be_last", true);
 	/**
-	 * @returns list of possible successors, if all are allowed then list is empty
+	 * @returns list of possible successors, if list is empty then all are allowed (if @ref can_be_last returns true, or no successors are allowed if @ref can_be_last is false).
 	 */
 	register_method(vm, &get_successors, "get_successors", true);
 	/**
-	 * @returns list of possible predecessors, if all are allowed then list is empty
+	 * @returns list of possible predecessors, if list is empty then all are allowed (if @ref can_be_first returns true, or no predecessors are allowed if @ref can_be_first is false).
 	 */
 	register_method(vm, &get_predecessors, "get_predecessors", true);
 	/**
@@ -517,11 +517,11 @@ void export_goods_desc(HSQUIRRELVM vm)
 	 */
 	register_method(vm, &building_desc_t::get_capacity, "get_capacity");
 	/**
-	 * @return whether building can be built underground
+	 * @return whether station building can be built underground
 	 */
 	register_method(vm, &building_desc_t::can_be_built_underground, "can_be_built_underground");
 	/**
-	 * @return whether building can be built above ground
+	 * @return whether station building can be built above ground
 	 */
 	register_method(vm, &building_desc_t::can_be_built_aboveground, "can_be_built_aboveground");
 	/**
@@ -560,6 +560,12 @@ void export_goods_desc(HSQUIRRELVM vm)
 	enum_slot(vm, "station", (uint8)building_desc_t::generic_stop, true);
 	/// station extension
 	enum_slot(vm, "station_extension", (uint8)building_desc_t::generic_extension, true);
+	/// city building: residential
+	enum_slot(vm, "city_res", (uint8)building_desc_t::city_res, true);
+	/// city building: commercial
+	enum_slot(vm, "city_com", (uint8)building_desc_t::city_com, true);
+	/// city building: industrial
+	enum_slot(vm, "city_ind", (uint8)building_desc_t::city_ind, true);
 	end_enum();
 	/**
 	 * @returns building type

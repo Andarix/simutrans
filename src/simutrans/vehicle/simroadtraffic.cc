@@ -24,7 +24,6 @@
 #include "../dataobj/translator.h"
 #include "../dataobj/loadsave.h"
 #include "../dataobj/environment.h"
-#include "../dataobj/pakset_manager.h"
 
 #include "../obj/crossing.h"
 #include "../obj/roadsign.h"
@@ -238,8 +237,8 @@ stringhashtable_tpl<const citycar_desc_t *> private_car_t::table;
 
 bool private_car_t::register_desc(const citycar_desc_t *desc)
 {
-	if(  table.remove(desc->get_name())  ) {
-		pakset_manager_t::doubled( "citycar", desc->get_name() );
+	if(const citycar_desc_t *old = table.remove(desc->get_name())  ) {
+		delete old;
 	}
 	table.put(desc->get_name(), desc);
 	return true;
@@ -371,7 +370,7 @@ sync_result private_car_t::sync_step(uint32 delta_t)
 			else {
 				if(  ms_traffic_jam > welt->ticks_per_world_month  &&  old_ms_traffic_jam<=welt->ticks_per_world_month  ) {
 					// message after two month, reset waiting timer
-					welt->get_message()->add_message( translator::translate("To heavy traffic\nresults in traffic jam.\n"), get_pos().get_2d(), message_t::traffic_jams|message_t::expire_after_one_month_flag, color_idx_to_rgb(COL_ORANGE) );
+					welt->get_message()->add_message( translator::translate("To heavy traffic\nresults in traffic jam.\n"), get_pos(), message_t::traffic_jams|message_t::expire_after_one_month_flag, color_idx_to_rgb(COL_ORANGE) );
 				}
 			}
 		}

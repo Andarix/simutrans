@@ -17,7 +17,7 @@
 
 static karte_ptr_t welt;
 
-message_stats_t::message_stats_t(const message_t::node *m, uint32 sid) :
+message_stats_t::message_stats_t(const message_node_t *m, uint32 sid) :
 	msg(m), sortid(sid)
 {
 	set_table_layout(2,1);
@@ -25,8 +25,8 @@ message_stats_t::message_stats_t(const message_t::node *m, uint32 sid) :
 	// pos-button, visible or not
 	button_t *b = new_component<button_t>();
 	b->set_typ(button_t::posbutton_automatic);
-	if (msg->pos!=koord::invalid) {
-		b->set_targetpos(msg->pos);
+	if (msg->pos!=koord3d::invalid) {
+		b->set_targetpos3d(msg->pos);
 	}
 	else {
 		b->set_visible(false);
@@ -70,18 +70,11 @@ bool message_stats_t::infowin_event(const event_t * ev)
 	bool swallowed = gui_aligned_container_t::infowin_event(ev);
 
 	if(  !swallowed  &&  IS_LEFTRELEASE(ev)  ) {
-		// show message window again
-		news_window* news;
-		if(  msg->pos==koord::invalid  ) {
-			news = new news_img( msg->msg, msg->image, msg->get_player_color(welt) );
-		}
-		else {
-			news = new news_loc( msg->msg, msg->pos, msg->get_player_color(welt) );
-		}
-		create_win(-1, -1, news, w_info, magic_none);
+		msg->open_msg_window(false /* open as normal not autoclose */);
+
 		swallowed = true;
 	}
-	else if(  !swallowed  &&  IS_RIGHTRELEASE(ev)  &&  msg->pos!=koord::invalid  ) {
+	else if(  !swallowed  &&  IS_RIGHTRELEASE(ev)  &&  msg->pos!=koord3d::invalid  ) {
 		welt->get_viewport()->change_world_position( msg->pos );
 		swallowed = true;
 	}

@@ -1647,7 +1647,7 @@ int simu_main(int argc, char** argv)
 
 		if(  !env_t::networkmode  &&  new_world  ) {
 			dbg->message("simu_main()", "Show banner ... " );
-			ticker::add_msg("Welcome to Simutrans", koord::invalid, PLAYER_FLAG | color_idx_to_rgb(COL_SOFT_BLUE));
+			ticker::add_msg("Welcome to Simutrans", koord3d::invalid, PLAYER_FLAG | color_idx_to_rgb(COL_SOFT_BLUE));
 			modal_dialogue( new banner_t(), magic_none, welt, never_quit );
 			// only show new world, if no other dialogue is active ...
 			new_world = win_get_open_count()==0;
@@ -1658,6 +1658,10 @@ int simu_main(int argc, char** argv)
 
 		// to purge all previous old messages
 		welt->get_message()->set_message_flags(env_t::message_flags[0], env_t::message_flags[1], env_t::message_flags[2], env_t::message_flags[3]);
+
+		if (pakset_manager_t::needs_doubled_warning_message()) {
+			welt->get_message()->add_message(pakset_manager_t::get_doubled_warning_message(), koord3d::invalid, message_t::general | message_t::do_not_rdwr_flag);
+		}
 
 		if(  !env_t::networkmode  &&  !env_t::server  ) {
 			welt->set_pause( pause_after_load );

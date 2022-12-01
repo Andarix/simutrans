@@ -231,7 +231,7 @@ public:
 	enum {
 		WFL_SHIFT  = 1 << 0, ///< shift-key was pressed when mouse-click happened
 		WFL_CTRL   = 1 << 1, ///< ctrl-key was pressed when mouse-click happened
-		WFL_LOCAL  = 1 << 2, ///< tool call was issued by local client
+		WFL_LOCAL  = 1 << 2, ///< tool call was issued by local client (and will not be sent to server)
 		WFL_SCRIPT = 1 << 3, ///< tool call was issued by script
 		WFL_NO_CHK = 1 << 4  ///< tool call needs no password or scenario checks
 	};
@@ -401,18 +401,13 @@ public:
 	bool is_first_click() const;
 
 	/**
-	 * Remove dummy grounds, remove start_marker.
+	 * Remove dummy grounds, remove start_marker if @p delete_start_marker is true.
 	 */
-	void cleanup() { cleanup(true); }
+	void cleanup(bool delete_start_marker = true);
 
 	const koord3d& get_start_pos() const { return start; }
 
 private:
-	/**
-	 * Remove dummy grounds, remove start_marker if @p delete_start_marker is true.
-	 */
-	void cleanup(bool delete_start_marker );
-
 	/*
 	 * This routine should fill marked_tiles.
 	 */

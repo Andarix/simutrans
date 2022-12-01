@@ -14,8 +14,8 @@
 #define TICKER_HEIGHT  (LINESPACE+2*TICKER_V_SPACE)
 
 
-class koord;
-
+class koord3d;
+struct message_node_t;
 /**
  * A very simple scrolling news ticker.
  */
@@ -28,17 +28,17 @@ namespace ticker
 	 * @param pos    position of the event
 	 * @param color  message color
 	 */
-	void add_msg(const char*, koord pos, FLAGGED_PIXVAL color);
+	void add_msg(const char*, koord3d pos, FLAGGED_PIXVAL color);
+
+	/**
+	 * Add a message in message_node_t format
+	 */
+	void add_msg_node(const message_node_t& msg);
 
 	/**
 	 * Remove all messages and mark for redraw
 	 */
 	void clear_messages();
-
-	/**
-	 * @returns the 2D world position of the most recent visible message
-	 */
-	koord get_welt_pos();
 
 	/**
 	 * Update message positions and remove old messages
@@ -60,6 +60,11 @@ namespace ticker
 	 * Force a ticker redraw (e.g. after a window resize)
 	 */
 	void redraw();
+
+	/**
+	 * Process click into ticker bar: jump to coordinate or open message window.
+	 */
+	void process_click(int x);
 };
 
 #endif

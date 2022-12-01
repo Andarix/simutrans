@@ -2650,8 +2650,6 @@ void karte_t::sync_step(uint32 delta_t)
 	}
 	ticks += delta_t;
 
-	set_random_mode( INTERACTIVE_RANDOM );
-
 	/* animations do not require exact sync
 	 * foundations etc are added removed frequently during city growth
 	 */
@@ -2660,8 +2658,6 @@ void karte_t::sync_step(uint32 delta_t)
 	wolke_t::sync_handler(delta_t);
 
 	pedestrian_t::sync_handler(delta_t);
-
-	clear_random_mode( INTERACTIVE_RANDOM );
 
 	// the following sync_steps affect the game state
 	sync_roadsigns.sync_step(delta_t);
@@ -2678,7 +2674,11 @@ void karte_t::sync_step(uint32 delta_t)
 
 	clear_random_mode( SYNC_STEP_RANDOM );
 
+	set_random_mode( INTERACTIVE_RANDOM );
+
 	eventmanager->check_events();
+
+	clear_random_mode( INTERACTIVE_RANDOM );
 }
 
 
@@ -2713,8 +2713,8 @@ void karte_t::display(uint32 delta_t)
 				grund_t *gr = lookup_kartenboden( new_pos.get_2d() );
 				bool redraw = false;
 				if( new_pos.z < gr->get_hoehe() ) {
-					redraw = grund_t::underground_mode == grund_t::ugm_none ? grund_t::underground_level != new_pos.z : true;
-					grund_t::set_underground_mode( env_t::follow_convoi_underground, new_pos.z );
+					redraw = (grund_t::underground_mode != grund_t::ugm_level)  ||  (grund_t::underground_level != new_pos.z);
+					grund_t::set_underground_mode( grund_t::ugm_level, new_pos.z );
 				}
 				else {
 					redraw = grund_t::underground_mode != grund_t::ugm_none;
@@ -3010,7 +3010,7 @@ DBG_MESSAGE("karte_t::new_year()","speedbonus for %d %i, %i, %i, %i, %i, %i, %i,
 
 	cbuffer_t buf;
 	buf.printf( translator::translate("Year %i has started."), last_year );
-	msg->add_message(buf,koord::invalid,message_t::general,SYSCOL_TEXT,skinverwaltung_t::neujahrsymbol->get_image_id(0));
+	msg->add_message(buf,koord3d::invalid,message_t::general,SYSCOL_TEXT,skinverwaltung_t::neujahrsymbol->get_image_id(0));
 
 	for(convoihandle_t const cnv : convoi_array) {
 		cnv->new_year();
@@ -3079,14 +3079,14 @@ void karte_t::recalc_average_speed()
 				if(intro_month == current_month) {
 					cbuffer_t buf;
 					buf.printf( translator::translate("New %s now available:\n%s\n"), vehicle_type, translator::translate(info->get_name()) );
-					msg->add_message(buf,koord::invalid,message_t::new_vehicle,NEW_VEHICLE,info->get_base_image());
+					msg->add_message(buf,koord3d::invalid,message_t::new_vehicle,NEW_VEHICLE,info->get_base_image());
 				}
 
 				const uint16 retire_month = info->get_retire_year_month();
 				if(retire_month == current_month) {
 					cbuffer_t buf;
 					buf.printf( translator::translate("Production of %s has been stopped:\n%s\n"), vehicle_type, translator::translate(info->get_name()) );
-					msg->add_message(buf,koord::invalid,message_t::new_vehicle,NEW_VEHICLE,info->get_base_image());
+					msg->add_message(buf,koord3d::invalid,message_t::new_vehicle,NEW_VEHICLE,info->get_base_image());
 				}
 			}
 		}
@@ -3119,7 +3119,7 @@ sint32 karte_t::get_record_speed( waytype_t w ) const
 
 
 // sets the new speed record
-void karte_t::notify_record( convoihandle_t cnv, sint32 max_speed, koord k )
+void karte_t::notify_record( convoihandle_t cnv, sint32 max_speed, koord3d k )
 {
 	records->notify_record(cnv, max_speed, k, current_month);
 }
@@ -5585,7 +5585,7 @@ void karte_t::switch_active_player(uint8 new_player, bool silent)
 			// tell the player
 			cbuffer_t buf;
 			buf.printf( translator::translate("Now active as %s.\n"), get_active_player()->get_name() );
-			msg->add_message(buf, koord::invalid, message_t::ai | message_t::do_not_rdwr_flag, PLAYER_FLAG|get_active_player()->get_player_nr(), IMG_EMPTY);
+			msg->add_message(buf, koord3d::invalid, message_t::ai | message_t::do_not_rdwr_flag, PLAYER_FLAG|get_active_player()->get_player_nr(), IMG_EMPTY);
 		}
 
 		// update menu entries
@@ -6095,6 +6095,12 @@ bool karte_t::interactive(uint32 quit_month)
 				tool->flags = 0;
 				next_deferred_move_flags = 0;
 			}
+			else if (two_click_tool_t *tct = dynamic_cast<two_click_tool_t*>(tool)) {
+				// remove preview images
+				if (!tct->is_first_click()) {
+					tct->cleanup(false);
+				}
+			}
 		}
 
 		if(  env_t::networkmode  ) {
@@ -6405,7 +6411,7 @@ void karte_t::network_disconnect()
 	reset_timer();
 	clear_command_queue();
 	create_win( display_get_width()/2-128, 40, new news_img("Lost synchronisation\nwith server."), w_info, magic_none);
-	ticker::add_msg( translator::translate("Lost synchronisation\nwith server."), koord::invalid, SYSCOL_TEXT );
+	ticker::add_msg( translator::translate("Lost synchronisation\nwith server."), koord3d::invalid, SYSCOL_TEXT );
 	last_active_player_nr = active_player_nr;
 
 	stop(false);
