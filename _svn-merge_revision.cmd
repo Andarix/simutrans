@@ -1,7 +1,7 @@
 git svn fetch
 git merge --log=20 refs/remotes/origin/trunk
 
-git svn log --oneline --limit=1 > status.txt
+rem git svn log --oneline --limit=1 > status.txt
 
 set /p string=<status.txt
 
