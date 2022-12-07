@@ -1,8 +1,9 @@
 git svn fetch
 git merge --log=20 refs/remotes/origin/trunk
 
-rem git svn log --oneline --limit=1 > status.txt
-
+git svn log --oneline --limit=1 >status.txt
+echo Revision in status.txt eintragen
+pause
 set /p string=<status.txt
 
 echo #define REVISION %string:~1,5% > src/simutrans/revision.h
