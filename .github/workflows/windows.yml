@@ -26,6 +26,7 @@ jobs:
     - name: detect revision
       run: |
         $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
+        echo $text
         $revision=$text.Substring(17,5)
         echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
@@ -74,6 +75,8 @@ jobs:
       run: |
         $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
         echo $text
+        echo $Env:GITHUB_WORKSPACE
+        echo $revision
         $revision=$text.Substring(17,5)
         echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
