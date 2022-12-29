@@ -145,9 +145,9 @@ jobs:
     - name: compile simutrans server
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
-        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-Server.vcxproj /p:Configuration=git_actions
+        .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-Server.vcxproj /p:Configuration=Release
         cd $Env:GITHUB_WORKSPACE\
-        copy Simutrans_Server.exe simutrans\Simutrans-Server.exe
+        copy build\Server\Simutrans_Server.exe simutrans\Simutrans-Server.exe
 
     - name: load translate files
       run: |
