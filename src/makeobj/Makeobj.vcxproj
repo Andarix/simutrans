@@ -29,8 +29,8 @@
   </ImportGroup>
   <PropertyGroup>
     <_ProjectFileVersion>16.0.28916.169</_ProjectFileVersion>
-    <OutDir>$(SolutionDir)..\build\makeobj\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\build\makeobj\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\build\makeobj\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\makeobj\$(Configuration)\</IntDir>
     <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
     <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -83,8 +83,8 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\libs\zlib-1.2.11;..\..\libs\lpng1637;..\..\libs\bzip2-1.0.6;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</WholeProgramOptimization>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdc17</LanguageStandard_C>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp14</LanguageStandard>
+      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</LanguageStandard_C>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

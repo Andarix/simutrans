@@ -29,8 +29,8 @@
   </ImportGroup>
   <PropertyGroup>
     <_ProjectFileVersion>16.0.28916.169</_ProjectFileVersion>
-    <OutDir>$(SolutionDir)</OutDir>
-    <IntDir>$(SolutionDir)..\build\nettool\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\build\nettool\</OutDir>
+    <IntDir>$(SolutionDir)..\..\build\nettool\$(Configuration)\</IntDir>
     <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
     <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -75,8 +75,8 @@
       <PreprocessorDefinitions>NETTOOL;NDEBUG;NOMINMAX</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../libs/zlib-1.2.11;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdc17</LanguageStandard_C>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp14</LanguageStandard>
+      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
