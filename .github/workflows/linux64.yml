@@ -3,12 +3,29 @@ name: Nightly build Linux x64
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_a'
 
 jobs:
+  set-revision:
+    name: set revision
+    runs-on: ubuntu-20.04
+    outputs:
+      output1: ${{ steps.out1.outputs.revision }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: detect revision
+      run: |
+        read text < ./src/simutrans/revision.h
+        revision=${text:17:5}
+        echo "revision=$revision" >> $GITHUB_ENV
+    - id: out1
+        run: echo "::set-output name=revision::$revision"
+
   makeobj_linux-x64-nightly:
     name: makeobj
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    needs: [set-revision]
 
     steps:
       - name: Checkout
@@ -38,24 +55,19 @@ jobs:
           cd src/makeobj
           zip -r -9 makeobj_linux-x64-nightly.zip makeobj
 
-      - name: detect revision
-        run: |
-          read text < ./src/simutrans/revision.h
-          revision=${text:17:5}
-          echo "revision=$revision" >> $GITHUB_ENV
-
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: src/makeobj/makeobj_linux-x64-nightly.zip
-          asset_name: makeobj_linux-x64-nightly_r${{ env.revision }}.zip
+          asset_name: makeobj_linux-x64-nightly_r${{needs.set-revision.outputs.output1}}.zip
           tag: Nightly
           overwrite: true
 
   simulinux-x64-nightly:
     name: simutrans SDL2
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    needs: [set-revision]
 
     steps:
       - name: Checkout
@@ -71,7 +83,7 @@ jobs:
 
       - name: setup
         run: |
-          cd libs/zstd-1.4.4/lib
+          cd libs/zstd-1.5.2/lib
           make
           cd ../../../
           autoconf
@@ -89,12 +101,6 @@ jobs:
       - name: Rename result
         run:  mv ./simu*.zip ./simulinux-x64-nightly.zip
 
-      - name: detect revision
-        run: |
-          read text < ./src/simutrans/revision.h
-          revision=${text:17:5}
-          echo "revision=$revision" >> $GITHUB_ENV
-
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
         with:
@@ -106,7 +112,8 @@ jobs:
 
   simulinux-posix-x64_nightly:
     name: simutrans posix
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    needs: [set-revision]
 
     steps:
       - name: Checkout
@@ -120,7 +127,7 @@ jobs:
 
       - name: setup
         run: |
-          cd libs/zstd-1.4.4/lib
+          cd libs/zstd-1.5.2/lib
           make
           cd ../../../
           autoconf
@@ -141,12 +148,6 @@ jobs:
       - name: Rename result
         run:  mv ./simu*.zip ./simulinux_posix-x64-nightly.zip
 
-      - name: detect revision
-        run: |
-          read text < ./src/simutrans/revision.h
-          revision=${text:17:5}
-          echo "revision=$revision" >> $GITHUB_ENV
-
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
         with:
@@ -158,7 +159,9 @@ jobs:
 
   nettool-linux:
     name: Nettool
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    needs: [set-revision]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -185,12 +188,6 @@ jobs:
         run: |
           cd src/nettool
           zip -r -9 nettool_linux-x64-nightly.zip nettool
-
-      - name: detect revision
-        run: |
-          read text < ./src/simutrans/revision.h
-          revision=${text:17:5}
-          echo "revision=$revision" >> $GITHUB_ENV
 
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v1-release
