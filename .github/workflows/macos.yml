@@ -8,7 +8,7 @@ on:
 jobs:
   sim-mac-sdl2:
     name: macOS (SDL2)
-    runs-on: macos-11.0
+    runs-on: macos-12
 
     steps:
       - name: Checkout
@@ -46,7 +46,7 @@ jobs:
 
   makeobj-mac:
     name: macOS Makeobj
-    runs-on: macos-11.0
+    runs-on: macos-12
 
     steps:
       - name: Checkout
@@ -76,7 +76,7 @@ jobs:
 
   nettool-mac:
     name: macOS Nettool
-    runs-on: macos-11.0
+    runs-on: macos-12
 
     steps:
       - name: Checkout
