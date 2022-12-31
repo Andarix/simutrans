@@ -3,7 +3,7 @@ name: Nightly build MacOS
 on:
   push:
     tags:
-      - 'Nightly_a'
+      - 'Nightly'
 
 jobs:
   sim-mac-sdl2:
