@@ -6,13 +6,26 @@ on:
       - 'Nightly'
 
 jobs:
+  check-code-formatting:
+    name: Code Formatting
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+    - name: detect revision
+      run: |
+        $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
+        echo $text
+        $revision=$text.Substring(17,5)
+        echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+      shell: pwsh
+
   makeobj_windows-nightly:
     name: makeobj
     runs-on: windows-2022
+    needs: [check-code-formatting]
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: compile makeobj
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -21,14 +34,6 @@ jobs:
 
     - name: zip result
       run: Compress-Archive build\makeobj\Makeobj.exe build\makeobj\makeobj_windows-nightly.zip
-      shell: pwsh
-
-    - name: detect revision
-      run: |
-        $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
-        echo $text
-        $revision=$text.Substring(17,5)
-        echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
 
     - name: Update binaries of Nightly Release
@@ -43,10 +48,9 @@ jobs:
   windows_GDI-nightly:
     name: Simutrans Windows GDI x86
     runs-on: windows-2022
+    needs: [check-code-formatting]
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: compile simutrans
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -71,16 +75,6 @@ jobs:
       run:  Compress-Archive simutrans simuwin_GDI-nightly_x86.zip
       shell: pwsh
 
-    - name: detect revision
-      run: |
-        $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
-        echo $text
-        echo $Env:GITHUB_WORKSPACE
-        echo $revision
-        $revision=$text.Substring(17,5)
-        echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-      shell: pwsh
-
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
@@ -93,10 +87,9 @@ jobs:
   windows_GDI_x64-nightly:
     name: Simutrans Windows GDI x64
     runs-on: windows-2022
+    needs: [check-code-formatting]
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: compile simutrans
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -121,16 +114,6 @@ jobs:
       run:  Compress-Archive simutrans simuwin_GDI_-nightly_x64.zip
       shell: pwsh
 
-    - name: detect revision
-      run: |
-        $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
-        echo $text
-        echo $Env:GITHUB_WORKSPACE
-        echo $revision
-        $revision=$text.Substring(17,5)
-        echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-      shell: pwsh
-
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
@@ -143,10 +126,9 @@ jobs:
   windows_SDL2-nightly:
     name: Simutrans Windows SDL2
     runs-on: windows-2022
+    needs: [check-code-formatting]
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: compile simutrans
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -172,13 +154,6 @@ jobs:
       run:  Compress-Archive simutrans simuwin_SDL2-nightly_x86.zip
       shell: pwsh
 
-    - name: detect revision
-      run: |
-        $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
-        $revision=$text.Substring(17,5)
-        echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-      shell: pwsh
-
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
@@ -191,10 +166,9 @@ jobs:
   windows_server-nightly:
     name: Simutrans Windows Server
     runs-on: windows-2022
+    needs: [check-code-formatting]
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: compile simutrans server
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -219,13 +193,6 @@ jobs:
       run: Compress-Archive simutrans simuwin_server-nightly_x86.zip
       shell: pwsh
 
-    - name: detect revision
-      run: |
-        $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
-        $revision=$text.Substring(17,5)
-        echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-      shell: pwsh
-
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
@@ -238,10 +205,9 @@ jobs:
   windows_nettool:
     name: Simutrans Nettool
     runs-on: windows-2022
+    needs: [check-code-formatting]
 
     steps:
-    - uses: actions/checkout@v3
-
     - name: compile simutrans nettool
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -250,13 +216,6 @@ jobs:
 
     - name: zip result
       run: Compress-Archive build\nettool\Nettool.exe build\nettool\nettool_windows-nightly.zip
-      shell: pwsh
-
-    - name: detect revision
-      run: |
-        $text = gc "$Env:GITHUB_WORKSPACE\src\simutrans\revision.h"
-        $revision=$text.Substring(17,5)
-        echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
 
     - name: Update binaries of Nightly Release
