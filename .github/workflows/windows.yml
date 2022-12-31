@@ -9,6 +9,8 @@ jobs:
   set-revision:
     name: set revision
     runs-on: windows-2022
+    outputs:
+      output1: ${{ steps.out1.outputs.revision }}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -19,6 +21,8 @@ jobs:
         $revision=$text.Substring(17,5)
         echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
+    - id: out1
+      run: echo "::set-output name=revision::${{ env.revision }}"
 
   makeobj_windows-nightly:
     name: makeobj
@@ -44,7 +48,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/makeobj/makeobj_windows-nightly.zip
-        asset_name: makeobj_windows-nightly_r${{ env.revision }}.zip
+        asset_name: makeobj_windows-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
 
@@ -86,7 +90,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_GDI_x86-nightly.zip
-        asset_name: simuwin_GDI_x86-nightly_r${{ env.revision }}.zip
+        asset_name: simuwin_GDI_x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
 
@@ -128,7 +132,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_GDI_x64-nightly.zip
-        asset_name: simuwin_GDI_x64-nightly_r${{ env.revision }}.zip
+        asset_name: simuwin_GDI_x64-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
 
@@ -171,7 +175,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_SDL2_x86-nightly.zip
-        asset_name: simuwin_SDL2_x86-nightly_r${{ env.revision }}.zip
+        asset_name: simuwin_SDL2_x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
 
@@ -213,7 +217,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_server_x86-nightly.zip
-        asset_name: simuwin_server_x86-nightly_r${{ env.revision }}.zip
+        asset_name: simuwin_server_x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
 
@@ -241,6 +245,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/nettool/nettool_windows-nightly.zip
-        asset_name: nettool_windows-nightly_r${{ env.revision }}.zip
+        asset_name: nettool_windows-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
