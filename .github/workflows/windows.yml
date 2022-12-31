@@ -6,8 +6,8 @@ on:
       - 'Nightly'
 
 jobs:
-  check-code-formatting:
-    name: Code Formatting
+  set-revision:
+    name: set revision
     runs-on: windows-2022
     steps:
     - name: Checkout
@@ -23,9 +23,12 @@ jobs:
   makeobj_windows-nightly:
     name: makeobj
     runs-on: windows-2022
-    needs: [check-code-formatting]
+    needs: [set-revision]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: compile makeobj
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -48,15 +51,18 @@ jobs:
   windows_GDI-nightly:
     name: Simutrans Windows GDI x86
     runs-on: windows-2022
-    needs: [check-code-formatting]
+    needs: [set-revision]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: compile simutrans
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-GDI.vcxproj /p:Configuration=Release /p:Platform=x86
         cd  $Env:GITHUB_WORKSPACE\
-        copy build\GDI\simutrans_GDI.exe simutrans\Simutrans.exe
+        copy build\GDI\Simutrans_GDI.exe simutrans\Simutrans.exe
 
     - name: load translate files
       run: |
@@ -72,30 +78,33 @@ jobs:
       shell: pwsh
 
     - name: zip result
-      run:  Compress-Archive simutrans simuwin_GDI-nightly_x86.zip
+      run:  Compress-Archive simutrans simuwin_GDI_x86-nightly.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: simuwin_GDI-nightly_x86.zip
-        asset_name: simuwin_GDI-nightly_x86_r${{ env.revision }}.zip
+        file: simuwin_GDI_x86-nightly.zip
+        asset_name: simuwin_GDI_x86-nightly_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
   windows_GDI_x64-nightly:
     name: Simutrans Windows GDI x64
     runs-on: windows-2022
-    needs: [check-code-formatting]
+    needs: [set-revision]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: compile simutrans
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
         .\MSBuild.exe $Env:GITHUB_WORKSPACE\Simutrans-GDI.vcxproj /p:Configuration=Release /p:Platform=x64 /p:TargetName=Simutrans_GDI_x64
         cd  $Env:GITHUB_WORKSPACE\
-        copy build\GDI\simutrans_GDI_x64.exe simutrans\Simutrans.exe
+        copy build\GDI\Simutrans_GDI_x64.exe simutrans\Simutrans.exe
 
     - name: load translate files
       run: |
@@ -111,24 +120,27 @@ jobs:
       shell: pwsh
 
     - name: zip result
-      run:  Compress-Archive simutrans simuwin_GDI_-nightly_x64.zip
+      run:  Compress-Archive simutrans simuwin_GDI_x64-nightly.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: simuwin_GDI-nightly_x64.zip
-        asset_name: simuwin_GDI-nightly_x64_r${{ env.revision }}.zip
+        file: simuwin_GDI_x64-nightly.zip
+        asset_name: simuwin_GDI_x64-nightly_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
   windows_SDL2-nightly:
     name: Simutrans Windows SDL2
     runs-on: windows-2022
-    needs: [check-code-formatting]
+    needs: [set-revision]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: compile simutrans
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -151,24 +163,27 @@ jobs:
       shell: pwsh
 
     - name: zip result
-      run:  Compress-Archive simutrans simuwin_SDL2-nightly_x86.zip
+      run:  Compress-Archive simutrans simuwin_SDL2_x86-nightly.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: simuwin_SDL2-nightly_x86.zip
-        asset_name: simuwin_SDL2-nightly_x86_r${{ env.revision }}.zip
+        file: simuwin_SDL2_x86-nightly.zip
+        asset_name: simuwin_SDL2_x86-nightly_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
   windows_server-nightly:
     name: Simutrans Windows Server
     runs-on: windows-2022
-    needs: [check-code-formatting]
+    needs: [set-revision]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: compile simutrans server
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"
@@ -190,24 +205,27 @@ jobs:
       shell: pwsh
 
     - name: zip result
-      run: Compress-Archive simutrans simuwin_server-nightly_x86.zip
+      run: Compress-Archive simutrans simuwin_server_x86-nightly.zip
       shell: pwsh
 
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v1-release
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: simuwin_server-nightly_x86.zip
-        asset_name: simuwin_server-nightly_x86_r${{ env.revision }}.zip
+        file: simuwin_server_x86-nightly.zip
+        asset_name: simuwin_server_x86-nightly_r${{ env.revision }}.zip
         tag: Nightly
         overwrite: true
 
   windows_nettool:
     name: Simutrans Nettool
     runs-on: windows-2022
-    needs: [check-code-formatting]
+    needs: [set-revision]
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - name: compile simutrans nettool
       run: |
         cd "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"

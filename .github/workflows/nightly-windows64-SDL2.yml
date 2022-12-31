@@ -47,6 +47,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./simuwin-SDL2-nightly_x64.zip
-          asset_name: simuwin-SDL2-nightly_x64_r${{ env.revision }}.zip
+          asset_name: simuwin-SDL2_x64-nightly_r${{ env.revision }}.zip
           tag: Nightly
           overwrite: true
