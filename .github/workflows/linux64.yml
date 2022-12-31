@@ -20,7 +20,7 @@ jobs:
         revision=${text:17:5}
         echo "revision=$revision" >> $GITHUB_ENV
     - id: out1
-      run: echo "::set-output name=revision::$revision"
+      run: echo "revision=$revision" >> $GITHUB_OUTPUT
 
   makeobj_linux-x64-nightly:
     name: makeobj

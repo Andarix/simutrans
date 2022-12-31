@@ -22,7 +22,7 @@ jobs:
         echo "revision=$revision" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: pwsh
     - id: out1
-      run: echo "::set-output name=revision::${{ env.revision }}"
+      run: echo "revision=${{ env.revision }}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf-8 -Append
 
   makeobj_windows-nightly:
     name: makeobj
