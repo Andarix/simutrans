@@ -23,13 +23,6 @@ finance_t::finance_t(player_t * _player, karte_t * _world) :
 	world(_world)
 {
 	account_balance = world->get_settings().get_starting_money(world->get_last_year());
-
-	sint64 base_tiles = 384 * 384;
-	sint64 map_tiles = world->get_size().x*world->get_size().y;
-	if (map_tiles > base_tiles) {
-		account_balance = account_balance*(map_tiles/base_tiles);
-	}
-
 	starting_money = account_balance;
 	account_overdrawn = 0;
 
