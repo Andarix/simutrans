@@ -44,7 +44,7 @@ jobs:
       shell: pwsh
 
     - name: Update binaries of Nightly Release
-      uses: svenstaro/upload-release-action@v1-release
+      uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/makeobj/makeobj_windows-nightly.zip
@@ -86,7 +86,7 @@ jobs:
       shell: pwsh
 
     - name: Update binaries of Nightly Release
-      uses: svenstaro/upload-release-action@v1-release
+      uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_GDI_x86-nightly.zip
@@ -128,7 +128,7 @@ jobs:
       shell: pwsh
 
     - name: Update binaries of Nightly Release
-      uses: svenstaro/upload-release-action@v1-release
+      uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_GDI_x64-nightly.zip
@@ -171,7 +171,7 @@ jobs:
       shell: pwsh
 
     - name: Update binaries of Nightly Release
-      uses: svenstaro/upload-release-action@v1-release
+      uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_SDL2_x86-nightly.zip
@@ -213,7 +213,7 @@ jobs:
       shell: pwsh
 
     - name: Update binaries of Nightly Release
-      uses: svenstaro/upload-release-action@v1-release
+      uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: simuwin_server_x86-nightly.zip
@@ -241,7 +241,7 @@ jobs:
       shell: pwsh
 
     - name: Update binaries of Nightly Release
-      uses: svenstaro/upload-release-action@v1-release
+      uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/nettool/nettool_windows-nightly.zip

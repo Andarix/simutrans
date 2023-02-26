@@ -56,7 +56,7 @@ jobs:
           zip -r -9 makeobj_linux-x64-nightly.zip makeobj
 
       - name: Update binaries of Nightly Release
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: src/makeobj/makeobj_linux-x64-nightly.zip
@@ -102,7 +102,7 @@ jobs:
         run:  mv ./simu*.zip ./simulinux-x64-nightly.zip
 
       - name: Update binaries of Nightly Release
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: simulinux-x64-nightly.zip
@@ -149,7 +149,7 @@ jobs:
         run:  mv ./simu*.zip ./simulinux_posix-x64-nightly.zip
 
       - name: Update binaries of Nightly Release
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: simulinux_posix-x64-nightly.zip
@@ -190,7 +190,7 @@ jobs:
           zip -r -9 nettool_linux-x64-nightly.zip nettool
 
       - name: Update binaries of Nightly Release
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: src/nettool/nettool_linux-x64-nightly.zip
