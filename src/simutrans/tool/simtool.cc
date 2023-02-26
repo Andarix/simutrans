@@ -1060,6 +1060,13 @@ void tool_setslope_t::rdwr_custom_data(memory_rw_t *packet)
 
 const char *tool_setslope_t::tool_set_slope_work( player_t *player, koord3d pos, int new_slope, bool old_slope_compatibility, bool just_check )
 {
+	if(  !ground_desc_t::double_grounds  &&  !old_slope_compatibility  ) {
+		// do not build double slopes if no graphics are available
+		if (slope_t::max_diff(new_slope) > 1) {
+			return ""; // invalid parameter
+		}
+	}
+
 	if(  !ground_desc_t::double_grounds  &&  old_slope_compatibility  ) {
 		// translate old single slope parameter to new double slope
 		if(  0 < new_slope  &&  new_slope < ALL_UP_SLOPE_SINGLE  ) {
@@ -1819,7 +1826,7 @@ const char *tool_change_city_size_t::work( player_t *, koord3d pos )
 const char *tool_set_climate_t::get_tooltip(player_t const*) const
 {
 	char temp[1024];
-	sprintf( temp, translator::translate( "Set tile climate" ), translator::translate( ground_desc_t::get_climate_name_from_bit((climate)atoi(default_param)) ) );
+	sprintf( temp, translator::translate( "Set tile climate %s" ), translator::translate( ground_desc_t::get_climate_name_from_bit((climate)atoi(default_param)) ) );
 	return tooltip_with_price( temp,  welt->get_settings().cst_alter_climate );
 }
 
@@ -3024,7 +3031,7 @@ const char *tool_build_tunnel_t::check_pos( player_t *player, koord3d pos)
 					return "";
 				}
 
-				if(  env_t::pak_height_conversion_factor != slope_t::max_diff(sl)  ) {
+				if(  welt->get_settings().get_way_height_clearance() != slope_t::max_diff(sl)  ) {
 					win_set_static_tooltip( translator::translate("The gradient does not fit a tunnel") );
 					return "";
 				}
