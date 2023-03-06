@@ -8,7 +8,6 @@
 
 
 #include "../simcolor.h"
-#include "../utils/unicode.h"
 #include "../simtypes.h"
 #include "clip_num.h"
 #include "simimg.h"
@@ -274,14 +273,6 @@ scr_coord_val display_get_char_width(utf32 c);
 bool has_character( utf16 char_code );
 
 /**
- * Returns the width of the widest character in a string.
- * @param text  pointer to a string of characters to evaluate.
- * @param len   length of text buffer to evaluate. If set to 0,
- *              evaluate until null termination.
- */
-scr_coord_val display_get_char_max_width(const char* text, size_t len=0);
-
-/**
  * For the next logical character in the text, returns the character code
  * as well as retrieves the char byte count and the screen pixel width
  * CAUTION : The text pointer advances to point to the next logical character
@@ -300,7 +291,7 @@ utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start
  * If an ellipsis len is given, it will only return the last character up to this len if the full length cannot be fitted
  * @returns index of next character. if text[index]==0 the whole string fits
  */
-size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_coord_val ellipsis_width=0 );
+size_t display_fit_proportional( const char *text, scr_coord_val max_width);
 
 /* routines for string len (macros for compatibility with old calls) */
 #define proportional_string_width(text)          display_calc_proportional_string_len_width(text, 0x7FFF)
@@ -310,7 +301,7 @@ size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_
 int display_calc_proportional_string_len_width(const char* text, size_t len);
 
 // box which will contain the multi (or single) line of text
-void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *text, size_t len );
+void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *text);
 
 /*
  * len parameter added - use -1 for previous behaviour.

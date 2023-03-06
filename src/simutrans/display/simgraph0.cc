@@ -240,25 +240,7 @@ void display_array_wh(scr_coord_val, scr_coord_val, scr_coord_val, scr_coord_val
 {
 }
 
-size_t get_next_char(const char*, size_t pos)
-{
-	return pos + 1;
-}
-
-sint32 get_prev_char(const char*, sint32 pos)
-{
-	if (pos <= 0) {
-		return 0;
-	}
-	return pos - 1;
-}
-
 scr_coord_val display_get_char_width(utf32)
-{
-	return 0;
-}
-
-scr_coord_val display_get_char_max_width(const char*, size_t)
 {
 	return 0;
 }
@@ -278,7 +260,7 @@ bool has_character( utf16 )
 	return false;
 }
 
-size_t display_fit_proportional(const char *, scr_coord_val, scr_coord_val)
+size_t display_fit_proportional(const char *, scr_coord_val)
 {
 	return 0;
 }
@@ -289,7 +271,7 @@ int display_calc_proportional_string_len_width(const char*, size_t)
 }
 
 
-void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *, size_t )
+void display_calc_proportional_multiline_string_len_width( int &xw, int &yh, const char *)
 {
 	xw = yh = 0;;
 }

@@ -23,6 +23,7 @@
 #include "../utils/unicode.h"
 #include "../simticker.h"
 #include "../utils/simstring.h"
+#include "../utils/unicode.h"
 #include "../io/raw_image.h"
 
 #include "../gui/simwin.h"
@@ -3682,38 +3683,9 @@ bool display_load_font(const char *fname, bool reload)
 }
 
 
-// unicode save moving in strings
-size_t get_next_char(const char* text, size_t pos)
-{
-	return utf8_get_next_char((const utf8*)text, pos);
-}
-
-
-sint32 get_prev_char(const char* text, sint32 pos)
-{
-	if(  pos <= 0  ) {
-		return 0;
-	}
-	return utf8_get_prev_char((const utf8*)text, pos);
-}
-
-
 scr_coord_val display_get_char_width(utf32 c)
 {
 	return default_font.get_glyph_advance(c);
-}
-
-
-/* returns the width of this character or the default (Nr 0) character size */
-scr_coord_val display_get_char_max_width(const char* text, size_t len) {
-
-	scr_coord_val max_len=0;
-
-	for(unsigned n=0; (len && n<len) || (len==0 && *text != '\0'); n++) {
-		max_len = max(max_len,display_get_char_width(*text++));
-	}
-
-	return max_len;
 }
 
 
@@ -3727,7 +3699,7 @@ utf32 get_next_char_with_metrics(const char* &text, unsigned char &byte_length, 
 	size_t len = 0;
 	utf32 const char_code = utf8_decoder_t::decode((utf8 const *)text, len);
 
-	if(  char_code==0  ||  char_code == '\n') {
+	if(  char_code==UNICODE_NUL  ||  char_code == '\n') {
 		// case : end of text reached -> do not advance text pointer
 		// also stop at linebreaks
 		byte_length = 0;
@@ -3766,7 +3738,7 @@ bool has_character(utf16 char_code)
  * If an ellipsis len is given, it will only return the last character up to this len if the full length cannot be fitted
  * @returns index of next character. if text[index]==0 the whole string fits
  */
-size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_coord_val ellipsis_width )
+size_t display_fit_proportional( const char *text, scr_coord_val max_width)
 {
 	size_t max_idx = 0;
 
@@ -3775,28 +3747,11 @@ size_t display_fit_proportional( const char *text, scr_coord_val max_width, scr_
 	scr_coord_val current_offset = 0;
 
 	const char *tmp_text = text;
-	while(  get_next_char_with_metrics(tmp_text, byte_length, pixel_width)  &&  max_width > (current_offset+ellipsis_width+pixel_width)  ) {
+	while(  get_next_char_with_metrics(tmp_text, byte_length, pixel_width)  &&  max_width > (current_offset+pixel_width)  ) {
 		current_offset += pixel_width;
 		max_idx += byte_length;
 	}
-	size_t ellipsis_idx = max_idx;
-
-	// now check if the text would fit completely
-	if(  ellipsis_width  &&  pixel_width > 0  ) {
-		// only when while above failed because of exceeding length
-		current_offset += pixel_width;
-		max_idx += byte_length;
-		// check the rest ...
-		while(  get_next_char_with_metrics(tmp_text, byte_length, pixel_width)  &&  max_width > (current_offset+pixel_width)  ) {
-			current_offset += pixel_width;
-			max_idx += byte_length;
-		}
-		// if this fits, return end of string
-		if(  max_width > (current_offset+pixel_width)  ) {
-			return max_idx+byte_length;
-		}
-	}
-	return ellipsis_idx;
+	return max_idx;
 }
 
 
@@ -3834,57 +3789,41 @@ utf32 get_prev_char_with_metrics(const char* &text, const char *const text_start
 */
 int display_calc_proportional_string_len_width(const char *text, size_t len)
 {
-	const font_t* const fnt = &default_font;
-	unsigned int width = 0;
+	uint8 byte_length = 0;
+	uint8 pixel_width = 0;
+	size_t idx = 0;
+	scr_coord_val width = 0;
 
-	// decode char
-	const char *const end = text + len;
-	while(  text < end  ) {
-		const utf8 *p = reinterpret_cast<const utf8 *>(text);
-		const utf32 iUnicode = utf8_decoder_t::decode(p);
-		text = reinterpret_cast<const char *>(p);
-
-		if(  iUnicode == UNICODE_NUL ||  iUnicode == '\n') {
-			return width;
-		}
-		width += fnt->get_glyph_advance(iUnicode);
+	while (get_next_char_with_metrics(text, byte_length, pixel_width)  &&  idx < len) {
+		width += pixel_width;
+		idx += byte_length;
 	}
-
 	return width;
 }
-
 
 
 /* display_calc_proportional_multiline_string_len_width
 * calculates the width and hieght of a box containing the text inside
 */
-void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, const char *text, size_t len)
+void display_calc_proportional_multiline_string_len_width(int &xw, int &yh, const char *text)
 {
 	const font_t* const fnt = &default_font;
 	int width = 0;
 
 	xw = yh = 0;
 
-	// decode char
-	const char *const end = text + len;
-	while(  text < end  ) {
-		const utf8 *p = reinterpret_cast<const utf8 *>(text);
-		const utf32 iUnicode = utf8_decoder_t::decode(p);
-		text = reinterpret_cast<const char *>(p);
+	const utf8 *p = reinterpret_cast<const utf8 *>(text);
+	while (const utf32 iUnicode = utf8_decoder_t::decode(p)) {
 
 		if(  iUnicode == '\n'  ) {
 			// new line: record max width
 			xw = max( xw, width );
 			yh += LINESPACE;
 			width = 0;
+			continue;
 		}
-		if(  iUnicode == UNICODE_NUL ) {
-			return;
-		}
-
 		width += fnt->get_glyph_advance(iUnicode);
 	}
-
 	xw = max( xw, width );
 	yh += LINESPACE;
 }
