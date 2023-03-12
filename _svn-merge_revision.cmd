@@ -13,6 +13,7 @@ git add src/simutrans/revision.h
 pause
 
 git commit -am "r%string:~1,5%"
+git push --all
 
 pause
 
