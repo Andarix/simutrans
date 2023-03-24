@@ -14,7 +14,6 @@
 #include <windows.h>
 
 #include <string.h>
-#include <utils/unicode.h>
 
 
 /**
