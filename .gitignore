@@ -29,6 +29,7 @@
 *.patch
 *.log
 /doxygen
+<<<<<<< HEAD
 /*.exe
 /*.manifest
 /*.pdb
@@ -50,3 +51,13 @@ Simutrans_SDL2.lib
 /status.txt
 /libs/zstd-1.5.0
 /src/build
+=======
+.vs/
+revision.h
+.idea
+*.d
+*.res
+/autom4te.cache
+*.exe
+.ccls-cache
+>>>>>>> refs/remotes/origin/trunk

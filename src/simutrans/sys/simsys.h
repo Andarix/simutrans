@@ -141,6 +141,22 @@ gzFile dr_gzopen(const char *path, const char *mode);
 // Functions the same as stat except path must be UTF-8 encoded.
 int dr_stat(const char *path, struct stat *buf);
 
+/** 
+* Check if the directory exists and if so set the result variable to it
+* @param path : Path to directory to check
+* @param info : String to provide extra log info
+* @param result : Variable to store the path to directory if it exists
+* @param testfile : Optional file to check for existence
+*/
+bool check_and_set_dir(const char *path, const char *info, char *result, const char *testfile=NULL);
+
+/**
+* Sets the base_dir
+* @param base_dir_arg : command line argument "-set_basedir"
+* @param executable_path : Path to executable (as stored in argv[0])
+*/
+bool dr_set_basedir(const char * base_dir_arg, char * executable_path);
+
 /* query home directory */
 char const* dr_query_homedir();
 
@@ -151,6 +167,9 @@ unsigned short* dr_textur_init();
 
 // returns the file path to a font file (or more than one, if used with number higher than zero)
 const char *dr_query_fontpath( int );
+
+// return a default TTF (windows/android) or a BDF for now
+std::string dr_get_system_font();
 
 void dr_textur(int xp, int yp, int w, int h);
 
@@ -251,6 +270,8 @@ sint16 dr_toggle_borderless();
 /* temparily minimizes window and restore it */
 sint16 dr_suspend_fullscreen();
 void dr_restore_fullscreen(sint16 old_fullscreen);
+
+const char* get_version();
 
 int sysmain(int argc, char** argv);
 

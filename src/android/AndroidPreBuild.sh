@@ -6,10 +6,27 @@ else
 	svn checkout https://github.com/Andarix/simutrans simutrans || exit 1
 fi
 echo "Updating translations"
+<<<<<<< HEAD
 	cd simutrans || exit 1
 	tools/get_lang_files.sh || exit 1
 	rm simutrans/config/simuconf.tab
 	mv simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
+=======
+tools/get_lang_files.sh || exit 1
+
+cd simutrans
+
+echo "Get pak64"
+../tools/get_pak.sh pak64 || exit 1
+
+#echo "Get pak64.german"
+#../tools/get_pak.sh pak.german || exit 1
+
+echo "Get pak64.japan"
+../tools/get_pak.sh pak64.japan || exit 1
+
+cd ..
+>>>>>>> refs/remotes/origin/trunk
 
 echo "copy cacert.pem and Android get_pak.sh"
   cp src/android/cacert.pem simutrans/cacert.pem || exit 1
@@ -39,11 +56,17 @@ download_with_retry() {
 #[ -e ../../simutrans/pak.japan ] || (download_with_retry http://downloads.sourceforge.net/project/simutrans/pak64.japan/123-0/simupak64.japan-123-0.zip simupak64.japan-123-0.zip && unzip -n simupak64.japan-123-0.zip -d .) || exit 1
 #[ -e ../simutrans/pak64.german ] || (download_with_retry https://simutrans-germany.com/pak.german/pak64.german_0-123-0-0-5_full.zip pak64.german_0-123-0-0-5_full.zip && unzip -n pak64.german_0-123-0-0-5_full.zip -d .) || exit 1
 
+<<<<<<< HEAD
 [ -e simutrans/simutrans/music/TimGM6mb.sf2 ] || (download_with_retry https://sourceforge.net/p/mscore/code/HEAD/tree/trunk/mscore/share/sound/TimGM6mb.sf2?format=raw simutrans/simutrans/music/TimGM6mb.sf2) || exit 1
+=======
+mkdir -p simutrans/music
+[ -e simutrans/music/TimGM6mb.sf2 ] || (download_with_retry https://sourceforge.net/p/mscore/code/HEAD/tree/trunk/mscore/share/sound/TimGM6mb.sf2?format=raw TimGM6mb.sf2 && cp ./TimGM6mb.sf2 simutrans/music/TimGM6mb.sf2) || exit 1
+>>>>>>> refs/remotes/origin/trunk
 #[ -e ../simutrans/font/RobotoCondensed-Regular.ttf ] || (download_with_retry https://fonts.google.com/download?family=Roboto%20Condensed Roboto_Condensed.zip && unzip -n Roboto_Condensed.zip -d ../simutrans/font) || exit 1
 #cd ../..
 [ -e simutrans/simutrans/font/Roboto-Regular.ttf ] || (download_with_retry https://fonts.google.com/download?family=Roboto Roboto.zip && unzip -n Roboto.zip Roboto-Regular.ttf -d simutrans/simutrans/font) || exit 1
 
+<<<<<<< HEAD
 echo 'Done adding assets'
 #cd ..
 
@@ -57,3 +80,6 @@ cd ../..
 echo Generating data.zip done
 
 #[ -e AndroidData/TimGM6mb.sf2 ] || cp simutrans/TimGM6mb.sf2 AndroidData/ || exit 1
+=======
+echo 'Done adding assets'
+>>>>>>> refs/remotes/origin/trunk
