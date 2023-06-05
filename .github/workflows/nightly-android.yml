@@ -125,12 +125,6 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: /android-sdl/simutrans-android-project/simutrans/build/outputs/bundle/release/simutrans-release.aab
-        asset_name: simuandroid-nightly.aab
-        tag: Nightly
-        overwrite: true
-
-
         file: /android-sdl/project/app/build/outputs/bundle/release/simuandroid-multi-nightly.apk
         asset_name: simuandroid-multi-nightly_r.apk
         tag: Nightly
