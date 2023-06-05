@@ -92,7 +92,7 @@ jobs:
         wget https://github.com/FluidSynth/fluidsynth/releases/download/v2.3.1/fluidsynth-2.3.1-android24.zip
         unzip fluidsynth-*.zip -d fluidsynth
 
-<<<<<<< HEAD
+
     # pelya building script expects that 1/ simutrans is found inside /android-sdl/project/jni/application/simutrans/simutrans and 2/ that it is a svn repo, as revision.h is populated by svn command line
     # the content of actions/checkout is a git repo so it is not compatible
     # so we just checkout the meta informations
@@ -121,30 +121,6 @@ jobs:
         sed -i "s/^AppVersionCode=[0-9]\+/AppVersionCode=$revision/" ./project/jni/application/simutrans/AndroidAppSettings.cfg
         sed -i "s/^AppVersionName=\"[0-9]\+.[0-9]\+\"/AppVersionName=\"r$(cd project/jni/application/simutrans/simutrans; tools/get_revision.sh)\"/" ./project/jni/application/simutrans/AndroidAppSettings.cfg
 
-    - name: Build Simutrans Bundle
-=======
-    - name: Build Simutrans
->>>>>>> refs/remotes/origin/trunk
-      env:
-          SIGNING_KEYSTORE: /android-sdl/simutrans-android-project/simutrans/jni/simutrans/src/android/Simutrans-upload.keystore
-          SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASS }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASS }}
-      working-directory: gh-clone/simutrans
-      run: |
-        echo "action_state=yellow" >> $GITHUB_ENV
-        sed -i "s/versionCode [0-9]\+/versionCode $(./tools/get_revision.sh)/" /android-sdl/simutrans-android-project/simutrans/build.gradle
-        cd /android-sdl/simutrans-android-project
-        cat simutrans/build.gradle
-        ./gradlew assembleRelease
-        ./gradlew bundleRelease
-        cd /android-sdl/simutrans-android-project/simutrans/build/outputs/bundle/release
-        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore $SIGNING_KEYSTORE --storepass $SIGNING_STORE_PASSWORD simutrans-release.aab $SIGNING_KEY_ALIAS
-        mkdir whatsNewDirectory
-        echo `$GITHUB_WORKSPACE/gh-clone/simutrans;git log --pretty=format:'%s' -1` > whatsNewDirectory/whatsnew-en-US
-
-<<<<<<< HEAD
-=======
     - name: Update binaries of Nightly Release aab
       uses: svenstaro/upload-release-action@v2
       with:
@@ -154,31 +130,9 @@ jobs:
         tag: Nightly
         overwrite: true
 
->>>>>>> refs/remotes/origin/trunk
-    - name: Update binaries of Nightly Release apk
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-<<<<<<< HEAD
+
         file: /android-sdl/project/app/build/outputs/bundle/release/simuandroid-multi-nightly.apk
         asset_name: simuandroid-multi-nightly_r.apk
         tag: Nightly
         overwrite: true
-=======
-        file: /android-sdl/simutrans-android-project/simutrans/build/outputs/apk/release/simutrans-release-unsigned.apk
-        asset_name: simuandroid-nightly.apk
-        tag: Nightly
-        overwrite: true
 
-    - name: Release Beta on Google Play Store
-      uses: r0adkll/upload-google-play@v1
-      if: github.repository == 'simutrans/simutrans'
-      with:
-        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-        packageName: com.simutrans
-        releaseFiles: /android-sdl/simutrans-android-project/simutrans/build/outputs/bundle/release/simutrans-release.aab
-        track: beta
-        status: completed
-        whatsNewDirectory: /android-sdl/simutrans-android-project/simutrans/build/outputs/bundle/release/whatsNewDirectory
-
->>>>>>> refs/remotes/origin/trunk
