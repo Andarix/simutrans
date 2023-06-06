@@ -98,6 +98,7 @@ jobs:
       working-directory: gh-clone/simutrans
       run: |
         echo "action_state=yellow" >> $GITHUB_ENV
+        sed -i 's/applicationId "com.simutrans"/applicationId "com.simutrans.germany.simutrans"/' /android-sdl/simutrans-android-project/simutrans/build.gradle
         sed -i "s/versionCode [0-9]\+/versionCode $(./tools/get_revision.sh)/" /android-sdl/simutrans-android-project/simutrans/build.gradle
         cd /android-sdl/simutrans-android-project
         cat simutrans/build.gradle
