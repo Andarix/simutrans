@@ -6,9 +6,26 @@ on:
       - 'Nightly_a'
 
 jobs:
+  set-revision:
+    name: set revision
+    runs-on: ubuntu-20.04
+    outputs:
+      output1: ${{ steps.out1.outputs.revision }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: detect revision
+      run: |
+        read text < ./src/simutrans/revision.h
+        revision=${text:17:5}
+        echo "revision=$revision" >> $GITHUB_ENV
+    - id: out1
+      run: echo "revision=$revision" >> $GITHUB_OUTPUT
+
   build:
 
     runs-on: ubuntu-latest
+    needs: [set-revision]
     permissions: write-all
 
     steps:
@@ -99,7 +116,7 @@ jobs:
       run: |
         echo "action_state=yellow" >> $GITHUB_ENV
         sed -i 's/applicationId "com.simutrans"/applicationId "com.simutrans.germany.simutrans"/' /android-sdl/simutrans-android-project/simutrans/build.gradle
-        sed -i "s/versionCode [0-9]\+/versionCode $(./tools/get_revision.sh)/" /android-sdl/simutrans-android-project/simutrans/build.gradle
+        sed -i "s/versionCode [0-9]\+/versionCode ${{ needs.set-revision.outputs.output1 }}/" /android-sdl/simutrans-android-project/simutrans/build.gradle
         cd /android-sdl/simutrans-android-project
         cat simutrans/build.gradle
         #cp project/jni/simutrans/src/android/signBundle.sh .
