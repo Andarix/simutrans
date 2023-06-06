@@ -90,6 +90,11 @@ jobs:
         unzip fluidsynth-*.zip -d fluidsynth
 
     - name: Build Simutrans
+      env:
+          SIGNING_KEYSTORE: /android-sdl/simutrans-android-project/simutrans/jni/simutrans/src/android/Simutrans-upload.keystore
+          SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASS }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASS }}
       working-directory: gh-clone/simutrans
       run: |
         echo "action_state=yellow" >> $GITHUB_ENV
