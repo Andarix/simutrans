@@ -7,6 +7,7 @@ else
 fi
 echo "Updating translations"
   cd simutrans || exit 1
+  chmod +755 tools/get_lang_files.sh
   tools/get_lang_files.sh || exit 1
   rm simutrans/config/simuconf.tab
   mv simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
