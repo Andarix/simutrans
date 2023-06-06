@@ -12,7 +12,7 @@ echo "Updating translations"
   rm simutrans/config/simuconf.tab
   mv simutrans/config/simuconf_android.tab simutrans/config/simuconf.tab
 
-cd simutrans
+#cd simutrans
 
 #echo "Get pak64"
 #../tools/get_pak.sh pak64 || exit 1
