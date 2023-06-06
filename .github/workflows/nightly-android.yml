@@ -90,19 +90,19 @@ jobs:
         unzip fluidsynth-*.zip -d fluidsynth
 
     - name: Build Simutrans
-      env:
-        STORE_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_ALIAS }}
-        STORE_PASS: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASS }}
-      working-directory: /android-sdl/simutrans-android-project
+      working-directory: gh-clone/simutrans
       run: |
         echo "action_state=yellow" >> $GITHUB_ENV
+        sed -i "s/versionCode [0-9]\+/versionCode $(./tools/get_revision.sh)/" /android-sdl/simutrans-android-project/simutrans/build.gradle
+        cd /android-sdl/simutrans-android-project
+        cat simutrans/build.gradle
         #cp project/jni/simutrans/src/android/signBundle.sh .
         #chmod 555 ./signBundle.sh
         #./build.sh -b simutrans
         ./gradlew assembleRelease
         ./gradlew bundleRelease
 
-    - name: Update binaries of Nightly Release aab
+    - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
