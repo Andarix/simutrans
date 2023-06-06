@@ -106,7 +106,7 @@ jobs:
         mv $GITHUB_WORKSPACE/gh-clone/simutrans project/jni/application/simutrans/
         chmod +755 project/jni/application/simutrans/simutrans/tools/get_revision.sh
         chmod +755 project/jni/application/simutrans/simutrans/tools/get_lang_files.sh
-        chmod +755 project/jni/application/simutrans/simutrans/src/android/AndroidBuild.sh
+        chmod +755 project/jni/application/simutrans/simutrans/src/android/AndroidPreBuild.sh
         echo $(ls -al project/jni/application/simutrans/simutrans/android)
         cp -f project/jni/application/simutrans/simutrans/src/android/AndroidAppSettings.cfg project/jni/application/simutrans/
         cp -f project/jni/application/simutrans/simutrans/src/android/AndroidBuild.sh project/jni/application/simutrans/
