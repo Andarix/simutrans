@@ -23,7 +23,6 @@ echo "Updating translations"
 #echo "Get pak64.japan"
 #../tools/get_pak.sh pak64.japan || exit 1
 
-
 echo "copy cacert.pem and Android get_pak.sh"
   cp src/android/cacert.pem simutrans/cacert.pem || exit 1
   cp src/android/unpak.sh simutrans/get_pak.sh; chmod 755 simutrans/get_pak.sh  || exit 1
