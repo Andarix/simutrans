@@ -93,9 +93,11 @@ jobs:
         cp -r $GITHUB_WORKSPACE/gh-clone/simutrans simutrans/jni/simutrans
         cp -r simutrans/jni/SDL/android-project/app/src/main/java simutrans/src/main
         cd simutrans/jni
-        cp -v simutrans/src/android/icon.png ../src/main/res/mipmap-hdpi/ic_launcher.png
-        cp -v simutrans/src/android/icon.png ../src/main/res/mipmap-mdpi/ic_launcher.png
-        cp -v simutrans/src/android/icon.png ../src/main/res/mipmap-xhdpi/ic_launcher.png
+        cp -v simutrans/src/android/logo_72.png ../src/main/res/mipmap-hdpi/ic_launcher.png
+        cp -v simutrans/src/android/logo_48.png ../src/main/res/mipmap-mdpi/ic_launcher.png
+        cp -v simutrans/src/android/logo_96.png ../src/main/res/mipmap-xhdpi/ic_launcher.png
+        cp -v simutrans/src/android/logo_144.png ../src/main/res/mipmap-xxhdpi/ic_launcher.png
+        cp -v simutrans/src/android/logo_192.png ../src/main/res/mipmap-xxxhdpi/ic_launcher.png
         chmod +755 simutrans/src/android/AndroidPreBuild.sh
         ./simutrans/src/android/AndroidPreBuild.sh
         cp -rf simutrans/simutrans/. ../src/main/assets
