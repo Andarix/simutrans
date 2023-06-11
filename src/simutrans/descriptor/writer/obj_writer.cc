@@ -25,7 +25,7 @@ void obj_writer_t::register_writer(bool main_obj)
 {
 	if (!writer_by_name) {
 		writer_by_name = new stringhashtable_tpl<obj_writer_t*>;
-		writer_by_type = new inthashtable_tpl<obj_type, obj_writer_t*>;
+		writer_by_type = new inthashtable_tpl<uint32, obj_writer_t*>;
 	}
 	if (main_obj) {
 		writer_by_name->put(get_type_name(), this);
@@ -70,48 +70,76 @@ void obj_writer_t::write_head(FILE* fp, obj_node_t& node, tabfileobj_t& obj)
 }
 
 
-void obj_writer_t::dump_nodes(FILE* infp, int level, uint16 index)
+bool obj_writer_t::dump_nodes(FILE* infp, int level, uint16 index)
 {
 	obj_node_info_t node;
-	uint16 child = 0;
 
-	obj_node_t::read_node( infp, node );
-	long next_pos = ftell(infp) + node.size;
+	if (!obj_node_t::read_node( infp, node ) || node.size == 0) {
+		return false;
+	}
 
-	obj_writer_t* writer = writer_by_type->get((obj_type)node.type);
+	const long next_pos = ftell(infp) + node.size;
+
+	obj_writer_t* writer = writer_by_type->get(node.type);
 	if (writer) {
 		printf("%*s%03u %4.4s-node (%s)", 3 * level, " ", index, (const char*)&node.type, writer->get_type_name());
-		writer->dump_node(infp, node);
+		bool ok = writer->dump_node(infp, node);
 		printf("\n");
+		if (!ok) {
+			return false;
+		}
 	}
-	fseek(infp, next_pos, SEEK_SET);
-	for (int i = 0; i < node.nchildren; i++) {
-		dump_nodes(infp, level + 1, child++);
+
+	if (fseek(infp, next_pos, SEEK_SET) != 0) {
+		return false;
 	}
+
+	for (int child_idx = 0; child_idx < node.nchildren; child_idx++) {
+		if (!dump_nodes(infp, level + 1, child_idx)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
-void obj_writer_t::list_nodes(FILE* infp)
+bool obj_writer_t::list_nodes(FILE *infp)
 {
 	obj_node_info_t node;
-	size_t          size = 0;
 
-	obj_node_t::read_node( infp, node );
-	long next_pos = ftell(infp) + node.size;
+	if (!obj_node_t::read_node( infp, node ) || node.size == 0) {
+		return false;
+	}
 
-	obj_writer_t* writer = writer_by_type->get((obj_type)node.type);
+	const long next_pos = ftell(infp) + node.size;
+
+	obj_writer_t *writer = writer_by_type->get((obj_type)node.type);
 	if (writer) {
-		fseek(infp, node.size, SEEK_CUR);
-		printf("%-16s  %-30s  %5u  ", writer->get_type_name(), (writer->get_node_name(infp)).c_str(), node.nchildren);
+		if (fseek(infp, node.size, SEEK_CUR) != 0) {
+			return false;
+		}
+
+		const std::string node_name = writer->get_node_name(infp);
+		printf("%-16s  %-30s  %5u  ", writer->get_type_name(), node_name.c_str(), node.nchildren);
 	}
 	else {
-		printf("(unknown %4.4s)    %30.30s  %5.5s  ", (const char*)&node.type, " ", " ");
+		printf("(unknown %4.4s)    %30.30s  %5.5s  ", (const char *)&node.type, " ", " ");
 	}
-	fseek(infp, next_pos, SEEK_SET);
+
+	if (fseek(infp, next_pos, SEEK_SET) != 0) {
+		return false;
+	}
+
+	size_t offset = 0;
 	for (int i = 0; i < node.nchildren; i++) {
-		size += skip_nodes(infp);
+		if (!skip_nodes(infp, offset)) {
+			return false;
+		}
 	}
-	printf("%10lu\n",size);
+
+	printf("%10lu\n", offset);
+	return true;
 }
 
 
@@ -136,44 +164,56 @@ void obj_writer_t::show_capabilites()
 }
 
 
-std::string obj_writer_t::name_from_next_node(FILE* fp) const
+std::string obj_writer_t::name_from_next_node(FILE *fp) const
 {
 	std::string ret;
-	char* buf;
 	obj_node_info_t node;
 
-	obj_node_t::read_node( fp, node );
-	if(node.type==obj_text) {
-		buf = new char[node.size];
-		fread(buf, node.size, 1, fp);
-		ret = buf;
-		delete [] buf;
-
-		return ret;
-	}
-	else {
+	if (!obj_node_t::read_node( fp, node ) || node.type!=obj_text || node.size == 0xFFFFFFFFu) {
 		return "";
 	}
+
+	char *buf = new char[node.size+1];
+	if (!buf) {
+		return "";
+	}
+
+	if (fread(buf, node.size, 1, fp) != 1) {
+		delete[] buf;
+		return "";
+	}
+
+	buf[node.size] = 0;
+	ret = buf;
+	delete[] buf;
+	return ret;
 }
 
 
-size_t obj_writer_t::skip_nodes(FILE* fp)
+bool obj_writer_t::skip_nodes(FILE *fp, size_t &offset)
 {
-	size_t          size = 0;
 	obj_node_info_t node;
 
-	obj_node_t::read_node( fp, node );
-	fseek(fp, node.size, SEEK_CUR);
-	for (int i = 0; i < node.nchildren; i++) {
-		size += skip_nodes(fp);
+	if (!obj_node_t::read_node( fp, node ) || fseek(fp, node.size, SEEK_CUR) != 0) {
+		return false;
 	}
-	return size+node.size;
+
+	offset += node.size;
+
+	for (int i = 0; i < node.nchildren; i++) {
+		if (!skip_nodes(fp, offset)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
-void obj_writer_t::dump_node(FILE* /*infp*/, const obj_node_info_t& node)
+bool obj_writer_t::dump_node(FILE */*infp*/, const obj_node_info_t& node)
 {
 	printf(" %5u bytes", node.size);
+	return true;
 }
 
 
@@ -182,7 +222,7 @@ const char* obj_writer_t::node_writer_name(FILE* infp) const
 	obj_node_info_t node;
 	obj_node_t::read_node( infp, node );
 	fseek(infp, node.size, SEEK_CUR);
-	obj_writer_t* writer = writer_by_type->get((obj_type)node.type);
+	obj_writer_t* writer = writer_by_type->get(node.type);
 	if (writer) {
 		return writer->get_type_name();
 	}

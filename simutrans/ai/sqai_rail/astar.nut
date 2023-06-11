@@ -683,7 +683,7 @@ class astar_builder extends astar
             local build_bridge = true
             // check whether the ground can be adjusted and no bridge is necessary
             // bridge len <= 4 tiles
-            if ( b_tiles < 5 ) {
+            if ( b_tiles < 8 ) {
               build_bridge = check_ground(tile_x(route[i-1].x, route[i-1].y, route[i-1].z), tile_x(route[i].x, route[i].y, route[i].z), way)
               //gui.add_message_at(our_player, "check_ground(pos_s, pos_e) --- " + build_bridge, route[i-1])
             }
@@ -743,12 +743,62 @@ function test_select_way(start, end, t_end, wt) {
 }
 
 /*
+ * check ground under bridges for terraform and remove bridge
+ *
+ * bridges ramp - ramp
+ *
+ * tiles = array -> way tile - bridge tiles - way tile
+ */
+function replace_bridge_to_land(tiles) {
+  // test_tile_is_empty(tile)
+
+  if ( (tiles[1].is_bridge() && tiles[1].y == tiles[0].y ) ) {
+    if ( tiles[1].x > tiles[0].x ) {
+      // 31-1 : 3-13
+      local tiles_ground = []
+      for ( local i = 2; i < tiles.len()-2; i++ ) {
+        tiles_ground = square_x(t_tile[i].x, t_tile[i].y).get_ground_tile()
+      }
+
+      local terraform_grid_tiles = []
+      local terraform_action = null // 0 = down ; 1 = up
+
+      if ( tiles_ground[0].get_slope() == 31 && tiles_ground[1].get_slope() == 1 ) {
+        local tile_a1 = square_x(tiles_ground[0].x, tiles_ground[0].y-1).get_ground_tile()
+        local tile_a1 = square_x(tiles_ground[1].x, tiles_ground[1].y-1).get_ground_tile()
+        local tile_b1 = square_x(tiles_ground[0].x, tiles_ground[0].y+1).get_ground_tile()
+        local tile_b2 = square_x(tiles_ground[1].x, tiles_ground[1].y+1).get_ground_tile()
+
+
+
+
+
+
+
+      }
+
+
+
+    } else {
+    // 13-3 : 1-31
+
+
+
+    }
+  }
+
+
+
+
+}
+
+/*
  * check ground under bridges
  *
  *
  */
 function check_ground(pos_s, pos_e, way) {
-  //gui.add_message_at(our_player, "check_ground(pos_s, pos_e) --- " + coord_to_string(pos_s), world.get_time())
+  gui.add_message_at(our_player, "check_ground(pos_s, pos_e) --- " + coord_to_string(pos_s) + " - " + coord_to_string(pos_e), pos_s)
 
   local check_x = 0
   local check_y = 0
@@ -802,13 +852,25 @@ function check_ground(pos_s, pos_e, way) {
   //gui.add_message_at(our_player, "(800) start_end_slope " + start_end_slope, world.get_time())
 
     local z = null
+    local z1 = null
     local terraform_tiles = []
     local terraform_grid_tiles = []
+<<<<<<< HEAD
     local err = null
   if ( start_end_slope == 1 && pos_s.z == pos_e.z ) {
+=======
+    local grid_coord = []
+    local err = null
+  if ( start_end_slope == 1 && pos_s.z == pos_e.z && f_count > 1 ) {
+>>>>>>> refs/remotes/origin/trunk
     for ( local i = 0; i < f_count; i++ ) {
       // find z coord
       z = square_x(t_tile[i].x, t_tile[i].y).get_ground_tile()
+      if ( (i + 1) == f_count ) {
+        z1 = square_x(t_tile[i-1].x, t_tile[i-1].y).get_ground_tile()
+      } else {
+        z1 = square_x(t_tile[i+1].x, t_tile[i+1].y).get_ground_tile()
+      }
 
         //gui.add_message_at(our_player, "check_ground bridge - tile_tree = " + tile_tree + " || tile_groundobj = " + tile_groundobj + " tile_moving_object = " + tile_moving_object, z)
 
@@ -823,6 +885,7 @@ function check_ground(pos_s, pos_e, way) {
         // tiles free no build bridges -> terraform
         terraform_tiles.append(z)
 
+<<<<<<< HEAD
         gui.add_message_at(our_player, "(817) check_ground bridge - terraform_tiles.append(z) " + coord_to_string(z), z)
         gui.add_message_at(our_player, "(817) z.get_slope() " + z.get_slope(), z)
         // slope 39 -> tile y+1 grid_raise()
@@ -838,6 +901,77 @@ function check_ground(pos_s, pos_e, way) {
       if ( terraform_grid_tiles.len() > 0 ) {
         for ( local i = 0; i < terraform_grid_tiles.len(); i++ ) {
           err = command_x.grid_raise(our_player, coord3d(terraform_grid_tiles[i].x, terraform_grid_tiles[i].y, terraform_grid_tiles[i].z))
+=======
+        gui.add_message_at(our_player, "(832) check_ground bridge - terraform_tiles.append(z) " + coord3d_to_string(z), z)
+        //gui.add_message_at(our_player, "(832) z.get_slope() " + z.get_slope(), z)
+        // EW slope 37-39 : 13-31 : 31-1 : 3-13
+        // NS slope 13-39 : 31-37
+        local z_slope_nr = z.get_slope()
+        local z1_slope_nr = z1.get_slope()
+        local grid_tile = null
+
+        if ( ((z_slope_nr == 39 || z_slope_nr == 31) && z1_slope_nr == 37) || (z_slope_nr == 37 && (z1_slope_nr == 39 || z1_slope_nr == 31)) ) {
+          if ( z1_slope_nr == 39 ) {
+            grid_tile = tile_x(z1.x, z1.y+1, z1.z)
+          } else if ( z_slope_nr == 39 ) {
+            grid_tile = tile_x(z.x, z.y+1, z.z)
+          }
+          if ( z1_slope_nr == 31 ) {
+            grid_tile = tile_x(z1.x+1, z1.y, z1.z)
+          } else if ( z_slope_nr == 31 ) {
+            grid_tile = tile_x(z.x+1, z.y, z.z)
+          }
+        }
+        if ( (z_slope_nr == 13 && (z1_slope_nr == 31 || z1_slope_nr == 39)) || ((z_slope_nr == 31 || z_slope_nr == 39) && z1_slope_nr == 13) ) {
+          if ( z1_slope_nr == 13 ) {
+            grid_tile = tile_x(z1.x, z1.y, z1.z)
+          } else {
+            grid_tile = tile_x(z.x, z.y, z.z)
+          }
+        }
+
+        if ( (z_slope_nr == 1 && z1_slope_nr == 31) || (z_slope_nr == 31 && z1_slope_nr == 1) ) {
+          if ( z1_slope_nr == 1 ) {
+            grid_tile = tile_x(z1.x, z1.y, z1.z)
+          } else {
+            grid_tile = tile_x(z.x, z.y, z.z)
+          }
+        }
+
+        //gui.add_message_at(our_player, "(862) grid_coord.find(coord3d_to_string(grid_tile)) " + grid_coord.find(coord3d_to_string(grid_tile)), grid_tile)
+        if ( grid_tile != null && grid_coord.find(coord3d_to_string(grid_tile)) == null ) {
+          terraform_grid_tiles.append(grid_tile)
+          grid_coord.append(coord3d_to_string(grid_tile))
+          gui.add_message_at(our_player, "(862) check_ground bridge - terraform_grid_tiles.append(grid_tile) " + coord3d_to_string(grid_tile), grid_tile)
+        }
+
+/*
+        if ( (z_slope_nr == 3 && z1_slope_nr == 9) || (z_slope_nr == 9 && z1_slope_nr == 3) ) {
+          if ( z1_slope_nr == 9 ) {
+            terraform_grid_tiles.append(tile_x(z1.x+1, z1.y, z1.z))
+          } else {
+            terraform_grid_tiles.append(tile_x(z.x+1, z.y, z.z))
+          }
+        }
+*/
+      }
+    }
+
+    local terraform_action = 1 // 0 = down ; 1 = up
+
+    if ( terraform_tiles.len() > 0 && terraform_tiles.len() < 7 ) {
+      local terraform_field = false
+      if ( terraform_grid_tiles.len() > 0 ) {
+        gui.add_message_at(our_player, "(873) terraform_grid_tiles.len() " + terraform_grid_tiles.len(), world.get_time())
+        for ( local i = 0; i < terraform_grid_tiles.len(); i++ ) {
+          if ( pos_s.z > terraform_grid_tiles[i].z ) {
+            err = command_x.grid_raise(our_player, coord3d(terraform_grid_tiles[i].x, terraform_grid_tiles[i].y, terraform_grid_tiles[i].z))
+          } else {
+            err = command_x.grid_lower(our_player, coord3d(terraform_grid_tiles[i].x, terraform_grid_tiles[i].y, terraform_grid_tiles[i].z))
+          }
+
+
+>>>>>>> refs/remotes/origin/trunk
           if ( err != null ) {
             terraform_field = true
           }
@@ -1144,6 +1278,15 @@ function remove_wayline(route, pos, wt, st_len = null) {
     if ( i > 0 ) {
       next_tile = square_x(route[i-1].x, route[i-1].y).get_ground_tile()
     }
+
+    local no_bridge = false
+    if ( i > 0 && ( abs(tile.x-next_tile.x) > 1 || abs(tile.x-next_tile.x) > 1 )) {
+      if ( tile.find_object(mo_bridge) == null ) {
+        no_bridge = true
+        gui.add_message_at(our_player, "#1179# remove way by not build bridge " + coord3d_to_string(tile), next_tile)
+      }
+    }
+
     local t_field = tile.find_object(mo_way)
     if ( t_field == null ) { continue }
     local cnv_count = t_field.get_convoys_passed()[0] + t_field.get_convoys_passed()[1]
@@ -1629,7 +1772,11 @@ function expand_station(pl, fields, wt, select_station, start_fld, combined_halt
   //gui.add_message_at(pl, "(1496) ---=> extension_tile " + extension_tile, world.get_time())
 
 
+<<<<<<< HEAD
   if ( tile_x(extension_tile.x, extension_tile.y, extension_tile.get_ground_tile().z).is_water() ) {
+=======
+  if ( extension_tile != null && tile_x(extension_tile.x, extension_tile.y, extension_tile.get_ground_tile().z).is_water() ) {
+>>>>>>> refs/remotes/origin/trunk
     extension_tile = null
   }
 
@@ -2432,8 +2579,9 @@ function build_double_track(start_field, wt) {
 
   // 1
   // 2 - terraform
+  // 21 - terraform grid
   // 3 - double track diagonal
-  local print_message_box = 0
+  local print_message_box = 21
 
   if ( print_message_box > 0 ) {
     gui.add_message_at(our_player, " ### build_double_track ### " + coord3d_to_string(start_field), start_field)
@@ -2748,45 +2896,269 @@ function build_double_track(start_field, wt) {
           straight_slope = true
         }
 
-        if ( print_message_box == 2 ) {
+        if ( print_message_box == 21 ) {
           gui.add_message_at(b_player, " ---=> tiles[i] ground " + coord3d_to_string(ref_hight), ref_hight)
           gui.add_message_at(b_player, " ---=> tiles_build[i] ground " + coord3d_to_string(build_hight), build_hight)
           gui.add_message_at(b_player, " ---=> ref_hight.get_slope() " + ref_hight.get_slope(), world.get_time())
+          gui.add_message_at(b_player, " ---=> straight_slope " + straight_slope, world.get_time())
         }
 
         if ( build_hight.is_empty() && ( build_hight.get_slope() > 0 || ref_hight.z != build_hight.z ) ) {
 
-          if ( print_message_box == 2 ) {
+          if ( print_message_box == 21 ) {
             gui.add_message_at(b_player, " ---=> terraform", world.get_time())
             gui.add_message_at(b_player, " ---=> tiles_build.z " + build_hight.z + " tiles.z " + ref_hight.z, world.get_time())
           }
 
-          if ( build_hight.z < ref_hight.z && build_hight.z >= (ref_hight.z - 2) ) {
+          if ( (build_hight.z < ref_hight.z && build_hight.z >= (ref_hight.z - 2)) ) { //|| straight_slope == true
           // terraform up
-            if ( print_message_box == 2 ) {
-              gui.add_message_at(b_player, " ---=> tile up to flat ", world.get_time())
+            if ( print_message_box == 21 ) {
+              gui.add_message_at(b_player, " ---=> terraform up ", world.get_time())
             }
-            do {
-              err = command_x.set_slope(b_player, build_hight, 82 )
-              if ( err != null ) { break }
-              z = square_x(tiles_build[i].x, tiles_build[i].y).get_ground_tile()
-            } while(z.z < ref_hight.z )
+
+              local terraform_tile = 1
+              // terraform grid up
+              if ( print_message_box == 21 ) {
+                gui.add_message_at(b_player, " build_hight.get_slope() " + build_hight.get_slope(), build_hight)
+              }
+
+              local tile_build_slope = [37, 9, 31, 1, 3]
+              if ( tile_build_slope.find(build_hight.get_slope()) != null ) {
+                local cx = 0
+                local cy = 0
+                local build_side = 0
+                if ( d == 10 ) {
+                  cx = 1
+                  if ( tiles_build[i].y > tiles[i].y ) {
+                    build_side = 1
+                  }
+                } else if ( d == 5 ) {
+                  cy = 1
+                  if ( tiles_build[i].x > tiles[i].x ) {
+                    build_side = 1
+                  }
+                }
+
+                local tile_a = square_x(tiles_build[i].x+cx, tiles_build[i].y+cy).get_ground_tile()
+                local tile_a1 = null
+                local tile_b1 = null
+                if ( build_side == 1 ) {
+                  tile_a1 = square_x(tiles_build[i].x+cy, tiles_build[i].y+cx).get_ground_tile()
+                  tile_b1 = square_x(tile_a.x+cy, tile_a.y+cx).get_ground_tile()
+                } else {
+                  tile_a1 = square_x(tiles_build[i].x-cy, tiles_build[i].y-cx).get_ground_tile()
+                  tile_b1 = square_x(tile_a.x-cy, tile_a.y-cx).get_ground_tile()
+                }
+
+                if ( print_message_box == 21 ) {
+                  gui.add_message_at(b_player, " tile_a.get_slope() " + tile_a.get_slope(), tile_a)
+                  gui.add_message_at(b_player, " tile_a1.get_slope() " + tile_a1.get_slope(), tile_a1)
+                  gui.add_message_at(b_player, " tile_b1.get_slope() " + tile_b1.get_slope(), tile_b1)
+                }
+
+                local tile_a_slope = [27, 36, 31, 1]
+                if ( build_hight.get_slope() == 37 && tile_a_slope.find(tile_a.get_slope()) != null && test_tile_is_empty(tile_a1) && test_tile_is_empty(tile_b1) ) {
+                  err = command_x.grid_raise(our_player, coord3d(tile_b1.x, tile_b1.y, tile_b1.z))
+                  if ( err == null ) {
+                    terraform_tile = 0
+                  }
+                } else if ( (build_hight.get_slope() == 31 || build_hight.get_slope() == 3) && (tile_a.get_slope() == 4 || tile_a.get_slope() == 13 || tile_a.get_slope() == 1) ) {
+                  local tile_a1 = null
+                  local tile_b1 = null
+                  if ( build_side == 1 ) {
+                    tile_a1 = square_x(tiles_build[i].x+cy, tiles_build[i].y+cx).get_ground_tile()
+                    tile_b1 = square_x(tile_a.x+cy, tile_a.y+cx).get_ground_tile()
+                  } else {
+                    tile_a1 = square_x(tiles_build[i].x-cy, tiles_build[i].y-cx).get_ground_tile()
+                    tile_b1 = square_x(tile_a.x-cy, tile_a.y-cx).get_ground_tile()
+                  }
+
+                  //tile_a1 = square_x(tiles_build[i].x, tiles_build[i].y-1).get_ground_tile()
+                  //tile_b1 = square_x(tile_a.x, tile_a.y-1).get_ground_tile()
+
+                  if ( test_tile_is_empty(tile_a1) && test_tile_is_empty(tile_b1) ) {
+                    err = command_x.grid_raise(our_player, coord3d(tile_a.x, tile_a.y, tile_a.z))
+                    terraform_tile = 0
+                  }
+
+                }
+
+
+              }
+
+              // terraform tile
+              if ( terraform_tile == 1 ) {
+                do {
+                  err = command_x.set_slope(b_player, build_hight, 82 )
+                  if ( err != null ) { break }
+                  z = square_x(tiles_build[i].x, tiles_build[i].y).get_ground_tile()
+                } while(z.z < ref_hight.z )
+
+              }
+
 
           } else if ( build_hight.z >= ref_hight.z || build_hight.z <= (ref_hight.z + 1) ) {
             // terraform down
-            if ( print_message_box == 2 ) {
-              gui.add_message_at(b_player, " ---=> tile down to flat ", world.get_time())
+            if ( print_message_box == 21 ) {
+              gui.add_message_at(b_player, " ---=> terraform down  ", world.get_time())
             }
             if ( (i == 0 && tiles[0].get_slope() > 0 ) || ( i == (way_len-1) && tiles[way_len-1].get_slope() > 0 ) ) {
 
             } else {
-              do {
-                err = command_x.set_slope(b_player, build_hight, 83 )
-                if ( err != null ) { break }
-                z = square_x(tiles_build[i].x, tiles_build[i].y).get_ground_tile()
-              } while(z.z > ref_hight.z )
-              // replace water to land
-              if ( z.is_water() ) { command_x.change_climate_at(our_player, z, cl_temperate) }
+              local terraform_tile = 1
+              // terraform grid down
+              if ( print_message_box == 21 ) {
+                gui.add_message_at(b_player, " build_hight.get_slope() " + build_hight.get_slope(), build_hight)
+              }
+
+              local tile_build_slope = [3, 1, 9, 37, 39]
+              if ( tile_build_slope.find(build_hight.get_slope()) != null ) {
+                local cx = 0
+                local cy = 0
+                local build_side = 0
+                if ( d == 10 ) {
+                  cx = 1
+                  if ( tiles_build[i].y > tiles[i].y ) {
+                    build_side = 1
+                  }
+                } else if ( d == 5 ) {
+                  cy = 1
+                  if ( tiles_build[i].x > tiles[i].x ) {
+                    build_side = 1
+                  }
+                }
+
+                local tile_a = square_x(tiles_build[i].x+cx, tiles_build[i].y+cy).get_ground_tile()
+                local tile_a1 = null
+                local tile_b1 = null
+
+                local tile_a_slope = null
+                local tile_a_slope_WE = null
+                local tile_a_slope_NS = null
+
+
+                if ( build_side == 1 ) {
+                  // x/y build way > exists way
+                  tile_a1 = square_x(tiles_build[i].x+cy, tiles_build[i].y+cx).get_ground_tile()
+                  tile_b1 = square_x(tile_a.x+cy, tile_a.y+cx).get_ground_tile()
+                  tile_a_slope = [12, 13, 1, 4]
+                  tile_a_slope_WE = [39, 27, 36]
+                  tile_a_slope_NS = [9]
+                } else {
+                  // x/y build way < exists way
+                  tile_a1 = square_x(tiles_build[i].x-cy, tiles_build[i].y-cx).get_ground_tile()
+                  tile_b1 = square_x(tile_a.x-cy, tile_a.y-cx).get_ground_tile()
+                  tile_a_slope = [9, 12, 13, 1, 4, 39]
+                  tile_a_slope_WE = [39, 27, 36]
+                  tile_a_slope_NS = [31]
+                }
+
+                if ( print_message_box == 21 ) {
+                  gui.add_message_at(b_player, " tile_a.get_slope() " + tile_a.get_slope(), tile_a)
+                  gui.add_message_at(b_player, " tile_a1.get_slope() " + tile_a1.get_slope(), tile_a1)
+                  gui.add_message_at(b_player, " tile_b1.get_slope() " + tile_b1.get_slope(), tile_b1)
+                }
+
+                if ( tile_build_slope.find(build_hight.get_slope()) != null && tile_a_slope.find(tile_a.get_slope()) != null && test_tile_is_empty(tile_a1) && test_tile_is_empty(tile_b1) ) {
+                  gui.add_message_at(b_player, " #3036# --", world.get_time())
+                  if ( straight_slope == true && build_side == 0 ) {
+                    err = command_x.grid_raise(our_player, coord3d(tile_a.x, tile_a.y, tile_a.z))
+                  } else if ( straight_slope == true && build_side == 1 ) {
+                    err = command_x.grid_raise(our_player, coord3d(tile_a1.x, tile_a1.y, tile_a1.z))
+                  } else {
+                    err = command_x.grid_lower(our_player, coord3d(tile_b1.x, tile_b1.y, tile_b1.z))
+                  }
+                  if ( err == null ) {
+                    terraform_tile = 0
+                  } else {
+                    gui.add_message_at(b_player, " #3047# err " + err, world.get_time())
+                  }
+                /*} else if ( build_hight.get_slope() == 3 && tile_a.get_slope() == 31 ) {
+                  tile_a1 = square_x(tiles_build[i].x-1, tiles_build[i].y).get_ground_tile()
+                  tile_b1 = square_x(tile_a.x-1, tile_a.y).get_ground_tile()
+                  if ( test_tile_is_empty(tile_a1) && test_tile_is_empty(tile_b1) ) {
+                    err = command_x.grid_lower(our_player, coord3d(tile_a.x, tile_a.y, tile_a.z))
+                    terraform_tile = 0
+                  }*/
+
+                } else if ( tile_build_slope.find(build_hight.get_slope()) != null && tile_a_slope_NS.find(tile_a.get_slope()) != null ) {
+                  gui.add_message_at(b_player, " #3055# NS", world.get_time())
+                  /*if ( build_side == 0 ) {
+                    tile_a1 = square_x(tiles_build[i].x-1, tiles_build[i].y).get_ground_tile()
+                    tile_b1 = square_x(tile_a.x-1, tile_a.y).get_ground_tile()
+                  }*/
+
+                  if ( test_tile_is_empty(tile_a1) && test_tile_is_empty(tile_b1) ) {
+                    gui.add_message_at(b_player, " #3065#  straight_slope " + straight_slope + " -- build_side " + build_side, world.get_time())
+                    if ( straight_slope == true && build_side == 0 ) {
+                      err = command_x.grid_lower(our_player, coord3d(tile_a.x, tile_a.y, tile_a.z))
+                    } else if ( straight_slope == true && build_side == 1 ) {
+                      gui.add_message_at(b_player, " #3069#  " + coord3d_to_string(tile_b1), world.get_time())
+                      err = command_x.grid_lower(our_player, coord3d(tile_b1.x, tile_b1.y, tile_b1.z))
+                    } else {
+                      err = command_x.grid_lower(our_player, coord3d(build_hight.x, build_hight.y, build_hight.z))
+                    }
+                    if ( err == null ) {
+                      terraform_tile = 0
+                    } else {
+                      gui.add_message_at(b_player, " #3076# err " + err, world.get_time())
+                    }
+                  }
+
+                } else if ( tile_build_slope.find(build_hight.get_slope()) != null && tile_a_slope_WE.find(tile_a.get_slope()) != null ) {
+                  gui.add_message_at(b_player, " #3091# WE", world.get_time())
+
+                  /*if ( build_side == 0 ) {
+                    tile_a1 = square_x(tiles_build[i].x, tiles_build[i].y-1).get_ground_tile()
+                    tile_b1 = square_x(tile_a.x, tile_a.y-1).get_ground_tile()
+                  }*/
+
+                  if ( test_tile_is_empty(tile_a1) && test_tile_is_empty(tile_b1) ) {
+                    if ( straight_slope == true || build_side == 0 ) {
+                      err = command_x.grid_lower(our_player, coord3d(tile_a.x, tile_a.y, tile_a.z))
+                    } else if ( straight_slope == true || build_side == 1 ) {
+                      err = command_x.grid_raise(our_player, coord3d(tile_b1.x, tile_b1.y, tile_b1.z))
+                    } else {
+                      err = command_x.grid_lower(our_player, coord3d(tile_b1.x, tile_b1.y, tile_b1.z))
+                    }
+                    if ( err == null ) {
+                      terraform_tile = 0
+                    } else {
+                      gui.add_message_at(b_player, " #3070# err " + err, world.get_time())
+
+                    }
+                  }
+
+                }
+
+              /*} else if ( build_hight.get_slope() == 37 ) {
+                local tile_a = square_x(tiles_build[i+1].x, tiles_build[i+1].y).get_ground_tile()
+                local tile_a1 = square_x(tiles_build[i].x, tiles_build[i].y-1).get_ground_tile()
+                local tile_b1 = square_x(tiles_build[i+1].x, tiles_build[i+1].y-1).get_ground_tile()
+
+                if ( (tile_a.get_slope() == 27 ) && test_tile_is_empty(tile_a1) && test_tile_is_empty(tile_b1) ) {
+                  err = command_x.grid_lower(our_player, coord3d(tile_a.x, tile_a.y, tile_a.z))
+                  if ( err == null ) {
+                    terraform_tile = 0
+                  }
+                }*/
+              }
+
+              // terraform tile
+              if ( terraform_tile == 1 ) { //&& ref_hight.z < build_hight.z
+                if ( print_message_box == 21 ) {
+                  gui.add_message_at(b_player, "#3112# terraform down ", world.get_time())
+                  //gui.add_message_at(b_player, " tile_a1.get_slope() " + tile_a1.get_slope(), tile_a1)
+                }
+                do {
+                  err = command_x.set_slope(b_player, build_hight, 83 )
+                  if ( err != null ) { break }
+                  z = square_x(tiles_build[i].x, tiles_build[i].y).get_ground_tile()
+                } while(z.z > ref_hight.z )
+                // replace water to land
+                if ( z.is_water() ) { command_x.change_climate_at(our_player, z, cl_temperate) }
+
+              }
             }
           }
           if ( err ) {
@@ -2797,13 +3169,13 @@ function build_double_track(start_field, wt) {
 
         if ( ref_hight.z == build_hight.z && ref_hight.get_slope() == build_hight.get_slope() ) {
 
-          if ( print_message_box == 2 ) {
-            gui.add_message_at(b_player, " ---=> slope tiles == tiles_build * tiles.z == tiles_build.z ", world.get_time())
+          if ( print_message_box == 21 ) {
+            gui.add_message_at(b_player, "#3135# ---=> slope tiles == tiles_build * tiles.z == tiles_build.z ", world.get_time())
           }
 
         } else if ( build_hight.is_empty() && straight_slope == true ) {
           // set slope ramp
-          if ( print_message_box == 2 ) {
+          if ( print_message_box == 21 ) {
             gui.add_message_at(b_player, " ---=> terraform slope ramp", world.get_time())
             gui.add_message_at(b_player, " ---=> tiles_build.z " + build_hight.z + " tiles.z " + ref_hight.z, world.get_time())
           }
@@ -2976,7 +3348,11 @@ function build_double_track(start_field, wt) {
         if ( start_field.get_way_dirs(wt) == 5 ) {
           tile_a = tile_x(tiles[0].x, tiles[0].y-1, tiles[0].z)
           tile_b = tile_x(tiles[0].x-1, tiles[0].y-1, tiles[0].z)
+<<<<<<< HEAD
           if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
+=======
+          if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
+>>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
           }
           tile_check = 1
@@ -2984,7 +3360,11 @@ function build_double_track(start_field, wt) {
         } else if ( start_field.get_way_dirs(wt) == 10 ) {
           tile_a = tile_x(tiles[0].x-1, tiles[0].y, tiles[0].z)
           tile_b = tile_x(tiles[0].x-1, tiles[0].y-1, tiles[0].z)
+<<<<<<< HEAD
           if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
+=======
+          if ( (tile_a.get_way_dirs(wt) == 12 || tile_a.get_way_dirs(wt) == 3) && (tile_b.get_way_dirs(wt) == 3 || tile_b.get_way_dirs(wt) == 12 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
+>>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
           }
           tile_check = 2
@@ -2995,7 +3375,11 @@ function build_double_track(start_field, wt) {
         if ( start_field.get_way_dirs(wt) == 5 ) {
           tile_a = tile_x(tiles[0].x, tiles[0].y-1, tiles[0].z)
           tile_b = tile_x(tiles[0].x+1, tiles[0].y-1, tiles[0].z)
+<<<<<<< HEAD
           if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
+=======
+          if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
+>>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
             sig_tile_new = "tr5"
           }
@@ -3005,7 +3389,11 @@ function build_double_track(start_field, wt) {
         } else if ( start_field.get_way_dirs(wt) == 10 ) {
           tile_a = tile_x(tiles[0].x-1, tiles[0].y, tiles[0].z)
           tile_b = tile_x(tiles[0].x-1, tiles[0].y+1, tiles[0].z)
+<<<<<<< HEAD
           if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
+=======
+          if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
+>>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
             sig_tile_new = "tr10t"
           }
@@ -3038,7 +3426,11 @@ function build_double_track(start_field, wt) {
 
             tile_a = tile_x(tiles[way_len - 1].x, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x-1, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
+<<<<<<< HEAD
             if ( tile_a.get_way_dirs(wt) == 9 && (tile_b.get_way_dirs(wt) == 6 || tile_b.get_way_dirs(wt) == 10) ) {
+=======
+            if ( tile_a.get_way_dirs(wt) == 9 && (tile_b.get_way_dirs(wt) == 6 || tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0) ) {
+>>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tl5"
             }
@@ -3047,7 +3439,11 @@ function build_double_track(start_field, wt) {
         } else if ( tile_check == 2 ) {
             tile_a = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y-1, tiles[way_len - 1].z)
+<<<<<<< HEAD
             if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || tile_b.get_way_dirs(wt) == 10) ) {
+=======
+            if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0) ) {
+>>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tl5"
             }
@@ -3055,7 +3451,11 @@ function build_double_track(start_field, wt) {
         } else if ( tile_check == 3 ) {
             tile_a = tile_x(tiles[way_len - 1].x, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
+<<<<<<< HEAD
             if ( tile_a.get_way_dirs(wt) == 3 && (tile_b.get_way_dirs(wt) == 12 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
+=======
+            if ( tile_a.get_way_dirs(wt) == 3 && (tile_b.get_way_dirs(wt) == 12 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
+>>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tr5t"
             }
@@ -3064,7 +3464,11 @@ function build_double_track(start_field, wt) {
         } else if ( tile_check == 4 ) {
             tile_a = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
+<<<<<<< HEAD
             if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
+=======
+            if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
+>>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tr10"
             }
@@ -4231,6 +4635,12 @@ function optimize_way_line(route, wt) {
         build_tile = tile_2
       }
 
+      // check is way our player
+      local tile_1_pl = tile_1.find_object(mo_way).get_owner().nr //.get_desc()
+      local tile_2_pl = tile_2.find_object(mo_way).get_owner().nr //.get_desc()
+      if ( tile_1_pl != our_player_nr || tile_2_pl != our_player_nr ) {
+        continue
+      }
 
 
       if ( (way_d > 0 || build_bridge > 0) && print_message_box > 0 ) { //
@@ -4270,13 +4680,24 @@ function optimize_way_line(route, wt) {
         // not build tunnel -> set slope down
         local tile_4 = tile_x(route[i-2].x, route[i-2].y, route[i-2].z)
         tile_4_d = tile_4.get_way_dirs(wt)
+<<<<<<< HEAD
         if ( tile_4.find_object(mo_building) != null || tile_4.find_object(mo_bridge) != null ) { //dir.is_single(tile_4_d)
+=======
+        /*if ( tile_4.find_object(mo_building) != null || tile_4.find_object(mo_bridge) != null ) { //dir.is_single(tile_4_d)
+>>>>>>> refs/remotes/origin/trunk
           local tool = command_x(tool_remover)
           err = tool.work(our_player, tile_3)
           if ( err == null ) { err = tool.work(our_player, tile_2) }
         } else {
           local tool = command_x(tool_remove_way)
           local err = tool.work(our_player, tile_3, tile_4, "" + wt)
+        }*/
+        if ( tile_3.find_object(mo_bridge) == null && tile_4.find_object(mo_bridge) == null && tile_4.find_object(mo_building) == null && tile_3.find_object(mo_building) == null ) {
+          local tool = command_x(tool_remove_way)
+          err = tool.work(our_player, tile_4, tile_3, "" + wt)
+        } else {
+          remove_tile_to_empty(tile_1, wt, 0)
+          remove_tile_to_empty(tile_2, wt, 0)
         }
 
         local way_obj = tile_4.find_object(mo_way).get_desc()
@@ -4399,6 +4820,7 @@ function optimize_way_line(route, wt) {
         local err = null
         local tile_4 = tile_x(route[i-2].x, route[i-2].y, route[i-2].z)
         //local err = remove_tile_to_empty(tile_2, wt, 0)
+<<<<<<< HEAD
         local tool = command_x(tool_remove_way)
         err = tool.work(our_player, tile_4, tile_3, "" + wt)
         if ( print_message_box == 4 ) {
@@ -4407,6 +4829,31 @@ function optimize_way_line(route, wt) {
           //::debug.pause()
         }
 
+=======
+
+
+        if ( tile_3.find_object(mo_bridge) == null && tile_4.find_object(mo_bridge) == null && tile_4.find_object(mo_building) == null && tile_3.find_object(mo_building) == null ) {
+          local tool = command_x(tool_remove_way)
+          err = tool.work(our_player, tile_4, tile_3, "" + wt)
+        } else {
+          err = remove_tile_to_empty(tile_1, wt, 0)
+          if ( err ) {
+            err = remove_tile_to_empty(tile_2, wt, 0)
+          }
+          if ( err ) {
+            err = null
+          } else {
+            continue
+          }
+        }
+
+        if ( print_message_box == 4 && err != null ) {
+          gui.add_message_at(our_player, "#4376# remove tile_1 " + coord3d_to_string(tile_1) + " : " + err, world.get_time())
+          gui.add_message_at(our_player, "#4376# remove tile_2 " + coord3d_to_string(tile_2) + " : " + err, world.get_time())
+          //::debug.pause()
+        }
+
+>>>>>>> refs/remotes/origin/trunk
         if (err == null) {
           //err = null
           /*local t = []
@@ -4946,9 +5393,16 @@ function destroy_line(line_obj, good, link_obj) {
       //::debug.pause()
 
       // Prüfen warum next_vehicle_check nicht vorhanden bei Schiffslinien
+<<<<<<< HEAD
       if ( wt != wt_water ) {
         line_obj.next_vehicle_check = world.get_time().ticks + (world.get_time().ticks_per_month * 1)
       }
+=======
+      // line_x statt link.line
+      //if ( wt != wt_water ) {
+        line_obj.next_vehicle_check = world.get_time().ticks + (world.get_time().ticks_per_month * 1)
+      //}
+>>>>>>> refs/remotes/origin/trunk
     }
     // sleep - convoys are destroyed when simulation continues
     sleep()
@@ -5461,6 +5915,7 @@ function check_stations_connections() {
 
     local halt_factory_connect = halt.get_factory_list().len()
     local halt_lines = halt.get_line_list()
+    local halt_line = null
     local halt_cnv = halt.get_convoy_list()
 
     //if ( halt_lines.get_count() == 1 ) { gui.add_message_at(our_player, "####### halt_lines[0]: " + halt_lines[0].get_name(), world.get_time()) }
@@ -5489,7 +5944,7 @@ function check_stations_connections() {
       foreach(line in line_list) {
         //gui.add_message_at(player_x(our_player.nr), "####### line check " + line.get_name(), world.get_time())
         if ( halt_lines[0].id == line.id ) {
-          halt_lines = line
+          halt_line = line
           break
         }
       }
@@ -5513,7 +5968,38 @@ function check_stations_connections() {
 
         //local t = halt.get_tile_list()
         //halt_cnv = halt_lines.get_convoy_list()
+<<<<<<< HEAD
         destroy_line(halt_lines, good, null)
+=======
+
+
+        // destroy_line link.line not line_x
+
+      /*
+
+      if (!check_link(link)) {
+        continue
+      }
+      yield link
+    }*/
+        local link_list = industry_manager.link_list
+        local search_line = null
+        foreach(link in link_list) {
+        // start_f[0], end_f[0], good.get_name()
+
+
+          foreach(index, line in link.lines) {
+            //gui.add_message_at(player_x(our_player.nr), "####### line check " + line.get_name(), world.get_time())
+            if ( line.is_valid() && line.get_owner().nr == our_player.nr && halt_line.get_name() == line.get_name() ) {
+              search_line = line
+            }
+          }
+
+        }
+
+
+        destroy_line(search_line, good, null) //halt_line
+>>>>>>> refs/remotes/origin/trunk
 
 
         break
