@@ -41,10 +41,13 @@ jobs:
     - name: Install pak64
       run: |
         pushd simutrans
+        chmod +755 tools/get_lang_files.sh
         printf '1\ni\ny\n' | ../tools/get_pak.sh
         popd
     - name: Install language files
-      run: tools/get_lang_files.sh
+      run: |
+        chmod +755 tools/get_lang_files.sh
+        tools/get_lang_files.sh
     - name: Link tests as scenario
       run: |
         mkdir -p ~/simutrans/addons/pak/scenario
