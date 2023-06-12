@@ -6,7 +6,7 @@ rem echo #define REVISION %string:~1,5% > src/simutrans/revision.h
 
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" src\nettool\Nettool.vcxproj /p:Configuration=Release;Platform=x86;OutDir=..\..\build\
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" src\makeobj\Makeobj.vcxproj /p:Configuration=Release;Platform=x86;OutDir=..\..\build\
-"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\;TargetName=Simutrans_GDI_x86
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=Release;Platform=x64;OutDir=build\;TargetName=Simutrans_GDI_x64
 rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-SDL2.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\
 "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-Server.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\
