@@ -7,8 +7,10 @@ pause
 set /p string=<status.txt
 
 echo #define REVISION %string:~1,5% > src/simutrans/revision.h
+echo #define REVISION %string:~1,5% > revision.h
 
 git add src/simutrans/revision.h
+git add revision.h
 
 pause
 
