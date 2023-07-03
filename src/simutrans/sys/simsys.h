@@ -141,7 +141,7 @@ gzFile dr_gzopen(const char *path, const char *mode);
 // Functions the same as stat except path must be UTF-8 encoded.
 int dr_stat(const char *path, struct stat *buf);
 
-/** 
+/**
 * Check if the directory exists and if so set the result variable to it
 * @param path : Path to directory to check
 * @param info : String to provide extra log info
@@ -192,8 +192,7 @@ void set_pointer(int loading);
 
 bool move_pointer(int x, int y);
 
-int get_mouse_x();
-int get_mouse_y();
+scr_coord get_mouse_pos();
 
 void ex_ord_update_mx_my();
 
@@ -245,7 +244,7 @@ void dr_stop_textinput();
 /**
  * Inform the IME of a ideal place to open its popup.
  */
-void dr_notify_input_pos(int x, int y);
+void dr_notify_input_pos(scr_coord pos);
 
 ///  returns current two byte languange ID
 const char* dr_get_locale();

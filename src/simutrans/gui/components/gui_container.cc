@@ -132,8 +132,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 	}
 	else {
 		// CASE : not a keyboard event
-		const int x = ev->ev_class==EVENT_MOVE ? ev->mx : ev->cx;
-		const int y = ev->ev_class==EVENT_MOVE ? ev->my : ev->cy;
+		const scr_coord event_pos = ev->ev_class == EVENT_MOVE ? ev->mouse_pos : ev->click_pos;
 
 		// Handle the focus!
 		if(  comp_focus  &&  comp_focus->is_visible()  ) {
@@ -144,7 +143,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 
 			// set focus for component, if component allows focus
 			gui_component_t *const focus = comp->get_focus() ? comp : NULL;
-			if(  focus  &&  IS_LEFTCLICK(ev)  &&  comp->getroffen(ev->cx, ev->cy)  ) {
+			if(  focus  &&  IS_LEFTCLICK(ev)  &&  comp->getroffen(ev->click_pos)  ) {
 				/* the focus swallow all following events;
 				 * due to the activation action
 				 */
@@ -175,7 +174,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 						comp->infowin_event(ev);
 					}
 					else if(  comp->is_visible()  ) {
-						if(  comp->getroffen(x, y)  ) {
+						if(  comp->getroffen(event_pos)  ) {
 							handle_mouseover.append( comp );
 						}
 					}
@@ -208,7 +207,7 @@ bool gui_container_t::infowin_event(const event_t *ev)
 				gui_component_t *focus = comp->get_focus() ? comp : NULL;
 
 				// set focus for component, if component allows focus
-				if(  focus  &&  IS_LEFTRELEASE(ev)  &&  comp->getroffen(ev->cx, ev->cy)  ) {
+				if(  focus  &&  IS_LEFTRELEASE(ev)  &&  comp->getroffen(ev->click_pos)  ) {
 					/* the focus swallow all following events;
 					 * due to the activation action
 					 */

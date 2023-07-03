@@ -116,9 +116,9 @@ bool gui_tab_panel_t::action_triggered(gui_action_creator_t *comp, value_t)
 }
 
 
-bool gui_tab_panel_t::tab_getroffen(scr_coord_val x, scr_coord_val y)
+bool gui_tab_panel_t::tab_getroffen(scr_coord p)
 {
-	return x >= 0  &&  x < size.w  &&  y >= 0  &&  y < required_size.h;
+	return p.x >= 0  &&  p.x < size.w  &&  p.y >= 0  &&  p.y < required_size.h;
 }
 
 bool gui_tab_panel_t::infowin_event(const event_t *ev)
@@ -128,15 +128,15 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 		is_dragging = false;
 	}
 
-	if(  required_size.w > size.w  &&  tab_getroffen(ev->cx, ev->cy)  ) {
+	if(  required_size.w > size.w  &&  tab_getroffen(ev->click_pos)  ) {
 		if (!is_dragging) {
 			// handle scroll buttons pressed
-			if(  left.getroffen(ev->cx, ev->cy)  ) {
+			if(  left.getroffen(ev->click_pos)  ) {
 				event_t ev2 = *ev;
 				ev2.move_origin(left.get_pos());
 				return left.infowin_event(&ev2);
 			}
-			if(  right.getroffen(ev->cx, ev->cy)  ) {
+			if(  right.getroffen(ev->click_pos)  ) {
 				event_t ev2 = *ev;
 				ev2.move_origin(right.get_pos());
 				return right.infowin_event(&ev2);
@@ -153,12 +153,12 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 	// we will handle dragging ourselves inf not prevented
 	if(is_dragging  &&  ev->ev_class < INFOWIN) {
 		// now drag: scrollbars are not in pixel, but we will scroll one unit per pixels ...
-		tab_offset_x -= (ev->mx - ev->cx);
+		tab_offset_x -= (ev->mouse_pos.x - ev->click_pos.x);
 		tab_offset_x = clamp(tab_offset_x, 0, required_size.w - size.w);
 		// and finally end dragging on release of any button
 		if (ev->ev_class == EVENT_RELEASE) {
 			is_dragging = false;
-			if (abs(ev->mx - ev->cx) >= 5 || abs(ev->cx - ev->mx) + abs(ev->cy - ev->my) >= env_t::scroll_threshold) {
+			if (abs(ev->mouse_pos.x - ev->click_pos.x) >= 5 || abs(ev->click_pos.x - ev->mouse_pos.x) + abs(ev->click_pos.y - ev->mouse_pos.y) >= env_t::scroll_threshold) {
 				// dragged a lot => swallow click
 				return true;
 			}
@@ -169,7 +169,7 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 		}
 	}
 
-	if(  IS_LEFTRELEASE(ev)  && tab_getroffen(ev->cx,ev->cy)  )  {
+	if(  IS_LEFTRELEASE(ev)  && tab_getroffen(ev->click_pos)  )  {
 		// tab selector was hit
 		int text_x = (required_size.w>size.w ? D_ARROW_LEFT_WIDTH : 0) + D_H_SPACE - tab_offset_x;
 		int k=0;
@@ -177,7 +177,7 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 			if (!i.component->is_visible()) {
 				continue;
 			}
-			if (text_x <= ev->mx && text_x + i.width > ev->mx) {
+			if (text_x <= ev->mouse_pos.x && text_x + i.width > ev->mouse_pos.x) {
 				// either tooltip or change
 				active_tab = k;
 				call_listeners((long)active_tab);
@@ -208,7 +208,7 @@ bool gui_tab_panel_t::infowin_event(const event_t *ev)
 		return true;
 	}
 
-	if(  ev->ev_class == EVENT_KEYBOARD  ||  DOES_WINDOW_CHILDREN_NEED(ev)  ||  get_aktives_tab()->getroffen(ev->mx, ev->my)  ||  get_aktives_tab()->getroffen(ev->cx, ev->cy)) {
+	if(  ev->ev_class == EVENT_KEYBOARD  ||  DOES_WINDOW_CHILDREN_NEED(ev)  ||  get_aktives_tab()->getroffen(ev->mouse_pos)  ||  get_aktives_tab()->getroffen(ev->click_pos)) {
 		// active tab was hit
 		event_t ev2 = *ev;
 		ev2.move_origin(get_aktives_tab()->get_pos());
@@ -311,21 +311,20 @@ void gui_tab_panel_t::draw(scr_coord parent_pos)
 	get_aktives_tab()->draw(parent_pos + pos);
 
 	// now for tooltips ...
-	int my = get_mouse_y()-parent_pos.y-pos.y-6;
+	int my = get_mouse_pos().y-parent_pos.y-pos.y-6;
 	if(my>=0  &&  my < required_size.h-1) {
 		// Reiter getroffen?
-		int mx = get_mouse_x()-parent_pos.x-pos.x;
+		int mx = get_mouse_pos().x-parent_pos.x-pos.x;
 		int text_x = D_H_SPACE + tab_offset_x;
-		int i=0;
+
 		for(tab const& iter : tabs) {
 			if(text_x <= mx && text_x+iter.width > mx  && (required_size.w<=get_size().w || mx < right.get_pos().x-12)) {
 				// tooltip or change
-				win_set_tooltip(get_mouse_x() + 16, ypos + required_size.h + 12, iter.tooltip, &iter, this);
+				win_set_tooltip(get_mouse_pos().x + 16, ypos + required_size.h + 12, iter.tooltip, &iter, this);
 				break;
 			}
 
 			text_x += iter.width;
-			i++;
 		}
 	}
 }

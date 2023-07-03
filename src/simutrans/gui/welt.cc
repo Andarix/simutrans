@@ -89,7 +89,6 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 	game_ends  = min( game_ends,  (way_builder_t::get_latest_way(road_wt)->get_retire_year_month()+11)/12 );
 
 	loaded_heightfield = load_heightfield = false;
-	load = start = close = scenario = quit = false;
 	sets->heightfield = "";
 
 	//******************************************************************
@@ -110,8 +109,9 @@ welt_gui_t::welt_gui_t(settings_t* const sets_par) :
 
 			// Map size label
 			size_label.init();
-			size_label.buf().printf(translator::translate("Size (%d MB):"), 9999);
+			size_label.buf().printf(translator::translate("Size (%d MB):"), 99999);
 			size_label.update();
+			size_label.set_min_width(size_label.get_min_size().w); // Make sure to not make the component size too small when the window is opened with a small map size that is increased afterwards
 			add_component( &size_label );
 
 			// Map X size edit
@@ -465,7 +465,9 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		sets->heightfield = "";
 		load_relief_frame_t* lrf = new load_relief_frame_t(sets);
 		create_win(lrf, w_info, magic_load_t );
-		win_set_pos(lrf, (display_get_width() - lrf->get_windowsize().w-10), env_t::iconsize.h);
+
+		const scr_coord new_pos{ (display_get_width() - lrf->get_windowsize().w-10), env_t::iconsize.h };
+		win_set_pos(lrf, new_pos);
 		knr = sets->get_map_number(); // otherwise using cancel would not show the normal generated map again
 	}
 	else if(comp==&use_intro_dates) {
@@ -546,18 +548,6 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 			update_preview();
 		}
 	}
-	return true;
-}
-
-
-bool  welt_gui_t::infowin_event(const event_t *ev)
-{
-	gui_frame_t::infowin_event(ev);
-
-	if(ev->ev_class==INFOWIN  &&  ev->ev_code==WIN_CLOSE) {
-		close = true;
-	}
-
 	return true;
 }
 
