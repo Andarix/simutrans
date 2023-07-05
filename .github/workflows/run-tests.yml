@@ -42,6 +42,7 @@ jobs:
       run: |
         pushd simutrans
         chmod +755 ../tools/get_lang_files.sh
+        chmod +755 ../tools/get_pak.sh
         printf '1\ni\ny\n' | ../tools/get_pak.sh
         popd
     - name: Install language files
