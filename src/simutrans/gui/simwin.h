@@ -132,17 +132,15 @@ void rdwr_all_win(loadsave_t *file);
 // save windowsizes in settings
 void rdwr_win_settings(loadsave_t *file);
 
-void win_clamp_xywh_position(scr_coord_val &x, scr_coord_val &y, scr_size wh, bool move_to_full_view);
+void win_clamp_xywh_position(scr_coord &pos, scr_size wh, bool move_to_full_view);
 
-int create_win(gui_frame_t*, wintype, ptrdiff_t magic);
-int create_win(scr_coord_val x, scr_coord_val y, gui_frame_t*, wintype, ptrdiff_t magic, bool move_to_show_full=false);
+int create_win(gui_frame_t *gui, wintype type, ptrdiff_t magic);
+int create_win(scr_coord pos, gui_frame_t *gui, wintype type, ptrdiff_t magic, bool move_to_show_full=false);
 
 // call to avoid the main menu getting mouse events while dragging
 void catch_dragging();
 
 bool check_pos_win(event_t*,bool modal);
-
-bool win_is_open(gui_frame_t *ig );
 
 
 scr_coord const& win_get_pos(gui_frame_t const*);
@@ -184,7 +182,6 @@ void rolldown_all_win();
 bool top_win(const gui_frame_t *ig, bool keep_rollup=false  );
 void display_all_win();
 void win_rotate90( sint16 new_size );
-void move_win(int win);
 
 void win_display_flush(double konto); // draw the frame and all windows
 
@@ -213,7 +210,7 @@ void win_load_font(const char *fname, uint8 fontsize);
  * Sets the tooltip to display.
  * @param owner : owner==NULL disables timing (initial delay and visible duration)
  */
-void win_set_tooltip(scr_coord_val xpos, scr_coord_val ypos, const char *text, const void *const owner = 0, const void *const group = 0);
+void win_set_tooltip(scr_coord pos, const char *text, const void *const owner = NULL, const void *const group = NULL);
 
 /**
  * Sets a static tooltip that follows the mouse
