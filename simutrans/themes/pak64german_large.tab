@@ -26,7 +26,7 @@ tooltip_duration = 5000
 left_to_right_graphs  = 0
 
 # larger icons too
-icon_width = 64
+icon_width = 60
 
 # Default button width
 gui_button_width = 130
@@ -119,6 +119,9 @@ gui_color_edit_text_disabled = #7187b7
 # Color of text in tabs, finance window headlines, ware list bonus text, minimap zoom
 # indicator, fps info in video options.
 gui_color_text_highlight = #1488E2
+
+# Transparency color in factories boost icons (mail, energy, passengers)
+gui_color_image_transparency = #5f7e99
 
 ##################################window stuff##################################
 
