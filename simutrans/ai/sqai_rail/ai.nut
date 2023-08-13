@@ -10,11 +10,7 @@ ai <- {}
 ai.short_description <- "AI player implementation road/ship/rail"
 
 ai.author <-"dwachs/Andarix"
-<<<<<<< HEAD
-ai.version <- "0.8.12"
-=======
 ai.version <- "0.8.13"
->>>>>>> refs/remotes/origin/trunk
 
 // includes
 include("basic")  // .. definition of basic node classes

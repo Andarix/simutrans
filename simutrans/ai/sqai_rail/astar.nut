@@ -855,14 +855,9 @@ function check_ground(pos_s, pos_e, way) {
     local z1 = null
     local terraform_tiles = []
     local terraform_grid_tiles = []
-<<<<<<< HEAD
-    local err = null
-  if ( start_end_slope == 1 && pos_s.z == pos_e.z ) {
-=======
     local grid_coord = []
     local err = null
   if ( start_end_slope == 1 && pos_s.z == pos_e.z && f_count > 1 ) {
->>>>>>> refs/remotes/origin/trunk
     for ( local i = 0; i < f_count; i++ ) {
       // find z coord
       z = square_x(t_tile[i].x, t_tile[i].y).get_ground_tile()
@@ -885,23 +880,6 @@ function check_ground(pos_s, pos_e, way) {
         // tiles free no build bridges -> terraform
         terraform_tiles.append(z)
 
-<<<<<<< HEAD
-        gui.add_message_at(our_player, "(817) check_ground bridge - terraform_tiles.append(z) " + coord_to_string(z), z)
-        gui.add_message_at(our_player, "(817) z.get_slope() " + z.get_slope(), z)
-        // slope 39 -> tile y+1 grid_raise()
-        if ( z.get_slope() == 39 ) {
-          terraform_grid_tiles.append(tile_x(z.x, z.y+1, z.z))
-        }
-
-      }
-    }
-
-    if ( terraform_tiles.len() > 0 && terraform_tiles.len() < 5 ) {
-      local terraform_field = false
-      if ( terraform_grid_tiles.len() > 0 ) {
-        for ( local i = 0; i < terraform_grid_tiles.len(); i++ ) {
-          err = command_x.grid_raise(our_player, coord3d(terraform_grid_tiles[i].x, terraform_grid_tiles[i].y, terraform_grid_tiles[i].z))
-=======
         gui.add_message_at(our_player, "(832) check_ground bridge - terraform_tiles.append(z) " + coord3d_to_string(z), z)
         //gui.add_message_at(our_player, "(832) z.get_slope() " + z.get_slope(), z)
         // EW slope 37-39 : 13-31 : 31-1 : 3-13
@@ -971,7 +949,6 @@ function check_ground(pos_s, pos_e, way) {
           }
 
 
->>>>>>> refs/remotes/origin/trunk
           if ( err != null ) {
             terraform_field = true
           }
@@ -1119,9 +1096,9 @@ function check_tile_end_of_station(direction, count, s_tile) {
 
   local tx = 0
   local ty = 0
-  if ( direction == 1 || direction == 4 || direction == 5 ) {
+  if ( direction == 1 || direction == 4 ) {
     ty = count
-  } else if ( direction == 2 || direction == 8 || direction == 10 ) {
+  } else if ( direction == 2 || direction == 8 ) {
     tx = count
   }
 
@@ -1139,14 +1116,8 @@ function check_tile_end_of_station(direction, count, s_tile) {
     case 8:
       t_square = square_x(s_tile.x + tx, s_tile.y)
       break
-    case 5:
-      t_square = square_x(s_tile.x, s_tile.y - ty)
-      break
-    case 10:
-      t_square = square_x(s_tile.x + tx, s_tile.y)
-      break
   }
-  local tile_coord = coord3d_to_string(s_tile) // debug
+
   local t_ground = null
   // tile out of map
   if ( !world.is_coord_valid(t_square) ) {
@@ -1778,11 +1749,7 @@ function expand_station(pl, fields, wt, select_station, start_fld, combined_halt
   //gui.add_message_at(pl, "(1496) ---=> extension_tile " + extension_tile, world.get_time())
 
 
-<<<<<<< HEAD
-  if ( tile_x(extension_tile.x, extension_tile.y, extension_tile.get_ground_tile().z).is_water() ) {
-=======
   if ( extension_tile != null && tile_x(extension_tile.x, extension_tile.y, extension_tile.get_ground_tile().z).is_water() ) {
->>>>>>> refs/remotes/origin/trunk
     extension_tile = null
   }
 
@@ -3354,11 +3321,7 @@ function build_double_track(start_field, wt) {
         if ( start_field.get_way_dirs(wt) == 5 ) {
           tile_a = tile_x(tiles[0].x, tiles[0].y-1, tiles[0].z)
           tile_b = tile_x(tiles[0].x-1, tiles[0].y-1, tiles[0].z)
-<<<<<<< HEAD
-          if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
-=======
           if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
->>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
           }
           tile_check = 1
@@ -3366,11 +3329,7 @@ function build_double_track(start_field, wt) {
         } else if ( start_field.get_way_dirs(wt) == 10 ) {
           tile_a = tile_x(tiles[0].x-1, tiles[0].y, tiles[0].z)
           tile_b = tile_x(tiles[0].x-1, tiles[0].y-1, tiles[0].z)
-<<<<<<< HEAD
-          if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
-=======
           if ( (tile_a.get_way_dirs(wt) == 12 || tile_a.get_way_dirs(wt) == 3) && (tile_b.get_way_dirs(wt) == 3 || tile_b.get_way_dirs(wt) == 12 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
->>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
           }
           tile_check = 2
@@ -3381,11 +3340,7 @@ function build_double_track(start_field, wt) {
         if ( start_field.get_way_dirs(wt) == 5 ) {
           tile_a = tile_x(tiles[0].x, tiles[0].y-1, tiles[0].z)
           tile_b = tile_x(tiles[0].x+1, tiles[0].y-1, tiles[0].z)
-<<<<<<< HEAD
-          if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
-=======
           if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
->>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
             sig_tile_new = "tr5"
           }
@@ -3395,11 +3350,7 @@ function build_double_track(start_field, wt) {
         } else if ( start_field.get_way_dirs(wt) == 10 ) {
           tile_a = tile_x(tiles[0].x-1, tiles[0].y, tiles[0].z)
           tile_b = tile_x(tiles[0].x-1, tiles[0].y+1, tiles[0].z)
-<<<<<<< HEAD
-          if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
-=======
           if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
->>>>>>> refs/remotes/origin/trunk
             b_tile = tile_b
             sig_tile_new = "tr10t"
           }
@@ -3432,11 +3383,7 @@ function build_double_track(start_field, wt) {
 
             tile_a = tile_x(tiles[way_len - 1].x, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x-1, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
-<<<<<<< HEAD
-            if ( tile_a.get_way_dirs(wt) == 9 && (tile_b.get_way_dirs(wt) == 6 || tile_b.get_way_dirs(wt) == 10) ) {
-=======
             if ( tile_a.get_way_dirs(wt) == 9 && (tile_b.get_way_dirs(wt) == 6 || tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0) ) {
->>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tl5"
             }
@@ -3445,11 +3392,7 @@ function build_double_track(start_field, wt) {
         } else if ( tile_check == 2 ) {
             tile_a = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y-1, tiles[way_len - 1].z)
-<<<<<<< HEAD
-            if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || tile_b.get_way_dirs(wt) == 10) ) {
-=======
             if ( tile_a.get_way_dirs(wt) == 6 && (tile_b.get_way_dirs(wt) == 9 || tile_b.get_way_dirs(wt) == 10 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0) ) {
->>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tl5"
             }
@@ -3457,11 +3400,7 @@ function build_double_track(start_field, wt) {
         } else if ( tile_check == 3 ) {
             tile_a = tile_x(tiles[way_len - 1].x, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
-<<<<<<< HEAD
-            if ( tile_a.get_way_dirs(wt) == 3 && (tile_b.get_way_dirs(wt) == 12 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
-=======
             if ( tile_a.get_way_dirs(wt) == 3 && (tile_b.get_way_dirs(wt) == 12 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
->>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tr5t"
             }
@@ -3470,11 +3409,7 @@ function build_double_track(start_field, wt) {
         } else if ( tile_check == 4 ) {
             tile_a = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y, tiles[way_len - 1].z)
             tile_b = tile_x(tiles[way_len - 1].x+1, tiles[way_len - 1].y+1, tiles[way_len - 1].z)
-<<<<<<< HEAD
-            if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel())) ) {
-=======
             if ( tile_a.get_way_dirs(wt) == 12 && (tile_b.get_way_dirs(wt) == 3 || (tile_b.get_way_dirs(wt) == 5 && !tile_b.is_bridge() && !tile_b.is_tunnel() && tile_b.get_slope() == 0)) ) {
->>>>>>> refs/remotes/origin/trunk
               b_tile = tile_b
               sig_tile_new = "tr10"
             }
@@ -4686,11 +4621,7 @@ function optimize_way_line(route, wt) {
         // not build tunnel -> set slope down
         local tile_4 = tile_x(route[i-2].x, route[i-2].y, route[i-2].z)
         tile_4_d = tile_4.get_way_dirs(wt)
-<<<<<<< HEAD
-        if ( tile_4.find_object(mo_building) != null || tile_4.find_object(mo_bridge) != null ) { //dir.is_single(tile_4_d)
-=======
         /*if ( tile_4.find_object(mo_building) != null || tile_4.find_object(mo_bridge) != null ) { //dir.is_single(tile_4_d)
->>>>>>> refs/remotes/origin/trunk
           local tool = command_x(tool_remover)
           err = tool.work(our_player, tile_3)
           if ( err == null ) { err = tool.work(our_player, tile_2) }
@@ -4826,16 +4757,6 @@ function optimize_way_line(route, wt) {
         local err = null
         local tile_4 = tile_x(route[i-2].x, route[i-2].y, route[i-2].z)
         //local err = remove_tile_to_empty(tile_2, wt, 0)
-<<<<<<< HEAD
-        local tool = command_x(tool_remove_way)
-        err = tool.work(our_player, tile_4, tile_3, "" + wt)
-        if ( print_message_box == 4 ) {
-          gui.add_message_at(our_player, "#4376# remove tile_1 " + coord3d_to_string(tile_1) + " : " + err, world.get_time())
-          gui.add_message_at(our_player, "#4376# remove tile_2 " + coord3d_to_string(tile_2) + " : " + err, world.get_time())
-          //::debug.pause()
-        }
-
-=======
 
 
         if ( tile_3.find_object(mo_bridge) == null && tile_4.find_object(mo_bridge) == null && tile_4.find_object(mo_building) == null && tile_3.find_object(mo_building) == null ) {
@@ -4859,7 +4780,6 @@ function optimize_way_line(route, wt) {
           //::debug.pause()
         }
 
->>>>>>> refs/remotes/origin/trunk
         if (err == null) {
           //err = null
           /*local t = []
@@ -5399,16 +5319,10 @@ function destroy_line(line_obj, good, link_obj) {
       //::debug.pause()
 
       // Prüfen warum next_vehicle_check nicht vorhanden bei Schiffslinien
-<<<<<<< HEAD
-      if ( wt != wt_water ) {
-        line_obj.next_vehicle_check = world.get_time().ticks + (world.get_time().ticks_per_month * 1)
-      }
-=======
       // line_x statt link.line
       //if ( wt != wt_water ) {
         line_obj.next_vehicle_check = world.get_time().ticks + (world.get_time().ticks_per_month * 1)
       //}
->>>>>>> refs/remotes/origin/trunk
     }
     // sleep - convoys are destroyed when simulation continues
     sleep()
@@ -5974,9 +5888,6 @@ function check_stations_connections() {
 
         //local t = halt.get_tile_list()
         //halt_cnv = halt_lines.get_convoy_list()
-<<<<<<< HEAD
-        destroy_line(halt_lines, good, null)
-=======
 
 
         // destroy_line link.line not line_x
@@ -6005,7 +5916,6 @@ function check_stations_connections() {
 
 
         destroy_line(search_line, good, null) //halt_line
->>>>>>> refs/remotes/origin/trunk
 
 
         break
