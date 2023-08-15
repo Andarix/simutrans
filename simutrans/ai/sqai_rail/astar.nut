@@ -1384,7 +1384,7 @@ function remove_wayline(route, pos, wt, st_len = null) {
         }
       }
 
-      if ( tile.is_crossing ) {
+      if ( tile.is_crossing() ) {
         //::debug.pause()
         // test crossing and remove
         local t_field = tile.get_way(wt)
@@ -1699,7 +1699,7 @@ function test_tile_is_empty(tile) {
   local tile_groundobj = tile.find_object(mo_groundobj)
   local tile_moving_object = tile.find_object(mo_moving_object)
 
-  //gui.add_message_at(our_player, " ---=> test_tile_is_empty " + coord3d_to_string(tile) + " | tile_tree " + tile_tree + " | tile_groundobj " + tile_groundobj + " | tile_moving_object " + tile_moving_object, tile)
+  //gui.add_message_at(our_player, " ---=> test_tile " + coord3d_to_string(tile) + " | is_empty " + tile.is_empty() + " | tile_tree " + tile_tree + " | tile_groundobj " + tile_groundobj + " | tile_moving_object " + tile_moving_object, tile)
 
   if ( tile.is_empty() ) {
     return true
