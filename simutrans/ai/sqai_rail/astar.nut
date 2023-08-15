@@ -3134,8 +3134,8 @@ function build_double_track(start_field, wt) {
                 }
                 do {
                   err = command_x.set_slope(b_player, build_hight, 83 )
-                  if ( err != null ) { break }
                   z = square_x(tiles_build[i].x, tiles_build[i].y).get_ground_tile()
+                  if ( err != null ) { break }
                 } while(z.z > ref_hight.z )
                 // replace water to land
                 if ( z.is_water() ) { command_x.change_climate_at(our_player, z, cl_temperate) }
