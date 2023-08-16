@@ -2563,7 +2563,7 @@ function build_double_track(start_field, wt) {
   // 2 - terraform
   // 21 - terraform grid
   // 3 - double track diagonal
-  local print_message_box = 21
+  local print_message_box = 0
 
   if ( print_message_box > 0 ) {
     gui.add_message_at(our_player, " ### build_double_track ### " + coord3d_to_string(start_field), start_field)
@@ -3131,6 +3131,8 @@ function build_double_track(start_field, wt) {
                 terraform_tile = 0
               }
 
+              // double hight 8, 24, 56, 72
+
 
               // terraform tile
               if ( terraform_tile == 1 ) { //&& ref_hight.z < build_hight.z
@@ -3140,8 +3142,8 @@ function build_double_track(start_field, wt) {
                 }
                 do {
                   err = command_x.set_slope(b_player, build_hight, 83 )
-                  z = square_x(tiles_build[i].x, tiles_build[i].y).get_ground_tile()
                   if ( err != null ) { break }
+                  z = square_x(tiles_build[i].x, tiles_build[i].y).get_ground_tile()
                 } while(z.z > ref_hight.z )
                 // replace water to land
                 if ( z.is_water() ) { command_x.change_climate_at(our_player, z, cl_temperate) }
