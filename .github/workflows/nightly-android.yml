@@ -122,7 +122,7 @@ jobs:
         echo "action_state=yellow" >> $GITHUB_ENV
         sed -i 's/applicationId "com.simutrans"/applicationId "com.simutrans.germany.simutrans"/' /android-sdl/simutrans-android-project/simutrans/build.gradle
         sed -i "s/versionCode [0-9]\+/versionCode ${{ needs.set-revision.outputs.output1 }}/" /android-sdl/simutrans-android-project/simutrans/build.gradle
-        sed -i '/distributionUrl/s/gradle-8.1-all.zip/gradle-8.2-all.zip/' /android-sdl/simutrans-android-project/gradle/wrapper/gradle-wrapper.properties
+        sed -i '/distributionUrl/s/gradle-8.2-all.zip/gradle-8.3-rc-2-all.zip/' /android-sdl/simutrans-android-project/gradle/wrapper/gradle-wrapper.properties
         cd /android-sdl/simutrans-android-project
         cat simutrans/build.gradle
         #cp project/jni/simutrans/src/android/signBundle.sh .
