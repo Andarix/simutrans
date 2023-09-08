@@ -22,23 +22,11 @@ TRANSLATOR_URL=https://makie.de/translator
 # Use curl if available, else use wget
 curl -q -h > /dev/null
 if [ $? -eq 0 ]; then
-<<<<<<< HEAD
     curl -q -L https://simutrans-germany.com/translator_page/base_text/download.php > /dev/null || {
       echo "Error: generating file language_pack-Base+texts.zip failed (curl returned $?)" >&2;
       exit 3;
     }
     curl -q -L https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
-=======
-	if ![curl --head --silent --fail $TRANSLATOR_URL 2> /dev/null]; then
-		TRANSLATOR_URL=https://translator.simutrans.com
-	fi
-	echo "Using translator at $TRANSLATOR_URL"
-    curl -q -L -d "version=0&choice=all&submit=Export%21" $TRANSLATOR_URL/script/main.php?page=wrap > /dev/null || {
-      echo "Error: generating file language_pack-Base+texts.zip failed (curl returned $?)" >&2;
-      exit 3;
-    }
-    curl -q -L $TRANSLATOR_URL/data/tab/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
->>>>>>> refs/remotes/origin/trunk
       echo "Error: download of file language_pack-Base+texts.zip failed (curl returned $?)" >&2
       rm -f "language_pack-Base+texts.zip"
       exit 4
@@ -46,23 +34,11 @@ if [ $? -eq 0 ]; then
 else
     wget -q --help > /dev/null
     if [ $? -eq 0 ]; then
-<<<<<<< HEAD
         wget -q --delete-after https://simutrans-germany.com/translator_page/base_text/download.php || {
           echo "Error: generating file language_pack-Base+texts.zip failed (wget returned $?)" >&2;
           exit 3;
         }
         wget -q -N https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip || {
-=======
-		if ![wget -q --method=HEAD $TRANSLATOR_URL 2> /dev/null]; then
-			TRANSLATOR_URL=https://translator.simutrans.com
-		fi
-		echo "Using translator at $TRANSLATOR_URL"
-        wget -q --post-data "version=0&choice=all&submit=Export!"  --delete-after $TRANSLATOR_URL/script/main.php?page=wrap || {
-          echo "Error: generating file language_pack-Base+texts.zip failed (wget returned $?)" >&2;
-          exit 3;
-        }
-        wget -q -N $TRANSLATOR_URL/data/tab/language_pack-Base+texts.zip || {
->>>>>>> refs/remotes/origin/trunk
           echo "Error: download of file language_pack-Base+texts.zip failed (wget returned $?)" >&2
           rm -f "language_pack-Base+texts.zip"
           exit 4
@@ -87,4 +63,3 @@ rm -f ${OUTPUT_DIR}/_objectlist.txt
 # Remove check test
 #rm xx.tab
 #rm -rf xx
-
