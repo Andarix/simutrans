@@ -1,9 +1,12 @@
-# This workflow sets up and runs MSBuild and VSTest 
+# This workflow sets up and runs MSBuild and VSTest
 # to build and test a Visual Studio solution.
 
 name: Nightly Built Windows64 SDL2
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly_'
 
 jobs:
   winSDL2-64:
