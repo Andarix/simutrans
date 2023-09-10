@@ -30,7 +30,6 @@
 *.patch
 *.log
 /doxygen
-<<<<<<< HEAD
 /*.exe
 /*.manifest
 /*.pdb
@@ -44,21 +43,20 @@ Simutrans_SDL2.lib
 /libs/miniupnpc-2.1
 /libs/miniupnpc-master
 /packages
-/libs/SDL2-2.0.14/VisualC/SDL/Win32/Release
 /libs/bzip2-1.0.6/Release/libbz2.tlog
 /libs/bzip2-1.0.6/Release
 /libs/SDL2-2.0.14/VisualC/Win32/Release
+/libs/SDL2-2.28.2/VisualC/Win32/Release
+/libs/SDL2-2.0.14/VisualC/x64/Release
+/libs/SDL2-2.28.2/VisualC/x64/Release
 /libs/freetype-2.10.1/objs/Win32/Release Static
 /status.txt
 /libs/zstd-1.5.0
 /src/build
-=======
 .vs/
-revision.h
 .idea
 *.d
 *.res
 /autom4te.cache
 *.exe
 .ccls-cache
->>>>>>> refs/remotes/origin/trunk

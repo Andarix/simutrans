@@ -72,7 +72,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>libs;$(SimLibraryPath);$(LibraryPath)</LibraryPath>
+    <LibraryPath>libs64;$(SimLibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <TargetName>$(ProjectName) Debug</TargetName>
@@ -109,7 +109,7 @@
       <WarningLevel>Level3</WarningLevel>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <DisableSpecificWarnings>4250;4373;4800;4996;26812;26451;4244</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4250;4373;4800;4996;26812;26451;4244;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
@@ -198,6 +198,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs\bzip2-1.0.6;libs\miniupnpc-2.2.2;libs\zlib-1.2.11;libs\lpng1637;libs\zstd-1.5.2\lib;libs\SDL2-2.28.2;libs\freetype-2.10.1\include;libs\pthreads4w;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release_x64|Win32'">libs\bzip2-1.0.6;libs\miniupnpc-2.2.2;libs\zlib-1.2.11;libs\lpng1637;libs\zstd-1.5.2\lib;libs\SDL2-2.0.14;libs\freetype-2.10.1\include;libs\pthreads4w;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libs\miniupnpc-2.2.2;libs\zstd-1.5.2\lib;libs\pthreads4w;libs\lpng1637;libs\freetype-2.10.1\include;libs\zlib-1.2.11;libs\SDL2-2.28.2;libs\bzip2-1.0.6;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)src\simutrans\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib;SDL2.lib;libpthreadVC3.lib;libbz2.lib;freetype.lib;libpng16.lib;libzstd_static.lib;miniupnpc.lib;zlib.lib;libz-static.lib</AdditionalDependencies>
@@ -210,6 +211,7 @@
       <Profile Condition="'$(Configuration)|$(Platform)'=='Release_x64|Win32'">true</Profile>
       <Profile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</Profile>
       <Profile Condition="'$(Configuration)|$(Platform)'=='Release_x64|x64'">true</Profile>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</UseLibraryDependencyInputs>
