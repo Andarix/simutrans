@@ -518,6 +518,40 @@ static uint32 zoom_factor = ZOOM_NEUTRAL;
 static sint32 zoom_num[MAX_ZOOM_FACTOR+1] = { 2, 3, 4, 1, 3, 5, 1, 3, 1, 1 };
 static sint32 zoom_den[MAX_ZOOM_FACTOR+1] = { 1, 2, 3, 1, 4, 8, 2, 8, 4, 8 };
 
+
+static inline rgb888_t pixval_to_rgb888(PIXVAL colour)
+{
+	// Scale each colour channel from 5 or 6 bits to 8 bits
+#ifdef RGB555
+	return {
+		uint8(((colour >> 10) & 0x1F) * 0xFF / 0x1F), // R
+		uint8(((colour >>  5) & 0x1F) * 0xFF / 0x1F), // G
+		uint8(((colour >>  0) & 0x1F) * 0xFF / 0x1F)  // B
+	};
+#else
+	return {
+		uint8(((colour >> 11) & 0x1F) * 0xFF / 0x1F), // R
+		uint8(((colour >>  5) & 0x3F) * 0xFF / 0x3F), // G
+		uint8(((colour >>  0) & 0x1F) * 0xFF / 0x1F)  // B
+	};
+#endif
+}
+
+
+static inline PIXVAL pixval_to_rgb343(PIXVAL rgb)
+{
+	//         msb          lsb
+	// rgb555: xrrrrrgggggbbbbb
+	// rgb565: rrrrrggggggbbbbb
+	// rgb343:       rrrggggbbb
+#ifdef RGB555
+	return ((rgb >> 5) & 0x0380) | ((rgb >>  3) & 0x0078) | ((rgb >> 2) & 0x07);
+#else
+	return ((rgb >> 6) & 0x0380) | ((rgb >>  4) & 0x0078) | ((rgb >> 2) & 0x07);
+#endif
+}
+
+
 /*
  * Gets a colour index and returns RGB888
  */
@@ -1006,14 +1040,10 @@ static void recode_img_src_target(scr_coord_val h, PIXVAL *src, PIXVAL *target)
 					while(  runlen--  ) {
 						if(  *src < 0x8020+(31*16)  ) {
 							// expand transparent player color
-							PIXVAL alpha = (*src-0x8020) % 31;
-							PIXVAL rgb = rgbmap_day_night[(*src-0x8020)/31+0x8000];
-#ifdef RGB555
-							PIXVAL pix = ((rgb >> 6) & 0x0380) | ((rgb >>  4) & 0x0038) | ((rgb >> 2) & 0x07);
-#else
-							PIXVAL pix = ((rgb >> 6) & 0x0380) | ((rgb >>  3) & 0x0078) | ((rgb >> 2) & 0x07);
-#endif
-							*target++ = 0x8020 + 31*31 + pix*31 + alpha;
+							const uint8 alpha   = (*src-0x8020) % 31;
+							const PIXVAL colour = rgbmap_day_night[(*src-0x8020)/31+0x8000];
+
+							*target++ = 0x8020 + 31*31 + pixval_to_rgb343(colour)*31 + alpha;
 							src ++;
 						}
 						else {
@@ -4660,17 +4690,10 @@ bool display_snapshot( const scr_rect &area )
 		const PIXVAL *row = textur + clipped_area.x + y*disp_width;
 
 		for (scr_coord_val x = clipped_area.x; x < clipped_area.x + clipped_area.w; ++x) {
-			const PIXVAL pixel = *row++;
-
-#ifdef RGB555
-			*dst++ = ((pixel >> 10) & 0x1F) << (8-5); // R
-			*dst++ = ((pixel >>  5) & 0x1F) << (8-5); // G
-			*dst++ = ((pixel >>  0) & 0x1F) << (8-5); // B
-#else
-			*dst++ = ((pixel >> 11) & 0x1F) << (8-5); // R
-			*dst++ = ((pixel >>  5) & 0x3F) << (8-6); // G
-			*dst++ = ((pixel >>  0) & 0x1F) << (8-5); // B
-#endif
+			const rgb888_t pixel = pixval_to_rgb888(*row++);
+			*dst++ = pixel.r;
+			*dst++ = pixel.g;
+			*dst++ = pixel.b;
 		}
 	}
 
