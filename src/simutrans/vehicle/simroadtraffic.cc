@@ -231,7 +231,7 @@ void road_user_t::finish_rd()
 
 
 /**********************************************************************************************************************/
-/* statsauto_t (city cars) from here on */
+/* private_car_t (city cars) from here on */
 
 freelist_iter_tpl<private_car_t> private_car_t::fl;
 
@@ -623,8 +623,10 @@ void private_car_t::enter_tile(grund_t* gr)
 		// was generating pedestrians gere, but not possible with new sync system
 	}
 #endif
-	vehicle_base_t::enter_tile(gr);
+
+	update_tiles_overtaking();
 	calc_disp_lane();
+	vehicle_base_t::enter_tile(gr);
 	gr->get_weg(road_wt)->book(1, WAY_STAT_CONVOIS);
 }
 
@@ -796,13 +798,11 @@ void private_car_t::hop(grund_t* to)
 	}
 	calc_image();
 
-	// and add to next tile
 	set_pos(pos_next);
 	enter_tile(to);
 
 	calc_current_speed(to);
 
-	update_tiles_overtaking();
 	if(to->ist_uebergang()) {
 		to->find<crossing_t>(2)->add_to_crossing(this);
 	}
@@ -867,9 +867,15 @@ void private_car_t::get_screen_offset( int &xoff, int &yoff, const sint16 raster
 
 void private_car_t::calc_disp_lane()
 {
-	// driving in the back or the front
-	ribi_t::ribi test_dir = welt->get_settings().is_drive_left() ? ribi_t::northeast : ribi_t::southwest;
-	disp_lane = get_direction() & test_dir ? 1 : 3;
+	disp_lane = welt->get_settings().is_drive_left() ? 1 : 3;
+	/* disp_lane is valid for vehicles moving to the right side of
+	   the screen, must be mirrored if SE < heading < NW, and also
+	   if overtaking as there are fíve "display lanes" in simutrans
+	   which determine their drawing order. */
+	bool heading_left = (get_direction() & ribi_t::southwest) != 0;
+	if (heading_left ^ is_overtaking()) {
+		disp_lane ^= 2;
+	}
 }
 
 void private_car_t::rotate90()

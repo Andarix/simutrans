@@ -59,7 +59,7 @@ road_vehicle_t::road_vehicle_t(loadsave_t *file, bool is_first, bool is_last) : 
 		if(  desc  ) {
 			last_desc = desc;
 		}
-		calc_disp_lane();
+		calc_disp_lane(false); // we do not know right now, if we are overtaking ...
 	}
 }
 
@@ -67,15 +67,21 @@ road_vehicle_t::road_vehicle_t(loadsave_t *file, bool is_first, bool is_last) : 
 void road_vehicle_t::rotate90()
 {
 	vehicle_t::rotate90();
-	calc_disp_lane();
+	calc_disp_lane(cnv && cnv->is_overtaking());
 }
 
 
-void road_vehicle_t::calc_disp_lane()
+void road_vehicle_t::calc_disp_lane(bool is_overtaking)
 {
-	// driving in the back or the front
-	ribi_t::ribi test_dir = welt->get_settings().is_drive_left() ? ribi_t::northeast : ribi_t::southwest;
-	disp_lane = get_direction() & test_dir ? 1 : 3;
+	disp_lane = welt->get_settings().is_drive_left() ? 1 : 3;
+	/* disp_lane is valid for vehicles moving to the right side of
+	   the screen, must be mirrored if SE < heading < NW, and also
+	   if overtaking as there are fíve "display lanes" in simutrans
+	   which determine their drawing order. */
+	bool heading_left = (get_direction() & ribi_t::southwest) != 0;
+	if (heading_left ^ is_overtaking) {
+		disp_lane ^= 2;
+	}
 }
 
 // need to reset halt reservation (if there was one)
@@ -515,8 +521,11 @@ overtaker_t* road_vehicle_t::get_overtaker()
 
 void road_vehicle_t::enter_tile(grund_t* gr)
 {
+	if (leading) {
+		cnv->update_tiles_overtaking();
+	}
+	calc_disp_lane(cnv && cnv->is_overtaking());
 	vehicle_t::enter_tile(gr);
-	calc_disp_lane();
 
 	const int cargo = get_total_cargo();
 	weg_t *str = gr->get_weg(road_wt);
@@ -525,9 +534,6 @@ void road_vehicle_t::enter_tile(grund_t* gr)
 		if (leading)  {
 			str->book(1, WAY_STAT_CONVOIS);
 		}
-	}
-	if (leading)  {
-		cnv->update_tiles_overtaking();
 	}
 }
 
