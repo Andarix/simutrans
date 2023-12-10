@@ -91,4 +91,22 @@
 /* Relative URL of the IP function on server */
 #define QUERY_ADDR_URL "/get_IP.php"
 
+/* Server to announce status to */
+//#define ANNOUNCE_SERVER1 "127.0.0.1:9280"
+//#define ANNOUNCE_SERVER2 "simutrans-germany.com"
+//#define ANNOUNCE_SERVER3 "simutrans-germany.com"
+
+/* Relative URL of the announce function on server */
+//#define ANNOUNCE_URL "/homepage/listserver/announce.php"
+
+/* Relative URL of the list function on server */
+//#define ANNOUNCE_LIST_URL "/homepage/listserver/list.php?format=csv"
+
+/* url for obtaining the external IP for easz servers */
+//#define QUERY_ADDR_IP "127.0.0.1:9280"
+//#define QUERY_ADDR_IPv4_ONLY "127.0.0.1:9280"
+
+/* Relative URL of the IP function on server */
+//#define QUERY_ADDR_URL "/showip.php"
+
 #endif
