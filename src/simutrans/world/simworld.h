@@ -786,7 +786,7 @@ public:
 	void step_month( sint16 months=1 );
 
 	/**
-	 * @return Either 0 or the current year*16 + month
+	 * @return Either 0 or the current year*12 + month
 	 */
 	uint16 get_timeline_year_month() const { return settings.get_use_timeline() ? current_month : 0; }
 
@@ -971,11 +971,12 @@ public:
 	 * To access the cities array.
 	 */
 	const weighted_vector_tpl<stadt_t*>& get_cities() const { return cities; }
-	void add_city(stadt_t *s);
 
-	/**
-	 * Removes town from map, houses will be left overs.
-	 */
+	/// Try to add a new city at @p pos with @p citizens inhabitants.
+	/// Returns NULL on failure.
+	stadt_t *create_city(koord pos, sint32 citizens);
+
+	/// Removes town from map, houses will be left over.
 	bool remove_city(stadt_t *s);
 
 	/* tourist attraction list */

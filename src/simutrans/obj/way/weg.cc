@@ -45,13 +45,32 @@ static recursive_mutex_maker_t weg_cim_maker(weg_calc_image_mutex);
  */
 slist_tpl <weg_t *> alle_wege;
 
+uint16 weg_t::cityroad_speed = 50;
 
 /**
  * Get list of all ways
  */
-const slist_tpl <weg_t *> & weg_t::get_alle_wege()
+const slist_tpl <weg_t*> &weg_t::get_alle_wege()
 {
 	return alle_wege;
+}
+
+
+void weg_t::set_cityroad_speedlimit(uint16 new_limit)
+{
+	if (cityroad_speed != new_limit) {
+		cityroad_speed = new_limit;
+		for(weg_t *w : alle_wege) {
+			if(  w->hat_gehweg()  &&  w->get_waytype() == road_wt  ) {
+				if (const way_desc_t* desc = w->get_desc()) {
+					w->set_max_speed(max(desc->get_topspeed(), cityroad_speed));
+				}
+				else {
+					w->set_max_speed(cityroad_speed);
+				}
+			}
+		}
+	}
 }
 
 
@@ -115,8 +134,8 @@ void weg_t::set_desc(const way_desc_t *b)
 {
 	desc = b;
 
-	if(  hat_gehweg() &&  desc->get_wtyp() == road_wt  &&  desc->get_topspeed() > 50  ) {
-		max_speed = 50;
+	if(  hat_gehweg() &&  desc->get_wtyp() == road_wt  &&  desc->get_topspeed() > cityroad_speed  ) {
+		max_speed = cityroad_speed;
 	}
 	else {
 		max_speed = desc->get_topspeed();
@@ -366,17 +385,8 @@ bool weg_t::check_season(const bool calc_only_season_change)
 	if(  is_diagonal()  ) {
 		set_images( image_diagonal, ribi, snow );
 	}
-	else if(  ribi_t::is_threeway( ribi )  &&  desc->has_switch_image()  ) {
-		// there might be two states of the switch; remember it when changing seasons
-		if(  image == desc->get_switch_image_id( ribi, old_snow, false )  ) {
-			set_images( image_switch, ribi, snow, false );
-		}
-		else if(  image == desc->get_switch_image_id( ribi, old_snow, true )  ) {
-			set_images( image_switch, ribi, snow, true );
-		}
-		else {
-			set_images( image_flat, ribi, snow );
-		}
+	else if(  ribi_t::is_threeway( ribi )  &&  desc->get_waytype()!=road_wt  ) {
+		set_images(image_switch, ribi, snow, has_switched());
 	}
 	else {
 		set_images( image_flat, ribi, snow );
@@ -446,6 +456,13 @@ void weg_t::calc_image()
 			// on slope
 			set_images(image_slope, hang, snow);
 		}
+		else if (ribi_t::is_threeway(ribi)) {
+			set_images(image_switch, ribi, snow, has_switched());
+		}
+		else if (!ribi_t::is_twoway(ribi)) {
+			set_images(image_flat, ribi, snow);
+		}
+		// recursion to find out of diagonal
 		else {
 			static int recursion = 0; /* Communicate among different instances of this method */
 

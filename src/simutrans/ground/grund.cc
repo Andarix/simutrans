@@ -503,6 +503,7 @@ void grund_t::rotate90()
 	pos.rotate90( welt->get_size().y-1 );
 	slope = slope_t::rotate90( slope );
 	// then rotate the things on this tile
+	objlist.rotate90_moving();
 	uint8 trees = 0, offset = 0;
 	if(  get_top()==254  ) {
 		dbg->warning( "grund_t::rotate90()", "Too many stuff on (%s)", pos.get_str() );
@@ -743,7 +744,7 @@ static inline uint8 get_back_image_from_diff(sint8 h1, sint8 h2)
 /**
 * if ground is deleted mark the old spot as dirty
 */
-void grund_t::mark_image_dirty()
+void grund_t::mark_image_dirty() const
 {
 	// see obj_t::mark_image_dirty
 	if(imageid!=IMG_EMPTY) {
@@ -1119,6 +1120,7 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 
 				//display snow transitions if required
 				if(  slope != 0  &&  (!weg  ||  !weg->hat_gehweg())  ) {
+					// the gehweg flag is used for rail switches, but a slope has no switches ...
 					switch(  snow_transition  ) {
 						case 1: {
 							display_alpha( ground_desc_t::get_snow_tile(slope), ground_desc_t::get_alpha_tile(slope), ALPHA_GREEN | ALPHA_BLUE, xpos, ypos, 0, 0, true, dirty CLIP_NUM_PAR );

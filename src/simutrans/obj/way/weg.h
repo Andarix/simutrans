@@ -50,7 +50,8 @@ public:
 	static const slist_tpl <weg_t *> & get_alle_wege();
 
 	enum {
-		HAS_SIDEWALK   = 1 << 0,
+		HAS_SIDEWALK   = 1 << 0, // only roads
+		HAS_SWITCHED   = 1 << 0, // only rails
 		IS_ELECTRIFIED = 1 << 1,
 		HAS_SIGN       = 1 << 2,
 		HAS_SIGNAL     = 1 << 3,
@@ -67,6 +68,8 @@ private:
 	* MAX_WAY_STATISTICS: see #define at top of file
 	*/
 	sint16 statistics[MAX_WAY_STAT_MONTHS][MAX_WAY_STATISTICS];
+
+	static uint16 cityroad_speed;
 
 	/**
 	* Way type description
@@ -147,6 +150,9 @@ public:
 
 	void set_max_speed(sint32 s) { max_speed = s; }
 	sint32 get_max_speed() const { return max_speed; }
+
+	static void set_cityroad_speedlimit(uint16 new_limit);
+	static uint16 get_cityroad_speedlimit() { return cityroad_speed; }
 
 	/// @note Replaces max speed of the way by the max speed property of the descriptor.
 	void set_desc(const way_desc_t *b);
@@ -250,6 +256,9 @@ public:
 	/* flag query routines */
 	void set_gehweg(const bool yesno) { flags = (yesno ? flags | HAS_SIDEWALK : flags & ~HAS_SIDEWALK); }
 	inline bool hat_gehweg() const { return flags & HAS_SIDEWALK; }
+
+	void set_switched(const bool yesno) { flags = (yesno ? flags | HAS_SWITCHED : flags & ~HAS_SWITCHED); }
+	inline bool has_switched() const { return flags & HAS_SWITCHED; }
 
 	void set_electrify(bool janein) {janein ? flags |= IS_ELECTRIFIED : flags &= ~IS_ELECTRIFIED;}
 	inline bool is_electrified() const {return flags&IS_ELECTRIFIED; }

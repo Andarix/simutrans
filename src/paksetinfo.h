@@ -3,7 +3,11 @@
 #define OBSOLETE_FROM (10)
 paksetinfo_t pakinfo[PAKSET_COUNT] = {
   { "http://downloads.sourceforge.net/project/simutrans/pak64/123-0/simupak64-123-0.zip", "pak", "pak64 123 r2102", 15634},
+<<<<<<< HEAD
   { "http://simutrans-germany.com/pak.german/pak64.german_0-123-0-0-7_full.zip", "pak64.german", "pak64.german 0.123.0.0.7", 26018},
+=======
+  { "https://simutrans-germany.com/pak.german/pak64.german_0-124-0-0-1_full.zip", "pak64.german", "pak64.german 0.124.0.0.1", 25558},
+>>>>>>> refs/remotes/origin/trunk
   { "http://downloads.sourceforge.net/project/simutrans/pak64.japan/123-0/simupak64.japan-123-0.zip", "pak.japan", "pak64.japan 123 r2101", 10072},
   { "http://github.com/wa-st/pak-nippon/releases/download/v0.5.0/pak.nippon-v0.5.0.zip", "pak.nippon", "pak.nippon v0.5.0", 49229},
   { "https://github.com/Varkalandar/pak48.Excentrique/releases/download/v0.19_RC3/pak48.excentrique_v019rc3.zip", "pak48.Excentrique", "pak48.Excentrique v0.19", 1980},
@@ -11,7 +15,11 @@ paksetinfo_t pakinfo[PAKSET_COUNT] = {
   { "http://downloads.sourceforge.net/project/simutrans/pak128.britain/pak128.Britain%20for%20120-3/pak128.Britain.1.18-120-3.zip", "pak128.Britain", "pak128.Britain 1.18 120.3 r1991", 241193},
   { "http://downloads.sourceforge.net/project/simutrans/PAK128.german/PAK128.german_2.1_for_ST_123.0/PAK128.german_2.1_for_ST_123.0.zip", "PAK128.german", "Pak128.german VS 2.1 (Rev. 473)", 559085},
   { "http://downloads.sourceforge.net/project/simutrans/pak128/pak128%202.8.2%20for%20ST%20123up/simupak128-2.8.2-for123.zip", "pak128", "pak128 2.8.2 for 123.0.1 git r498 hash 0adb1d2", 414063},
+<<<<<<< HEAD
   { "http://github.com/Flemmbrav/Pak192.Comic/releases/download/2021-V0.6-RC2/pak192.comic.0.6.RC2.zip", "pak192.comic-nightly-datconverter", "Pak192.Comic 2021 [V 0.6 RC 1]", 801767},
+=======
+  { "https://github.com/Flemmbrav/Pak192.Comic/releases/download/2021-V0.6-RC2/pak192.comic.0.6.RC2.zip", "pak192.comic-nightly-datconverter", "Pak192.Comic 2021 [V 0.6 RC 1]", 801767},
+>>>>>>> refs/remotes/origin/trunk
   { "http://downloads.sourceforge.net/project/simutrans/pak96.comic/pak96.comic%20for%20111-3/pak96.comic-0.4.10-plus.zip", "pak96.comic", "pak96.comic V4.1 plus", 32518},
   { "http://pak128.jpn.org/souko/pak128.japan.120.0.cab", "pak128.japan", "Pak128.Japan 120.0", 27643},
   { "http://downloads.sourceforge.net/project/simutrans/pak32.comic/pak32.comic%20for%20102-0/pak32.comic_102-0.zip", "pak32", "", 3262},
