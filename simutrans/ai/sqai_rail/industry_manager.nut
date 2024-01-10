@@ -729,14 +729,24 @@ class industry_manager_t extends manager_t
 
       local entries = line.get_schedule().entries
       local start_h = entries[0].get_halt(our_player)
+      local end_l = tile_x(entries[entries.len()-1].x, entries[entries.len()-1].y, entries[entries.len()-1].z)
+
+      // remove stucked convoy
+      // cnv_count > 10 then remove cnv_count/2
+      local cnv_remove_count = cnv_count
+      if ( cnv_count > 10 ) {
+        cnv_remove_count = abs(cnv_count / 2)
+        //gui.add_message_at(our_player, "(738) ####  cnv_remove_count " + cnv_remove_count, world.get_time())
+      }
+      local loading_cnv_stucked = 0
 
       for ( local i = 0; i < cnv_count; i++ ) {
         if ( !list[i].is_withdrawn() && cnv == null ) {
           cnv = list[i]
         }
-        // stucked road vehicles destroy
+        // stucked convoy destroy
         local d = list[i].get_traveled_distance()
-        if ( list[i].get_distance_traveled_total() > 0 && d[0] == 0 && d[1] == 0 && list[i].is_loading() == false && cnv_count > 1 && list[i].get_loading_level() == 0) {
+        if ( list[i].get_distance_traveled_total() > 0 && d[0] == 0 && d[1] == 0 && list[i].is_loading() == false && cnv_count > 1 && list[i].get_loading_level() == 0 && stucked_cnv.len() <= cnv_remove_count ) {
           //gui.add_message_at(our_player, "####### destroy stucked road vehicles " + cnv_count, world.get_time())list[i].get_waytype() == wt_road &&
           stucked_cnv.append(list[i])
           //remove_cnv++
@@ -748,11 +758,44 @@ class industry_manager_t extends manager_t
         // destroy no waiting goods
         if ( start_h != null ) {
           local d = start_h.get_waiting()
-          if ( d[0] == 0 && list[i].is_loading() == false ) {
+          if ( d[0] == 0 && list[i].is_loading() == false && stucked_cnv.len() <= cnv_remove_count ) {
             //gui.add_message_at(our_player, "(605) ####### " + start_h.get_name() + " - destroy waiting road vehicles ", world.get_time())
             stucked_cnv.append(list[i])
             //remove_cnv++
           }
+        }
+        // stucked loaded convoy
+        if ( d[0] == 0 && d[1] == 0 && list[i].get_loading_level() > 0 && loading_cnv_stucked == 0 && line.get_waytype() == wt_road ) {
+          loading_cnv_stucked = 1
+          //gui.add_message_at(our_player, "(768) ####  loading convoy stucked ", world.get_time())
+          local traffic_obj = find_signal("traffic_light", line.get_waytype())
+
+          // end_l
+          local asf = astar_route_finder(wt)
+          local result = asf.search_route([list[i].get_pos()], [end_l])
+          local route_tile = []
+          if ("err" in result) {
+
+          }
+          else {
+            foreach(node in result.routes) {
+              local tile = tile_x(node.x, node.y, node.z)
+              route_tile.append(tile)
+            }
+            sleep()
+          }
+          local traffic_build = 0
+          for ( local s = 0; traffic_build < 2; s++ ) {
+            local test_way = route_tile[s].find_object(mo_way)
+
+            if ( dir.is_threeway(route_tile[s].get_way_dirs(wt_road)) && (test_way.get_owner().nr == our_player_nr || test_way.get_owner().nr == 1) ) {
+              local err = command_x.build_sign_at(our_player, route_tile[s], traffic_obj)
+              traffic_build++
+            }
+
+
+          }
+
         }
       }
 
@@ -774,6 +817,9 @@ class industry_manager_t extends manager_t
         }
         if ( line.get_waytype() == wt_road ) {
           line.next_vehicle_check = world.get_time().ticks + next_time
+          if ( cnv_remove_count < cnv_count ) {
+            line.next_vehicle_check = world.get_time().ticks + (next_time * 4)
+          }
         } else {
           line.next_vehicle_check = world.get_time().ticks + (world.get_time().ticks_per_month * 2)
 
@@ -1729,8 +1775,15 @@ class industry_manager_t extends manager_t
 
         }
       }
+
     }
     dbgprint("")
+
+    if ( wt == wt_road ) {
+      line.next_vehicle_check = world.get_time().ticks + road_line_check
+    } else {
+      line.next_vehicle_check = world.get_time().ticks + world.get_time().ticks_per_month
+    }
 
     return true
 
