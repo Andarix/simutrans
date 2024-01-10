@@ -52,7 +52,7 @@ ifdef MULTI_THREAD
       ifneq ($(OSTYPE),haiku)
         # mingw has already added pthread statically
         ifneq ($(OSTYPE),mingw)
-	  LDFLAGS += -lpthread
+    LDFLAGS += -lpthread
         endif
       endif
     endif
@@ -311,6 +311,7 @@ SOURCES += src/simutrans/dataobj/route.cc
 SOURCES += src/simutrans/dataobj/scenario.cc
 SOURCES += src/simutrans/dataobj/schedule.cc
 SOURCES += src/simutrans/dataobj/settings.cc
+SOURCES += src/simutrans/dataobj/sve_cache.cc
 SOURCES += src/simutrans/dataobj/tabfile.cc
 SOURCES += src/simutrans/dataobj/translator.cc
 SOURCES += src/simutrans/descriptor/bridge_desc.cc
@@ -762,21 +763,21 @@ endif
 all: simutrans makeobj nettool
 
 makeobj:
-	@echo "Building makeobj"
-	$(Q)$(MAKE) -e -C src/makeobj FLAGS="$(FLAGS)"
+  @echo "Building makeobj"
+  $(Q)$(MAKE) -e -C src/makeobj FLAGS="$(FLAGS)"
 
 nettool:
-	@echo "Building nettool"
-	$(Q)$(MAKE) -e -C src/nettool FLAGS="$(FLAGS)"
+  @echo "Building nettool"
+  $(Q)$(MAKE) -e -C src/nettool FLAGS="$(FLAGS)"
 
 test: simutrans
-	$(PROGDIR)/$(PROG) -set_basedir $(shell pwd)/simutrans -objects pak -scenario automated-tests -debug 2 -lang en -fps 100
+  $(PROGDIR)/$(PROG) -set_basedir $(shell pwd)/simutrans -objects pak -scenario automated-tests -debug 2 -lang en -fps 100
 
 clean:
-	@echo "===> Cleaning up"
-	$(Q)rm -f $(OBJS)
-	$(Q)rm -f $(DEPS)
-	$(Q)rm -f $(PROGDIR)/$(PROG)
-	$(Q)rm -fr $(PROGDIR)/$(PROG).app
-	$(Q)$(MAKE) -e -C src/makeobj clean
-	$(Q)$(MAKE) -e -C src/nettool clean
+  @echo "===> Cleaning up"
+  $(Q)rm -f $(OBJS)
+  $(Q)rm -f $(DEPS)
+  $(Q)rm -f $(PROGDIR)/$(PROG)
+  $(Q)rm -fr $(PROGDIR)/$(PROG).app
+  $(Q)$(MAKE) -e -C src/makeobj clean
+  $(Q)$(MAKE) -e -C src/nettool clean
