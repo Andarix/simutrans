@@ -187,7 +187,6 @@ download_and_install_pakset()
 # generated list of pak sets
 obsolete_start_index=10
 paksets=( \
-<<<<<<< HEAD
   "https://downloads.sourceforge.net/project/simutrans/pak64/123-0/simupak64-123-0.zip" \
   "https://simutrans-germany.com/pak.german/pak64.german_0-124-0-0-1_full.zip" \
   "https://downloads.sourceforge.net/project/simutrans/pak64.japan/123-0/simupak64.japan-123-0.zip" \
