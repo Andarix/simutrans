@@ -54,7 +54,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SimutransCompileOptions.cmake)
 
 # CMake does not fill in CMAKE_BUILD_TYPE automatically.
 if (NOT MSVC)
-	if (CMAKE_BUILD_TYPE STREQUAL "")
+	if (NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
 		set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Build type. Valid values are Debug Release MinSizeRel RelWithDebInfo" FORCE)
 	endif ()
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel RelWithDebInfo)
@@ -89,7 +89,7 @@ set_target_properties( simutrans PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BIN
 # Generate revision on compile time (so only if needed) if no revision is given
 #
 if (${SIMUTRANS_USE_REVISION})
-	file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}src/simutrans/revision.h "#define REVISION ${SIMUTRANS_USE_REVISION}\n")
+	file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/src/simutrans/revision.h "#define REVISION ${SIMUTRANS_USE_REVISION}\n")
 	message(STATUS "Compiling Simutrans with manually specified revision ${SIMUTRANS_USE_REVISION}")
 else ()
 	string(FIND ${CMAKE_GENERATOR} "Visual Studio" VS )
