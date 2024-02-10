@@ -3160,10 +3160,18 @@ function build_double_track(start_field, wt) {
         if ( b_tile == null ) {
           err = command_x.build_way(b_player, tiles_build[way_len - 1], tiles[way_len - 1], way_obj, true)
 
-          local st = tile_x(signal[1].coor.x, signal[1].coor.y, signal[1].coor.z).get_way_dirs(wt)
-          if ( st == 11 || st == 13 || st == 7 || st == 14 ) {
-            sig_field = 1
-          }
+          /*if ( settings.get_drive_on_left() ) {
+            local st = tile_x(signal[0].coor.x, signal[0].coor.y, signal[0].coor.z).get_way_dirs(wt)
+            if ( st == 11 || st == 13 || st == 7 || st == 14 ) {
+              sig_field = 1
+            }
+          } else {*/
+            local st = tile_x(signal[1].coor.x, signal[1].coor.y, signal[1].coor.z).get_way_dirs(wt)
+            if ( st == 11 || st == 13 || st == 7 || st == 14 ) {
+              sig_field = 1
+            }
+
+          //}
 
         } else {
           err = command_x.build_way(b_player, tiles_build[way_len - 1], b_tile, way_obj, true)
@@ -3177,9 +3185,12 @@ function build_double_track(start_field, wt) {
           tool.work(our_player, tiles_build[way_len - 1])
           // build
           err = command_x.build_way(b_player, tiles_build[way_len - 2], tiles[way_len - 2], way_obj, true)
-          if ( settings.get_drive_on_left() ) {
-
-          } else {
+          /*if ( settings.get_drive_on_left() ) {
+            local st = tile_x(signal[0].coor.x, signal[0].coor.y, signal[0].coor.z).get_way_dirs(wt)
+            if ( st == 11 || st == 13 || st == 7 || st == 14 ) {
+              sig_field = 1
+            }
+          } else {*/
             local st = tile_x(signal[1].coor.x, signal[1].coor.y, signal[1].coor.z).get_way_dirs(wt)
             if ( st == 11 || st == 13 || st == 7 || st == 14 ) {
               sig_field = 1
@@ -3188,7 +3199,7 @@ function build_double_track(start_field, wt) {
               // 4
               signal[0].ribi = 8
             }*/
-          }
+          //}
         }
       } else {
         return false
@@ -5330,6 +5341,12 @@ function destroy_line(line_obj, good, link_obj) {
       // remove double ways by rail
       if ( double_ways > 0 ) {
         local j = 0;
+
+        local c = 0
+        if ( double_ways > 4 ) {
+          c = 1
+        }
+
         for ( local i = 0; i < double_ways; i++ ) {
           // remove double way
           //    local cnv_count = t_field.get_convoys_passed()[0] + t_field.get_convoys_passed()[1]
@@ -5343,7 +5360,7 @@ function destroy_line(line_obj, good, link_obj) {
             //::debug.pause()
           }
 
-          if ( cnv_count_0 == cnv_count_1 && (cnv_count_0 <= cnv_count_start || cnv_count_0 <= cnv_count_end) ) {
+          if ( cnv_count_0 == cnv_count_1 && (cnv_count_0 <= (cnv_count_start + c) || cnv_count_0 <= (cnv_count_end + c)) ) {
             tool.work(our_player, double_way_tiles[j], double_way_tiles[j+1], "" + wt_rail)
             tool.work(our_player, double_way_tiles[j+1], double_way_tiles[j], "" + wt_rail)
             if ( i < (double_ways-1) ) {
@@ -5556,6 +5573,8 @@ function destroy_line(line_obj, good, link_obj) {
   //link_obj.status = 4
   //link_obj.next_check = today_plus_months(36)
 
+  check_stations_connections()
+
   return true
 }
 
@@ -5669,6 +5688,7 @@ function check_stations_connections() {
       for ( local i = 0; i < t.len(); i++ ) {
         if ( t[i].has_way(wt_rail) ) {
           // remove way by wt_rail from halt tiles
+          gui.add_message_at(our_player, "####### remove rail halt : " + halt.get_name(), t[i])
           remove_tile_to_empty(t, wt_rail, 1)
         } else {
           //gui.add_message_at(our_player, "####### remove building halt name: " + halt.get_name(), t[i])
