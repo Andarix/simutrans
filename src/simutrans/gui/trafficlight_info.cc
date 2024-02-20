@@ -25,36 +25,78 @@ trafficlight_info_t::trafficlight_info_t(roadsign_t* s) :
 	obj_infowin_t(s),
 	roadsign(s)
 {
-	add_table(3,1);
+	add_table(5,4)->set_alignment(ALIGN_CENTER_H);
 	{
+	  gui_label_buf_t* label_blank = new_component<gui_label_buf_t>();
+	  label_blank->buf().printf(" ");
+	  label_blank->update();
+
+	  new_component<gui_empty_t>();
+
+	  gui_label_buf_t* label_green = new_component<gui_label_buf_t>();
+	  label_green->buf().printf(translator::translate("green"));
+	  label_green->update();
+
+	  new_component<gui_empty_t>();
+
+	  gui_label_buf_t* label_yellow = new_component<gui_label_buf_t>();
+	  label_yellow->buf().printf(translator::translate("yellow"));
+	  label_yellow->update();
+
+
+
+	  gui_label_buf_t* label_ns = new_component<gui_label_buf_t>();
+	  label_ns->buf().printf(translator::translate("Nord/South"));
+	  label_ns->update();
+
+	  new_component<gui_empty_t>();
+
 	  ns.set_limits( 1, 255 );
 	  ns.wrap_mode( false );
 	  ns.add_listener( this );
 	  add_component( &ns );
+
+	  new_component<gui_empty_t>();
+
+	  yellow_ns.set_limits( 1, 255 );
+	  yellow_ns.wrap_mode( false );
+	  yellow_ns.add_listener( this );
+	  add_component( &yellow_ns );
+
+
+	  gui_label_buf_t* label_ew = new_component<gui_label_buf_t>();
+	  label_ew->buf().printf(translator::translate("East/West"));
+	  label_ew->update();
+
+	  new_component<gui_empty_t>();
 
 	  ow.set_limits( 1, 255 );
 	  ow.wrap_mode( false );
 	  ow.add_listener( this );
 	  add_component( &ow );
 
-	  offset.set_limits( 0, 255 );
-	  offset.wrap_mode( false );
-	  offset.add_listener( this );
-	  add_component( &offset );
-	}
-	end_table();
-
-	add_table(2,1);
-	{
-	  yellow_ns.set_limits( 1, 255 );
-	  yellow_ns.wrap_mode( false );
-	  yellow_ns.add_listener( this );
-	  add_component( &yellow_ns );
+	  new_component<gui_empty_t>();
 
 	  yellow_ow.set_limits( 1, 255 );
 	  yellow_ow.wrap_mode( false );
 	  yellow_ow.add_listener( this );
 	  add_component( &yellow_ow );
+
+	}
+	end_table();
+
+
+	add_table(2, 1);
+	{
+	  gui_label_buf_t* label_offset = new_component<gui_label_buf_t>();
+	  label_offset->buf().printf(translator::translate("offset"));
+	  label_offset->update();
+
+	  offset.set_limits(0, 255);
+	  offset.wrap_mode(false);
+	  offset.add_listener(this);
+	  add_component(&offset);
+
 	}
 	end_table();
 

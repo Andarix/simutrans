@@ -179,11 +179,13 @@ void roadsign_t::info(cbuffer_t & buf) const
 {
 	obj_t::info( buf );
 
+	buf.append(translator::translate(desc->get_name()));
+	buf.append("\n");
+
 	if(  !desc->is_private_way()  ) {
-		buf.append(translator::translate("Roadsign"));
-		buf.append("\n");
 		if(desc->is_single_way()) {
 			buf.append(translator::translate("\nsingle way"));
+			buf.append("\n");
 		}
 		if(desc->get_min_speed()!=0) {
 			buf.printf("%s%d", translator::translate("\nminimum speed:"), speed_to_kmh(desc->get_min_speed()));

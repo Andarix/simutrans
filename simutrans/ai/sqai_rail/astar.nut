@@ -2597,7 +2597,7 @@ function search_station(field_pos, wt, range) {
  *
  *
  */
-function build_double_track(start_field, wt) {
+function build_double_track(start_field, wt, station_len) {
 
   // 1
   // 2 - terraform
@@ -2607,6 +2607,7 @@ function build_double_track(start_field, wt) {
 
   if ( print_message_box > 0 ) {
     gui.add_message_at(our_player, " ### build_double_track ### " + coord3d_to_string(start_field), start_field)
+    gui.add_message_at(our_player, " ### station_len ### " + station_len, start_field)
   }
 
   //local way_list = way_desc_x.get_available_ways(wt, st_flat)
@@ -2623,15 +2624,15 @@ function build_double_track(start_field, wt) {
   local tiles_build_l = []
   local tiles_build_r = []
   local t = 0
-  local way_len = 8
+  local way_len = station_len
   local diagonal_st = 0
   local way_len_d = 0
   if ( d == 6 || d == 9 ) {
-    way_len = 9
+    way_len++
     way_len_d = 1
     diagonal_st = d
   } else if ( d == 3 || d == 12  ) {
-    way_len = 9
+    way_len++
     way_len_d = 1
     diagonal_st = d
   }
@@ -2975,11 +2976,11 @@ function build_double_track(start_field, wt) {
       }
       else {
         if ( d == 10 ) {
-          signal = [{coor=coord3d(tiles_build[tiles.len()-2].x, tiles_build[tiles.len()-2].y, tiles_build[tiles.len()-2].z), ribi=2}, {coor=coord3d(tiles[1].x, tiles[1].y, tiles[1].z), ribi=8}]
+          signal = [{coor=coord3d(tiles_build[way_len - 3].x, tiles_build[way_len - 3].y, tiles_build[way_len - 3].z), ribi=2}, {coor=coord3d(tiles[1].x, tiles[1].y, tiles[1].z), ribi=8}]
           //gui.add_message_at(b_player, "signals 10 tr " + coord3d_to_string(tiles_build[6]) + " & " + coord3d_to_string(tiles[1]), world.get_time())
 
         } else if ( d == 5 ) {
-          signal = [{coor=coord3d(tiles_build[1].x, tiles_build[1].y, tiles_build[1].z), ribi=1}, {coor=coord3d(tiles[tiles.len()-2].x, tiles[tiles.len()-2].y, tiles[tiles.len()-2].z), ribi=4}]
+          signal = [{coor=coord3d(tiles_build[1].x, tiles_build[1].y, tiles_build[1].z), ribi=1}, {coor=coord3d(tiles[way_len - 2].x, tiles[way_len - 2].y, tiles[way_len - 2].z), ribi=4}]
           //gui.add_message_at(b_player, "signals 5 tr " + coord3d_to_string(tiles_build[1]) + " & " + coord3d_to_string(tiles[6]), world.get_time())
 
         } else if ( diagonal_st == 6 ) {
@@ -3000,11 +3001,11 @@ function build_double_track(start_field, wt) {
       }
       if ( settings.get_drive_on_left() ) {
         if (  d == 10 ) {
-          signal = [{coor=coord3d(tiles_build[6].x, tiles_build[6].y, tiles_build[6].z), ribi=2}, {coor=coord3d(tiles[1].x, tiles[1].y, tiles[1].z), ribi=8}]
+          signal = [{coor=coord3d(tiles_build[way_len - 3].x, tiles_build[way_len - 3].y, tiles_build[way_len - 3].z), ribi=2}, {coor=coord3d(tiles[1].x, tiles[1].y, tiles[1].z), ribi=8}]
           //gui.add_message_at(b_player, "settings.get_drive_on_left() signals 10 tl " + coord3d_to_string(tiles_build[6]) + " & " + coord3d_to_string(tiles[1]), world.get_time())
 
         } else if ( d == 5 ) {
-          signal = [{coor=coord3d(tiles_build[1].x, tiles_build[1].y, tiles_build[1].z), ribi=1}, {coor=coord3d(tiles[6].x, tiles[6].y, tiles[6].z), ribi=4}]
+          signal = [{coor=coord3d(tiles_build[1].x, tiles_build[1].y, tiles_build[1].z), ribi=1}, {coor=coord3d(tiles[way_len - 2].x, tiles[way_len - 2].y, tiles[way_len - 2].z), ribi=4}]
           //gui.add_message_at(b_player, "settings.get_drive_on_left() signals 5 tl " + coord3d_to_string(tiles_build[1]) + " & " + coord3d_to_string(tiles[6]), world.get_time())
         } else if ( diagonal_st == 9 ) {
           // ribi 9 to 9
@@ -3479,6 +3480,7 @@ function check_way_line(start, end, wt, l, c, r_line) {
   }
 
   local nexttile = [] //[tile_x(start.x, start.y, start.z)]
+  local station_len = 0
 
   //if (wt == wt_rail) {
     local asf = astar_route_finder(wt)
@@ -3494,9 +3496,20 @@ function check_way_line(start, end, wt, l, c, r_line) {
       //gui.add_message_at(our_player, " ### route found: length =  " +  result.routes.len(), start)
       // route found, mark tiles
       local marked = {}
+      local a = 0
       foreach(node in result.routes) {
         local tile = tile_x(node.x, node.y, node.z)
         nexttile.append(tile)
+
+        // count station len start/end
+        if ( tile.find_object(mo_building) != null && a == 0 ) {
+          station_len++
+        } else {
+          if ( a == 0 ) {
+            station_len += 2
+          }
+          a = 1
+        }
         /*
         try {
           tile.mark();
@@ -3552,6 +3565,9 @@ function check_way_line(start, end, wt, l, c, r_line) {
   local s = []
 
   local l_split = 25
+  if ( station_len > 8 ) {
+    l_split = station_len + 1
+  }
 
   if ( c > 0 ) {
     // distance double ways
@@ -3560,7 +3576,7 @@ function check_way_line(start, end, wt, l, c, r_line) {
     //as = as - ( c * 16 )
     if ( print_message_box > 0 ) {
       gui.add_message_at(our_player, c + " double way search", world.get_time())
-      message_text.append("as " + as + " l " + l + " c " + c)
+      message_text.append("l_split " + l_split + " as " + as + " l " + l + " c " + c)
     }
 
       for (local i = 0; i < as; i++ ) {
@@ -3587,7 +3603,7 @@ function check_way_line(start, end, wt, l, c, r_line) {
   local dst = 0
   local i = 8
 
-  while ( i < (nexttile.len() - 1 - 8) ) {
+  while ( i < (nexttile.len() - 1 - station_len) ) {
     i++
     // check to signal
     local sig = nexttile[i-1].find_object(mo_signal)
@@ -3605,16 +3621,21 @@ function check_way_line(start, end, wt, l, c, r_line) {
     di = dc
     dc = d
 
-    if ( i < 5 ) {
+    /*if ( i < station_len ) {
       st_tile = nexttile[i-1].find_object(mo_building)
-    }
+    }*/
 
     // len from double track
     local way_len = 8
-    if ( d == 6 || d == 9 ) {
-      way_len = 9
-    } else if ( d == 3 || d == 12 ) {
-      way_len = 9
+    if ( station_len > 8 ) {
+      way_len = station_len
+      if ( d == 6 || d == 9 || d == 3 || d == 12) {
+        way_len = station_len + 1
+      }
+    } else {
+      if ( d == 6 || d == 9 || d == 3 || d == 12) {
+        way_len = station_len + 1
+      }
     }
 
     d = nexttile[i].get_way_dirs(wt)
@@ -4080,16 +4101,20 @@ function check_way_line(start, end, wt, l, c, r_line) {
         gui.add_message_at(our_player, "* " + coord3d_to_string(t), world.get_time())
       }
 
+      local dw_abs = 10
+      if ( station_len > 8 ) {
+        dw_abs = 1
+      }
       if ( r < as ) {
         if ( r < s.len() - 1 ) {
           if ( i > s[r] ) {
-            s[r] = i + 10
+            s[r] = i + dw_abs
           } else {
             s[r] = i
           }
         } else {
           if ( i > s[r] ) {
-            s.append(i + 10)
+            s.append(i + dw_abs)
           } else {
             s.append(i)
           }
@@ -4212,9 +4237,22 @@ function optimize_way_line(route, wt, int_run, o_line) {
   local stations_awst = null
   local stations_awst_2 = []
 
+  // count station len start
+  local station_len = 0
+  for ( local c = 0; c < 50; c++ ) {
+    if ( route[c].find_object(mo_building) != null ) {
+      station_len++
+    } else {
+      break
+    }
+  }
+  if ( station_len == 1 ) {
+    station_len = 3
+  }
+
   //gui.add_message_at(our_player, " found bridge " + bridge_obj.get_name() + " tunnel " + tunnel_obj.get_name(), world.get_time())
 
-  for ( local i = 1; i < route.len() - 2; i++ ) {
+  for ( local i = 1; i < (route.len() - station_len); i++ ) {
     local tile_1 = tile_x(route[i-1].x, route[i-1].y, route[i-1].z)
     local tile_2 = tile_x(route[i].x, route[i].y, route[i].z)
     local tile_3 = tile_x(route[i+1].x, route[i+1].y, route[i+1].z)
@@ -4284,8 +4322,9 @@ function optimize_way_line(route, wt, int_run, o_line) {
     }
     // END :: remove diagonal double ways without spacing
 
+
     // START :: check station in line
-    if ( tile_2.find_object(mo_building) != null && i > 8 && i < (route.len() - 8) && wt == wt_rail && stations_awst == null ) {
+    if ( tile_2.find_object(mo_building) != null && i > station_len && i < (route.len() - station_len) && wt == wt_rail && stations_awst == null ) {
       // station in line
 
       // set line.way_line_count
@@ -4307,7 +4346,7 @@ function optimize_way_line(route, wt, int_run, o_line) {
       }*/
       local t = null
       local r = null
-      for (local j = 1; j < 8; j++ ) {
+      for (local j = 1; j < station_len; j++ ) {
         t = route[i+j]
         //gui.add_message_at(our_player, "st_awst ", t)
         if (t.find_object(mo_building) == null) {
@@ -6085,23 +6124,46 @@ function station_aw(start_field, wt, awst_array) {
       local tile_c = tile_x(awst_array[0].x, awst_array[0].y-1, awst_array[0].z)
       //gui.add_message_at(b_player, "(6667)  ", tile_c)
       local err = command_x.build_way(b_player, awst_array[0], tile_c, way_obj, true)
-      //gui.add_message_at(b_player, "(6669) err " + err, awst_array[0])
-      err = command_x.build_way(b_player, tile_c, tiles_build[0], way_obj, true)
-      //gui.add_message_at(b_player, "(6671) err " + err, tiles_build[0])
+      gui.add_message_at(b_player, "(6088) err " + err, awst_array[0])
+      if ( err != null ) {
+        remove_tile_to_empty(awst_array, wt_rail, 1)
+      } else {
+        err = command_x.build_way(b_player, tile_c, tiles_build[0], way_obj, true)
+        gui.add_message_at(b_player, "(6093) err " + err, tiles_build[0])
+        if ( err != null ) {
+          remove_tile_to_empty(awst_array, wt_rail, 1)
+        } else {
+          local obj_sign = find_signal("is_signal", wt)
+          local signal = null
+          local s_tile = tile_x(awst_array[1].x,awst_array[1].y-1, awst_array[1].z)
+          if ( s_tile.get_way_dirs(wt) == 10 ) {
+            // ew
+            signal = [{coor=coord3d(awst_array[1].x,awst_array[1].y-1, awst_array[1].z), ribi=8}, {coor=coord3d(awst_array[awst_array.len()-2].x, awst_array[awst_array.len()-2].y, awst_array[awst_array.len()-2].z), ribi=2}]
+          } else if ( s_tile.get_way_dirs(wt) == 5 ) {
+            // ns
+            signal = [{coor=coord3d(awst_array[1].x,awst_array[1].y-1, awst_array[1].z), ribi=1}, {coor=coord3d(awst_array[awst_array.len()-2].x, awst_array[awst_array.len()-2].y, awst_array[awst_array.len()-2].z), ribi=4}]
+          }
 
-      local obj_sign = find_signal("is_signal", wt)
-
-      local signal = [{coor=coord3d(awst_array[1].x,awst_array[1].y-1, awst_array[1].z), ribi=8}, {coor=coord3d(awst_array[awst_array.len()-2].x, awst_array[awst_array.len()-2].y, awst_array[awst_array.len()-2].z), ribi=2}]
-      for ( local j=0; j < 2; j++ ) {
-        local s_ribi = signal[j].ribi
-        local signal_build_tile = tile_x(signal[j].coor.x, signal[j].coor.y, signal[j].coor.z)
-
+          for ( local j=0; j < 2; j++ ) {
+            local s_ribi = signal[j].ribi
+            local signal_build_tile = tile_x(signal[j].coor.x, signal[j].coor.y, signal[j].coor.z)
+              gui.add_message_at(b_player, "(6103) signal_build_tile " + coord3d_to_string(signal_build_tile), signal_build_tile)
               while(true){
-                local err = command_x.build_sign_at(b_player, signal_build_tile, obj_sign)
+                err = command_x.build_sign_at(b_player, signal_build_tile, obj_sign)
+                if ( err != null ) {
+                  break
+                }
                 local ribi = signal_build_tile.get_way_dirs_masked(wt)
                 if (ribi == s_ribi)
                   break
               }
+          }
+          if ( err != null ) {
+            remove_tile_to_empty(awst_array, wt_rail, 1)
+          }
+
+        }
+
       }
     }
   }
