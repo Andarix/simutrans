@@ -885,7 +885,7 @@ void stadt_t::factory_set_t::rdwr(loadsave_t *file)
 		uint32 entry_count = entries.get_count();
 		file->rdwr_long(entry_count);
 		if(  file->is_loading()  ) {
-			entries.resize( entry_count );
+			entries.reserve( entry_count );
 			factory_entry_t entry;
 			for(  uint32 e=0;  e<entry_count;  ++e  ) {
 				entry.rdwr( file );
@@ -3021,7 +3021,7 @@ void stadt_t::build_city_building(const koord k)
 	// test ownership of all objects that can block construction
 	for(  uint8 i = 0;  i < gr->obj_count();  i++  ) {
 		obj_t *const obj = gr->obj_bei(i);
-		if(  obj->is_deletable(NULL) != NULL  &&  obj->get_typ() != obj_t::pillar  ) {
+		if(  obj->get_removal_error(NULL) != NULL  &&  obj->get_typ() != obj_t::pillar  ) {
 			return;
 		}
 	}

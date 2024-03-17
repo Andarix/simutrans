@@ -59,4 +59,8 @@ Simutrans_SDL2.lib
 *.res
 /autom4te.cache
 *.exe
+<<<<<<< HEAD
 .ccls-cache
+=======
+*.kdev4
+>>>>>>> refs/remotes/origin/trunk
