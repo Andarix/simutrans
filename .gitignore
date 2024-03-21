@@ -21,7 +21,7 @@
 *.rej
 /simutrans/*pak*
 /simutrans/pak*
-/simutrans/text
+/simutrans/text/*.tab
 *.bdf
 *.zip
 /ipch/*
