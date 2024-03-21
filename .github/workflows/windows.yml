@@ -74,7 +74,7 @@ jobs:
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
 
     - name: extract translate files
-      run: Expand-Archive language_pack.zip simutrans/text
+      run: Expand-Archive language_pack.zip simutrans/text -Force
       shell: pwsh
 
     - name: delete ce translate files
@@ -116,7 +116,7 @@ jobs:
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
 
     - name: extract translate files
-      run: Expand-Archive language_pack.zip simutrans/text
+      run: Expand-Archive language_pack.zip simutrans/text -Force
       shell: pwsh
 
     - name: delete ce translate files
@@ -159,7 +159,7 @@ jobs:
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
 
     - name: extract translate files
-      run: Expand-Archive language_pack.zip src/simutrans/simutrans/text
+      run: Expand-Archive language_pack.zip src/simutrans/simutrans/text -Force
       shell: pwsh
 
     - name: delete ce translate files
@@ -201,7 +201,7 @@ jobs:
         Invoke-WebRequest -Uri https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip -OutFile language_pack.zip
 
     - name: extract translate files
-      run: Expand-Archive language_pack.zip simutrans/text
+      run: Expand-Archive language_pack.zip simutrans/text -Force
       shell: pwsh
 
     - name: delete ce translate files
