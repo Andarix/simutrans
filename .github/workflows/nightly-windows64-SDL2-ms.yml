@@ -6,7 +6,7 @@ name: Nightly Built Windows64 SDL2
 on:
   push:
     tags:
-      - 'Nightly_'
+      - 'Nightly'
 
 jobs:
   winSDL2-64:
