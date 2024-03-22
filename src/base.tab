@@ -4216,6 +4216,10 @@ obj=error_text
 name=No curves on runways
 note=Displayed when a route search failed as one possible cause
 --
+obj=error_text
+name=A building blocks the construction
+note=Displayed when a route search failed as one possible cause
+--
 obj=tooltip_text
 name=Mirrors order of stops
 note=tooltip for mirror stop order button
@@ -4307,6 +4311,22 @@ note=Text in banner
 obj=program_text
 name=/month
 note=Text in tooltip for way and building tool icons
+--
+obj=program_text
+name=Revenue/unit/100 tiles
+note=Column header in goods list
+--
+obj=program_text
+name=Speed Bonus
+note=Column header in goods list
+--
+obj=program_text
+name=Category
+note=Column header in goods list
+--
+obj=program_text
+name=Weight/unit
+note=Column header in goods list
 --
 
 #obj=help_text

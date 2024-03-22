@@ -11,15 +11,11 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: install_dependencies
       run: |
-        # Build with fluidsynth temporarily disabled until issue with homebrew is solved
-        # See https://github.com/Homebrew/homebrew-core/issues/140930
-        brew update
-        brew reinstall cmake pkg-config libpng freetype zstd
-        brew install sdl2 #fluidsynth
+        brew reinstall cmake pkg-config libpng freetype zstd fluidsynth
 
     - name: build
       run: |

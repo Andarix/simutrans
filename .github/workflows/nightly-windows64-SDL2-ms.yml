@@ -16,7 +16,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       id: checkout_code
 
     - name: Make NSIS
