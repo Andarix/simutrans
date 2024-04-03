@@ -75,9 +75,6 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-<<<<<<< HEAD
-    <VcpkgHostTriplet>x86-windows-static</VcpkgHostTriplet>
-=======
     <VcpkgHostTriplet>
     </VcpkgHostTriplet>
     <VcpkgUseStatic>true</VcpkgUseStatic>
@@ -109,7 +106,6 @@
     <VcpkgHostTriplet>
     </VcpkgHostTriplet>
     <VcpkgUseStatic>true</VcpkgUseStatic>
->>>>>>> refs/remotes/origin/trunk
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
