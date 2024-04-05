@@ -53,9 +53,9 @@ download_with_retry() {
 
 [ -e simutrans/simutrans/music/TimGM6mb.sf2 ] || (download_with_retry https://sourceforge.net/p/mscore/code/HEAD/tree/trunk/mscore/share/sound/TimGM6mb.sf2?format=raw simutrans/simutrans/music/TimGM6mb.sf2) || exit 1
 #[ -e ../simutrans/font/RobotoCondensed-Regular.ttf ] || (download_with_retry https://fonts.google.com/download?family=Roboto%20Condensed Roboto_Condensed.zip && unzip -n Roboto_Condensed.zip -d ../simutrans/font) || exit 1
-[ -e simutrans/font/Roboto-Regular.ttf ] || (download_with_retry https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip Roboto.zip && unzip -n Roboto.zip Roboto-Regular.ttf -d simutrans/font) || exit 1
+[ -e simutrans/simutrans/font/Roboto-Regular.ttf ] || (download_with_retry https://github.com/googlefonts/roboto/releases/download/v2.138/roboto-android.zip Roboto.zip && unzip -n Roboto.zip Roboto-Regular.ttf -d simutrans/simutrans/font) || exit 1
 #[ -e simutrans/cacert.pem ] || cp src/android/cacert.pem simutrans/cacert.pem || exit 1
-[ -e simutrans/get_pak.sh ] || cp src/android/unpak.sh simutrans/get_pak.sh; chmod 755 simutrans/get_pak.sh  || exit 1
+[ -e simutrans/simutrans/get_pak.sh ] || cp src/android/unpak.sh simutrans/get_pak.sh; chmod 755 simutrans/get_pak.sh  || exit 1
 
 echo 'Done adding assets'
 #cd ..
