@@ -24,6 +24,10 @@
 /simutrans/text/*.tab
 *.bdf
 *.zip
+<<<<<<< HEAD
+=======
+*.vcxproj.*
+>>>>>>> refs/remotes/origin/trunk
 /ipch/*
 *.*sdf
 *.diff
@@ -63,4 +67,8 @@ Simutrans_SDL2.lib
 .ccls-cache
 =======
 *.kdev4
+<<<<<<< HEAD
+>>>>>>> refs/remotes/origin/trunk
+=======
+vcpkg_installed/
 >>>>>>> refs/remotes/origin/trunk

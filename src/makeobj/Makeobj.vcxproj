@@ -46,6 +46,9 @@
     <VcpkgUseStatic>true</VcpkgUseStatic>
     <VcpkgTriplet>x86-windows-static</VcpkgTriplet>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>

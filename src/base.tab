@@ -1767,9 +1767,6 @@ obj=program_text
 name=show station coverage
 -
 obj=program_text
-name=show station names
--
-obj=program_text
 name=show waiting bars
 -
 obj=program_text
@@ -4280,33 +4277,37 @@ obj=button_text
 name=Continue Game
 note=Button in the banner window
 --
+obj=program_text
+name=Load '%s'
+note=Tooltip for Continue Game button in banner window
+--
 obj=button_text
 name=Return to menu
 note=Button to return to banner menu
 --
 obj=program_text
 name=Welcome to Simutrans
-note=Text in banner. It may be followed by a version string (i.e. "Nightly")
+note=Text in banner window. It may be followed by a version string (i.e. "Nightly")
 --
 obj=program_text
 name=Developed by the Simutrans Team
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=under the Artistic License
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=based on Simutrans 84.22.1
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=Selling of the program is forbidden.
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=For questions and support please visit:
-note=Text in banner
+note=Text in banner window
 --
 obj=program_text
 name=/month
@@ -4327,6 +4328,14 @@ note=Column header in goods list
 obj=program_text
 name=Weight/unit
 note=Column header in goods list
+--
+obj=program_text
+name=Hide labels
+note=Option in display settings/stations
+--
+obj=program_text
+name=Change label style
+note=Option in display settings/stations
 --
 
 #obj=help_text
@@ -4552,6 +4561,9 @@ note=Column header in goods list
 #obj=program_text
 #name=\nAct. Load: %u MW\n
 #note=powernet info window (depricated)
+#-
+#obj=program_text
+#name=show station names
 #-
 #obj=program_text
 #name=Account above %s
