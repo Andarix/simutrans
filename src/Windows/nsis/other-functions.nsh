@@ -57,7 +57,6 @@ PageExEnd
 
 ; If not installed to program dir, ask for a portable installation
 Function CheckForPortableInstall
-  StrCpy $PAKDIR $INSTDIR
   ; defaults in progdir, and ending with simutrans
   StrCpy $installinsimutransfolder "1"
   StrCpy $multiuserinstall "1"
@@ -116,6 +115,13 @@ Function MovePre
 
   StrCmp $multiuserinstall "1" +2
   Abort
+
+  SetShellVarContext all
+  StrCmp $PAKDIR "$LOCALAPPDATA\simutrans" +3
+  SetShellVarContext current
+  Abort
+
+  SetShellVarContext current
 
   ; find at least on pak to move?
   nsDialogs::Create 1018
@@ -331,7 +337,7 @@ PageExEnd
 Function .oninit
   StrCpy $USERDIR "$LOCALAPPDATA\simutrans"
   SetShellVarContext all
-  StrCpy $PAKDIR "$APPDATA\simutrans"
+  StrCpy $PAKDIR "$LOCALAPPDATA\simutrans"
   SetShellVarContext current
 
   !insertmacro MULTIUSER_INIT
