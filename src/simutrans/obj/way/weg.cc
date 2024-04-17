@@ -261,6 +261,18 @@ void weg_t::info(cbuffer_t & buf) const
 		buf.printf(translator::translate("Constructed by %s"), maker);
 		buf.append("\n");
 	}
+
+	// way details
+	char key[256];
+	sprintf(key, "way_%s_details", get_desc()->get_name());
+	const char* value = translator::translate(key);
+	if (value && *value != 'w') {
+		buf.append(translator::translate("info description"));
+		buf.append("\n");
+		buf.append(value);
+		buf.append("\n\n");
+	}
+
 }
 
 
