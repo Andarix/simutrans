@@ -27,7 +27,8 @@ gui_textinput_t::gui_textinput_t() :
 	textcol(SYSCOL_EDIT_TEXT),
 	text_dirty(false),
 	cursor_reference_time(0),
-	focus_received(false)
+	focus_received(false),
+	notify_all_changes_delay(0xFFFF)
 { }
 
 
@@ -122,14 +123,18 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 				case SIM_KEY_ENTER:
 					if(  text_dirty  ) {
 						text_dirty = false;
-						call_listeners((long)1);
+						call_listeners((long)INPUT_FINISHED);
 					}
-					/* FALLTHROUGH */
+					head_cursor_pos = len;
+					tail_cursor_pos = 0;
+					return false;
+
 				case SIM_KEY_TAB:
 					// focus is going to be lost -> reset cursor positions to select the whole text by default
 					head_cursor_pos = len;
 					tail_cursor_pos = 0;
-					/* FALLTHROUGH */
+					return false;
+
 				case SIM_KEY_ESCAPE:
 					return false;
 
@@ -157,6 +162,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 						}
 						tail_cursor_pos = ( head_cursor_pos += dr_paste(text + head_cursor_pos, max - len - 1) );
 						text_dirty = true;
+						next_update_call = notify_all_changes_delay == 0xFFFFu ? 0xFFFFFFFFul : dr_time() + notify_all_changes_delay;
 					}
 					break;
 				case 24:
@@ -167,6 +173,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 						dr_copy(text + start_pos, end_pos - start_pos);
 						remove_selection();
 						text_dirty = true;
+						next_update_call = notify_all_changes_delay == 0xFFFFu ? 0xFFFFFFFFul : dr_time() + notify_all_changes_delay;
 					}
 					break;
 				case SIM_KEY_DOWN: // down arrow
@@ -250,7 +257,6 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 				case SIM_KEY_BACKSPACE:
 					// backspace
 					// check and remove any selected text first
-					text_dirty |= len>0;
 					if(  !remove_selection()  &&  head_cursor_pos>0  ) {
 						if (  head_cursor_pos<len  ) {
 							size_t prev_pos = head_cursor_pos;
@@ -263,19 +269,22 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 							tail_cursor_pos = head_cursor_pos = utf8_get_prev_char(text, head_cursor_pos);
 							text[head_cursor_pos] = 0;
 						}
-						text_dirty = true;
+						if (len > 0) {
+							text_dirty = true;
+							next_update_call = notify_all_changes_delay == 0xFFFFu ? 0xFFFFFFFFul : dr_time() + notify_all_changes_delay;
+						}
 					}
 					break;
 				case SIM_KEY_DELETE:
 					// delete
 					// check and remove any selected text first
-					text_dirty |= len>0;
 					if(  !remove_selection()  &&  head_cursor_pos<=len  ) {
 						size_t next_pos = utf8_get_next_char(text, head_cursor_pos);
 						for(  size_t pos=head_cursor_pos;  pos<len;  pos++  ) {
 							text[pos] = text[pos+(next_pos-head_cursor_pos)];
 						}
 						text_dirty = true;
+						next_update_call = notify_all_changes_delay == 0xFFFFu ? 0xFFFFFFFFul : dr_time() + notify_all_changes_delay;
 					}
 					break;
 				default:
@@ -297,7 +306,6 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 						// recalculate text length after deleting selection
 						len = strlen(text);
 					}
-					text_dirty = true;
 
 					// test, if we have top convert letter
 					char letter[16];
@@ -342,6 +350,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 						text[len+num_letter] = 0;
 					}
 					text_dirty = true;
+					next_update_call = notify_all_changes_delay == 0xFFFFu ? 0xFFFFFFFFul : dr_time() + notify_all_changes_delay;
 					tail_cursor_pos = ( head_cursor_pos += num_letter );
 					/* end default */
 			}
@@ -350,6 +359,12 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 			DBG_MESSAGE("gui_textinput_t::infowin_event", "called but text is NULL");
 		}
 		cursor_reference_time = dr_time(); // update reference time for cursor blinking
+
+		if (text_dirty  &&  next_update_call < dr_time()) {
+			// time to update content
+			text_dirty = false;
+			call_listeners((long)INPUT_CHANGED);
+		}
 		return true;
 	}
 	else if(  ev->ev_class==EVENT_STRING  ) {
@@ -411,6 +426,17 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 				len += num_letter;
 			} /* while still characters in string */
 		}
+		if (text_dirty && notify_all_changes_delay ==0) {
+			// time to update content
+			text_dirty = false;
+			call_listeners((long)INPUT_CHANGED);
+		}
+		else {
+			text_dirty = true;
+			next_update_call = notify_all_changes_delay == 0xFFFFu ? 0xFFFFFFFFul : dr_time() + notify_all_changes_delay;
+		}
+
+		return false;
 	}
 	else if(  IS_LEFTCLICK(ev)  ) {
 		// since now the focus could be received while the mouse  no there, we must release it
@@ -430,7 +456,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 		return true;
 	}
 	else if(  IS_LEFTDRAG(ev)  ) {
-		// since now the focus could be received while the mouse  no there, we must release it
+		// since now the focus could be received while the mouse is not there, we must release it
 		scr_rect this_comp( get_size() );
 		if(  !this_comp.contains(scr_coord(ev->click_pos.x,ev->click_pos.y) )  ) {
 			// not us, just in old focus from previous selection or tab
@@ -445,7 +471,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 		return true;
 	}
 	else if(  IS_LEFTDBLCLK(ev)  ) {
-		// since now the focus could be received while the mouse  no there, we must release it
+		// since now the focus could be received while the mouse is not there, we must release it
 		scr_rect this_comp( get_size() );
 		if(  !this_comp.contains(scr_coord(ev->click_pos.x,ev->click_pos.y) )  ) {
 			// not us, just in old focus from previous selection or tab
@@ -479,15 +505,28 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 	}
 	else if(  ev->ev_class==INFOWIN  &&  ev->ev_code==WIN_UNTOP  ) {
 		if(  text_dirty  ) {
-			call_listeners((long)0);
+			text_dirty = false;
+			call_listeners((long)INPUT_UNTOP);
 		}
 		return true;
 	}
 	else if(  ev->ev_class == INFOWIN   &&  ev->ev_code == WIN_CLOSE  &&  focus_received  ) {
 		// release focus on close and close keyboard
 		dr_stop_textinput();
+		if (text_dirty) {
+			// note all pending changes
+			text_dirty = false;
+			call_listeners((long)INPUT_UNTOP);
+		}
 		focus_received = false;
 	}
+
+	if (text_dirty && next_update_call < dr_time()) {
+		// time to update content
+		text_dirty = false;
+		call_listeners((long)INPUT_CHANGED);
+	}
+
 	return false;
 }
 
@@ -498,6 +537,14 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 void gui_textinput_t::draw(scr_coord offset)
 {
 	display_with_focus( offset, (win_get_focus()==this) );
+	if (text_dirty  &&  next_update_call < dr_time()) {
+		// need to trigger a dummy event for next processing
+		event_t* ev = new event_t();
+		ev->ev_class = EVENT_KEYBOARD;
+		ev->ev_code = 0;
+		ev->ev_key_mod = 0;
+		queue_event(ev);
+	}
 }
 
 

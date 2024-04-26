@@ -39,6 +39,8 @@ factorylist_frame_t::factorylist_frame_t() :
 	set_table_layout(3,4);
 	new_component<gui_label_t>("Filter:");
 	name_filter_input.set_text(name_filter, lengthof(name_filter));
+	name_filter_input.set_notify_all_changes_delay(0);
+	name_filter_input.add_listener(this);
 	add_component(&name_filter_input);
 	new_component<gui_fill_t>();
 
@@ -102,7 +104,10 @@ bool factorylist_frame_t::action_triggered( gui_action_creator_t *comp,value_t v
 			fill_list();
 		}
 	}
-	else if( comp == &filter_by_owner ) {
+	else if (comp == &filter_by_owner) {
+		fill_list();
+	}
+	else if (comp == &name_filter_input) {
 		fill_list();
 	}
 	return true;
@@ -141,17 +146,6 @@ void factorylist_frame_t::fill_list()
 	}
 	scrolly.sort(0);
 	scrolly.set_size(scrolly.get_size());
-}
-
-
-void factorylist_frame_t::draw(scr_coord pos, scr_size size)
-{
-	if(  world()->get_fab_list().get_count() != old_factories_count  ||  strcmp(last_name_filter, name_filter)  ) {
-		strcpy(last_name_filter, name_filter);
-		fill_list();
-	}
-
-	gui_frame_t::draw(pos,size);
 }
 
 

@@ -64,17 +64,23 @@ protected:
 	PIXVAL textcol;
 
 	// true if there were changed but no notification was sent yet
-	bool text_dirty;
+	bool text_dirty : 1;
+
+	/**
+	 * whether focus has been received
+	 */
+	bool focus_received : 1;
+
+	/**
+	 * whether focus has been received
+	 */
+	uint16 notify_all_changes_delay;
+	uint32 next_update_call;
 
 	/**
 	 * reference time for regulating cursor blinking
 	 */
 	uint32 cursor_reference_time;
-
-	/**
-	 * whether focus has been received
-	 */
-	bool focus_received;
 
 	/**
 	 * determine new cursor position from event coordinates
@@ -88,7 +94,13 @@ protected:
 	bool remove_selection();
 
 public:
+	// three messages for the calling
+	enum { INPUT_UNTOP = 0, INPUT_FINISHED, INPUT_CHANGED };
+
 	gui_textinput_t();
+
+	// update changes with delay (in ms), 0=immeadiately 0xFFFF=never
+	void set_notify_all_changes_delay(uint16 _n) { notify_all_changes_delay = _n; }
 
 	/**
 	 * Sets the Text buffer
