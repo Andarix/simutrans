@@ -7,7 +7,7 @@
 ? dolje desno je dana informacija o odabranoj gradskoj zgradi<br>
 </p>
 <h1>Lista odabira</h1> <p> U listi odabira se nalaze sve urbane zgrade koje su dostupne postavkama danim gore desno
-(<em>Stambene kuæe</em>, 
+(<em>Stambene kuÄ‡e</em>, 
 <em>Trgovine i ured</em>, 
 <em>Industrijske zgrade</em>). 
 Postoje dva jahaca koji dozvoljavaju promjenu nacina na koji se urbane gradjevine identificiraju.<br> 
@@ -15,9 +15,15 @@ Postoje dva jahaca koji dozvoljavaju promjenu nacina na koji se urbane gradjevin
  ? <em>Objekt:</em> Prikazuje Simutrans unutarnje ime za tip zgrade.<br> 
 <br> 
 Boja teksta ime slijedece znacenje:<br>
+<<<<<<< HEAD
  ? <em>plavi tekst</em> naznacava zgradu za stanovanje.<br>
  ? <em>zeleni tekst</em> nazncèava zgradu trgovine ili ureda.<br>
  ? <em>vrni tekst</em> naznacava industrijsku zgradu.<br> 
+=======
+ - <em>plavi tekst</em> naznacava zgradu za stanovanje.<br>
+ - <em>zeleni tekst</em> nazncÄava zgradu trgovine ili ureda.<br>
+ - <em>vrni tekst</em> naznacava industrijsku zgradu.<br> 
+>>>>>>> refs/remotes/origin/trunk
 </p> 
 <h1>Opcije</h1> 
 <p>

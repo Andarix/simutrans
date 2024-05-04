@@ -61,10 +61,27 @@ do_download()
 install_cab()
 {
   pakzippath="$1"
-# files=$(cabextract --list "$pakzippath" 2>/dev/null | head -n -2 | tail -n +4 | cut -d '|' -f3- | cut -b 2- ) || {
   files=$(cabextract --list "$pakzippath" 2>/dev/null) || {
-    echo "Error: Cannot extract .cab file (cabextract required)" >&2
-    return 1
+    #echo "Warning: no cabextract, assuming mingw on windows" >&2
+    files=$(extrac32 //D "$pakzippath" 2>/dev/null) || {
+      echo "Error: Cannot extract .cab file (Either cabextract or makecab required)" >&2
+      return 1
+    }
+    # this is likely Mingw on windows using extrac32
+    # First check if we only have a simutrans/ directory at the root.
+    files=$(echo "$files" | grep ' simutrans\\')
+    if [ $? -eq 0 ]; then
+      # has simutrans folder, but cabextract cannot handle unix path on windows
+      destdir="."
+    else
+      mkdir -p simutrans
+      destdir="simutrans"
+    fi
+    files=$(extrac32 //L "$destdir" //Y //E "$pakzippath" 2>/dev/null) || {
+      echo "Error: Could not extract '$pakzippath' to '$destdir'" >&2
+      return 1
+    }
+    return 0
   }
 
   # First check if we only have a simutrans/ directory at the root.
@@ -81,7 +98,6 @@ install_cab()
     echo "Error: Could not extract '$pakzippath' to '$destdir'" >&2
     return 1
   }
-
   return 0
 }
 
@@ -185,18 +201,19 @@ download_and_install_pakset()
 
 
 # generated list of pak sets
-obsolete_start_index=10
+obsolete_start_index=11
 paksets=( \
   "http://downloads.sourceforge.net/project/simutrans/pak64/124-0/simupak64-124-0.zip" \
-  "http://simutrans-germany.com/pak.german/pak64.german_0-124-0-0-1_full.zip" \
+  "http://downloads.sourceforge.net/project/simutrans/pak128/pak128%20for%20ST%20124up%20%282.9%29/simupak128-2.9-for124.zip" \
+  "http://downloads.sourceforge.net/project/simutrans/pak192.comic/pak192.comic%20V0.7.1/pak192-comic.zip" \
+  "http://simutrans-germany.com/pak.german/pak64.german_0-124-0-0-2_full.zip" \
   "http://downloads.sourceforge.net/project/simutrans/pak64.japan/123-0/simupak64.japan-123-0.zip" \
   "https://github.com/wa-st/pak-nippon/releases/download/v0.6.2/pak.nippon-v0.6.2.zip" \
   "http://downloads.sourceforge.net/project/simutrans/Pak128.CS/nightly%20builds/pak128.CS-r2096.zip" \
   "http://downloads.sourceforge.net/project/simutrans/pak128.britain/pak128.Britain%20for%20120-3/pak128.Britain.1.18-120-3.zip" \
-  "http://downloads.sourceforge.net/project/simutrans/PAK128.german/PAK128.german_2.1_for_ST_123.0/PAK128.german_2.1_for_ST_123.0.zip" \
-  "http://downloads.sourceforge.net/project/simutrans/pak128/pak128%202.8.2%20for%20ST%20123up/simupak128-2.8.2-for123.zip" \
+  "http://downloads.sourceforge.net/project/simutrans/PAK128.german/PAK128.german_2.2_for_ST_124.0/PAK128.german_2.2_for_ST_124.0.zip" \
   "https://github.com/Varkalandar/pak144.Excentrique/releases/download/Nightly/pak144.Excentrique_v008.zip" \
-  "http://downloads.sourceforge.net/project/simutrans/pak192.comic/pak192.comic%20V0.7.1/pak192.comic-serverset.zip" \
+  "http://downloads.sourceforge.net/project/simutrans/pakTTD/simupakTTD-124-0.zip" \
   "http://downloads.sourceforge.net/project/simutrans/pak96.comic/pak96.comic%20for%20111-3/pak96.comic-0.4.10-plus.zip" \
   "http://pak128.jpn.org/souko/pak128.japan.120.0.cab" \
   "http://downloads.sourceforge.net/project/simutrans/pak32.comic/pak32.comic%20for%20102-0/pak32.comic_102-0.zip" \
@@ -205,7 +222,7 @@ paksets=( \
   "http://hd.simutrans.com/release/PakHD_v04B_100-0.zip" \
   "http://downloads.sourceforge.net/project/simutrans/pakHAJO/pakHAJO_102-2-2/pakHAJO_0-102-2-2.zip" \
   "http://downloads.sourceforge.net/project/simutrans/pak64.scifi/pak64.scifi_112.x_v0.2.zip" \
-  "http://simutrans.bilkinfo.de/pak64.ho-scale-latest.tar.gz" \
+  "https://simutrans.bilkinfo.de/pak64.ho-scale-latest.tar.gz" \
 )
 
 #

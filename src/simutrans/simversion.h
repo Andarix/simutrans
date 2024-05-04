@@ -18,8 +18,8 @@
 
 #define SIM_VERSION_MAJOR 124
 #define SIM_VERSION_MINOR   0
-#define SIM_VERSION_PATCH   0
-#define SIM_VERSION_BUILD SIM_BUILD_RELEASE_CANDIDATE
+#define SIM_VERSION_PATCH   1
+#define SIM_VERSION_BUILD SIM_BUILD_NIGHTLY
 
 // Beware: SAVEGAME minor is often ahead of version minor when there were patches.
 // ==> These have no direct connection at all!
@@ -45,7 +45,11 @@
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE_CANDIDATE
 # define SIM_VERSION_BUILD_STRING " Release Candidate"
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE
+<<<<<<< HEAD
 # define SIM_VERSION_BUILD_STRING
+=======
+#	define SIM_VERSION_BUILD_STRING ""
+>>>>>>> refs/remotes/origin/trunk
 #else
 # error invalid SIM_VERSION_BUILD
 #endif
