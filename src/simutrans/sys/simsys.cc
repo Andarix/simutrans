@@ -167,8 +167,22 @@ uint8 dr_get_max_threads()
 int dr_mkdir(char const* const path)
 {
 #ifdef _WIN32
-	// Perform operation.
-	int const result = SHCreateDirectory(NULL, U16View(path)) ? 0 : -1;
+	const char* new_dir_with_path = path;
+
+	// Perform operation needs absolute path
+	if (path[1] != ':'  &&  path[1] !=  '\\') {
+		// so let get the absolute path
+		char abs_buf[MAX_PATH];
+		dr_getcwd(abs_buf, MAX_PATH);
+		if (strlen(abs_buf) + strlen(path) + 2 >= MAX_PATH) {
+			return -1;
+		}
+		strcat(abs_buf, "\\");
+		strcat(abs_buf, path);
+		new_dir_with_path = abs_buf;
+	}
+
+	int result = SHCreateDirectory(NULL, U16View(new_dir_with_path)) ? 0 : -1;
 
 	// Translate error.
 	if (result != ERROR_SUCCESS) {
@@ -379,13 +393,17 @@ bool check_and_set_dir( const char *path, const char *info, char *result, const 
 {
 	if(  path  &&  *path  ) {
 		bool ok = !dr_chdir(path);
-		FILE * testf = NULL;
-		ok &=  ok  &&  testfile  &&  (testf = fopen(testfile,"r"));
+		if(testfile) {
+			FILE* testf = fopen(testfile,"r");
+			ok = ok && testf;
+			if(testf) {
+				fclose(testf);
+			}
+		}
 		if(!ok) {
 			printf("WARNING: Objects not found in %s \"%s\"!\n",  info, path);
 		}
 		else {
-			fclose(testf);
 			dr_getcwd( result, PATH_MAX-1 );
 			strcat( result, PATH_SEPARATOR );
 			return true;
@@ -609,8 +627,6 @@ char const *dr_query_homedir()
 	}
 #endif
 
-	// create directory and subdirectories
-	dr_mkdir(buffer);
 	strcat(buffer, PATH_SEPARATOR);
 	return buffer;
 }
@@ -655,8 +671,6 @@ char const *dr_query_installdir()
 	}
 #endif
 
-	// create directory and subdirectories
-	dr_mkdir(buffer);
 	strcat(buffer, PATH_SEPARATOR);
 	return buffer;
 }
@@ -1377,7 +1391,8 @@ bool dr_download_pakset( const char *data_dir, bool portable )
 	 * Otherwise the waiting for installation will fail!
 	 * (no idea how this works on XP though)
 	 */
-	shExInfo.lpVerb = L"runas";
+//	shExInfo.lpVerb = L"runas"; we do not need afmin rights any more
+	shExInfo.lpVerb = L"open";
 	shExInfo.lpFile = L"download-paksets.exe";
 	shExInfo.lpParameters = wparam;
 	shExInfo.lpDirectory = wpath_to_program;
