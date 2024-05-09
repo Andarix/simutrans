@@ -25,8 +25,8 @@
 #endif
 
 #ifdef _WIN32
-#define STRCASESTR StrStrIA
-#include <shlwapi.h>
+char* tstrcasestr(const char* str, const char* pattern);
+#define STRCASESTR tstrcasestr
 #else
 #define STRCASESTR strcasestr
 #endif

@@ -166,6 +166,11 @@ uint8 dr_get_max_threads()
 // create a directory with all subdirectories needed
 int dr_mkdir(char const* const path)
 {
+	if (path == 0  ||  path[0]==0) {
+		// always succed on empty string (should never happen)
+		return 0;
+	}
+
 #ifdef _WIN32
 	const char* new_dir_with_path = path;
 
@@ -204,6 +209,7 @@ int dr_mkdir(char const* const path)
 
 	// remove trailing director separator
 	len = strnlen(tmp, sizeof(tmp));
+
 	if (tmp[len - 1] == *PATH_SEPARATOR) {
 		tmp[len - 1] = 0;
 	}
@@ -533,85 +539,8 @@ char const *dr_query_homedir()
 	if (state & SDL_ANDROID_EXTERNAL_STORAGE_WRITE) {
 		const char* p = SDL_AndroidGetExternalStoragePath();
 		if (p) {
-		  //strcpy(buffer, p);
-
-      size_t p_len;
-      p_len = strlen(p);
-
-      DIR *pDir;
-      bool bExists = false;
-
-      pDir = opendir ("/storage/sdcard1");
-      if (pDir != NULL){
-            bExists = true;
-            closedir (pDir);
-            strcpy(buffer, "/storage/sdcard1/simutrans");
-      }
-      if (bExists == false) {
-        pDir = opendir ("/mnt/sdcard");
-        if (pDir != NULL){
-            bExists = true;
-            closedir (pDir);
-            strcpy(buffer, "/mnt/sdcard/simutrans");
-        }
-      }
-      if (bExists == false) {
-        pDir = opendir ("/storage/external_sd");
-        if (pDir != NULL){
-            bExists = true;
-            closedir (pDir);
-            strcpy(buffer, "/storage/external_sd/simutrans");
-        }
-      }
-
-
-      if (bExists == false){
-        sprintf(buffer, "%s/simutrans", p);
-      }
-/*
-      char * originalString[] = { p };
-      char* aux[];
-      int j=0;
-      int x = (unsigned)strlen(originalString);
-      int y;
-      y = strstr(originalString, '/Android/');
-      //int x=0;
-      for(int i=0;i<x;i++){
-        aux[j] = originalString[i];
-        //if(originalString[i] == '/'){
-        //  x++;
-        //}
-        if(i==y){
-            aux[j+1]='\0';
-            i = x;
-        }else{
-            j++;
-        }
-      }
-       /* if(new File("/storage/extSdCard/").exists())
-         {
-              sprintf(buffer, "%s/Simutrans", "/storage/extSdCard");
-         }
-        if(new File("/storage/sdcard1/").exists())
-         {
-              sprintf(buffer, "%s/Simutrans", "/storage/sdcard1");
-         }
-        if(new File("/storage/usbcard1/").exists())
-         {
-              sprintf(buffer, "%s/Simutrans", "/storage/usbcard1");
-         }
-        if(new File("/storage/sdcard0/").exists())
-         {
-              sprintf(buffer, "%s/Simutrans", "/storage/sdcard0");
-         }
-        if(new File("/storage/external_sd/").exists())
-         {
-              sprintf(buffer, "%s/Simutrans", "/storage/external_sd");
-         }
-        if(new File("/mnt/sdcard/").exists())
-         {
-              sprintf(buffer, "%s/Simutrans", "/mnt/sdcard");
-         }*/
+			strcpy(buffer, p);
+			dr_mkdir("/sdcard/simutrans");
 		}
 	}
 	if (!*buffer) {
