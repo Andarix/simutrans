@@ -200,11 +200,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libs\miniupnpc-2.2.2;libs\zstd-1.5.2\lib;libs\pthreads4w;libs\lpng1637;libs\freetype-2.10.1\include;libs\zlib-1.2.11;libs\SDL2-2.28.2;libs\bzip2-1.0.6;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)src\simutrans\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-<<<<<<< HEAD
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib;SDL2.lib;libpthreadVC3.lib;libbz2.lib;freetype.lib;libpng16.lib;libzstd_static.lib;miniupnpc.lib;zlib.lib;libz-static.lib</AdditionalDependencies>
-=======
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib;Shlwapi.lib</AdditionalDependencies>
->>>>>>> refs/remotes/origin/trunk
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib;SDL2.lib;libpthreadVC3.lib;libbz2.lib;freetype.lib;libpng16.lib;libzstd_static.lib;miniupnpc.lib;zlib.lib;libz-static.lib;Shlwapi.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LargeAddressAware>
