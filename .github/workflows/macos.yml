@@ -6,6 +6,22 @@ on:
       - 'Nightly'
 
 jobs:
+  set-revision:
+    name: set revision
+    runs-on: ubuntu-20.04
+    outputs:
+      output1: ${{ steps.out1.outputs.revision }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: detect revision
+      run: |
+        read text < ./src/simutrans/revision.h
+        revision=${text:17:5}
+        echo "revision=$revision" >> $GITHUB_ENV
+    - id: out1
+      run: echo "revision=$revision" >> $GITHUB_OUTPUT
+
   sim-mac-sdl2:
     name: macOS (SDL2)
     runs-on: macos-12
@@ -26,17 +42,12 @@ jobs:
         run: |
           cd build
           zip -r simumac_x86-nightly.zip simutrans
-      - name: detect revision
-        run: |
-          read text < ./src/simutrans/revision.h
-          revision=${text:17:5}
-          echo "revision=$revision" >> $GITHUB_ENV
       - name: Upload Artifact (CI)
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: simumac_x86-nightly.zip
-          asset_name: simumac_x86-nightly_r${{ env.revision }}.zip
+          asset_name: simumac_x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
           #name: ${{ github.job }}-nightly
           #path:
           tag: Nightly
@@ -62,17 +73,12 @@ jobs:
       run: |
         cd build
         zip -r simumac-arm-nightly.zip simutrans
-    - name: detect revision
-      run: |
-        read text < ./src/simutrans/revision.h
-        revision=${text:17:5}
-        echo "revision=$revision" >> $GITHUB_ENV
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simumac-arm-nightly.zip
-        asset_name: simumac-arm-nightly_r${{ env.revision }}.zip
+        asset_name: simumac-arm-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
 
@@ -90,17 +96,12 @@ jobs:
         run: make -j2 makeobj
       - name: zip result
         run: zip -r -9 makeobj_macos-nightly.zip build/default/makeobj/makeobj
-      - name: detect revision
-        run: |
-          read text < ./src/simutrans/revision.h
-          revision=${text:17:5}
-          echo "revision=$revision" >> $GITHUB_ENV
       - name: Upload Artifact (CI)
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: makeobj_macos-nightly.zip
-          asset_name: makeobj_macos-x86-nightly_r${{ env.revision }}.zip
+          asset_name: makeobj_macos-x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
           #name: ${{ github.job }}-nightly
           #path: build/default/makeobj/makeobj
           tag: Nightly
@@ -120,17 +121,12 @@ jobs:
         run: make -j2 nettool
       - name: zip result
         run: zip -r -9 nettool_mac-nightly.zip build/default/nettool/nettool
-      - name: detect revision
-        run: |
-          read text < ./src/simutrans/revision.h
-          revision=${text:17:5}
-          echo "revision=$revision" >> $GITHUB_ENV
       - name: Upload Artifact (CI)
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: nettool_mac-nightly.zip
-          asset_name: nettool_mac-x86-nightly_r${{ env.revision }}.zip
+          asset_name: nettool_mac-x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
           #name: ${{ github.job }}-nightly
           #path: build/default/nettool/nettool
           tag: Nightly
