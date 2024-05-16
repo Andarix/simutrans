@@ -25,13 +25,14 @@ jobs:
   sim-mac-sdl2:
     name: macOS (SDL2)
     runs-on: macos-12
+    needs: [set-revision]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Get Dependencies
         run: |
-          brew reinstall homebrew/cask/cmake pkg-config libpng freetype zstd sdl2 fluidsynth
+          brew reinstall cmake --cask pkg-config libpng freetype zstd sdl2 fluidsynth
       - name: Build
         run: |
           mkdir build
@@ -56,13 +57,14 @@ jobs:
   sim-mac-arm:
     name: macOS (ARM)
     runs-on: macos-latest
+    needs: [set-revision]
 
     steps:
     - uses: actions/checkout@v4
 
     - name: install_dependencies
       run: |
-        brew reinstall homebrew/cask/cmake pkg-config libpng freetype zstd sdl2 fluidsynth
+        brew reinstall cmake --cask pkg-config libpng freetype zstd sdl2 fluidsynth
     - name: build
       run: |
         mkdir build
@@ -86,6 +88,7 @@ jobs:
   makeobj-mac:
     name: macOS Makeobj
     runs-on: macos-12
+    needs: [set-revision]
 
     steps:
       - name: Checkout
@@ -111,6 +114,7 @@ jobs:
   nettool-mac:
     name: macOS Nettool
     runs-on: macos-12
+    needs: [set-revision]
 
     steps:
       - name: Checkout
