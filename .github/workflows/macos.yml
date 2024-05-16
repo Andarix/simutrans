@@ -52,25 +52,21 @@ jobs:
     - name: install_dependencies
       run: |
         brew reinstall cmake pkg-config libpng freetype zstd sdl2 fluidsynth
-
     - name: build
       run: |
         mkdir build
         cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
         cmake --build . --target install
-
     - name: distribute
       run: |
         cd build
         zip -r simumac-arm-nightly.zip simutrans
-
     - name: detect revision
       run: |
         read text < ./src/simutrans/revision.h
         revision=${text:17:5}
         echo "revision=$revision" >> $GITHUB_ENV
-
     - name: Update binaries of Nightly Release
       uses: svenstaro/upload-release-action@v2
       with:
