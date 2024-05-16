@@ -18,10 +18,10 @@ jobs:
           brew reinstall cmake pkg-config libpng freetype zstd sdl2 fluidsynth
       - name: Build
         run: |
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=Release ..
-        cmake --build . --target install
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --target install
       - name: Build Zip
       run: |
         cd build
