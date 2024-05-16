@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Get Dependencies
         run: |
-          brew reinstall cmake --cask pkg-config libpng freetype zstd sdl2 fluidsynth
+          brew reinstall cmake pkg-config libpng freetype zstd sdl2 fluidsynth
       - name: Build
         run: |
           mkdir build
@@ -64,7 +64,7 @@ jobs:
 
     - name: install_dependencies
       run: |
-        brew reinstall cmake --cask pkg-config libpng freetype zstd sdl2 fluidsynth
+        brew reinstall cmake pkg-config libpng freetype zstd sdl2 fluidsynth
     - name: build
       run: |
         mkdir build
