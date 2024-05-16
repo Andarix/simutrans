@@ -1,6 +1,9 @@
 name: Nightly build MacOS Intel
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly'
 
 jobs:
   build:
