@@ -23,9 +23,9 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . --target install
       - name: Build Zip
-      run: |
-        cd build
-        zip -r simumac_x86-nightly.zip simutrans
+        run: |
+          cd build
+          zip -r simumac_x86-nightly.zip simutrans
       - name: detect revision
         run: |
           read text < ./src/simutrans/revision.h
