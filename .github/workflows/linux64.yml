@@ -80,7 +80,8 @@ jobs:
           sudo apt-get -ym install libfreetype6-dev
           sudo apt-get -ym install libfontconfig-dev
           sudo apt-get -ym install libbz2-dev
-          sudo apt-get -ym install autoconf
+          sudo apt-get -ym install libminiupnpc-dev
+          sudo apt-get -ym install libzstd-dev
 
           # We build fluidsynth with the minimum set of options we need to keep dependencies low
           sudo apt-get -ym install libsndfile1-dev
@@ -93,29 +94,19 @@ jobs:
 
       - name: setup
         run: |
-          cd libs/zstd-1.5.2/lib
-          make
-          cd ../../../
-          autoconf
-          ./configure
-          echo "CFLAGS += -std=c++2a " >>config.default
-          echo "STATIC := 1" >>config.default
-          cat config.default >>/dev/stderr
-
-      - name: make
-        run: make
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_BUNDLE_LIBRARIES=ON
+          cmake --build build -j$(nproc) --target install
 
       - name: distribute
-        run: sh tools/distribute.sh
-
-      - name: Rename result
-        run:  mv ./simu*.zip ./simulinux-x64-nightly.zip
+        run: |
+          cd build
+          zip -r simulinux-x64-nightly.zip simutrans
 
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: simulinux-x64-nightly.zip
+          file: build/simulinux-x64-nightly.zip
           asset_name: simulinux-x64-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
           tag: Nightly
           overwrite: true
