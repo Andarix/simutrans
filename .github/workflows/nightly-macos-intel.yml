@@ -3,7 +3,7 @@ name: Nightly build MacOS Intel
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_'
 
 jobs:
   build:
