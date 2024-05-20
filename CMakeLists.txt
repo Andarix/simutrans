@@ -20,7 +20,11 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SimutransVcpkgTriplet.cmake)
 project(simutrans LANGUAGES C CXX)
 
 # Force C++14 everywhere
-set(CMAKE_CXX_STANDARD 14)
+if(SIMUTRANS_STEAM_BUILT)
+	set(CMAKE_CXX_STANDARD 17)
+else()
+	set(CMAKE_CXX_STANDARD 14)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -244,6 +248,24 @@ if ((SIMUTRANS_BACKEND STREQUAL "sdl2") OR (SIMUTRANS_BACKEND STREQUAL "gdi"))
 	endif (SIMUTRANS_USE_FLUIDSYNTH_MIDI)
 endif ((SIMUTRANS_BACKEND STREQUAL "sdl2") OR (SIMUTRANS_BACKEND STREQUAL "gdi"))
 
+if (SIMUTRANS_STEAM_BUILT AND NOT ANDROID)
+	target_compile_definitions(simutrans PRIVATE STEAM_BUILT=1)
+	target_sources(simutrans PRIVATE src/steam/steam.cc src/steam/workshop_item.cc src/steam/achievements.cc )
+	add_library(steam SHARED IMPORTED)
+	if(APPLE)
+		set_target_properties(steam PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/sdk/redistributable_bin/osx/libsteam_api.dylib)
+	elseif(UNIX)
+		set_target_properties(steam PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/sdk/redistributable_bin/linux64/libsteam_api.so)
+	elseif(MSVC AND CMAKE_GENERATOR_PLATFORM MATCHES "x64")
+		set_target_properties(steam PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/sdk/redistributable_bin/win64/steam_api64.dll)
+		set_target_properties(steam PROPERTIES IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/sdk/redistributable_bin/win64/steam_api64.lib)
+	else(MSVC AND CMAKE_GENERATOR_PLATFORM MATCHES "Win32")
+		set_target_properties(steam PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/sdk/redistributable_bin/steam_api.dll)
+		set_target_properties(steam PROPERTIES IMPORTED_IMPLIB ${CMAKE_SOURCE_DIR}/sdk/redistributable_bin/steam_api.lib)
+	endif()
+	target_include_directories(simutrans PRIVATE ${CMAKE_SOURCE_DIR}/sdk/public/steam)
+	target_link_libraries(simutrans PRIVATE steam)
+endif ()
 
 #
 # compile options
@@ -289,10 +311,6 @@ endif ()
 
 if (SIMUTRANS_USE_IP4_ONLY)
 	target_compile_definitions(simutrans PRIVATE USE_IP4_ONLY=1)
-endif ()
-
-if (SIMUTRANS_STEAM_BUILT)
-	target_compile_definitions(simutrans PRIVATE STEAM_BUILT=1)
 endif ()
 
 if (SIMUTRANS_USE_OWN_PAKINSTALL)
