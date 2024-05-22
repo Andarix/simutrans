@@ -53,13 +53,8 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <EnableASAN>true</EnableASAN>
   </PropertyGroup>
-<<<<<<< HEAD
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreferredToolArchitecture>x86</PreferredToolArchitecture>
-=======
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <EnableASAN>true</EnableASAN>
->>>>>>> refs/remotes/origin/trunk
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="Shared">
