@@ -9,7 +9,7 @@
 
 #ifndef REVISION
 // include external generated revision file
-#include "../../revision.h"
+#include "revision.h"
 #endif
 
 #define SIM_BUILD_NIGHTLY           0
@@ -30,24 +30,24 @@
 #define MAKEOBJ_VERSION "60.7"
 
 #ifndef QUOTEME
-# define QUOTEME_(x) #x
-# define QUOTEME(x)  QUOTEME_(x)
+#	define QUOTEME_(x) #x
+#	define QUOTEME(x)  QUOTEME_(x)
 #endif
 
 #if SIM_VERSION_PATCH != 0
-# define SIM_VERSION_PATCH_STRING "." QUOTEME(SIM_VERSION_PATCH)
+#	define SIM_VERSION_PATCH_STRING "." QUOTEME(SIM_VERSION_PATCH)
 #else
-# define SIM_VERSION_PATCH_STRING
+#	define SIM_VERSION_PATCH_STRING
 #endif
 
 #if   SIM_VERSION_BUILD == SIM_BUILD_NIGHTLY
-# define SIM_VERSION_BUILD_STRING " Nightly"
+#	define SIM_VERSION_BUILD_STRING " Nightly"
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE_CANDIDATE
-# define SIM_VERSION_BUILD_STRING " Release Candidate"
+#	define SIM_VERSION_BUILD_STRING " Release Candidate"
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE
-# define SIM_VERSION_BUILD_STRING ""
+#	define SIM_VERSION_BUILD_STRING ""
 #else
-# error invalid SIM_VERSION_BUILD
+#	error invalid SIM_VERSION_BUILD
 #endif
 
 #define VERSION_NUMBER QUOTEME(SIM_VERSION_MAJOR) "." QUOTEME(SIM_VERSION_MINOR) SIM_VERSION_PATCH_STRING SIM_VERSION_BUILD_STRING
@@ -63,12 +63,12 @@
 #define RES_VERSION_NUMBER  0, SIM_VERSION_MAJOR, SIM_VERSION_MINOR, SIM_VERSION_PATCH
 
 #ifdef REVISION
-# define SIM_TITLE_REVISION_STRING " - r" QUOTEME(REVISION)
+#	define SIM_TITLE_REVISION_STRING " - r" QUOTEME(REVISION)
 #else
-# define SIM_TITLE_REVISION_STRING
+#	define SIM_TITLE_REVISION_STRING
 #endif
 
-# define SIM_TITLE SAVEGAME_PREFIX VERSION_NUMBER SIM_TITLE_REVISION_STRING
+#	define SIM_TITLE SAVEGAME_PREFIX VERSION_NUMBER SIM_TITLE_REVISION_STRING
 
 
 /*********************** Settings related to network games ********************/
@@ -90,23 +90,5 @@
 
 /* Relative URL of the IP function on server */
 #define QUERY_ADDR_URL "/get_IP.php"
-
-/* Server to announce status to */
-//#define ANNOUNCE_SERVER1 "127.0.0.1:9280"
-//#define ANNOUNCE_SERVER2 "simutrans-germany.com"
-//#define ANNOUNCE_SERVER3 "simutrans-germany.com"
-
-/* Relative URL of the announce function on server */
-//#define ANNOUNCE_URL "/homepage/listserver/announce.php"
-
-/* Relative URL of the list function on server */
-//#define ANNOUNCE_LIST_URL "/homepage/listserver/list.php?format=csv"
-
-/* url for obtaining the external IP for easz servers */
-//#define QUERY_ADDR_IP "127.0.0.1:9280"
-//#define QUERY_ADDR_IPv4_ONLY "127.0.0.1:9280"
-
-/* Relative URL of the IP function on server */
-//#define QUERY_ADDR_URL "/showip.php"
 
 #endif
