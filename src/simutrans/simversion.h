@@ -45,11 +45,7 @@
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE_CANDIDATE
 # define SIM_VERSION_BUILD_STRING " Release Candidate"
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE
-<<<<<<< HEAD
-# define SIM_VERSION_BUILD_STRING
-=======
-#	define SIM_VERSION_BUILD_STRING ""
->>>>>>> refs/remotes/origin/trunk
+# define SIM_VERSION_BUILD_STRING ""
 #else
 # error invalid SIM_VERSION_BUILD
 #endif
