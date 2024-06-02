@@ -177,11 +177,14 @@ void roadsign_t::show_info()
 
 void roadsign_t::info(cbuffer_t & buf) const
 {
+<<<<<<< HEAD
 	obj_t::info( buf );
 
 	buf.append(translator::translate(desc->get_name()));
 	buf.append("\n");
 
+=======
+>>>>>>> refs/remotes/origin/trunk
 	if(  !desc->is_private_way()  ) {
 		if(desc->is_single_way()) {
 			buf.append(translator::translate("\nsingle way"));
