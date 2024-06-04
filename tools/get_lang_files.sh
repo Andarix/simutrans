@@ -5,6 +5,78 @@
 # (see LICENSE.txt)
 #
 
+# updating SVN too?
+UPDATE_SVN=0
+if [ "$#" -gt 0 ] && [ "$1" = '-svn' ]; then
+  echo "Updating SVN too"
+  UPDATE_SVN=1
+else
+  echo "Use option -svn to update the repo."
+fi
+
+move_if_differ_add()
+{
+  pattern="$1"
+  dest_path="$2"
+
+  mkdir -p $dest_path
+  if [[ $UPDATE_SVN -eq 1 ]]; then
+    # only copy changed texts
+    for f in $pattern; do
+      if [[ -f "$dest_path/$f" ]]; then
+        cat $f | grep "^[^#]" > $f.tmp
+        a=`cat $dest_path/$f | grep "^[^#]" | diff -wq $f.tmp -`
+        if [[ ! -z "$a" ]] ; then
+          echo "Updating $f to texts"
+          mv $f $dest_path/$f
+        fi
+      else
+        # new file: move it and add it to svn
+        echo "Creating $f to texts"
+        mv $f $dest_path/$f
+        svn add $dest_path/$f
+        svn ps svn:eol-style native $dest_path/$f
+      fi
+    done
+  else
+    # only copy changed texts
+    for f in $pattern; do
+      cat $f | grep "^[^#]" > $f.tmp
+      a=`cat $dest_path/$f | grep "^[^#]" | diff -wq $f.tmp -`
+      if [[ ! -z "$a" ]] ; then
+        echo "Updating $f to texts"
+        mv $f $dest_path/$f
+      fi
+    done
+  fi
+}
+
+move_add()
+{
+  pattern="$1"
+  dest_path="$2"
+
+  if ! [[ -d "$dest_path" ]]; then
+    mkdir -p $dest_path
+    if [[ $UPDATE_SVN -eq 1 ]];then
+      svn add $dest_path
+    fi
+  fi
+
+  # only copy changed texts
+  for f in $pattern; do
+    if [[ $UPDATE_SVN -eq 1 ]]  &&  ! [[ -f "$dest_path/$f" ]]; then
+      # new file: move it and add it to svn
+      echo "Creating $f to texts"
+      mv $f $dest_path/$f
+      svn add $dest_path/$f
+      svn ps svn:eol-style native $dest_path/$f
+    else
+      mv $f $dest_path/$f
+    fi
+  done
+}
+
 #
 # script to fetch language files
 #
@@ -12,6 +84,7 @@
 #
 
 OUTPUT_DIR=simutrans/text
+TEMP_DIR=lang-tmp
 TRANSLATOR_URL=https://translator.simutrans.com
 
 # get the translations for basis
@@ -49,17 +122,27 @@ else
     fi
 fi
 
-unzip -otv "language_pack-Base+texts.zip" -d ${OUTPUT_DIR} || {
+# create temporary directory
+rm -rf  $TEMP_DIR
+mkdir  $TEMP_DIR
+
+# test archive
+unzip -otv "language_pack-Base+texts.zip" -d $TEMP_DIR || {
    echo "Error: file language_pack-Base+texts.zip seems to be defective" >&2
    rm -f "language_pack-Base+texts.zip"
    exit 5
 }
-unzip -o "language_pack-Base+texts.zip" -d ${OUTPUT_DIR}
+unzip -o "language_pack-Base+texts.zip" -d $TEMP_DIR
 rm language_pack-Base+texts.zip
+
+# now we do this inside the tmmp directory
+cd $TEMP_DIR
+
 # remove Chris English (may become simple English ... )
-rm -f ${OUTPUT_DIR}/ce.tab
-rmdir ${OUTPUT_DIR}/ce
-rm -f ${OUTPUT_DIR}/_objectlist.txt
+rm -f ce.tab
+rmdir ce
+rm -f _objectlist.txt
 # Remove check test
 #rm xx.tab
 #rm -rf xx
+
