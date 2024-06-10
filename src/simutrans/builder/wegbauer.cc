@@ -651,27 +651,39 @@ bool way_builder_t::is_allowed_step(const grund_t *from, const grund_t *to, sint
 		}
 	}
 
-	// universal check for depots/stops/...
-	if(  !check_building( from, zv )  ||  !check_building( to, -zv )  ) {
-		warn_fail = translator::translate("A building blocks the construction");
-		return false;
-	}
+	if ((zv.x | zv.y) != 0) {
+		// the forrowing checks make only sense if we actually connect two tiles
 
-	// universal check for bridges: enter bridges in bridge direction
-	if( to->get_typ()==grund_t::brueckenboden ) {
-		ribi_t::ribi br = ribi_type(zv);
-		br  = to->hat_wege()    ? to->get_weg_nr(0)->get_ribi_unmasked() : (ribi_t::ribi)ribi_t::none;
-		br |= to->get_leitung() ? to->get_leitung()->get_ribi()          : (ribi_t::ribi)ribi_t::none;
-		if(!ribi_t::is_straight(br)) {
+		// universal check for depots/stops/...
+		if(  !check_building( from, zv )  ||  !check_building( to, -zv )  ) {
+			warn_fail = translator::translate("A building blocks the construction");
 			return false;
 		}
-	}
-	if( from->get_typ()==grund_t::brueckenboden ) {
-		ribi_t::ribi br = ribi_type(zv);
-		br  = from->hat_wege()    ? from->get_weg_nr(0)->get_ribi_unmasked() : (ribi_t::ribi)ribi_t::none;
-		br |= from->get_leitung() ? from->get_leitung()->get_ribi()          : (ribi_t::ribi)ribi_t::none;
-		if(!ribi_t::is_straight(br)) {
-			return false;
+
+		// universal check for bridges: enter bridges in bridge direction
+		if( from->get_typ()==grund_t::brueckenboden ) {
+			if (weg_t *w = from->get_weg((waytype_t)(bautyp_mask & bautyp))) {
+				if (ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) != ribi_t::doubles(w->get_ribi_unmasked())) {
+					return false;
+				}
+			}
+			if ((bautyp_mask & bautyp)==powerline_wt  &&  from->get_leitung()) {
+				if (ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) != ribi_t::doubles(from->get_leitung()->get_ribi())) {
+					return false;
+				}
+			}
+		}
+		if( to->get_typ()==grund_t::brueckenboden ) {
+			if (weg_t* w = to->get_weg((waytype_t)(bautyp_mask & bautyp))) {
+				if (ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) != ribi_t::doubles(w->get_ribi_unmasked())) {
+					return false;
+				}
+			}
+			if ((bautyp_mask & bautyp) == powerline_wt  &&  to->get_leitung()) {
+				if (ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) != ribi_t::doubles(to->get_leitung()->get_ribi())) {
+					return false;
+				}
+			}
 		}
 	}
 
@@ -685,22 +697,23 @@ bool way_builder_t::is_allowed_step(const grund_t *from, const grund_t *to, sint
 
 	// do not connect to the side of a sloped elevated way if the ground is flat
 	if (from->get_typ() == grund_t::monorailboden  &&  to->get_typ() != grund_t::monorailboden  &&  !from->ist_karten_boden()) {
-		// we try to connect to an elevated way. Only allowed, if both are parallel
-		weg_t* w = to->get_weg(desc->get_wtyp());
-		if (w  &&  ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) == ribi_t::doubles(w->get_ribi_unmasked())) {
-			// we may be allowed to connect here
-		}
-		else {
-			return false;
+		// we try to connect to an elevated way. For bridges, only allowed, if both are parallel
+		if (to->get_typ() == grund_t::brueckenboden) {
+			weg_t* w = to->get_weg(desc->get_wtyp());
+			if (!w  ||  ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) != ribi_t::doubles(w->get_ribi_unmasked())  ) {
+				// we are not allowed to connect here
+				return false;
+			}
 		}
 	}
 	if (to->get_typ() == grund_t::monorailboden  &&  from->get_typ() != grund_t::monorailboden  &&  !to->ist_karten_boden()) {
-		weg_t* w = to->get_weg(desc->get_wtyp());
-		if (w  &&  ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) == ribi_t::doubles(w->get_ribi_unmasked())) {
-			// we may be allowed to connect here
-		}
-		else {
-			return false;
+		// we try to connect to an elevated way. For bridges, only allowed, if both are parallel
+		if (from->get_typ() == grund_t::brueckenboden) {
+			weg_t* w = to->get_weg(desc->get_wtyp());
+			if (!w  ||  ribi_t::doubles(ribi_t::ribi(ribi_type(zv))) != ribi_t::doubles(w->get_ribi_unmasked())) {
+				// we are not allowed to connect here
+				return false;
+			}
 		}
 	}
 

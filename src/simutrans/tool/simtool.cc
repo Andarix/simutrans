@@ -4813,6 +4813,23 @@ const char *tool_build_station_t::check_pos( player_t*,  koord3d pos )
 }
 
 
+char const* tool_build_station_t::move(player_t* const player, uint16 const b, koord3d const pos)
+{
+	if (b == 0) {
+		return NULL;
+	}
+	if (env_t::networkmode) {
+		// queue tool for network
+		nwc_tool_t* nwc = new nwc_tool_t(player, this, pos, welt->get_steps(), welt->get_map_counter(), false);
+		network_send_server(nwc);
+		return NULL;
+	}
+	else {
+		return work(player, pos);
+	}
+}
+
+
 const char *tool_build_station_t::work( player_t *player, koord3d pos )
 {
 	const grund_t *gr = welt->lookup(pos);
@@ -7138,9 +7155,6 @@ bool tool_rotate90_t::init( player_t * )
 
 bool tool_quit_t::init( player_t * )
 {
-	if (env_t::networkmode) {
-		welt->network_disconnect();
-	}
 	if (!strempty(default_param)) {
 		// new world
 		destroy_all_win(true);
@@ -7149,6 +7163,9 @@ bool tool_quit_t::init( player_t * )
 	else {
 		// totally quit
 		welt->stop(true);
+	}
+	if (env_t::networkmode) {
+		welt->network_disconnect();
 	}
 	return false;
 }
