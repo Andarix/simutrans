@@ -1,0 +1,115 @@
+name: Nightly build makeobj
+
+on: [push]
+
+jobs:
+  makeobj_windows-nightly:
+    name: makeobj Windows
+    runs-on: windows-2022
+
+    steps:
+      - name: Setup Mingw
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW32
+          update: false
+          install: base-devel mingw-w64-i686-toolchain mingw-w64-i686-gcc mingw-w64-i686-libpng
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: build
+        shell: msys2 {0}
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: |
+          printf 'BACKEND := posix\nOSTYPE := mingw\nOPTIMISE := 1\nSTATIC := 1\n' | cat >config.default
+          cd src/makeobj
+          make
+          cd ../../build/default/makeobj
+          strip makeobj.exe
+
+      - name: zip result
+        shell: pwsh
+        run: Compress-Archive build\default\makeobj\makeobj.exe build\default\makeobj\makeobj-windows-nightly.zip
+
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build\default\makeobj\makeobj-windows-nightly.zip
+          asset_name: makeobj-win-nightly.zip
+          tag: Nightly
+          overwrite: true
+
+  makeobj_linux-x64-nightly:
+    name: makeobj Linux x64
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: install_dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -ym install autoconf
+          sudo apt-get -ym install libpng-dev
+          sudo apt-get -ym install libbz2-dev
+
+      - name: setup
+        run: |
+          autoconf
+          ./configure
+          echo "STATIC = 1" >>config.default
+          cat config.default >>/dev/stderr
+
+      - name: make makeobj
+        run: |
+          cd src/makeobj
+          make
+
+      - name: zip result
+        run: |
+          cd src/makeobj
+          zip -r -9 makeobj_linux-x64-nightly.zip makeobj
+
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: src/makeobj/makeobj_linux-x64-nightly.zip
+          asset_name: makeobj_linux-x64-nightly.zip
+          tag: Nightly
+          overwrite: true
+
+  makeobj-mac:
+    name: makeobj macOS arm
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: install_dependencies
+      run: |
+        brew reinstall cmake pkg-config libpng
+
+    - name: build
+      run: |
+        printf "#define REVISION %i\n" $(tools/get_revision.sh) > src/simutrans/revision.h
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build/src/makeobj
+
+    - name: distribute
+      run: |
+        cd build/src/makeobj
+        zip -r makeobj-arm-nightly.zip makeobj
+
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/src/makeobj/makeobj-arm-nightly.zip
+        asset_name: makeobj-arm-nightly.zip
+        tag: Nightly
+        overwrite: true
+

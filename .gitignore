@@ -7,7 +7,7 @@
 .vs
 /Debug
 /Release
-/build
+build
 /vcpkg*
 /config.*
 /makeobj/makeobj
