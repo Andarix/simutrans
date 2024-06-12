@@ -1,6 +1,9 @@
 name: Nightly build makeobj
 
-on: [push]
+on:
+  push:
+    tags:
+      - 'Nightly'
 
 jobs:
   makeobj_windows-nightly:
@@ -112,4 +115,3 @@ jobs:
         asset_name: makeobj-arm-nightly.zip
         tag: Nightly
         overwrite: true
-

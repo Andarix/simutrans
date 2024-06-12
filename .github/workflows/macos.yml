@@ -64,7 +64,7 @@ jobs:
 
     - name: install_dependencies
       run: |
-        brew reinstall cmake pkg-config libpng freetype zstd sdl2 fluidsynth
+        brew reinstall --cask cmake pkg-config libpng freetype zstd sdl2 fluidsynth
     - name: build
       run: |
         mkdir build
@@ -85,7 +85,7 @@ jobs:
         overwrite: true
 
 
-  makeobj-mac:
+  makeobj-mac_x86:
     name: macOS Makeobj
     runs-on: macos-12
     needs: [set-revision]
@@ -110,6 +110,37 @@ jobs:
           tag: Nightly
           overwrite: true
 
+  makeobj-mac_arm:
+    name: makeobj macOS arm
+    runs-on: macos-latest
+    needs: [set-revision]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: install_dependencies
+      run: |
+        brew reinstall --cask cmake pkg-config libpng
+
+    - name: build
+      run: |
+        printf "#define REVISION %i\n" $(tools/get_revision.sh) > src/simutrans/revision.h
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build/src/makeobj
+
+    - name: distribute
+      run: |
+        cd build/src/makeobj
+        zip -r makeobj-arm-nightly.zip makeobj
+
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/src/makeobj/makeobj-arm-nightly.zip
+        asset_name: makeobj_macos-arm-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
+        tag: Nightly
+        overwrite: true
 
   nettool-mac:
     name: macOS Nettool
