@@ -3,7 +3,7 @@ name: Nightly build makeobj
 on:
   push:
     tags:
-      - 'Nightly'
+      - 'Nightly_'
 
 jobs:
   makeobj_windows-nightly:
