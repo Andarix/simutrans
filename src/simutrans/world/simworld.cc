@@ -2200,7 +2200,7 @@ void karte_t::set_tool_api( tool_t *tool_in, player_t *player, bool& suspended)
 	}
 	// check for password-protected players
 	if(  (!tool_in->is_init_keeps_game_state()  ||  !tool_in->is_work_keeps_game_state())  &&  needs_check  &&
-		 !(tool_in->get_id()==(TOOL_CHANGE_PLAYER|SIMPLE_TOOL)  ||  tool_in->get_id()==(TOOL_ADD_MESSAGE | GENERAL_TOOL))  &&
+		 !(tool_in->get_id() == (DIALOG_LOAD | DIALOGE_TOOL)  ||  tool_in->get_id() == (TOOL_CHANGE_PLAYER | SIMPLE_TOOL)  ||  tool_in->get_id()==(TOOL_ADD_MESSAGE | GENERAL_TOOL))  &&
 		 player  &&  player->is_locked()  ) {
 		// player is currently password protected => request unlock first
 		create_win(new password_frame_t(player), w_info, magic_pwd_t + player->get_player_nr() );
@@ -3309,7 +3309,7 @@ void karte_t::step()
 		last_clients = socket_list_t::get_playing_clients();
 		// add message via tool
 		cbuffer_t buf;
-		buf.printf("%d,", chat_message_t::do_not_rdwr_flag | chat_message_t::do_not_log_flag);
+		buf.printf("%d,", chat_message_t::DO_NOT_SAVE_MSG | chat_message_t::DO_NO_LOG_MSG);
 		buf.printf(translator::translate("Now %u clients connected.", settings.get_name_language_id()), last_clients);
 		tool_t *tmp_tool = create_tool( TOOL_ADD_MESSAGE | GENERAL_TOOL );
 		tmp_tool->set_default_param( buf );
@@ -3705,6 +3705,10 @@ DBG_MESSAGE("karte_t::save(loadsave_t *file)", "motd filename %s", env_t::server
 
 	if (file->is_version_atleast(124, 1)) {
 		chat_msg->rdwr(file);
+	}
+
+	if (file->is_version_atleast(124, 2)) {
+		records->rdwr(file);
 	}
 
 	file->rdwr_byte( active_player_nr );
@@ -4249,6 +4253,10 @@ DBG_MESSAGE("karte_t::load()", "%d factories loaded", fab_list.get_count());
 	}
 	else {
 		// maybe move messages into chat_messages?
+	}
+
+	if (file->is_version_atleast(124, 2)) {
+		records->rdwr(file);
 	}
 
 	if(  file->is_version_atleast(102, 4)  ) {
@@ -5598,7 +5606,7 @@ void karte_t::switch_active_player(uint8 new_player, bool silent)
 			// tell the player
 			cbuffer_t buf;
 			buf.printf( translator::translate("Now active as %s.\n"), get_active_player()->get_name() );
-			msg->add_message(buf, koord3d::invalid, message_t::ai | message_t::do_not_rdwr_flag, PLAYER_FLAG|get_active_player()->get_player_nr(), IMG_EMPTY);
+			msg->add_message(buf, koord3d::invalid, message_t::ai | message_t::DO_NOT_SAVE_MSG, PLAYER_FLAG|get_active_player()->get_player_nr(), IMG_EMPTY);
 		}
 
 		// update menu entries

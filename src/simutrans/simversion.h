@@ -19,35 +19,35 @@
 #define SIM_VERSION_MAJOR 124
 #define SIM_VERSION_MINOR   1
 #define SIM_VERSION_PATCH   1
-#define SIM_VERSION_BUILD SIM_BUILD_RELEASE
+#define SIM_VERSION_BUILD SIM_BUILD_RELEASE_CANDIDATE
 
 // Beware: SAVEGAME minor is often ahead of version minor when there were patches.
 // ==> These have no direct connection at all!
-#define SIM_SAVE_MINOR      1
-#define SIM_SERVER_MINOR    1
+#define SIM_SAVE_MINOR      2
+#define SIM_SERVER_MINOR    2
 // NOTE: increment before next release to enable save/load of new features
 
 #define MAKEOBJ_VERSION "60.7"
 
 #ifndef QUOTEME
-# define QUOTEME_(x) #x
-# define QUOTEME(x)  QUOTEME_(x)
+#	define QUOTEME_(x) #x
+#	define QUOTEME(x)  QUOTEME_(x)
 #endif
 
 #if SIM_VERSION_PATCH != 0
-# define SIM_VERSION_PATCH_STRING "." QUOTEME(SIM_VERSION_PATCH)
+#	define SIM_VERSION_PATCH_STRING "." QUOTEME(SIM_VERSION_PATCH)
 #else
-# define SIM_VERSION_PATCH_STRING
+#	define SIM_VERSION_PATCH_STRING
 #endif
 
 #if   SIM_VERSION_BUILD == SIM_BUILD_NIGHTLY
-# define SIM_VERSION_BUILD_STRING " Nightly"
+#	define SIM_VERSION_BUILD_STRING " Nightly"
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE_CANDIDATE
-# define SIM_VERSION_BUILD_STRING " Release Candidate"
+#	define SIM_VERSION_BUILD_STRING " Release Candidate"
 #elif SIM_VERSION_BUILD == SIM_BUILD_RELEASE
-# define SIM_VERSION_BUILD_STRING ""
+#	define SIM_VERSION_BUILD_STRING ""
 #else
-# error invalid SIM_VERSION_BUILD
+#	error invalid SIM_VERSION_BUILD
 #endif
 
 #define VERSION_NUMBER QUOTEME(SIM_VERSION_MAJOR) "." QUOTEME(SIM_VERSION_MINOR) SIM_VERSION_PATCH_STRING SIM_VERSION_BUILD_STRING
@@ -63,12 +63,12 @@
 #define RES_VERSION_NUMBER  0, SIM_VERSION_MAJOR, SIM_VERSION_MINOR, SIM_VERSION_PATCH
 
 #ifdef REVISION
-# define SIM_TITLE_REVISION_STRING " - r" QUOTEME(REVISION)
+#	define SIM_TITLE_REVISION_STRING " - r" QUOTEME(REVISION)
 #else
-# define SIM_TITLE_REVISION_STRING
+#	define SIM_TITLE_REVISION_STRING
 #endif
 
-# define SIM_TITLE SAVEGAME_PREFIX VERSION_NUMBER SIM_TITLE_REVISION_STRING
+#	define SIM_TITLE SAVEGAME_PREFIX VERSION_NUMBER SIM_TITLE_REVISION_STRING
 
 
 /*********************** Settings related to network games ********************/
