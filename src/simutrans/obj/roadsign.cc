@@ -70,6 +70,7 @@ roadsign_t::roadsign_t(loadsave_t *file) : obj_t ()
 
 roadsign_t::roadsign_t(player_t *player, koord3d pos, ribi_t::ribi dir, const roadsign_desc_t *desc, bool preview) : obj_t(pos)
 {
+<<<<<<< HEAD
   this->desc = desc;
   this->dir = dir;
   this->preview = preview;
@@ -97,6 +98,35 @@ roadsign_t::roadsign_t(player_t *player, koord3d pos, ribi_t::ribi dir, const ro
   if(  automatic  ) {
     welt->sync_roadsigns.add(this);
   }
+=======
+	this->desc = desc;
+	this->dir = dir;
+	this->preview = preview;
+	image = foreground_image = IMG_EMPTY;
+	state = 0;
+	ticks_ns = ticks_ow = 16;
+	ticks_offset = 0;
+	ticks_yellow_ns = ticks_yellow_ow = 2;
+	set_owner( player );
+	if(  desc->is_private_way()  ) {
+		// init ownership of private ways
+		ticks_offset = ticks_ow = 0;
+		if(  player->get_player_nr() >= 8  ) {
+			ticks_ow = 1 << (player->get_player_nr()-8);
+		}
+		else {
+			ticks_offset = 1 << player->get_player_nr();
+		}
+	}
+	/* if more than one state, we will switch direction and phase for traffic lights
+	 * however also gate signs need indications
+	 */
+	automatic = (desc->get_count()>4  &&  desc->get_wtyp()==road_wt)  ||  (desc->get_count()>2  &&  desc->is_private_way());
+	// only traffic light need switches
+	if(  automatic  ) {
+		welt->sync_roadsigns.add(this);
+	}
+>>>>>>> refs/remotes/origin/trunk
 }
 
 
@@ -617,6 +647,7 @@ void roadsign_t::rdwr(loadsave_t *file)
     char bname[128];
     file->rdwr_str(bname, lengthof(bname));
 
+<<<<<<< HEAD
     desc = roadsign_t::table.get(bname);
     if(desc==NULL) {
       desc = roadsign_t::table.get(translator::compatibility_name(bname));
@@ -634,6 +665,29 @@ void roadsign_t::rdwr(loadsave_t *file)
       ticks_ow = 0xFF;
     }
   }
+=======
+		desc = roadsign_t::table.get(bname);
+		if(desc==NULL) {
+			desc = roadsign_t::table.get(translator::compatibility_name(bname));
+			if(  desc==NULL  ) {
+				dbg->warning("roadsign_t::rwdr", "description %s for roadsign/signal at %d,%d not found! (may be ignored)", bname, get_pos().x, get_pos().y);
+				pakset_manager_t::add_missing_paks( bname, MISSING_SIGN );
+			}
+			else {
+				dbg->warning("roadsign_t::rwdr", "roadsign/signal %s at %d,%d replaced by %s", bname, get_pos().x, get_pos().y, desc->get_name() );
+			}
+		}
+		// init ownership of private ways signs
+		if(  desc  &&  desc->is_private_way()  ) {
+			ticks_ns = 0xFD;
+			ticks_ow = 0xFF;
+			if(  file->is_version_less(124, 2)  ) {
+				// private sign mask now in ticks_ow and ticks_offset
+				ticks_ns = ticks_offset;
+			}
+		}
+	}
+>>>>>>> refs/remotes/origin/trunk
 }
 
 
@@ -725,15 +779,24 @@ bool roadsign_t::register_desc(roadsign_desc_t *desc)
  */
 void roadsign_t::fill_menu(tool_selector_t *tool_selector, waytype_t wtyp, sint16 /*sound_ok*/)
 {
+<<<<<<< HEAD
   // check if scenario forbids this
   if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_ROADSIGN | GENERAL_TOOL, wtyp)) {
     return;
   }
+=======
+	// check if scenario forbids this
+	if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_ROADSIGN | GENERAL_TOOL, wtyp)) {
+		return;
+	}
+	bool enable = welt->get_scenario()->is_tool_enabled(welt->get_active_player(), TOOL_BUILD_ROADSIGN | GENERAL_TOOL, wtyp);
+>>>>>>> refs/remotes/origin/trunk
 
   const uint16 time = welt->get_timeline_year_month();
 
   vector_tpl<const roadsign_desc_t *>matching;
 
+<<<<<<< HEAD
   for(auto const& i : table) {
     roadsign_desc_t const* const desc = i.value;
     if(  desc->is_available(time)  &&  desc->get_wtyp()==wtyp  &&  desc->get_builder()  ) {
@@ -744,6 +807,19 @@ void roadsign_t::fill_menu(tool_selector_t *tool_selector, waytype_t wtyp, sint1
   for(roadsign_desc_t const* const i : matching) {
     tool_selector->add_tool_selector(i->get_builder());
   }
+=======
+	for(auto const& i : table) {
+		roadsign_desc_t const* const desc = i.value;
+		if(  desc->is_available(time)  &&  desc->get_wtyp()==wtyp  &&  desc->get_builder()  ) {
+			// only add items with a cursor
+			matching.insert_ordered( desc, compare_roadsign_desc );
+		}
+	}
+	for(roadsign_desc_t const* const i : matching) {
+		i->get_builder()->enabled = enable;
+		tool_selector->add_tool_selector(i->get_builder());
+	}
+>>>>>>> refs/remotes/origin/trunk
 }
 
 
