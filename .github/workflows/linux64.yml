@@ -94,7 +94,8 @@ jobs:
 
       - name: setup
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_BUNDLE_LIBRARIES=ON -SIMUTRANS_USE_REVISION=${{ needs.set-revision.outputs.output1 }}
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DOPTION_BUNDLE_LIBRARIES=ON
+          cp revision.h build/revision.h
           cmake --build build -j$(nproc) --target install
 
       - name: distribute
