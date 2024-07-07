@@ -38,6 +38,7 @@ jobs:
           mkdir build
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release ..
+          cp ./revision.h ./build/revision.h
           cmake --build . --target install
       - name: Build Zip
         run: |
@@ -70,6 +71,7 @@ jobs:
         mkdir build
         cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
+        cp ./revision.h ./build/revision.h
         cmake --build . --target install
     - name: distribute
       run: |
@@ -126,6 +128,7 @@ jobs:
       run: |
         printf "#define REVISION %i\n" $(tools/get_revision.sh) > src/simutrans/revision.h
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cp ./revision.h ./build/revision.h
         cmake --build build/src/makeobj
 
     - name: distribute
