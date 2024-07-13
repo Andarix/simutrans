@@ -621,8 +621,7 @@ int simu_main(int argc, char** argv)
 				env_t::default_settings.rdwr(&settings_file);
 				settings_file.close();
 				// reset to false (otherwise these settings will persist)
-				env_t::default_settings.set_freeplay( false );
-				env_t::default_settings.set_allow_player_change( true );
+				env_t::default_settings.reset_after_global_settings_reload();
 				env_t::server_announce = 0;
 			}
 		}
@@ -935,17 +934,18 @@ int simu_main(int argc, char** argv)
 
 	// prepare skins first
 	bool themes_ok = false;
-	if(  const char *themestr = args.gimme_arg("-theme", 1)  ) {
-		dr_chdir( env_t::user_dir );
-		dr_chdir( "themes" );
+	if (const char* themestr = args.gimme_arg("-theme", 1)) {
+		dr_chdir(env_t::user_dir);
+		dr_chdir("themes");
 		themes_ok = gui_theme_t::themes_init(themestr, true, false);
-		if(  !themes_ok  ) {
-			dr_chdir( env_t::base_dir );
-			dr_chdir( "themes" );
+		if (!themes_ok) {
+			dr_chdir(env_t::base_dir);
+			dr_chdir("themes");
 			themes_ok = gui_theme_t::themes_init(themestr, true, false);
 		}
 	}
 	// next try the last used theme
+	skinverwaltung_t::save_all_skins(); // save empty to have the pakset default
 	if(  !themes_ok  &&  env_t::default_theme.c_str()!=NULL  ) {
 		dr_chdir( env_t::user_dir );
 		dr_chdir( "themes" );
@@ -1169,7 +1169,9 @@ int simu_main(int argc, char** argv)
 	tool_t::init_menu();
 
 	// loading all objects in the pak
+	skinverwaltung_t::restore_all_skins(); // restore empty skins to have the pakset default
 	pakset_manager_t::load_pakset(env_t::default_settings.get_with_private_paks());
+	skinverwaltung_t::save_all_skins(); // save pakset default
 
 	// load tool scripts
 	dbg->message("simu_main()","Reading tool scripts ...");
