@@ -38,7 +38,7 @@ jobs:
           mkdir build
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release ..
-          cp ./revision.h ./build/revision.h
+          cp ../revision.h ./revision.h
           cmake --build . --target install
       - name: Build Zip
         run: |
@@ -71,7 +71,7 @@ jobs:
         mkdir build
         cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
-        cp ./revision.h ./build/revision.h
+        cp ../revision.h ./revision.h
         cmake --build . --target install
     - name: distribute
       run: |
