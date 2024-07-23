@@ -948,6 +948,8 @@ int simu_main(int argc, char** argv)
 	skinverwaltung_t::save_all_skins(); // save empty to have the pakset default
 	if(  !themes_ok  &&  env_t::default_theme.c_str()!=NULL  ) {
 		dr_chdir( env_t::user_dir );
+		dr_remove("settings_old.xml");
+		dr_rename("settings.xml", "settings_old.xml"); // or we are stuck on a broken theme forever
 		dr_chdir( "themes" );
 		themes_ok = gui_theme_t::themes_init( env_t::default_theme, true, false );
 		if(  !themes_ok  ) {
@@ -955,6 +957,7 @@ int simu_main(int argc, char** argv)
 			dr_chdir( "themes" );
 			themes_ok = gui_theme_t::themes_init( env_t::default_theme, true, false );
 		}
+		dr_rename("settings_old.xml", "settings.xml"); // or we are stuck on a broken theme forever
 	}
 	// specified themes not found => try default themes
 #if COLOUR_DEPTH != 0
@@ -1625,6 +1628,7 @@ int simu_main(int argc, char** argv)
 
 	if(  !env_t::networkmode  &&  !env_t::server  &&  new_world  ) {
 		welt->get_message()->clear();
+		welt->get_chat_message()->clear();
 	}
 #ifdef USE_FLUIDSYNTH_MIDI
 	if(  strcmp( env_t::soundfont_filename.c_str(), "Error" ) == 0  ) {
@@ -1641,7 +1645,7 @@ int simu_main(int argc, char** argv)
 #if COLOUR_DEPTH != 0
 		if(  new_world  ) {
 			dbg->message("simu_main()", "Show banner ... " );
-			ticker::add_msg("Welcome to Simutrans", koord3d::invalid, PLAYER_FLAG | color_idx_to_rgb(COL_SOFT_BLUE));
+			ticker::add_msg("Welcome to Simutrans", koord3d::invalid, PLAYER_FLAG | 1);
 			modal_dialogue( new banner_t(), magic_none, welt, never_quit, true );
 			// only show new world, if no other dialogue is active ...
 			new_world = win_get_open_count()==0;
