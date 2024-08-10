@@ -100,8 +100,8 @@ jobs:
 
       - name: distribute
         run: |
-          chmod -v 755 ./tools/get_lang_files.sh
-          ./tools/get_lang_files.sh
+          chmod -v 755 ./tools/lang_files_standard.sh
+          ./tools/lang_files_standard.sh
           cd build
           zip -r simulinux-x64-nightly.zip simutrans
 
@@ -147,7 +147,10 @@ jobs:
 
       - name: distribute
         run: |
-          sh tools/distribute.sh
+          chmod -v 755 ./tools/lang_files_standard.sh
+          ./tools/lang_files_standard.sh
+          cd build
+          zip -r simulinux-x64-nightly.zip simutrans
 
       - name: Rename result
         run:  mv ./simu*.zip ./simulinux_posix-x64-nightly.zip
