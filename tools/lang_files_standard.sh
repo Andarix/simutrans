@@ -2,7 +2,7 @@
 #
 # script to fetch language files
 #
-OUTPUT_DIR=simutrans/text
+OUTPUT_DIR=build/simutrans/text
 SET_NAME=Base+texts
 SET_ID=0
 # get the translations for basis
@@ -50,4 +50,3 @@ rm -f ${OUTPUT_DIR}/ce.tab
 # Remove check test
 #rm xx.tab
 #rm -rf xx
-
