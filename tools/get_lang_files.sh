@@ -84,7 +84,7 @@ move_add()
 #
 
 OUTPUT_DIR=simutrans/text
-TEMP_DIR=lang-tmp
+TEMP_DIR=simutrans/text
 TRANSLATOR_URL=https://translator.simutrans.com
 
 # get the translations for basis
@@ -145,4 +145,3 @@ rm -f _objectlist.txt
 # Remove check test
 #rm xx.tab
 #rm -rf xx
-
