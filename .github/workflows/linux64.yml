@@ -101,7 +101,7 @@ jobs:
       - name: distribute
         run: |
           chmod -v 755 ./tools/get_lang_files.sh
-          ./tools/get_lang_files.sh
+          ./tools/get_lang_files.sh -s -simutrans/text
           cd build
           zip -r simulinux-x64-nightly.zip simutrans
 
