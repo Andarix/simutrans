@@ -149,11 +149,8 @@ jobs:
         run: |
           chmod -v 755 ./tools/lang_files_standard.sh
           ./tools/lang_files_standard.sh
-          cd build
-          zip -r simulinux-x64-nightly.zip simutrans
-
-      - name: Rename result
-        run:  mv ./simu*.zip ./simulinux_posix-x64-nightly.zip
+          cp build/simutrans/text/* simutrans/text
+          zip -r simulinux_posix-x64-nightly.zip simutrans
 
       - name: Update binaries of Nightly Release
         uses: svenstaro/upload-release-action@v2
