@@ -102,6 +102,7 @@ jobs:
         run: |
           chmod -v 755 ./tools/lang_files_standard.sh
           ./tools/lang_files_standard.sh
+          cp simutrans/text/* build/simutrans/text
           cd build
           zip -r simulinux-x64-nightly.zip simutrans
 
@@ -149,7 +150,6 @@ jobs:
         run: |
           chmod -v 755 ./tools/lang_files_standard.sh
           ./tools/lang_files_standard.sh
-          cp build/simutrans/text/* simutrans/text
           zip -r simulinux_posix-x64-nightly.zip simutrans
 
       - name: Update binaries of Nightly Release

@@ -84,7 +84,7 @@ move_add()
 #
 
 OUTPUT_DIR=simutrans/text
-TEMP_DIR=build/simutrans/text
+TEMP_DIR=simutrans/text
 TRANSLATOR_URL=https://translator.simutrans.com
 
 # get the translations for basis
