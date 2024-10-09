@@ -15,6 +15,7 @@
 #include "kanal.h"
 #include "runway.h"
 
+#include "../gebaeude.h"
 
 #include "../../ground/grund.h"
 #include "../../world/simworld.h"
@@ -366,14 +367,14 @@ bool weg_t::check_season(const bool calc_only_season_change)
 		return true;
 	}
 
-	grund_t *from = welt->lookup( get_pos() );
-	if(  from->ist_bruecke()  &&  from->obj_bei(0) == this  ) {
+	grund_t *gr = welt->lookup( get_pos() );
+	if(  gr->ist_bruecke()  &&  gr->obj_bei(0) == this  ) {
 		// first way on a bridge (bruecke_t will set the image)
 		return true;
 	}
 
 	// use snow image if above snowline and above ground
-	bool snow = (from->ist_karten_boden()  ||  !from->ist_tunnel())  &&  (get_pos().z  + from->get_weg_yoff()/TILE_HEIGHT_STEP >= welt->get_snowline()  ||  welt->get_climate( get_pos().get_2d() ) == arctic_climate);
+	bool snow = (gr->ist_karten_boden()  ||  !gr->ist_tunnel())  &&  (get_pos().z  + gr->get_weg_yoff()/TILE_HEIGHT_STEP >= welt->get_snowline()  ||  welt->get_climate( get_pos().get_2d() ) == arctic_climate);
 	bool old_snow = (flags&IS_SNOW) != 0;
 	if(  !(snow ^ old_snow)  ) {
 		// season is not changing ...
@@ -386,7 +387,7 @@ bool weg_t::check_season(const bool calc_only_season_change)
 		flags |= IS_SNOW;
 	}
 
-	slope_t::type hang = from->get_weg_hang();
+	slope_t::type hang = gr->get_weg_hang();
 	if(  hang != slope_t::flat  ) {
 		set_images( image_slope, hang, snow );
 		return true;
@@ -399,7 +400,25 @@ bool weg_t::check_season(const bool calc_only_season_change)
 		set_images(image_switch, ribi, snow, has_switched());
 	}
 	else {
+		// level track
 		set_images( image_flat, ribi, snow );
+		if(foreground_image != IMG_EMPTY  &&  ribi_t::is_straight(ribi)) {
+			// on straight level tracks may be stations or depots => no foreground then
+			if (gr->is_halt()) {
+				// no foreground in stations
+				set_foreground_image(IMG_EMPTY);
+			}
+			else {
+				// check for any building on this tile
+				for (  uint8 i = 1;  i < gr->obj_count();  i++  ) {
+					if (dynamic_cast<gebaeude_t *>(gr->obj_bei(i))) {
+						// no foreground in depots
+						set_foreground_image(IMG_EMPTY);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	return true;
@@ -471,6 +490,23 @@ void weg_t::calc_image()
 		}
 		else if (!ribi_t::is_twoway(ribi)) {
 			set_images(image_flat, ribi, snow);
+			// nide foreground in stations and depots
+			if (foreground_image != IMG_EMPTY) {
+				if (from->is_halt()) {
+					// no foreground in stations
+					set_foreground_image(IMG_EMPTY);
+				}
+				else if (ribi_t::is_single(ribi)  &&  from->obj_count() > 1) {
+					// check for any building on this tile
+					for (uint8 i = 1; i < from->obj_count(); i++) {
+						if (dynamic_cast<gebaeude_t*>(from->obj_bei(i))) {
+							// no foreground in depots
+							set_foreground_image(IMG_EMPTY);
+							break;
+						}
+					}
+				}
+			}
 		}
 		// recursion to find out of diagonal
 		else {
@@ -508,6 +544,25 @@ void weg_t::calc_image()
 					}
 				}
 			}
+
+			// level track
+			if (foreground_image != IMG_EMPTY) {
+				if (from->is_halt()) {
+					// no foreground in stations
+					set_foreground_image(IMG_EMPTY);
+				}
+				else if (ribi_t::is_straight(ribi) && from->obj_count() > 1) {
+					// check for any building on this tile
+					for (uint8 i = 1; i < from->obj_count(); i++) {
+						if (dynamic_cast<gebaeude_t*>(from->obj_bei(i))) {
+							// no foreground in depots
+							set_foreground_image(IMG_EMPTY);
+							break;
+						}
+					}
+				}
+			}
+
 		}
 	}
 	if(  image!=old_image  ) {
