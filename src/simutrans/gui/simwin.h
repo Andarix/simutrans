@@ -124,6 +124,7 @@ enum magic_numbers {
 	magic_pakinstall,
 	magic_chatframe,
 	magic_player_ranking,
+	magic_script_generator,	// only during saving
 	magic_max
 };
 
@@ -135,6 +136,9 @@ void rdwr_all_win(loadsave_t *file);
 
 // save windowsizes in settings
 void rdwr_win_settings(loadsave_t *file);
+
+// returns the client area and offset
+scr_rect win_get_max_window_area();
 
 void win_clamp_xywh_position(gui_frame_t *gui, scr_coord &pos, bool move_to_full_view);
 

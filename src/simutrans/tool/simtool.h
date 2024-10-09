@@ -10,19 +10,20 @@
 /// New OO tool system
 
 #include "../simtypes.h"
-#include "../world/simworld.h"
-#include "../tool/simmenu.h"
-#include "../obj/simobj.h"
 
+#include "../world/simworld.h"
+
+#include "../tool/simmenu.h"
+
+#include "../obj/simobj.h"
 #include "../obj/way/schiene.h"
+#include "../obj/baum.h"
+#include "../obj/groundobj.h"
 
 #include "../dataobj/environment.h"
 #include "../dataobj/translator.h"
 
 #include "../display/viewport.h"
-
-#include "../obj/baum.h"
-#include "../obj/groundobj.h"
 
 #include "../player/simplay.h"
 
@@ -684,6 +685,37 @@ public:
 };
 
 
+// saves the infrostructure of an area as a building script
+class tool_generate_script_t : public two_click_tool_t {
+public:
+	tool_generate_script_t() : two_click_tool_t(TOOL_GENERATE_SCRIPT | GENERAL_TOOL) {}
+	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("generate script"); }
+	bool is_init_keeps_game_state() const OVERRIDE { return true; }
+	bool save_script(const char *fullpath, const char *command) const;
+private:
+	char const* do_work(player_t*, koord3d const&, koord3d const&) OVERRIDE;
+	void mark_tiles(player_t*, koord3d const&, koord3d const&) OVERRIDE;
+	uint8 is_valid_pos(player_t*, koord3d const&, char const*&, koord3d const&) OVERRIDE { return 3; };
+};
+
+
+// Copies item under cursor into cursor
+class tool_pipette_t : public tool_t
+{
+public:
+	tool_pipette_t() : tool_t(TOOL_PIPETTE | GENERAL_TOOL) {}
+
+public:
+	const char *get_tooltip(const player_t *) const OVERRIDE { return translator::translate("Pipette"); }
+	const char *work(player_t *, koord3d) OVERRIDE;
+	bool is_init_keeps_game_state() const OVERRIDE { return true; }
+	bool is_work_keeps_game_state() const OVERRIDE { return true; }
+
+private:
+	const char* allow_tool_check(const obj_t* obj, const obj_desc_timelined_t* desc, const player_t* pl) const;
+};
+
+
 // internal tool: show error message at specific coordinate
 // used for scenario error messages send by server
 class tool_error_message_t : public tool_t {
@@ -1066,7 +1098,7 @@ class tool_toggle_reservation_t : public tool_t {
 public:
 	tool_toggle_reservation_t() : tool_t(TOOL_TOGGLE_RESERVATION | SIMPLE_TOOL) {}
 	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("show/hide block reservations"); }
-	bool is_selected() const OVERRIDE { return schiene_t::show_reservations; }
+	bool is_selected() const OVERRIDE;
 	bool init( player_t * ) OVERRIDE {
 		schiene_t::show_reservations ^= 1;
 		welt->set_dirty();
