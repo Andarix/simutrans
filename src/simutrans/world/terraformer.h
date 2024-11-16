@@ -116,9 +116,8 @@ private:
 	 * @see can_lower_to
 	 * @returns count of full lower operations (4 corners lowered one level)
 	 * @note Clear tile, reset water/land type, calc minimap pixel.
-	 * @SIEDEFFECT: changes the water table!
 	 */
-	int lower_to(const node_t &node,bool watertable_only);
+	int lower_to(const node_t &node);
 
 	/**
 	 * Checks if the planquadrat (tile) at coordinate (x,y)
