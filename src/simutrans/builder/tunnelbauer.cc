@@ -109,10 +109,10 @@ static bool compare_tunnels(const tunnel_desc_t* a, const tunnel_desc_t* b)
 void tunnel_builder_t::fill_menu(tool_selector_t* tool_selector, const waytype_t wtyp, sint16 /*sound_ok*/)
 {
 	// check if scenario forbids this
-	if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp)) {
+	if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp, 0)) {
 		return;
 	}
-	bool enable = welt->get_scenario()->is_tool_enabled(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp);
+	bool enable = welt->get_scenario()->is_tool_enabled(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp, 0);
 
 	const uint16 time=welt->get_timeline_year_month();
 	vector_tpl<const tunnel_desc_t*> matching(tunnel_by_name.get_count());
@@ -120,12 +120,14 @@ void tunnel_builder_t::fill_menu(tool_selector_t* tool_selector, const waytype_t
 	for(auto const& i : tunnel_by_name) {
 		tunnel_desc_t* const desc = i.value;
 		if(  desc->get_waytype()==wtyp  &&  desc->is_available(time)  ) {
-			matching.insert_ordered(desc, compare_tunnels);
+			if (welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp, desc->get_name())) {
+				matching.insert_ordered(desc, compare_tunnels);
+			}
 		}
 	}
 	// now sorted ...
 	for(tunnel_desc_t const* const i : matching) {
-		i->get_builder()->enabled = enable;
+		i->get_builder()->enabled = enable  &&  welt->get_scenario()->is_tool_enabled(welt->get_active_player(), TOOL_BUILD_TUNNEL | GENERAL_TOOL, wtyp, i->get_name());
 		tool_selector->add_tool_selector(i->get_builder());
 	}
 }
@@ -197,7 +199,7 @@ koord3d tunnel_builder_t::find_end_pos(player_t *player, koord3d pos, koord zv, 
 			return koord3d::invalid;
 		}
 
-		if (const char* err = welt->get_scenario()->is_work_allowed_here(player, TOOL_BUILD_TUNNEL|GENERAL_TOOL, wegtyp, pos)) {
+		if (const char* err = welt->get_scenario()->is_work_allowed_here(player, TOOL_BUILD_TUNNEL|GENERAL_TOOL, wegtyp, desc->get_name(), pos)) {
 			if (msg) {
 				*msg = err;
 			}
@@ -619,13 +621,19 @@ void tunnel_builder_t::build_tunnel_portal(player_t *player, koord3d end, koord 
 
 	// Auto-connect to a way outside the new tunnel mouth
 	grund_t *ground_outside = welt->lookup(end-zv);
-	if( !ground_outside ) {
-		ground_outside = welt->lookup(end-zv+koord3d(0,0,-1));
-		if(  ground_outside  &&  ground_outside->get_grund_hang() != tunnel->get_grund_hang()  ) {
-			// Not the correct slope.
-			ground_outside = NULL;
+	if (!ground_outside) {
+		ground_outside = welt->lookup_kartenboden(end.get_2d() - zv);
+		if (ground_outside) {
+			if (!ground_outside->hat_weg(desc->get_waytype())
+				|| ground_outside->get_weg_hang() != slope_t::flat
+				|| (end.z - ground_outside->get_pos().z) != slope_t::max_diff(ground_outside->get_grund_hang())
+				) {
+				// Not the correct slope/height
+				ground_outside = NULL;
+			}
 		}
 	}
+	// check if we can connect
 	if( ground_outside) {
 		weg_t *way_outside = ground_outside->get_weg( desc->get_waytype() );
 		if( way_outside ) {
