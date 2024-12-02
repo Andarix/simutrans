@@ -84,8 +84,14 @@ move_add()
 #
 
 OUTPUT_DIR=simutrans/text
+<<<<<<< HEAD
 TEMP_DIR=simutrans/text
 TRANSLATOR_URL=https://translator.simutrans.com
+=======
+TEMP_DIR=lang-tmp
+#TRANSLATOR_URL=https://translator.simutrans.com
+TRANSLATOR_URL=https://makie.de/translator
+>>>>>>> refs/remotes/origin/trunk
 
 # get the translations for basis
 # The first file is longer, but only because it contains SQL error messages
