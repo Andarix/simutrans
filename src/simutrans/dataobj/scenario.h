@@ -82,20 +82,23 @@ private:
 	 */
 	struct forbidden_t {
 
+		static const uint32 EMPTY_HASH=0;
+
 		static uint32 string_to_hash(const char* p)
 		{
 			const uint32 MULTIPLIER = 37;
-			uint32 hash = 0;
+			uint32 hash = EMPTY_HASH;
 			if (p) {
 				for (; *p; p++)
 					hash = MULTIPLIER * hash + (unsigned char)*p;
 			}
-			return hash;
+			return hash & 0x7FFFFFFu; // since we do singed compare afterwards
 		}
 
 		enum forbid_type {
-			forbid_tool      = 1,
-			forbid_tool_rect = 2
+			forbid_tool			= 1,
+			allow_tool_rect 	= 2,
+			forbid_tool_rect	= 3
 		};
 
 		forbid_type type;
@@ -111,8 +114,8 @@ private:
 		plainstring error;
 
 		/// constructor: forbid tool/etc for a certain player
-		forbidden_t(forbid_type type_=forbid_tool, uint16 toolnr_=0, sint16 waytype_=invalid_wt, const char *param_=NULL) :
-			type(type_), toolnr(toolnr_), waytype(waytype_),
+		forbidden_t(forbid_type type_=forbid_tool, uint16 toolnr_=0, sint16 waytype_= ignore_wt, const char *param_=NULL) :
+			type(type_), toolnr(toolnr_), waytype(waytype_ < 0 ? ignore_wt : waytype_),
 			pos_nw(koord::invalid), pos_se(koord::invalid), hmin(-128), hmax(127), error()
 		{
 			parameter_hash = string_to_hash(param_);
@@ -120,7 +123,7 @@ private:
 
 		/// constructor: forbid tool for a certain player at certain locations (and heights)
 		forbidden_t(uint16 toolnr_, sint16 waytype_, const char *param_, koord nw, koord se, sint8 hmin_=-128, sint8 hmax_=127) :
-			type(forbid_tool_rect), toolnr(toolnr_), waytype(waytype_), pos_nw(nw), pos_se(se), hmin(hmin_), hmax(hmax_), error()
+			type(forbid_tool_rect), toolnr(toolnr_), waytype(waytype_ < 0 ? ignore_wt : waytype_), pos_nw(nw), pos_se(se), hmin(hmin_), hmax(hmax_), error()
 		{
 			parameter_hash = string_to_hash(param_);
 		}
@@ -129,7 +132,12 @@ private:
 		forbidden_t(const forbidden_t&);
 
 		/**
-		 * @returns if this < other, compares: type, playernr, tool, wt
+		 * @returns difference
+		 */
+		sint32 diff(const forbidden_t&) const;
+
+		/**
+		 * @returns if this < other, compares: type, playernr, tool, wt, parameter
 		 * DIRTY: (a <= b)  &&  (b <= a)  DOES NOT imply  a == b
 		 */
 		bool operator <(const forbidden_t &) const;
@@ -138,7 +146,7 @@ private:
 
 		static bool compare(const forbidden_t *a, const forbidden_t *b)
 		{
-			return *a < *b;
+			return a->diff(*b) < 0;
 		}
 
 		/**
@@ -201,9 +209,10 @@ private:
 	 * Puts/removes new record into/from forbidden_tools list, checks for identical entries.
 	 * Only call this method from call_forbid_tool(forbidden_t *,bool)
 	 * @param test must be pointer to allocated memory, will be invalid after call
-	 * @param forbid if true puts, if false removes into/from list
+	 * @param add_rule if true add rule, if false removes rule from list
+	 * @returns vule 1 if added rule, and 2 deleted previous rule, return 0 on error
 	 */
-	void intern_forbid(forbidden_t *test, uint player_nr, bool forbid);
+	void intern_forbid(forbidden_t *test, uint player_nr, bool add_rule);
 
 	/**
 	 * Helper function: works on forbidden_tools directly (if not in network-mode)
@@ -213,6 +222,9 @@ private:
 	 */
 	void call_forbid_tool(forbidden_t *test, uint player_nr, bool forbid);
 	/// @}
+
+		// internal function, returns the idx of the first matching rule of 0xFFFFFF
+	sint32 matching_rule(const uint8 player, const forbidden_t& test, koord3d pos) const;
 
 	/// bit set if player has won / lost
 	uint16 won;
@@ -358,7 +370,7 @@ public:
 	 * @ingroup squirrel-api
 	 * @see forbid_tool
 	 */
-	void allow_tool(uint8 player_nr, uint16 tool_id);
+	void clear_forbid_tool(uint8 player_nr, uint16 tool_id);
 
 	/**
 	 * Forbid tool with certain waytype
@@ -370,12 +382,6 @@ public:
 	 * @param wt waytype
 	 */
 	void forbid_way_tool(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param);
-
-	/**
-	 * @ingroup squirrel-api
-	 * @see forbid_way_tool
-	 */
-	void allow_way_tool(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param);
 
 	/**
 	 * Forbid tool with certain waytype within rectangular region on the map
@@ -390,12 +396,6 @@ public:
 	 * @param err error message presented to user when trying to apply this tool
 	 */
 	void forbid_way_tool_rect(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param, koord pos_nw, koord pos_se, plainstring err);
-
-	/**
-	 * @ingroup squirrel-api
-	 * @see forbid_way_tool_rect
-	 */
-	void allow_way_tool_rect(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param, koord pos_nw, koord pos_se);
 
 	/**
 	 * Forbid tool with certain waytype within cubic region on the map.
@@ -413,15 +413,49 @@ public:
 
 	/**
 	 * @ingroup squirrel-api
-	 * @see forbid_way_tool_cube
+	 * @see forbid_way_tool
 	 */
-	void allow_way_tool_cube(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param, koord3d pos_nw, koord3d pos_se);
+	void clear_forbid_way_tool(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param);
+
+	void clear_way_tool_rect(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param, koord pos_nw_0, koord pos_se_0, bool allow);
+
+	/**
+	 * clear rule with certain waytype within cubic region on the map.
+	 * @ingroup squirrel-api
+	 *
+	 * @param player_nr number of player this rule applies to,
+	 *                  if this is set to MAX_PLAYER_COUNT then this acts for all players except public player
+	 * @param tool_id id of tool
+	 * @param wt waytype
+	 * @param pos_nw coordinate of north-western corner of cube
+	 * @param pos_se coordinate of south-eastern corner of cube
+	 * @param allow clear and allow rule (true) or clear a forbid rule (false)
+	 */
+	void clear_way_tool_cube(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param, koord3d pos_nw_0, koord3d pos_se_0, bool allow);
 
 	/**
 	 * Clears all rules.
 	 * @ingroup squirrel-api
 	 */
 	void clear_rules();
+
+	/**
+	 * Clears all rules for a player selec
+	 * @ingroup squirrel-api
+	 */
+	void clear_player_rules(uint8 player_nr);
+
+	/**
+	 * @ingroup squirrel-api
+	 * @see forbid_way_tool_rect
+	 */
+	void allow_way_tool_rect(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param, koord pos_nw, koord pos_se);
+
+	/**
+	 * @ingroup squirrel-api
+	 * @see forbid_way_tool_cube
+	 */
+	void allow_way_tool_cube(uint8 player_nr, uint16 tool_id, waytype_t wt, const char* param, koord3d pos_nw, koord3d pos_se);
 
 	/**
 	 * Toolbars/active tools need an update due to changed rules; update is done in step().
@@ -434,7 +468,7 @@ public:
 	 * Called for instance in karte_t::local_set_tool to change active tool or when filling toolbars.
 	 * @return true if player can use this tool.
 	 */
-	bool is_tool_allowed(const player_t* player, uint16 tool_id, sint16 wt = invalid_wt, const char *param=0);
+	bool is_tool_allowed(const player_t* player, uint16 tool_id, sint16 wt = ignore_wt, const char *param=0);
 
 	/**
 	 * Checks if player can use the tool at this position.
