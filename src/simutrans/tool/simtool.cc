@@ -1761,9 +1761,31 @@ const char *tool_add_city_t::work( player_t *player, koord3d pos )
 	}
 
 	// always start with 1/10 citizens
-	const int citizens = (int)(welt->get_settings().get_mean_citizen_count() * 0.09);
+	int citizens = (int)(welt->get_settings().get_mean_citizen_count() * 0.09);
+	const building_desc_t* desc = NULL;
+	sint16 rotation = -1;
+	if (!strempty(default_param)) {
+		char* building = strdup(default_param);
+		const building_tile_desc_t* tdsc = NULL;
 
-	stadt_t *stadt = welt->create_city(k, citizens);
+		citizens = atoi(building);
+		char* p = strrchr(building, ',');
+		if (p) {
+			p++;
+			char* desc_name = p;
+			while (*p  &&  *p!=',') {
+				p++;
+			}
+			if (*p  &&  isdigit(p[1])) {
+				rotation = atoi(p+1);
+			}
+			*p = 0;
+			desc = hausbauer_t::get_desc(desc_name);
+		}
+		free(building);
+	}
+
+	stadt_t *stadt = welt->create_city(k, citizens, desc, rotation);
 	if (!stadt) {
 		return NOTICE_UNSUITABLE_GROUND;
 	}
@@ -4572,9 +4594,9 @@ DBG_MESSAGE("tool_station_aux()", "building %s on square %d,%d for waytype %x", 
 			}
 
 			switch(ribi) {
-				//case ribi_t::south:layout = 0;  break;
-				case ribi_t::east:   layout = 1;    break;
-				case ribi_t::north:  layout = 2;    break;
+				case ribi_t::south: layout = 0;  break;
+				case ribi_t::east:  layout = 1;    break;
+				case ribi_t::north: layout = 2;    break;
 				case ribi_t::west:  layout = 3;    break;
 			}
 		}
@@ -4628,6 +4650,7 @@ DBG_MESSAGE("tool_station_aux()", "building %s on square %d,%d for waytype %x", 
 			// now for the details
 			ribi_t::ribi senkrecht = ~ribi_t::doubles(ribi);
 			ribi_t::ribi waagerecht = ribi_t::doubles(ribi);
+			layout = 0;
 			if(next_own!=ribi_t::none) {
 				// oriented buildings here
 				if(ribi_t::is_single(ribi & next_own)) {
@@ -4656,6 +4679,7 @@ DBG_MESSAGE("tool_station_aux()", "building %s on square %d,%d for waytype %x", 
 					}
 				}
 			}
+			assert(layout >= 0);
 			// avoid orientation on 8 tiled buildings
 			layout &= (desc->get_all_layouts()-1);
 		}
