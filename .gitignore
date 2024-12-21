@@ -69,4 +69,9 @@ Simutrans_SDL2.lib
 *.kdev4
 vcpkg_installed/
 UpgradeLog.htm
+<<<<<<< HEAD
 /libs/zstd-1.4.4/contrib/VS2005/zstdlib/Win32/Release
+=======
+src/linux/com.simutrans.Simutrans.metainfo.xml
+src/android/AndroidAppSettings.cfg
+>>>>>>> refs/remotes/origin/trunk

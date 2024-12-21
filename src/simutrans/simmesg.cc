@@ -394,7 +394,7 @@ void chat_message_t::convert_old_message(const char* text, const char* name, sin
 void chat_message_t::add_chat_message(const char* text, sint8 channel, sint8 sender_nr, plainstring sender_nick, plainstring recipient, koord pos, uint8 flags)
 {
 	cbuffer_t buf;  // Output which will be printed to ticker
-	player_t* player = world()->get_player(sender_nr);
+
 	// send this message to a ticker if public channel message
 	if (channel >= -1) { // and not mine
 		if (sender_nr >= 0 && sender_nr != PLAYER_UNOWNED) {
@@ -418,7 +418,8 @@ void chat_message_t::add_chat_message(const char* text, sint8 channel, sint8 sen
 	else if (channel == -2) {
 		// text contains the current nicks, separated by TAB
 		clients.clear();
-		char* nick = strtok((char*)text, "\t");
+		std::string temp = text; // strtok alters the string, so make a copy to be safe
+		char* nick = strtok(const_cast<char *>(temp.data()), "\t");
 		while (nick) {
 			clients.append(nick);
 			nick = strtok(NULL, "\t");
