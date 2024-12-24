@@ -175,6 +175,11 @@ class rail_connector_t extends manager_t
             //::debug.pause()
             if ( build_status != true ) {
               calc_route = test_route(our_player, c_end, c_start, planned_way)
+
+              if ( calc_route == "No route" ) {
+                return r_t(RT_TOTAL_FAIL)
+              }
+
               build_status = check_build_station(calc_route)
               if ( build_status == true ) {
                 local c = c_start
@@ -351,8 +356,9 @@ class rail_connector_t extends manager_t
             combined_halt = true
           }
 
+          //
           // check place and build station to c_start
-          s_src = check_station(pl, c_start, count, wt_rail, planned_station, 1, combined_halt)
+          s_src = check_station(pl, c_start, c_route, count, wt_rail, planned_station, 1, combined_halt)
           if ( s_src == false ) {
             print("Failed to build station at " + coord_to_string(c_start))
             if ( print_message_box > 0 ) {
@@ -403,7 +409,7 @@ class rail_connector_t extends manager_t
 
 
           // check place and build station to c_end
-          s_dest = check_station(pl, c_end, count, wt_rail, station_select, 1, combined_halt)
+          s_dest = check_station(pl, c_end, c_route, count, wt_rail, station_select, 1, combined_halt)
           if ( s_dest == false ) {
             print("Failed to build station at " + coord_to_string(c_end))
             if ( print_message_box > 0 ) {
@@ -499,6 +505,7 @@ class rail_connector_t extends manager_t
         }
       case 6: // create schedule
         {
+          //gui.add_message_at(pl, "c_start " + coord_to_string(c_start) +  " - c_end " + coord_to_string(c_end), world.get_time())
           local sched = schedule_x(wt_rail, [])
           sched.entries.append( schedule_entry_x(c_start, 100, 0) );
           sched.entries.append( schedule_entry_x(c_end, 0, 0) );
@@ -719,7 +726,7 @@ class rail_connector_t extends manager_t
             //if ( err != null ) { gui.add_message_at(pl, "check_station build_way " + err, t_start[0]) }
             //::debug.pause()
     if ( err == null ) {
-      err = check_station(pl, t_start[0], st_lenght, wt_rail, planned_station, 0)
+      err = check_station(pl, t_start[0], routes, st_lenght, wt_rail, planned_station, 0)
       if ( err == false ) {
         gui.add_message_at(pl, "check_station " + err, t_start[0])
       }
@@ -739,7 +746,7 @@ class rail_connector_t extends manager_t
                 //local tool = command_x(tool_remove_way)
 
         if ( err == null ) {
-          err = check_station(pl, t_end[0], st_lenght, wt_rail, planned_station, 0)
+          err = check_station(pl, t_end[0], routes, st_lenght, wt_rail, planned_station, 0)
           if ( err == true ) {
             // station end ok
             // remove track -> error by build
@@ -861,7 +868,7 @@ class depot_pathfinder extends astar_builder
 
       for (local i = 1; i<route.len(); i++) {
         local err = command_x.build_way(our_player, route[i-1], route[i], way, false )
-        if (debug) gui.add_message_at(our_player, "command_x.build_way rail  search_route :" + err, world.get_time())
+        if (debug) gui.add_message_at(our_player, "command_x.build_way rail  search_route : " + err, world.get_time())
         if (err) {
           gui.add_message_at(our_player, "Failed to build rail from  " + coord_to_string(route[i-1]) + " to " + coord_to_string(route[i]) +"\n" + err, route[i])
           return { err =  err }
