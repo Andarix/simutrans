@@ -74,10 +74,10 @@ function hm_get_bridge_desc(desc_name, wt) {
   return obj
 }
 
-function hm_get_sign_desc(desc_name, wt) {
+function hm_get_sign_desc(desc_name, wt, sigtype) {
   local obj = null
 
-  if ( wt == null ) {
+  if ( wt == null || sigtype == null) {
     // not set waytype
     // object not found, break script
     foreach(wt in hm_all_waytypes) {
@@ -89,7 +89,7 @@ function hm_get_sign_desc(desc_name, wt) {
       }
     }
   } else {
-    // set waytype
+    // set waytype and signal type
     // object not available then replace
     local list = sign_desc_x.get_available_signs(wt)
     foreach (s in list) {
@@ -98,7 +98,45 @@ function hm_get_sign_desc(desc_name, wt) {
         break
       }
       if ( obj == null ) {
-        obj = s
+        local found = false
+        switch ( sigtype ) {
+          case 1 :
+            found = s.is_one_way()
+            break
+          case 2 :
+            found = s.is_choose_sign()
+            break
+          case 4 :
+            found = s.is_private_way()
+            break
+          case 8 :
+            found = s.is_signal()
+            break
+          case 10 : // signal and choose
+            found = s.is_choose_sign()
+            break
+          case 16 :
+            found = s.is_pre_signal()
+            break
+          case 512 :
+            found = s.is_traffic_light()
+            break
+          case 64 :
+            found = s.is_longblock_signal()
+            break
+          case 128 :
+            found = s.is_end_choose_signal()
+            break
+          case 256 :
+            found = s.is_priority_signal()
+            break
+          default :
+            // does not know how to handle that combination (like minimum speed and oneway)
+        }
+
+        if ( found ) {
+          obj = s
+        }
       }
     }
 
@@ -167,4 +205,3 @@ function hm_get_building_desc(desc_name, wt, building_type) {
   }
   return obj
 }
-
