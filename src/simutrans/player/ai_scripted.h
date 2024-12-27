@@ -12,6 +12,7 @@
 
 class script_vm_t;
 
+/// Squirrel Script AI
 class ai_scripted_t : public ai_t
 {
 	/// name of ai, files are searched in ai/ai_name/...
@@ -50,6 +51,8 @@ public:
 	bool has_script() const { return script; }
 
 	uint8 get_ai_id() const OVERRIDE { return AI_SCRIPTED; }
+
+	const char* get_ai_name() const { return ai_name; }
 
 	void step() OVERRIDE;
 
