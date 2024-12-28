@@ -96,7 +96,7 @@ TRANSLATOR_URL=https://makie.de/translator
 # Use curl if available, else use wget
 curl -q -h > /dev/null
 if [ $? -eq 0 ]; then
-    curl -q -L https://simutrans-germany.com/translator_page/base_text/download.php > /dev/null || {
+    curl -q -L -d https://simutrans-germany.com/translator_page/base_text/download.php > /dev/null || {
       echo "Error: generating file language_pack-Base+texts.zip failed (curl returned $?)" >&2;
       exit 3;
     }
