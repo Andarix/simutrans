@@ -96,11 +96,15 @@ TRANSLATOR_URL=https://makie.de/translator
 # Use curl if available, else use wget
 curl -q -h > /dev/null
 if [ $? -eq 0 ]; then
-    curl -q -L -d https://simutrans-germany.com/translator_page/base_text/download.php > /dev/null || {
+    if ![ curl --head --silent --fail $TRANSLATOR_URL 2> /dev/null ]; then
+        TRANSLATOR_URL=https://translator.simutrans.com
+    fi
+    echo "Using translator at $TRANSLATOR_URL"
+    curl -q -L -d "version=0&choice=all&submit=Export%21" $TRANSLATOR_URL/script/main.php?page=wrap > /dev/null || {
       echo "Error: generating file language_pack-Base+texts.zip failed (curl returned $?)" >&2;
       exit 3;
     }
-    curl -q -L https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
+    curl -q -L $TRANSLATOR_URL/data/tab/language_pack-Base+texts.zip > language_pack-Base+texts.zip || {
       echo "Error: download of file language_pack-Base+texts.zip failed (curl returned $?)" >&2
       rm -f "language_pack-Base+texts.zip"
       exit 4
@@ -108,11 +112,15 @@ if [ $? -eq 0 ]; then
 else
     wget -q --help > /dev/null
     if [ $? -eq 0 ]; then
-        wget -q --delete-after https://simutrans-germany.com/translator_page/base_text/download.php || {
+        if ![ wget -q --method=HEAD $TRANSLATOR_URL 2> /dev/null ]; then
+            TRANSLATOR_URL=https://translator.simutrans.com
+        fi
+        echo "Using translator at $TRANSLATOR_URL"
+        wget -q --post-data "version=0&choice=all&submit=Export!"  --delete-after $TRANSLATOR_URL/script/main.php?page=wrap || {
           echo "Error: generating file language_pack-Base+texts.zip failed (wget returned $?)" >&2;
           exit 3;
         }
-        wget -q -N https://simutrans-germany.com/translator_page/base_text/data/language_pack-Base+texts.zip || {
+        wget -q -N $TRANSLATOR_URL/data/tab/language_pack-Base+texts.zip || {
           echo "Error: download of file language_pack-Base+texts.zip failed (wget returned $?)" >&2
           rm -f "language_pack-Base+texts.zip"
           exit 4
@@ -146,3 +154,32 @@ rm -f _objectlist.txt
 # Remove check test
 #rm xx.tab
 #rm -rf xx
+
+# user credits
+mv _translate_users.txt ../$OUTPUT_DIR/translate_users.txt
+
+# only copy changed texts
+move_if_differ_add "*.tab" "../$OUTPUT_DIR/"
+
+#if [[ $UPDATE_SVN -eq 1 ]]; then
+#  svn ps svn:eol-style native ../$OUTPUT_DIR/*.tab
+#fi
+
+# remove the unchanged files (apart from dates and translators)
+rm *.tab
+rm *.tab.tmp
+
+# now move the help files
+for f in *; do
+  if [ -z "$(ls -A $f)" ]; then
+   echo "Remove empty help files for $f"
+  else
+    cd $f
+    move_add "*.txt" "../../$OUTPUT_DIR/$f"
+    cd ..
+    rm -rf $f
+  fi
+done
+
+cd ..
+rm -rf  $TEMP_DIR

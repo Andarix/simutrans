@@ -47,8 +47,8 @@ jobs:
         popd
     - name: Install language files
       run: |
-        chmod +755 tools/lang_files_standard.sh
-        tools/lang_files_standard.sh
+        chmod +755 tools/get_lang_files.sh
+        tools/get_lang_files.sh
     - name: Link tests as scenario
       run: |
         mkdir -p ~/simutrans/addons/pak/scenario
