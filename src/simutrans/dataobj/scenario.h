@@ -14,6 +14,7 @@
 #include "../script/dynamic_string.h"
 #include "../dataobj/ribi.h"
 #include "../convoihandle.h"
+#include "../tool/simmenu.h"
 
 class loadsave_t;
 class stadt_t;
@@ -89,8 +90,10 @@ private:
 			const uint32 MULTIPLIER = 37;
 			uint32 hash = EMPTY_HASH;
 			if (p) {
-				for (; *p; p++)
+				const char *start = p;
+				for (; *p && (p-start) < 128; p++) {
 					hash = MULTIPLIER * hash + (unsigned char)*p;
+				}
 			}
 			return hash & 0x7FFFFFFu; // since we do singed compare afterwards
 		}
@@ -118,6 +121,11 @@ private:
 			type(type_), toolnr(toolnr_), waytype(waytype_ < 0 ? (sint16)ignore_wt : waytype_),
 			pos_nw(koord::invalid), pos_se(koord::invalid), hmin(-128), hmax(127), error()
 		{
+			if (toolnr == (GENERAL_TOOL|TOOL_SCHEDULE_INS)  ||  toolnr == (GENERAL_TOOL | TOOL_SCHEDULE_ADD)) {
+				// paramter is pointer to binary => not checking
+				parameter_hash = 0;
+				return;
+			}
 			parameter_hash = string_to_hash(param_);
 		}
 
