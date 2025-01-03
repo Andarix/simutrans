@@ -23,14 +23,10 @@ jobs:
       run: echo "revision=$revision" >> $GITHUB_OUTPUT
 
   build:
-<<<<<<< HEAD
 
     runs-on: ubuntu-latest
     needs: [set-revision]
     permissions: write-all
-=======
-    runs-on: ubuntu-24.04
->>>>>>> refs/remotes/origin/trunk
 
     steps:
     - uses: actions/checkout@v4
