@@ -71,8 +71,9 @@ scenario_info_t::scenario_info_t() :
 	}
 
 	set_resizemode(diagonal_resize);
-	reset_min_windowsize();
-	set_windowsize(scr_size(500, D_TITLEBAR_HEIGHT + D_TAB_HEADER_HEIGHT+300));
+	scr_size ms(min(display_get_width() / 2, 500), min(display_get_height() / 2, 300));
+	set_min_windowsize(ms);
+	set_windowsize(ms);
 }
 
 
@@ -84,10 +85,18 @@ void scenario_info_t::update_scenario_texts(bool init)
 	scenario_t *scen = welt->get_scenario();
 	scr_size border_size = get_client_windowsize() - info.get_pos() - scr_size(D_MARGIN_RIGHT + D_SCROLLBAR_WIDTH, D_MARGIN_BOTTOM + D_SCROLLBAR_HEIGHT);
 	if (init) {
+		hash_goal = 0;
 		scen->update_scenario_texts();
 	}
-	init |= update_dynamic_texts( info, scen->info_text, border_size, init);
-	init |= update_dynamic_texts( goal, scen->goal_text, border_size, init);
+	if (scen->is_local()) {
+		scen->update_scenario_texts();
+	}
+	uint32 new_hash_goal = string_to_hash(scen->goal_text, 256);
+	int x = goal.get_scroll_x();
+	int y = goal.get_scroll_y();
+
+	init |= update_dynamic_texts(info, scen->info_text, border_size, init);
+	init |= update_dynamic_texts( goal, scen->goal_text, border_size, init); // always force update or scenario screen will lag
 	init |= update_dynamic_texts( rule, scen->rule_text, border_size, init);
 	init |= update_dynamic_texts( about, scen->about_text, border_size, init);
 	init |= update_dynamic_texts( result, scen->result_text, border_size, init);
@@ -95,9 +104,14 @@ void scenario_info_t::update_scenario_texts(bool init)
 
 	const char *d = scen->debug_text;
 	debug_msg.set_visible(d  &&  *d);
-	if (init) {
+	if (init  ||  new_hash_goal != hash_goal) {
 		set_windowsize(get_windowsize());
 	}
+	if (new_hash_goal == hash_goal) {
+		// first 256 bytes the same => keep scroll position
+		goal.set_scroll_position(x, y);
+	}
+	hash_goal = new_hash_goal;
 }
 
 void scenario_info_t::draw(scr_coord pos, scr_size size)
