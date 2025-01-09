@@ -53,7 +53,7 @@ ifdef MULTI_THREAD
       ifneq ($(OSTYPE),haiku)
         # mingw has already added pthread statically
         ifneq ($(OSTYPE),mingw)
-    LDFLAGS += -lpthread
+          LDFLAGS += -lpthread
         endif
       endif
     endif
@@ -189,16 +189,18 @@ ifneq ($(BACKEND),posix)
       LDFLAGS += -lpng -lharfbuzz
     endif
   endif
-  
+
   ifeq ($(OSTYPE),mingw)
     LDFLAGS += -lfreetype
   endif
 
-  ifeq ($(shell expr $(USE_FONTCONFIG) \>= 1), 1)
-    sdfsfsd := $(shell echo error)
-    CFLAGS  += -DUSE_FONTCONFIG
-    CFLAGS  += $(shell $(FONTCONFIG_CONFIG) --cflags)
-    LDFLAGS += $(shell $(FONTCONFIG_CONFIG) --libs)
+  ifdef USE_FONTCONFIG
+    ifeq ($(shell expr $(USE_FONTCONFIG) \>= 1), 1)
+      sdfsfsd := $(shell echo error)
+      CFLAGS  += -DUSE_FONTCONFIG
+      CFLAGS  += $(shell $(FONTCONFIG_CONFIG) --cflags)
+      LDFLAGS += $(shell $(FONTCONFIG_CONFIG) --libs)
+    endif
   endif
 endif
 
@@ -776,21 +778,21 @@ endif
 all: simutrans makeobj nettool
 
 makeobj:
-	@echo "Building makeobj"
-	$(Q)$(MAKE) -e -C src/makeobj FLAGS="$(FLAGS)"
+  @echo "Building makeobj"
+  $(Q)$(MAKE) -e -C src/makeobj FLAGS="$(FLAGS)"
 
 nettool:
-	@echo "Building nettool"
-	$(Q)$(MAKE) -e -C src/nettool FLAGS="$(FLAGS)"
+  @echo "Building nettool"
+  $(Q)$(MAKE) -e -C src/nettool FLAGS="$(FLAGS)"
 
 test: simutrans
-	$(PROGDIR)/$(PROG) -set_basedir $(shell pwd)/simutrans -objects pak -scenario automated-tests -debug 2 -lang en -fps 100
+  $(PROGDIR)/$(PROG) -set_basedir $(shell pwd)/simutrans -objects pak -scenario automated-tests -debug 2 -lang en -fps 100
 
 clean:
-	@echo "===> Cleaning up"
-	$(Q)rm -f $(OBJS)
-	$(Q)rm -f $(DEPS)
-	$(Q)rm -f $(PROGDIR)/$(PROG)
-	$(Q)rm -fr $(PROGDIR)/$(PROG).app
-	$(Q)$(MAKE) -e -C src/makeobj clean
-	$(Q)$(MAKE) -e -C src/nettool clean
+  @echo "===> Cleaning up"
+  $(Q)rm -f $(OBJS)
+  $(Q)rm -f $(DEPS)
+  $(Q)rm -f $(PROGDIR)/$(PROG)
+  $(Q)rm -fr $(PROGDIR)/$(PROG).app
+  $(Q)$(MAKE) -e -C src/makeobj clean
+  $(Q)$(MAKE) -e -C src/nettool clean
