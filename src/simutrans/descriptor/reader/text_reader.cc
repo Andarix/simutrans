@@ -22,7 +22,7 @@ obj_desc_t *text_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		return NULL;
 	}
 
-//	DBG_DEBUG("text_reader_t::read_node()", "%s",desc->get_text() );
+//	PAKSET_INFO("text_reader_t::read_node()", "text=%s", desc->get_text());
 
 	return desc;
 }

@@ -6,8 +6,10 @@
 #include "../simdebug.h"
 
 #include "../world/simworld.h"
+#include "../obj/way/weg.h"
 
 #include "building_desc.h"
+#include "intro_dates.h"
 #include "../network/checksum.h"
 
 
@@ -128,6 +130,77 @@ uint8 building_desc_t::adjust_layout(uint8 layout) const
 void building_desc_t::calc_checksum(checksum_t *chk) const
 {
 	obj_desc_timelined_t::calc_checksum(chk);
+#if MSG_LEVEL>0
+	switch(type) {
+		case city_res:     PAKSET_INFO("type=","res"); break;
+		case city_com:     PAKSET_INFO("type=","com"); break;
+		case city_ind:     PAKSET_INFO("type=","ind"); break;
+		case attraction_land:
+		case attraction_city:
+		                   PAKSET_INFO("type=","cur"); break;
+		case townhall:     PAKSET_INFO("type=","tow"); break;
+		case monument:     PAKSET_INFO("type=","mon"); break;
+		case headquarters: PAKSET_INFO("type=","hq"); break;
+		case dock:         PAKSET_INFO("type=","harbour"); break;
+		case flat_dock:    PAKSET_INFO("type=","dock"); break;
+		case factory:      break;
+		case generic_stop: PAKSET_INFO("type=","stop"); break;
+		case generic_extension: PAKSET_INFO("type=","extension"); break;
+		case depot:        PAKSET_INFO("type=","depot"); break;
+		case others:       PAKSET_INFO("type=","any"); break;
+		default:
+			break;
+	}
+	// extra_data and level
+	switch(type) {
+		case city_res:
+		case city_com:
+		case city_ind:
+			if(extra_data) PAKSET_INFO("clusters=","%d",extra_data);
+		case attraction_land:
+		case factory:
+			if(preservation_year_month!=DEFAULT_RETIRE_DATE*12) {
+				PAKSET_INFO("preservation_year=","%d",preservation_year_month/12);
+				if(preservation_year_month%12) PAKSET_INFO("preservation_month=","%d",(preservation_year_month%12)+1);
+			}
+			//PAKSET_INFO("level=","%d",level);
+			break;
+		case attraction_city:
+		case townhall:
+			PAKSET_INFO("passengers=","%d",level);
+			PAKSET_INFO("build_time=","%d",extra_data);
+			break;
+		case monument:
+			PAKSET_INFO("passengers=","%d",level);
+			break;
+		case headquarters:
+			PAKSET_INFO("passengers=","%d",level);
+			PAKSET_INFO("hq_level=","%d",extra_data);
+			break;
+		case dock:
+		case flat_dock:
+		case generic_stop:
+		case generic_extension:
+			PAKSET_INFO("capacity=","%d",capacity);
+			if(enables&1) PAKSET_INFO("enables_pax=","1");
+			if(enables&2) PAKSET_INFO("enables_post=","1");
+			if(enables&4) PAKSET_INFO("enables_ware=","1");
+			if(allow_underground) PAKSET_INFO("allow_underground=","1");
+		case depot:
+			PAKSET_INFO("waytype=","%s",weg_t::waytype_to_string((waytype_t)extra_data));
+			break;
+		case others:
+		default:
+			break;
+	}
+	if(distribution_weight!=100  &&  type!=factory) PAKSET_INFO("chance=","%d",distribution_weight);
+	if(animation_time!=300) PAKSET_INFO("animation_time=","%d",animation_time);
+	if(size.x*size.y*layouts>1) PAKSET_INFO("dims=","%d,%d,%d",size.x,size.y,layouts);
+	if(flags&FLAG_NO_INFO) PAKSET_INFO("noinfo=","1");
+	if(flags&FLAG_NO_PIT) PAKSET_INFO("noconstruction=","1");
+	if(flags&FLAG_NEED_GROUND) PAKSET_INFO("needs_ground=","1");
+	// climates are missing ...
+#endif
 	chk->input((uint8)type);
 	chk->input(animation_time);
 	chk->input(extra_data);

@@ -19,29 +19,74 @@
 
 #ifdef MAKEOBJ
 //debuglevel is global variable
-#define dr_fopen fopen
+#  define dr_fopen fopen
 #else
-#ifdef NETTOOL
-#define debuglevel (0)
-#define dr_fopen fopen
+#  ifdef NETTOOL
+#    define debuglevel (0)
+#    define dr_fopen fopen
+#  else
+#    define debuglevel (env_t::verbose_debug)
 
-#else
-#define debuglevel (env_t::verbose_debug)
-
-// for display ...
-#include "../gui/messagebox.h"
-#include "../display/simgraph.h"
-#include "../gui/simwin.h"
-
-#include "../dataobj/environment.h"
-#endif
+// for display
+#    include "../gui/messagebox.h"
+#    include "../display/simgraph.h"
+#    include "../gui/simwin.h"
+#    include "../dataobj/environment.h"
+#  endif
 #endif
 
 #ifdef __ANDROID__
-#include <android/log.h>
-#include "cbuffer.h"
-#define  LOG_TAG    "com.simutrans-germany/simutrans"
+#    include <android/log.h>
+#    include "cbuffer.h"
+#    define  LOG_TAG    "com.simutrans-germany/simutrans"
 #endif
+
+/**
+ * writes a message into the log.
+ */
+void log_t::pakset(const char* who, const char* format, ...)
+{
+// never spam the Android buffer
+#if !defined(__ANDROID__) && !defined (MAKEOBJ) && !defined(NETTOOL)
+	if (env_t::pakset_debug) {
+		va_list argptr;
+		va_start(argptr, format);
+
+		if (log) {                             /* only log when a log */
+			fprintf(log, "%s", who); /* is already open */
+			vfprintf(log, format, argptr);
+			fprintf(log, "\n");
+
+			if (force_flush) {
+				fflush(log);
+			}
+		}
+		va_end(argptr);
+
+		va_start(argptr, format);
+		if (tee) {                             /* only log when a log */
+			fprintf(tee, "%s", who); /* is already open */
+			vfprintf(tee, format, argptr);
+			fprintf(tee, "\n");
+		}
+		va_end(argptr);
+
+#ifdef SYSLOG
+		va_start(argptr, format);
+		if (syslog) {
+			// Replace with dynamic memory allocation
+			char buffer[4096];
+			sprintf(buffer, "%s%s", who, format);
+			vsyslog(LOG_INFO, buffer, argptr);
+		}
+		va_end(argptr);
+#endif
+	}
+#else
+	(void)who;
+	(void)format;
+#endif
+}
 
 /**
  * writes a debug message into the log.
