@@ -156,7 +156,6 @@ void crossing_t::rdwr(loadsave_t *file)
 		if(desc==NULL) {
 			dbg->fatal("crossing_t::rdwr()","requested for waytypes %i and %i but nothing defined!", w1, w2 );
 		}
-		crossing_logic_t::add( this, static_cast<crossing_logic_t::crossing_state_t>(state) );
 	}
 }
 
@@ -179,14 +178,16 @@ void crossing_t::finish_rd()
 		w1->count_sign();
 		w2->count_sign();
 		ns = ribi_t::is_straight_ns(w2->get_ribi_unmasked());
+		if (!logic) {
 #ifdef MULTI_THREAD
-		pthread_mutex_lock( &crossing_logic_mutex );
+			pthread_mutex_lock(&crossing_logic_mutex);
 #endif
-		crossing_logic_t::add( this, static_cast<crossing_logic_t::crossing_state_t>(state) );
-		logic->recalc_state();
+			crossing_logic_t::add(this, static_cast<crossing_logic_t::crossing_state_t>(state));
+			logic->recalc_state();
 #ifdef MULTI_THREAD
-		pthread_mutex_unlock( &crossing_logic_mutex );
+			pthread_mutex_unlock(&crossing_logic_mutex);
 #endif
+		}
 	}
 }
 
