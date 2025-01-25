@@ -655,9 +655,9 @@ bool way_builder_t::is_allowed_step(const grund_t *from, const grund_t *to, sint
 		if(  to2 && (((bautyp&bautyp_mask)!=leitung  &&  to2->get_weg_nr(0)  &&  to2->get_weg_nr(0)->get_desc()->get_topspeed()>0) || to2->get_leitung())  ) {
 			return false;
 		}
-		// tile above cannot have way unless we are a way (not powerline) with a maximum speed of 0, or be surface if we are underground
+		// tiles directly above cannot have way unless it is a powerline bridge
 		to2 = welt->lookup( to->get_pos() + koord3d(0, 0, 1) );
-		if(  to2  &&  ((to2->get_weg_nr(0)  &&  (desc->get_topspeed()>0  ||  (bautyp&bautyp_mask)==leitung))  ||  (bautyp & tunnel_flag) != 0)  ) {
+		if(  to2  &&  (to2->find<leitung_t>() == NULL  ||  to2->get_typ() != grund_t::brueckenboden)  ) {
 			return false;
 		}
 	}
@@ -699,10 +699,10 @@ bool way_builder_t::is_allowed_step(const grund_t *from, const grund_t *to, sint
 	}
 
 	// universal check: do not switch to tunnel through cliffs!
-	if( from->get_typ()==grund_t::tunnelboden  &&  to->get_typ() != grund_t::tunnelboden  &&  !from->ist_karten_boden() ) {
+	if(  from->get_typ() == grund_t::tunnelboden  &&  to->get_typ() != grund_t::tunnelboden  &&  !from->ist_karten_boden() ) {
 		return false;
 	}
-	if( to->get_typ()==grund_t::tunnelboden  &&  from->get_typ() != grund_t::tunnelboden   &&  !to->ist_karten_boden() ) {
+	if(  to->get_typ() == grund_t::tunnelboden  &&  from->get_typ() != grund_t::tunnelboden   &&  !to->ist_karten_boden() ) {
 		return false;
 	}
 
@@ -897,8 +897,10 @@ bool way_builder_t::is_allowed_step(const grund_t *from, const grund_t *to, sint
 				if(to->get_typ()==grund_t::fundament) {
 					ok &= to->find<field_t>()!=NULL;
 				}
-				// no bridges and monorails here in the air
-				ok &= (welt->access(to_pos)->get_boden_in_hoehe(to->get_pos().z+1)==NULL);
+				// no bridges and monorails here in the air apart from another powerline bridge
+				if (grund_t* to2 = welt->lookup(to->get_pos() + koord3d(0,0,1))) {
+					ok &= to->find<leitung_t>()  &&  to->get_typ() == grund_t::brueckenboden;
+				}
 			}
 
 			// calculate costs
@@ -1225,24 +1227,28 @@ void way_builder_t::check_for_bridge(const grund_t* parent_from, const grund_t* 
 	}
 
 	// ok, so now we do a closer investigation
-	if(  bridge_desc  && (  ribi_type(from->get_grund_hang()) == ribi_t::backward(ribi_type(zv))  ||  from->get_grund_hang() == 0  )
-		&&  bridge_builder_t::can_place_ramp(player_builder, from, desc->get_wtyp(),ribi_t::backward(ribi_type(zv)))  ) {
+	if(  bridge_desc  && (  ribi_type(from->get_grund_hang()) == ribi_t::backward(ribi_type(zv))  ||  from->get_grund_hang() == 0  )) {
 		// Try a bridge.
+
 		const sint32 cost_difference = desc->get_maintenance() > 0 ? (bridge_desc->get_maintenance() * 4l + 3l) / desc->get_maintenance() : 16;
 		// try eight possible lengths ..
 		uint32 min_length = 1;
 		for (uint8 i = 0; i < 8 && min_length <= welt->get_settings().way_max_bridge_len; ++i) {
 			sint8 bridge_height;
-			const char *error = NULL;
-			koord3d end = bridge_builder_t::find_end_pos( player_builder, from->get_pos(), zv, bridge_desc, error, bridge_height, true, min_length );
-			const grund_t* gr_end = welt->lookup(end);
-			if(  gr_end == NULL) {
+			const grund_t* gr_end = welt->lookup_kartenboden(from->get_pos().get_2d() + zv * i);
+			if (!gr_end) {
+				// not on map any more
+				break;
+			}
+			koord3d end = gr_end->get_pos();
+			const char *error = bridge_builder_t::can_build_bridge( player_builder, from->get_pos(), end, bridge_height, bridge_desc, false);
+			if(error) {
 				// no valid end point found
 				min_length++;
 				continue;
 			}
 			uint32 length = koord_distance(from->get_pos(), end);
-			if(!ziel.is_contained(end)  &&  bridge_builder_t::can_place_ramp(player_builder, gr_end, desc->get_wtyp(), ribi_type(zv))) {
+			if(!ziel.is_contained(end)  &&  bridge_builder_t::check_start_tile(player_builder, gr_end, ribi_type(-zv), bridge_desc)) {
 				// If there is a slope on the starting tile, it's taken into account in is_allowed_step, but a bridge will be flat!
 				sint8 num_slopes = (from->get_grund_hang() == slope_t::flat) ? 1 : -1;
 				// On the end tile, we haven't to subtract way_count_slope, since is_allowed_step isn't called with this tile.
@@ -2363,12 +2369,7 @@ void way_builder_t::build_tunnel_and_bridges()
 		const koord zv(ribi_type(d));
 
 		// ok, here is a gap ...
-		if(d.x > 1 || d.y > 1 || d.x < -1 || d.y < -1) {
-
-			if(d.x*d.y!=0) {
-				dbg->error("way_builder_t::build_tunnel_and_bridges()", "Cannot build a bridge between %s (n=%i, max_n=%i) and %s", route[i].get_str(),i,get_count()-1,route[i+1].get_str());
-				continue;
-			}
+		if(koord_distance(route[i], route[i + 1])>1) {
 
 			DBG_MESSAGE("way_builder_t::build_tunnel_and_bridges", "Built bridge %p between %s and %s", bridge_desc, route[i].get_str(), route[i + 1].get_str());
 
@@ -2385,15 +2386,13 @@ void way_builder_t::build_tunnel_and_bridges()
 			}
 
 			if(start->get_grund_hang()==slope_t::flat  ||  start->get_grund_hang()==slope_type(zv*(-1))  ||  start->get_grund_hang()==2*slope_type(zv*(-1))) {
-				// code derived from tool/simtool
-
 				sint8 bridge_height = 0;
-				const char *error;
-
-				koord3d end = bridge_builder_t::find_end_pos(player_builder, route[i], zv, bridge_desc, error, bridge_height, false, koord_distance(route[i], route[i+1]), false);
-				if (end == route[i+1]) {
-					bridge_builder_t::build_bridge( player_builder, route[i], route[i+1], zv, bridge_height, bridge_desc, way_builder_t::weg_search(bridge_desc->get_waytype(), bridge_desc->get_topspeed(), welt->get_timeline_year_month(), type_flat));
+				const char* error = bridge_builder_t::can_build_bridge(player_builder, route[i], route[i + 1], bridge_height, bridge_desc, false);
+				if (d.x * d.y != 0) {
+					dbg->error("way_builder_t::build_tunnel_and_bridges()", "Cannot build a bridge between %s (n=%i, max_n=%i) and %s", route[i].get_str(), i, get_count() - 1, route[i + 1].get_str());
+					continue;
 				}
+				bridge_builder_t::build_bridge( player_builder, route[i], route[i+1], zv, bridge_height, bridge_desc, way_builder_t::weg_search(bridge_desc->get_waytype(), bridge_desc->get_topspeed(), welt->get_timeline_year_month(), type_flat));
 			}
 			else {
 				// tunnel
@@ -2421,9 +2420,11 @@ void way_builder_t::build_tunnel_and_bridges()
 					if(  h != slope_type(zv)  ) {
 						// its a bridge
 						if( bridge_desc ) {
-							wi->set_ribi(ribi_type(h));
-							wi1->set_ribi(ribi_type(slope_t::opposite(h)));
-							bridge_builder_t::build( player_builder, route[i], bridge_desc);
+							sint8 bridge_height = 0;
+							const char* error = bridge_builder_t::can_build_bridge(player_builder, route[i], route[i + 1], bridge_height, bridge_desc, false);
+							if (!error) {
+								bridge_builder_t::build_bridge(player_builder, route[i], route[i + 1], zv, bridge_height, bridge_desc, way_builder_t::weg_search(bridge_desc->get_waytype(), bridge_desc->get_topspeed(), welt->get_timeline_year_month(), type_flat));
+							}
 						}
 					}
 					else if( tunnel_desc ) {
