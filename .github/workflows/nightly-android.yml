@@ -124,8 +124,10 @@ jobs:
       working-directory: gh-clone/simutrans
       run: |
         echo "action_state=yellow" >> $GITHUB_ENV
-        sed -i 's/applicationId "com.simutrans"/applicationId "com.simutrans.germany.simutrans"/' /android-sdl/simutrans-android-project/simutrans/build.gradle
-        sed -i "s/versionCode [0-9]\+/versionCode ${{ needs.set-revision.outputs.output1 }}/" /android-sdl/simutrans-android-project/simutrans/build.gradle
+        sed -i "s/versionCode [0-9]\+/versionCode $(./tools/get_revision.sh)/" /android-sdl/simutrans-android-project/simutrans/build.gradle
+        VERSION=`sed -n 's/#define SIM_VERSION_MAJOR *\([0-9]*\)$/\1/ p' <src/simutrans/simversion.h`.`sed -n 's/#define SIM_VERSION_MINOR *\([0-9]*\)$/\1/ p' <src/simutrans/simversion.h`.`sed -n 's/#define SIM_VERSION_PATCH *\([0-9]*\)$/\1/ p' <src/simutrans/simversion.h`
+        NIGHTLY=`sed -n 's/#define SIM_VERSION_BUILD SIM_BUILD_NIGHTLY/ Nightly/ p' <src/simutrans/simversion.h``sed -n 's/#define SIM_VERSION_BUILD SIM_BUILD_RELEASE_CANDIDATE/ Release candidate/ p' <src/simutrans/simversion.h`
+        sed -i 's/versionName.*$/versionName "'"$VERSION$NIGHTLY"'"/' /android-sdl/simutrans-android-project/simutrans/build.gradle
         sed -i '/distributionUrl/s/gradle-8.3-all.zip/gradle-8.3-all.zip/' /android-sdl/simutrans-android-project/gradle/wrapper/gradle-wrapper.properties
         cd /android-sdl/simutrans-android-project
         cat simutrans/build.gradle
