@@ -1,6 +1,6 @@
 	CHG: option for pakset dump versus all other debug by appending 'p' to the debug level, e.g. "-debug 0p" to show only pak details to declutter server logs
 	CHG: tram system type way can be laid over other tracks as well (like pak192 narrowgauge over normal rails)
-	CHG: bridge builder is now only a two click tool (total reneval) Can again connect to complex ramps on elevated ways or cross rivers automatically
+	CHG: bridge builder is now only a two click tool (total renewal) Can again connect to complex ramps on elevated ways or cross rivers automatically
 	FIX: Players gain money by building long stretches of expensive tunnels
 	FIX: Pak files cannot represent cost of vehicles exceeding 2^32-1 Simu-cents
 	FIX: Pak files cannot represent runningcost of vehicles exceeding 2^16-1 Simu-cents
@@ -9,6 +9,9 @@
 	FIX: Freelist allocated objects (tiles, ways, trees etc.) use 3x more memory than necessary
 	FIX: Do not change underground mode when scrolling from the minimap
 	ADD: Monthly maintenance for roadsigns and signals (maintenance=1234 in dat file)
+	FIX: "Not a socket" error when server does not reply to initial connection attempt within 2 seconds on Windows
+	FIX: Increased maximum possible cost, runningcost, and fixed cost of all pak objects (where applicable) to 2^63-1 Simu-cents to prevent overflows during pak creation
+	FIX: Completely updated city renovation logic, now goes forward to multitle and back again
 
 
 Release of 124.3 (r11590 on 10-Jan-2025):
