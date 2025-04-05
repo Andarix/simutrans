@@ -1,3 +1,4 @@
+Release of 124.3.1 (r11671 on 5-Apr-2025):
 	CHG: option for pakset dump versus all other debug by appending 'p' to the debug level, e.g. "-debug 0p" to show only pak details to declutter server logs
 	CHG: tram system type way can be laid over other tracks as well (like pak192 narrowgauge over normal rails)
 	CHG: bridge builder is now only a two click tool (total renewal) Can again connect to complex ramps on elevated ways or cross rivers automatically
@@ -11,9 +12,12 @@
 	ADD: Monthly maintenance for roadsigns and signals (maintenance=1234 in dat file)
 	FIX: "Not a socket" error when server does not reply to initial connection attempt within 2 seconds on Windows
 	FIX: Increased maximum possible cost, runningcost, and fixed cost of all pak objects (where applicable) to 2^63-1 Simu-cents to prevent overflows during pak creation
-	FIX: Completely updated city renovation logic, now goes forward to multitle and back again
+	FIX: Completely updated city renovation logic, now goes forward to multitile and back again
 	FIX: bridge during town growth were built even if the inital test failed
 	FIX: less moving townhalls and not builging townhalls over roads with asymmetric sizes
+	CHG: with pause setting, server saves game after going to pause => immediately able to fulfill join requests and more current savegames on crashing servers
+	ADD: CURRENCY is now translateable to a local currency (no conversions though) and can be also modified by the user
+	FIX: make sure, the pak path and working path are really different
 
 
 Release of 124.3 (r11590 on 10-Jan-2025):

@@ -16,6 +16,8 @@ static char fraction_sep = '.';
 static const char *large_number_string = "M";
 static double large_number_factor = 1e99; // off
 static int thousand_sep_exponent = 3;
+static const char *currency_string = "$";
+static bool currency_left = false;
 
 
 /**
@@ -49,6 +51,10 @@ void set_fraction_sep(char c)
 }
 
 
+/**
+ * Set fraction separator, used in money_to_string and
+ * number_to_string
+ */
 char get_fraction_sep()
 {
 	return fraction_sep;
@@ -57,6 +63,25 @@ char get_fraction_sep()
 const char *get_large_money_string()
 {
 	return large_number_string;
+}
+
+
+void set_currency_string(const char* c, bool left)
+{
+	currency_string = c;
+	currency_left = left;
+}
+
+
+const char *get_currency_string()
+{
+	return currency_string;
+}
+
+
+bool get_currency_left()
+{
+	return currency_left;
 }
 
 
@@ -76,11 +101,15 @@ void set_large_amount(const char *s, const double v)
  * Concludes format with $ sign. Buffer must be large enough, no checks
  * are made!
  */
-void money_to_string(char * p, double f, const bool show_decimal)
+void money_to_string(char *p, double f, const bool show_decimal)
 {
 	char   tmp[128];
 	char   *tp = tmp;
 	int    i,l;
+
+	if (currency_left) {
+		p += sprintf(p, "%s", currency_string);
+	}
 
 	if(  f>1000.0*large_number_factor  ) {
 		sprintf( tp, "%.1f", f/large_number_factor );
@@ -128,8 +157,10 @@ void money_to_string(char * p, double f, const bool show_decimal)
 			*p++ = tp[i++];
 		}
 	}
-	*p++ = '$';
 	*p = 0;
+	if (!currency_left) {
+		strcpy(p, currency_string);
+	}
 }
 
 
