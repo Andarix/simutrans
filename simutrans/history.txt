@@ -1,3 +1,8 @@
+	FIX: stations on bridge heads drawn too low
+	ADD: new freight sorting order "via owner": groups goods by owner of their next transfer stop and sort by amount (also change order a little and fixed several inconsitencies: Now all windows show same ordering)
+	CHG: Help texts will be first searched in pak directory
+
+
 Release of 124.3.1 (r11671 on 5-Apr-2025):
 	CHG: option for pakset dump versus all other debug by appending 'p' to the debug level, e.g. "-debug 0p" to show only pak details to declutter server logs
 	CHG: tram system type way can be laid over other tracks as well (like pak192 narrowgauge over normal rails)
