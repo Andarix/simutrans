@@ -1105,7 +1105,8 @@ public:
 	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("show/hide block reservations"); }
 	bool is_selected() const OVERRIDE;
 	bool init( player_t * ) OVERRIDE {
-		schiene_t::show_reservations ^= 1;
+		schiene_t::show_reservations = !schiene_t::show_reservations;
+		env_t::show_single_ways = false;
 		welt->set_dirty();
 		return false;
 	}
@@ -1180,6 +1181,23 @@ public:
 	bool is_selected() const OVERRIDE { return env_t::night_shift; }
 	bool init(player_t*) OVERRIDE {
 		env_t::night_shift = !env_t::night_shift;
+		welt->set_dirty();
+		return false;
+	}
+	bool exit(player_t* s) OVERRIDE { return init(s); }
+	bool is_init_keeps_game_state() const OVERRIDE { return true; }
+	bool is_work_keeps_game_state() const OVERRIDE { return true; }
+};
+
+// highlight line single way tiles
+class tool_show_single_ways_t : public tool_t {
+public:
+	tool_show_single_ways_t() : tool_t(TOOL_SINGLE_WAY_TOOGLE | SIMPLE_TOOL) {}
+	char const* get_tooltip(player_t const*) const OVERRIDE { return translator::translate("highlight single ways"); }
+	bool is_selected() const OVERRIDE { return env_t::show_single_ways; }
+	bool init(player_t*) OVERRIDE {
+		env_t::show_single_ways = !env_t::show_single_ways;
+		schiene_t::show_reservations = false;
 		welt->set_dirty();
 		return false;
 	}
