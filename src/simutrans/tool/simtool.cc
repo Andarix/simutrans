@@ -54,6 +54,8 @@
 #include "../gui/privatesign_info.h"
 #include "../gui/messagebox.h"
 
+#include "../network/network_socket_list.h"
+
 #include "../obj/zeiger.h"
 #include "../obj/bruecke.h"
 #include "../obj/tunnel.h"
@@ -4136,6 +4138,7 @@ DBG_MESSAGE("tool_station_building_aux()", "building mail office/station buildin
 	// difficult to distinguish correctly most suitable waytype
 	player_t::book_construction_costs(player,  cost, k, desc->get_finance_waytype());
 	halt->recalc_station_type();
+	halt->recalc_basis_pos();
 
 	return NULL;
 }
@@ -4317,6 +4320,8 @@ const char *tool_build_station_t::tool_station_dock_aux(player_t *player, koord3
 	}
 
 	halt->recalc_station_type();
+	halt->recalc_basis_pos();
+
 	if(  env_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==k  ) {
 		// since we are larger now ...
 		halt->mark_unmark_coverage( true );
@@ -4540,6 +4545,7 @@ const char *tool_build_station_t::tool_station_flat_dock_aux(player_t *player, k
 	}
 
 	halt->recalc_station_type();
+	halt->recalc_basis_pos();
 
 	if(  env_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==k  ) {
 		// since we are larger now ...
@@ -4752,6 +4758,7 @@ DBG_MESSAGE("tool_station_aux()", "building %s on square %d,%d for waytype %x", 
 	}
 	hausbauer_t::build_station_extension_depot(halt->get_owner(), bd->get_pos(), layout, desc, &halt);
 	halt->recalc_station_type();
+	halt->recalc_basis_pos();
 
 	if(neu) {
 		char* const name = halt->create_name(k, type_name);
@@ -7216,6 +7223,38 @@ const char *tool_pipette_t::work(player_t *pl, koord3d pos)
 
 	return gr->obj_count()>0 ? "Not allowed to copy object." : NULL;
 }
+
+// pause tool also to unpause server games
+char const* tool_pause_t::get_tooltip(player_t const*) const
+{
+	if (env_t::networkmode) {
+		if (env_t::server) {
+			return translator::translate("Pause");
+		}
+		return translator::translate("deactivated in online mode");
+	}
+	return translator::translate("Pause");
+
+}
+
+bool tool_pause_t::init(player_t*)
+{
+	if (!env_t::networkmode) {
+		welt->set_fast_forward(0);
+		welt->set_pause(welt->is_paused() ^ 1);
+	}
+	else {
+		env_t::pause_server_no_clients = !env_t::pause_server_no_clients;
+		if (socket_list_t::get_playing_clients() == 0) {
+			welt->set_pause(env_t::pause_server_no_clients);
+		}
+	}
+	return false;
+}
+
+
+
+
 
 
 bool tool_show_trees_t::init( player_t* )
