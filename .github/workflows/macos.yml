@@ -8,7 +8,7 @@ on:
 jobs:
   set-revision:
     name: set revision
-    runs-on: ubuntu-20.04
+    runs-on: latest
     outputs:
       output1: ${{ steps.out1.outputs.revision }}
     steps:
