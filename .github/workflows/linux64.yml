@@ -64,6 +64,48 @@ jobs:
           tag: Nightly
           overwrite: true
 
+  makeobj_linux-arm64-nightly:
+    name: makeobj-arm64
+    runs-on: ubuntu-24.04-arm
+    needs: [set-revision]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: install_dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -ym install autoconf
+          sudo apt-get -ym install libpng-dev
+          sudo apt-get -ym install libbz2-dev
+
+      - name: setup
+        run: |
+          autoconf
+          ./configure
+          echo "STATIC = 1" >>config.default
+          cat config.default >>/dev/stderr
+
+      - name: make makeobj
+        run: |
+          cd src/makeobj
+          make
+
+      - name: zip result
+        run: |
+          cd src/makeobj
+          zip -r -9 makeobj_linux-arm64-nightly.zip makeobj
+
+      - name: Update binaries of Nightly Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: src/makeobj/makeobj_linux-x64-arm-nightly.zip
+          asset_name: makeobj_linux-arm64-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
+          tag: Nightly
+          overwrite: true
+
   simulinux-x64-nightly:
     name: simutrans SDL2
     runs-on: ubuntu-22.04
