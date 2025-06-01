@@ -101,7 +101,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: src/makeobj/makeobj_linux-x64-arm-nightly.zip
+          file: src/makeobj/makeobj_linux-arm64-nightly.zip
           asset_name: makeobj_linux-arm64-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
           tag: Nightly
           overwrite: true
