@@ -5,6 +5,8 @@
 	ADD: New simple tool 43 to highlight single ribi ways
 	CHG: Pause tool unpauses server waiting for clients
 	FIX: new city buildings were built when exceeded 2x1 size (only renovated)
+	FIX: Missing collision check for water factories
+	FIX: Crash when screenshotting in-game window with non-0 position
 
 
 Release of 124.3.1 (r11671 on 5-Apr-2025):
