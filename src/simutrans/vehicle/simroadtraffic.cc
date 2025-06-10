@@ -293,7 +293,7 @@ void private_car_t::build_timeline_list(karte_t *welt)
 			}
 		}
 	}
-	liste_timeline.resize( temp_liste.get_count() );
+	liste_timeline.reserve( temp_liste.get_count() );
 	for(citycar_desc_t const* const i : temp_liste) {
 		liste_timeline.append(i, i->get_distribution_weight());
 	}
@@ -496,7 +496,7 @@ bool private_car_t::can_enter_tile(grund_t *gr)
 		if(ribi_t::is_threeway(str->get_ribi_unmasked())) {
 			// but leaving from railroad crossing is more important
 			if (grund_t* gr_current = welt->lookup(get_pos())) {
-				if (crossing_t* cr = gr_current->get_crossing()) {
+				if (gr_current->get_crossing() != NULL) {
 					return true;
 				}
 			}
