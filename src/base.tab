@@ -4488,11 +4488,23 @@ note=local currency (no longer than 2 charcters for right side)
 --
 obj=program_text
 name=CURRENCY_LEFT
-note=local currency to the left of the number
+note=local currency to the left of the number if the text is "1"
 --
 obj=program_text
 name=via owner
 note=sort label for Freight for next stop owner
+--
+obj=program_text
+name=connection
+note=sort label for sorting display by lines/convoi
+--
+obj=program_text
+name=connection
+note=sort label for sorting display by lines/convoi
+--
+obj=program_text
+name=%d more convois
+note=message when additional convois serve that stop for sorting display
 --
 
 #obj=help_text
