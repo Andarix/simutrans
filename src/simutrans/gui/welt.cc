@@ -121,7 +121,7 @@ welt_gui_t::welt_gui_t() :
 	add_table(3,1);
 	{
 		// input fields
-		add_table(2,3);
+		add_table(2,0);
 		{
 			new_component<gui_label_t>("2WORLD_CHOOSE");
 			inp_map_number.init( abs(sets->get_map_number()), 0, 0x7FFFFFFF, 1, true );
@@ -135,17 +135,21 @@ welt_gui_t::welt_gui_t() :
 			size_label.set_min_width(size_label.get_min_size().w); // Make sure to not make the component size too small when the window is opened with a small map size that is increased afterwards
 			add_component( &size_label );
 
-			// Map X size edit
-			inp_x_size.init( sets->get_size_x(), 8, 32766, sets->get_size_x()>=512 ? 128 : 64, false );
-			inp_x_size.add_listener(this);
-			add_component( &inp_x_size );
+			add_table(3,0);
+			{
+				// Map X size edit
+				inp_x_size.init( sets->get_size_x(), 8, 32766, sets->get_size_x()>=512 ? 128 : 64, false );
+				inp_x_size.add_listener(this);
+				add_component( &inp_x_size );
 
-			new_component<gui_empty_t>(&size_label);
+				new_component<gui_label_t>("x");
 
-			// Map size Y edit
-			inp_y_size.init( sets->get_size_y(), 8, 32766, sets->get_size_y()>=512 ? 128 : 64, false );
-			inp_y_size.add_listener(this);
-			add_component( &inp_y_size );
+				// Map size Y edit
+				inp_y_size.init( sets->get_size_y(), 8, 32766, sets->get_size_y()>=512 ? 128 : 64, false );
+				inp_y_size.add_listener(this);
+				add_component( &inp_y_size );
+			}
+			end_table();
 		}
 		end_table();
 
@@ -224,13 +228,24 @@ welt_gui_t::welt_gui_t() :
 		inp_intro_date.set_value(abs(sets->get_starting_year()) );
 		add_component( &inp_intro_date );
 
-
 		// Use beginner mode checkbox
+
 		use_beginner_mode.init(button_t::square_state, "Use beginner mode");
 		use_beginner_mode.set_tooltip("Higher transport fees, crossconnect all factories");
 		use_beginner_mode.pressed = sets->get_beginner_mode();
 		use_beginner_mode.add_listener( this );
 		add_component( &use_beginner_mode );
+
+		add_table(3, 0);
+		{
+			new_component<gui_label_t>(translator::translate("Transport fees: +"));
+			beginner_price_factor.init((env_t::default_settings.beginner_price_factor - 1000) / 10, -100, 25000, /*step_size=*/10, /*wrap=*/false);
+			beginner_price_factor.enable(use_beginner_mode.pressed);
+			beginner_price_factor.add_listener(this);
+			add_component(&beginner_price_factor);
+			new_component<gui_label_t>("%");
+		}
+		end_table();
 	}
 	end_table();
 
@@ -498,6 +513,11 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 	else if(comp==&use_beginner_mode) {
 		sets->beginner_mode = sets->get_beginner_mode()^1;
 		use_beginner_mode.pressed = sets->get_beginner_mode();
+
+		beginner_price_factor.enable(use_beginner_mode.pressed);
+	}
+	else if(comp==&beginner_price_factor) {
+		sets->beginner_price_factor = 1000 + 10*beginner_price_factor.get_value();
 	}
 	else if(comp==&open_setting_gui) {
 		gui_frame_t *sg = win_get_magic( magic_settings_frame_t );
