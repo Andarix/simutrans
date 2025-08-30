@@ -21,6 +21,8 @@
 	FIX: (Nazalassa) Public unread message counter is increased for private messages
 	FIX: (Nazalassa) Ticker messages do not respect player colours when the ticker is opened
 	FIX: (Nazalassa) Cannot build tunnels directly above sloped tunnels if way_height_clearance=1
+	FIX: (Nazalassa) Cursors ignore player changes
+	FIX: Crash when changing the sort mode of a halt while a convoi window is open
 
 
 Release of 124.3.1 (r11671 on 5-Apr-2025):
