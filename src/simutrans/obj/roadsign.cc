@@ -193,7 +193,7 @@ void roadsign_t::info(cbuffer_t & buf) const
 		if(desc->get_min_speed()!=0) {
 			buf.printf("%s%d", translator::translate("\nminimum speed:"), speed_to_kmh(desc->get_min_speed()));
 		}
-		buf.printf("%s%u\n", translator::translate("\ndirection:"), dir);
+		buf.printf("%s%s\n", translator::translate("\ndirection:"), ribi_t::names[dir]);
 
 		if(  automatic  ) {
 			buf.append(translator::translate("\nSet phases:"));
@@ -685,8 +685,13 @@ static bool compare_roadsign_desc(const roadsign_desc_t* a, const roadsign_desc_
 		}
 		diff += (int)(a->get_flags() & ~roadsign_desc_t::SIGN_SIGNAL) - (int)(b->get_flags()  & ~roadsign_desc_t::SIGN_SIGNAL);
 	}
+
 	if (diff == 0) {
-		/* Some type: sort by name */
+		diff = (sint32)a->get_intro_year_month() - (sint32)b->get_intro_year_month();
+	}
+
+	if (diff == 0) {
+		/* Same type and intro date: sort by name */
 		diff = strcmp(a->get_name(), b->get_name());
 	}
 	return diff < 0;
