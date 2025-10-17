@@ -24,7 +24,7 @@ jobs:
 
   sim-mac-sdl2:
     name: macOS (SDL2)
-    runs-on: macos-13
+    runs-on: macos-15-intel
     needs: [set-revision]
 
     steps:
@@ -89,7 +89,7 @@ jobs:
 
   makeobj-mac_x86:
     name: macOS Makeobj
-    runs-on: macos-13
+    runs-on: macos-15-intel
     needs: [set-revision]
 
     steps:
@@ -149,7 +149,7 @@ jobs:
 
   nettool-mac:
     name: macOS Nettool
-    runs-on: macos-13
+    runs-on: macos-15-intel
     needs: [set-revision]
 
     steps:
