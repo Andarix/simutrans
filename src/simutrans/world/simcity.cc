@@ -218,7 +218,7 @@ bool stadt_t::bewerte_loc(const koord pos, const rule_t &regel, int rotation)
 				break;
 			case 'n':
 				// nature/empty
-				if (!gr->ist_natur() || gr->kann_alle_obj_entfernen(NULL) != NULL) return false;
+				if (!gr->ist_natur()  ||  gr->kann_alle_obj_entfernen(NULL) != NULL) return false;
 				break;
 			case 'U':
 				// unbuildable for road
@@ -2430,6 +2430,7 @@ void stadt_t::check_bau_spezial(bool new_town)
 }
 
 
+
 void stadt_t::check_bau_townhall(bool new_town, const building_desc_t* desc, sint16 rotation)
 {
 	if (desc == NULL) {
@@ -2610,8 +2611,12 @@ void stadt_t::check_bau_townhall(bool new_town, const building_desc_t* desc, sin
 			koord road0(0,0);
 			koord road1(0,0);
 			koord size = desc->get_size(layout);
+			koord origin = new_gb->get_pos().get_2d();
+			townhall_road = koord::invalid;
 
-			switch (dir) {
+			for (sint8 i = 0; i < 4; i++) {
+				uint8 dir = ribi_t::layout_to_ribi[(layout + i)&3];
+				switch (dir) {
 				case ribi_t::east:
 					road0.x = road1.x = size.x;
 					road0.y = -neugruendung;
@@ -2633,40 +2638,16 @@ void stadt_t::check_bau_townhall(bool new_town, const building_desc_t* desc, sin
 					road0.x = -neugruendung;
 					road1.x = size.x - umziehen;
 					break;
-			}
-			// make them one tile shorter, if not lookup
-			gr = welt->lookup_kartenboden(best_pos + road0);
-			if (!gr  ||  !slope_t::is_way(gr->get_grund_hang())) {
-				if (dir == ribi_t::east || dir == ribi_t::west) {
-					road0.y ++;
 				}
-				else {
-					road0.x ++;
+				// build the road in front of the townhall, if possible
+				if (test_and_build_cityroad(origin + road0, origin + road1)) {
+					townhall_road = origin + road0;
+					break;
 				}
 			}
-			gr = welt->lookup_kartenboden(best_pos + road1);
-			if (!gr || !slope_t::is_way(gr->get_grund_hang())) {
-				if (dir == ribi_t::east || dir == ribi_t::west) {
-					road0.y --;
-				}
-				else {
-					road0.x --;
-				}
-			}
-			// build the road in front of the townhall
-			if (road0!=road1  &&  welt->lookup_kartenboden(best_pos + road0)  &&  welt->lookup_kartenboden(best_pos + road1)) {
-				way_builder_t bauigel(NULL);
-				bauigel.init_builder(way_builder_t::strasse | way_builder_t::terraform_flag, welt->get_city_road(), NULL, NULL);
-				bauigel.set_build_sidewalk(true);
-				bauigel.calc_straight_route(welt->lookup_kartenboden(best_pos + road0)->get_pos(), welt->lookup_kartenboden(best_pos + road1)->get_pos());
-				bauigel.build();
-			}
-			else {
-				build_road(best_pos + road0, NULL, true);
-			}
-			townhall_road = best_pos + road0;
+
 		}
-		if (umziehen  &&  alte_str != koord::invalid) {
+		if (umziehen  &&  alte_str != koord::invalid  &&  townhall_road != koord::invalid) {
 			// Strasse vom ehemaligen Rathaus zum neuen verlegen.
 			way_builder_t bauer(NULL);
 			bauer.init_builder(way_builder_t::strasse | way_builder_t::terraform_flag, welt->get_city_road());
@@ -3616,36 +3597,127 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 	}
 
 	// we must not built on water or runways etc.
-	if(  bd->hat_wege()  &&  !bd->hat_weg(road_wt)  &&  !bd->hat_weg(track_wt)  ) {
-		return false;
-	}
-
-	// somebody else's things on it?
-	if(  bd->kann_alle_obj_entfernen(NULL)  ) {
-		return false;
-	}
-
-	// If not able to build here, try to make artificial slope
-	slope_t::type slope = bd->get_grund_hang();
-	if (!slope_t::is_way(slope)) {
-		climate c = welt->get_climate(k);
-		if (welt->can_flatten_tile(NULL, k, bd->get_hoehe()+1, true)) {
-			welt->flatten_tile(NULL, k, bd->get_hoehe()+1, true);
-		}
-		else if(  bd->get_hoehe() > welt->get_water_hgt(k)  &&  welt->can_flatten_tile(NULL, k, bd->get_hoehe() )  ) {
-			welt->flatten_tile(NULL, k, bd->get_hoehe());
+	if(  bd->hat_wege()  &&  !bd->hat_weg(road_wt)  ) {
+		if (weg_t* w = bd->get_weg(track_wt)) {
+			if (w->get_desc()->get_styp() != type_tram) {
+				return false;
+			}
 		}
 		else {
 			return false;
 		}
-		// kartenboden may have changed - also ensure is land
-		bd = welt->lookup_kartenboden(k);
-		if (bd->get_typ() == grund_t::wasser) {
-			welt->set_water_hgt_nocheck(k, bd->get_hoehe()-1);
-			welt->access(k)->correct_water();
-			welt->set_climate(k, c, true);
-			bd = welt->lookup_kartenboden(k);
+	}
+
+	// now try single tile road conenction
+	sint8 connections = 0;
+	if (!bd->hat_weg(road_wt)  &&   bd->get_typ()==grund_t::boden) {
+		// somebody else's things on it?
+		if (bd->kann_alle_obj_entfernen(NULL)) {
+			return false;
 		}
+
+		// we need to connect to a neighbouring tile (or not building anything)
+		sint8 r;
+		// try articicial slope. For this, we need to know the height of the tile with the conencting road
+		for (r = 0; r < 4; r++) {
+			if (grund_t* gr = welt->lookup_kartenboden(k + koord::nesw[r])) {
+				if (gr->hat_weg(road_wt)) {
+
+					// try to connect
+					if (gr->get_weg_hang() != slope_t::flat  &&  (ribi_t::doubles(ribi_type(gr->get_weg_hang()))&ribi_t::nesw[r]) == 0) {
+						// this is on a slope => we can only connect in straight direction
+						continue;
+					}
+
+					sint8 target_h = gr->get_vmove(ribi_t::backward(ribi_t::nesw[r]));
+					grund_t* to;
+					slope_t::type this_slope = bd->get_grund_hang();
+					if (slope_t::is_way(this_slope)  &&
+						(bd->get_hoehe() == target_h  &&  (this_slope == slope_t::flat  ||
+							(ribi_type(this_slope) & ribi_t::northwest & ribi_t::nesw[r]) != 0))
+						||	(((ribi_type(this_slope) & ribi_t::southeast & ribi_t::nesw[r]) != 0)  &&  target_h == bd->get_hoehe() + slope_t::max_diff(this_slope))
+						) {
+						// we can connect => no further preparations needed
+						continue;
+					}
+					else {
+						// slopes do not match
+						// try to level the land
+						if (welt->can_flatten_tile(NULL, k, target_h, true)) {
+							welt->flatten_tile(NULL, k, target_h, true);
+							bd = welt->lookup_kartenboden(k);
+						}
+						// now we do articial slopes
+						else if (bd->get_hoehe() + 2 < target_h) {
+							// ground too deep
+							continue;
+						}
+						else if (bd->get_hoehe() < target_h) {
+							// down or flat slope could connect
+							sint8 max_h = bd->get_hoehe() + slope_t::max_diff(bd->get_grund_hang());
+							if (max_h > gr->get_hoehe()) {
+								// in between, so we raise the entire tile
+								bd->set_grund_hang(slope_t::flat);
+								bd->set_pos(koord3d(k, target_h));
+								for (int i = 0; i < bd->obj_count(); i++) {
+									bd->obj_bei(i)->set_pos(bd->get_pos());
+								}
+							}
+							else {
+								// we make a down slope
+								bd->set_grund_hang(slope_type(ribi_t::nesw[r]) * (target_h-bd->get_hoehe()));
+							}
+						}
+						else if (bd->get_hoehe() == target_h) {
+							// up slope
+							sint8 max_h = bd->get_hoehe() + slope_t::max_diff(bd->get_grund_hang());
+							bd->set_grund_hang(slope_type(ribi_t::backward(ribi_t::nesw[r])));
+						}
+						else if (bd->get_hoehe() - 1 == target_h) {
+							// lower with up slope
+							sint8 max_h = bd->get_hoehe() + slope_t::max_diff(bd->get_grund_hang());
+							// in between, so we raise the entire tile
+							bd->set_grund_hang(slope_type(ribi_t::backward(ribi_t::nesw[r]))*min(max_h - target_h,2));
+							bd->set_pos(koord3d(k, target_h));
+							for (int i = 0; i < bd->obj_count(); i++) {
+								bd->obj_bei(i)->set_pos(bd->get_pos());
+							}
+						}
+						else {
+							// to much height difference => give up
+							continue;
+						}
+					}
+
+					// assume that we have terraformed ...
+					bd->calc_image();
+					if (grund_t* gr = welt->lookup_kartenboden(k + koord(1, 0))) {
+						gr->calc_image();
+					}
+					if (grund_t* gr = welt->lookup_kartenboden(k + koord(0, 1))) {
+						gr->calc_image();
+					}
+
+					// now all slopes should be correct, we can build
+					way_builder_t bauigel(NULL);
+					bauigel.init_builder(way_builder_t::strasse | way_builder_t::terraform_flag, welt->get_city_road(), NULL, NULL);
+					bauigel.set_build_sidewalk(true);
+					if (!bauigel.calc_straight_route(gr->get_pos(), bd->get_pos())) {
+						bauigel.build();
+						connections++;
+					}
+				}
+			}
+		}
+	}
+
+	if (connections > 0) {
+		// we could build something
+		return true;
+	}
+
+	if (!slope_t::is_way(bd->get_weg_hang())) {
+		return false;
 	}
 
 	// initially allow all possible directions ...
@@ -3900,6 +3972,57 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 	}
 
 	return false;
+}
+
+
+
+// build a piece of straight road in front of a townhall and take care of flattening th eground etc
+bool stadt_t::test_and_build_cityroad(koord start, koord end)
+{
+	if (start == end) {
+		return build_road(start, NULL, true);
+	}
+
+	const sint16 length = koord_distance(start, end);
+	const koord dir = (end - start) / length;
+	assert(dir.x + dir.y == 1);
+	minivec_tpl<sint8>heights(length);
+	for (sint8 i = 0; i <= length; i++) {
+		grund_t* gr = welt->lookup_kartenboden(start + dir * i);
+		if (!gr || gr->get_typ() != grund_t::boden) {
+			return false;
+		}
+		heights.append(gr->get_hoehe());
+		if (i > 0 && abs(heights[i - 1] - heights[i]) > 2) {
+			return false;
+		}
+	}
+	// now we have to planarise the slopes to have a way
+	for (sint8 i = 0; i <= length; i++) {
+		grund_t* gr = welt->lookup_kartenboden(start +dir*i);
+		if (i < length && heights[i] < heights[i + 1]) {
+			gr->set_grund_hang(slope_type(dir)*(heights[i+1]- heights[i]));
+			gr->calc_image();
+		}
+		else if (i > 0 && heights[i - 1] > heights[i]) {
+			gr->set_grund_hang(slope_type(-dir)*(heights[i-1] - heights[i]));
+			gr->calc_image();
+		}
+		else if(gr->get_grund_hang()) {
+			// any other tile: just planarise it
+			gr->set_grund_hang(slope_t::flat);
+			gr->calc_image();
+		}
+	}
+	// now all slopes should be correct, we can build
+	way_builder_t bauigel(NULL);
+	bauigel.init_builder(way_builder_t::strasse | way_builder_t::terraform_flag, welt->get_city_road(), NULL, NULL);
+	bauigel.set_build_sidewalk(true);
+	if (bauigel.calc_straight_route(welt->lookup_kartenboden(start)->get_pos(), welt->lookup_kartenboden(end)->get_pos())) {
+		return false;
+	}
+	bauigel.build();
+	return true;
 }
 
 
