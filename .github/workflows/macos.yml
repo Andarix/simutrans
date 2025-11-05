@@ -163,7 +163,7 @@ jobs:
         uses: actions/checkout@v4
       - name: install_dependencies
         run: |
-        brew reinstall cmake pkg-config
+          brew reinstall cmake pkg-config
       - name: Configure
         run: cp configs/config.${{ github.job }} config.default
       - name: Build
@@ -191,7 +191,7 @@ jobs:
         uses: actions/checkout@v4
       - name: install_dependencies
         run: |
-        brew reinstall cmake pkg-config
+          brew reinstall cmake pkg-config
       - name: Configure
         run: cp configs/config.${{ github.job }} config.default
       - name: Build
