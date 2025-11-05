@@ -93,26 +93,32 @@ jobs:
     needs: [set-revision]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: install_dependencies
-        run: brew reinstall cmake pkg-config libpng zstd sdl2
-      - name: Configure
-        run: cp configs/config.makeobj-mac config.default
-      - name: Build
-        run: make -j2 makeobj
-      - name: zip result
-        run: zip -r -9 makeobj_macos-nightly.zip build/default/makeobj/makeobj
-      - name: Upload Artifact (CI)
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: makeobj_macos-nightly.zip
-          asset_name: makeobj_macos-x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
-          #name: ${{ github.job }}-nightly
-          #path: build/default/makeobj/makeobj
-          tag: Nightly
-          overwrite: true
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: install_dependencies
+      run: |
+        brew reinstall cmake pkg-config libpng zstd sdl2
+    - name: Configure
+      run: cp configs/config.makeobj-mac config.default
+    - name: Build
+      run: |
+        printf "#define REVISION %i\n" $(tools/get_revision.sh) > src/simutrans/revision.h
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cp ./revision.h ./build/revision.h
+        cmake --build build/src/makeobj
+
+    - name: zip result
+      run: zip -r -9 makeobj_macos-nightly.zip build/default/makeobj/makeobj
+    - name: Upload Artifact (CI)
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: makeobj_macos-nightly.zip
+        asset_name: makeobj_macos-x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
+        #name: ${{ github.job }}-nightly
+        #path: build/default/makeobj/makeobj
+        tag: Nightly
+        overwrite: true
 
   makeobj-mac_arm:
     name: makeobj macOS arm
@@ -156,7 +162,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: install_dependencies
-        run: brew reinstall cmake pkg-config
+        run: |
+        brew reinstall cmake pkg-config
       - name: Configure
         run: cp configs/config.${{ github.job }} config.default
       - name: Build
@@ -169,6 +176,34 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: nettool_mac-nightly.zip
           asset_name: nettool_mac-x86-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
+          #name: ${{ github.job }}-nightly
+          #path: build/default/nettool/nettool
+          tag: Nightly
+          overwrite: true
+
+  nettool-mac_arm:
+    name: macOS Nettool arm
+    runs-on: macos-latest
+    needs: [set-revision]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: install_dependencies
+        run: |
+        brew reinstall cmake pkg-config
+      - name: Configure
+        run: cp configs/config.${{ github.job }} config.default
+      - name: Build
+        run: make -j2 nettool
+      - name: zip result
+        run: zip -r -9 nettool_mac_arm-nightly.zip build/default/nettool/nettool
+      - name: Upload Artifact (CI)
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: nettool_mac_arm-nightly.zip
+          asset_name: nettool_mac-arm-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
           #name: ${{ github.job }}-nightly
           #path: build/default/nettool/nettool
           tag: Nightly
