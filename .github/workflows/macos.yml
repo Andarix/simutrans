@@ -118,30 +118,3 @@ jobs:
         asset_name: makeobj_macos-arm-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
-
-  nettool-mac_arm:
-    name: macOS Nettool arm
-    runs-on: macos-14
-    needs: [set-revision]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: install_dependencies
-        #run: brew reinstall cmake pkg-config
-      - name: Configure
-        #run: cp configs/config.${{ github.job }} config.default
-      - name: Build
-        #run: make -j2 nettool
-      - name: zip result
-        #run: zip -r -9 nettool_mac_arm-nightly.zip build/default/nettool/nettool
-      - name: Upload Artifact (CI)
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          #file: nettool_mac_arm-nightly.zip
-          #asset_name: nettool_mac-arm-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
-          #name: ${{ github.job }}-nightly
-          #path: build/default/nettool/nettool
-          #tag: Nightly
-          #overwrite: true
