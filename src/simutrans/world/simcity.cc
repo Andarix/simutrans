@@ -3630,7 +3630,6 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 				if (gr->hat_weg(road_wt)) {
 
 					// Do we want to connect to nextnext tile?
-					bool connected_across = false;
 					bool terraform_allowed = !connection_roads;
 
 					if (gr->find<crossing_t>() && ribi_t::doubles(gr->get_weg_ribi_unmasked(road_wt)) != ribi_t::doubles(ribi_t::nesw[r])) {
@@ -3767,7 +3766,6 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 									}
 								}
 								else if (bd->get_hoehe() == target_h) {
-									slope_t::type sl = bd->get_grund_hang();
 									// find out height of nextnext tile
 									sint8 next_h = bd->get_hoehe();
 									if (grund_t* gr2 = welt->lookup_kartenboden(k - koord::nesw[r])) {
@@ -3874,7 +3872,7 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 				return false;
 			}
 			sint8 bridge_height;
-			const char* err = bridge_builder_t::can_build_bridge(NULL, bd->get_pos(), bd_next->get_pos(), bridge_height, bridge, false);
+			const char* err = bridge_builder_t::can_build_bridge(NULL, bd->get_pos(), bd_next->get_pos(), bridge_height, bridge);
 			// if the river is navigable, we need a two hight slope, so we have to start on a flat tile
 			if (err) {
 
@@ -3891,7 +3889,7 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 							bd->obj_bei(i)->set_pos(bd->get_pos());
 						}
 					}
-				
+
 					slope_t::type try_flat_end = bd_next->get_grund_hang();
 					if (try_flat_end != slope_t::flat) {
 						sint8 h_diff = slope_t::max_diff(try_flat_end);
@@ -3904,7 +3902,7 @@ bool stadt_t::build_road(const koord k, player_t* player_, bool forced)
 						}
 					}
 
-					err = bridge_builder_t::can_build_bridge(NULL, bd->get_pos(), bd_next->get_pos(), bridge_height, bridge, false);
+					err = bridge_builder_t::can_build_bridge(NULL, bd->get_pos(), bd_next->get_pos(), bridge_height, bridge);
 					if (err) {
 						// still impossible => restore slope
 						if (try_flat_start != slope_t::flat) {
