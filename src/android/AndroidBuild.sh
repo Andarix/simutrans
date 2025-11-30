@@ -24,7 +24,7 @@ cmake -E copy_if_different config.$1.txt config.$1
 #cmake -E copy_if_different revision.h.txt revision.h
 
 env CFLAGS="-fpermissive -fvisibility=hidden -fvisibility-inlines-hidden -ffunction-sections -fdata-sections" \
-	LDFLAGS="-L`pwd`/../../../../obj/local/$1 -Wl,--gc-sections -s " \
+	LDFLAGS="-L`pwd`/../../../../obj/local/$1 --Wl,-z,max-page-size=16384 -s " \
 	PATH=`pwd`/../..:$PATH \
 	../../setEnvironment-$1.sh sh -c " \
 		make -j8 CFG=$1 && \

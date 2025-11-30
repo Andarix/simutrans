@@ -78,12 +78,12 @@ jobs:
         echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
         yes | sdkmanager --install "build-tools;35.0.0"
         echo "$ANDROID_HOME/build-tools/35.0.0" >> $GITHUB_PATH
-        yes | sdkmanager --install "cmake;3.22.1"
-        echo "$ANDROID_HOME/cmake/3.22.1/bin" >> $GITHUB_PATH
-        yes | sdkmanager --install "ndk;28.2.13676358"
-        echo "$ANDROID_HOME/ndk/28.2.13676358" >> $GITHUB_PATH
-        echo "$ANDROID_HOME/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/" >> $GITHUB_PATH
-        ln -s llvm-objdump ${ANDROID_HOME}/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/objdump
+        yes | sdkmanager --install "cmake;3.31.6"
+        echo "$ANDROID_HOME/cmake/3.31.6/bin" >> $GITHUB_PATH
+        yes | sdkmanager --install "ndk;29.0.14206865"
+        echo "$ANDROID_HOME/ndk/29.0.14206865" >> $GITHUB_PATH
+        echo "$ANDROID_HOME/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/" >> $GITHUB_PATH
+        ln -s llvm-objdump ${ANDROID_HOME}/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/objdump
 
     - name: Set up android project
       working-directory: /android-sdl
@@ -91,7 +91,11 @@ jobs:
         git clone --depth 1 https://github.com/simutrans/simutrans-android-project
         cd simutrans-android-project
         git submodule init
-        git submodule update --depth 1
+        git submodule update
+        cd simutrans/jni/SDL
+        git revert 53dbe18  --no-commit
+        cd ../../..
+
         cp -r $GITHUB_WORKSPACE/gh-clone/simutrans simutrans/jni/simutrans
         cp -r simutrans/jni/SDL/android-project/app/src/main/java simutrans/src/main
         cd simutrans/jni
@@ -138,7 +142,6 @@ jobs:
         ./gradlew bundleRelease
 
         cd /android-sdl/simutrans-android-project/simutrans/build/outputs/bundle/release
-        #jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore $SIGNING_KEYSTORE --storepass $SIGNING_STORE_PASSWORD simutrans-release.aab $SIGNING_KEY_ALIAS
         mkdir whatsNewDirectory
         echo `cd $GITHUB_WORKSPACE/gh-clone/simutrans && git log --pretty=format:'%s' -1` > whatsNewDirectory/whatsnew-en-US
 
