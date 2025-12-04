@@ -1,4 +1,4 @@
-git svn fetch
+rem git svn fetch
 git merge --log=20 refs/remotes/origin/trunk
 
 rem git svn log --oneline --limit=1 >status.txt
