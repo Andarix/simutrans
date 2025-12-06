@@ -1,7 +1,14 @@
 rem git svn fetch
+wsl git svn fetch
+rem cd /d/simutrans_entwicklung/svn/simutrans_git/
+rem git svn fetch
+
+rem exit
+
 git merge --log=20 refs/remotes/origin/trunk
 
-rem git svn log --oneline --limit=1 >status.txt
+rem wsl git svn log --oneline --limit=1 >status.txt
+
 echo Revision in status.txt eintragen
 pause
 set /p string=<status.txt
