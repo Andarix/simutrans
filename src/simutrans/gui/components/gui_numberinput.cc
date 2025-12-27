@@ -301,13 +301,13 @@ bool gui_numberinput_t::infowin_event(const event_t *ev)
 		}
 
 		// catch non-number keys
-		if(  ev->ev_class == EVENT_KEYBOARD  ||  value==new_value  ) {
+		if(  IS_KEYDOWN(ev)  ||  value==new_value  ) {
 			// assume false input
-			bool call_textinp = ev->ev_class != EVENT_KEYBOARD;
+			bool call_textinp = !IS_KEYBOARD(ev);
 			// editing keys, arrows, hom/end
 			switch (ev->ev_code) {
 				case '-':
-					call_textinp = min_value <0;
+					call_textinp = min_value < 0;
 					break;
 				case 1:   // allow Ctrl-A (select all text) to function
 				case 3:   // allow Ctrl-C (copy text to clipboard)
@@ -326,16 +326,16 @@ bool gui_numberinput_t::infowin_event(const event_t *ev)
 				case '7':
 				case '8':
 				case '9':
-				case SIM_KEY_LEFT:
-				case SIM_KEY_RIGHT:
-				case SIM_KEY_HOME:
-				case SIM_KEY_END:
+				case SIM_KEYCODE_LEFT:
+				case SIM_KEYCODE_RIGHT:
+				case SIM_KEYCODE_HOME:
+				case SIM_KEYCODE_END:
 					call_textinp = true;
 					break;
-				case SIM_KEY_UP:
-				case SIM_KEY_DOWN:
+				case SIM_KEYCODE_UP:
+				case SIM_KEYCODE_DOWN:
 						// next/previous choice
-						new_value = (ev->ev_code==SIM_KEY_DOWN) ? get_prev_value() : get_next_value();
+						new_value = (ev->ev_code==SIM_KEYCODE_DOWN) ? get_prev_value() : get_next_value();
 			}
 			if(  call_textinp  ) {
 				event_t ev2 = *ev;

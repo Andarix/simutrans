@@ -17,14 +17,15 @@
 enum event_class_t
 {
 	EVENT_NONE           =   0,
-	EVENT_KEYBOARD       =   1,
-	EVENT_STRING         =   2,  ///< instead of a single character a ev_ptr points to an utf8 string
-	EVENT_CLICK          =   3,
-	EVENT_DOUBLE_CLICK   =   4,  ///< 2 consecutive sequences of click-release
-	EVENT_TRIPLE_CLICK   =   5,  ///< 3 consecutive sequences of click-release
-	EVENT_RELEASE        =   6,
-	EVENT_MOVE           =   7,
-	EVENT_DRAG           =   8,
+	EVENT_KEYDOWN        =   1,
+	EVENT_KEYUP          =   2,
+	EVENT_STRING         =   3,  ///< instead of a single character a ev_ptr points to an utf8 string
+	EVENT_CLICK          =   4,
+	EVENT_DOUBLE_CLICK   =   5,  ///< 2 consecutive sequences of click-release
+	EVENT_TRIPLE_CLICK   =   6,  ///< 3 consecutive sequences of click-release
+	EVENT_RELEASE        =   7,
+	EVENT_MOVE           =   8,
+	EVENT_DRAG           =   9,
 
 	INFOWIN              =  10,  ///< window event, i.e. WIN_OPEN, WIN_CLOSE
 	WINDOW_RESIZE        =  11,
@@ -61,90 +62,55 @@ enum event_class_t
 /* other would be better for true unicode support :( */
 
 /* control keys */
-#define SIM_KEY_BACKSPACE             8
-#define SIM_KEY_TAB                   9
-#define SIM_KEY_ENTER                13
-#define SIM_KEY_ESCAPE               27
-#define SIM_KEY_SPACE                32
-#define SIM_KEY_DELETE              127
-#define SIM_KEY_PAUSE               279
+#define SIM_KEYCODE_BACKSPACE             8
+#define SIM_KEYCODE_TAB                   9
+#define SIM_KEYCODE_ENTER                13
+#define SIM_KEYCODE_ESCAPE               27
+#define SIM_KEYCODE_SPACE                32
+#define SIM_KEYCODE_DELETE              127
+#define SIM_KEYCODE_PAUSE               279
 
 /* arrow (direction) keys */
 enum {
-	SIM_KEY_NUMPAD_BASE = 280, // 0 on keypad
-	SIM_KEY_DOWNLEFT,
-	SIM_KEY_DOWN,
-	SIM_KEY_DOWNRIGHT,
-	SIM_KEY_LEFT,
-	SIM_KEY_CENTER,
-	SIM_KEY_RIGHT,
-	SIM_KEY_UPLEFT,
-	SIM_KEY_UP,
-	SIM_KEY_UPRIGHT
+	SIM_KEYCODE_NUMPAD_BASE = 280, // 0 on keypad
+	SIM_KEYCODE_DOWNLEFT,
+	SIM_KEYCODE_DOWN,
+	SIM_KEYCODE_DOWNRIGHT,
+	SIM_KEYCODE_LEFT,
+	SIM_KEYCODE_CENTER,
+	SIM_KEYCODE_RIGHT,
+	SIM_KEYCODE_UPLEFT,
+	SIM_KEYCODE_UP,
+	SIM_KEYCODE_UPRIGHT
 };
 
 /* other navigation keys */
-#define SIM_KEY_HOME                275
-#define SIM_KEY_END                 276
-#define SIM_KEY_PGUP                277
-#define SIM_KEY_PGDN                278
-#define SIM_KEY_SCROLLLOCK          279
+#define SIM_KEYCODE_HOME                275
+#define SIM_KEYCODE_END                 276
+#define SIM_KEYCODE_PGUP                277
+#define SIM_KEYCODE_PGDN                278
+#define SIM_KEYCODE_SCROLLLOCK          279
 
 /* Function keys */
-#define SIM_KEY_F1                  256
-#define SIM_KEY_F2                  257
-#define SIM_KEY_F3                  258
-#define SIM_KEY_F4                  259
-#define SIM_KEY_F5                  260
-#define SIM_KEY_F6                  261
-#define SIM_KEY_F7                  262
-#define SIM_KEY_F8                  263
-#define SIM_KEY_F9                  264
-#define SIM_KEY_F10                 265
-#define SIM_KEY_F11                 266
-#define SIM_KEY_F12                 267
-#define SIM_KEY_F13                 268
-#define SIM_KEY_F14                 269
-#define SIM_KEY_F15                 270
+#define SIM_KEYCODE_F1                  256
+#define SIM_KEYCODE_F2                  257
+#define SIM_KEYCODE_F3                  258
+#define SIM_KEYCODE_F4                  259
+#define SIM_KEYCODE_F5                  260
+#define SIM_KEYCODE_F6                  261
+#define SIM_KEYCODE_F7                  262
+#define SIM_KEYCODE_F8                  263
+#define SIM_KEYCODE_F9                  264
+#define SIM_KEYCODE_F10                 265
+#define SIM_KEYCODE_F11                 266
+#define SIM_KEYCODE_F12                 267
+#define SIM_KEYCODE_F13                 268
+#define SIM_KEYCODE_F14                 269
+#define SIM_KEYCODE_F15                 270
 
 #define SIM_MOD_NONE   0
 #define SIM_MOD_SHIFT  (1u << 0)
 #define SIM_MOD_CTRL   (1u << 1)
-
-
-/* macros */
-#define IS_MOUSE(ev) ((ev)->ev_class >= EVENT_CLICK && (ev)->ev_class <= EVENT_DRAG)
-
-#define IS_LEFTCLICK(ev)              ((ev)->ev_class == EVENT_CLICK        && (ev)->ev_code == MOUSE_LEFTBUTTON)
-#define IS_LEFTRELEASE(ev)            ((ev)->ev_class == EVENT_RELEASE      && (ev)->ev_code == MOUSE_LEFTBUTTON)
-#define IS_LEFTDRAG(ev)               ((ev)->ev_class == EVENT_DRAG         && (ev)->ev_code == MOUSE_LEFTBUTTON)
-#define IS_LEFTDBLCLK(ev)             ((ev)->ev_class == EVENT_DOUBLE_CLICK && (ev)->ev_code == MOUSE_LEFTBUTTON)
-#define IS_LEFTTPLCLK(ev)             ((ev)->ev_class == EVENT_TRIPLE_CLICK && (ev)->ev_code == MOUSE_LEFTBUTTON)
-
-#define IS_RIGHTCLICK(ev)             ((ev)->ev_class == EVENT_CLICK        && (ev)->ev_code == MOUSE_RIGHTBUTTON)
-#define IS_RIGHTRELEASE(ev)           ((ev)->ev_class == EVENT_RELEASE      && (ev)->ev_code == MOUSE_RIGHTBUTTON)
-#define IS_RIGHTDRAG(ev)              ((ev)->ev_class == EVENT_DRAG         && (ev)->ev_code == MOUSE_RIGHTBUTTON)
-#define IS_RIGHTDBLCLK(ev)            ((ev)->ev_class == EVENT_DOUBLE_CLICK && (ev)->ev_code == MOUSE_RIGHTBUTTON)
-#define IS_RIGHTTPLCLK(ev)            ((ev)->ev_class == EVENT_TRIPLE_CLICK && (ev)->ev_code == MOUSE_RIGHTBUTTON)
-
-#define IS_WHEELUP(ev)                ((ev)->ev_class == EVENT_CLICK        && (ev)->ev_code == MOUSE_WHEELUP)
-#define IS_WHEELDOWN(ev)              ((ev)->ev_class == EVENT_CLICK        && (ev)->ev_code == MOUSE_WHEELDOWN)
-
-#define IS_WINDOW_RESIZE(ev)          ((ev)->ev_class == WINDOW_RESIZE)
-#define IS_WINDOW_MAKE_MIN_SIZE(ev)   ((ev)->ev_class == WINDOW_MAKE_MIN_SIZE)
-#define IS_WINDOW_CHOOSE_NEXT(ev)     ((ev)->ev_class == WINDOW_CHOOSE_NEXT)
-
-// This macro is to determine if the event should be also handled by children of containers.
-#define DOES_WINDOW_CHILDREN_NEED(ev) ((ev)->ev_class == INFOWIN || (ev)->ev_class == WINDOW_RESIZE || (ev)->ev_class == WINDOW_MAKE_MIN_SIZE )
-
-#define IS_WINDOW_TOP(ev)             ((ev)->ev_class == INFOWIN || (ev)->ev_code == WIN_TOP)
-
-#define IS_LEFT_BUTTON_PRESSED(ev)     ((ev)->button_state&1)
-#define IS_RIGHT_BUTTON_PRESSED(ev)   (((ev)->button_state&2)>>1)
-#define IS_MIDDLE_BUTTON_PRESSED(ev)  (((ev)->button_state&4)>>2)
-
-#define IS_SHIFT_PRESSED(ev)          (((ev)->ev_key_mod&SIM_MOD_SHIFT) != 0)
-#define IS_CONTROL_PRESSED(ev)        (((ev)->ev_key_mod&SIM_MOD_CTRL ) != 0)
 
 
 /**
@@ -165,7 +131,7 @@ enum {
 struct event_t
 {
 public:
-	event_t(event_class_t event_class = EVENT_NONE);
+	explicit event_t(event_class_t event_class = EVENT_NONE);
 
 public:
 	/**
@@ -175,7 +141,7 @@ public:
 	void move_origin(scr_coord delta);
 
 public:
-	event_class_t ev_class;
+	event_class_t ev_class = EVENT_NONE;
 	union
 	{
 		unsigned int ev_code;
@@ -183,20 +149,58 @@ public:
 	};
 
 	// Mouse position
-	scr_coord mouse_pos;
+	scr_coord mouse_pos = { 0, 0 };
 
 	/// position of last mouse click
-	scr_coord click_pos;
+	scr_coord click_pos = { 0, 0 };
 
 	/// new window size for SYSTEM_RESIZE
-	scr_size new_window_size;
+	scr_size new_window_size = { 0, 0 };
 
-	/// current mouse button state
-	int button_state;
+	/// bitset indicating which mouse buttons are pressed
+	int mouse_button_state = 0;
 
-	/// mod key (SHIFT; ALT; CTRL; etc) pressed while event as triggered
-	unsigned int ev_key_mod;
+	/// mod key (SHIFT, CTRL etc) pressed while event as triggered
+	unsigned int ev_key_mod = SIM_MOD_NONE;
 };
+
+
+static inline bool IS_KEYDOWN    (const event_t *ev) { return ev->ev_class == EVENT_KEYDOWN;  }
+static inline bool IS_KEYUP      (const event_t *ev) { return ev->ev_class == EVENT_KEYUP;    }
+static inline bool IS_KEYBOARD   (const event_t *ev) { return IS_KEYDOWN(ev) || IS_KEYUP(ev); }
+
+static inline bool IS_MOUSE(const event_t *ev) { return ev->ev_class >= EVENT_CLICK && ev->ev_class <= EVENT_DRAG; }
+
+static inline bool IS_LEFTCLICK  (const event_t *ev) { return ev->ev_class == EVENT_CLICK        && ev->ev_code == MOUSE_LEFTBUTTON; }
+static inline bool IS_LEFTRELEASE(const event_t *ev) { return ev->ev_class == EVENT_RELEASE      && ev->ev_code == MOUSE_LEFTBUTTON; }
+static inline bool IS_LEFTDRAG   (const event_t *ev) { return ev->ev_class == EVENT_DRAG         && ev->ev_code == MOUSE_LEFTBUTTON; }
+static inline bool IS_LEFTDBLCLK (const event_t *ev) { return ev->ev_class == EVENT_DOUBLE_CLICK && ev->ev_code == MOUSE_LEFTBUTTON; }
+static inline bool IS_LEFTTPLCLK (const event_t *ev) { return ev->ev_class == EVENT_TRIPLE_CLICK && ev->ev_code == MOUSE_LEFTBUTTON; }
+
+static inline bool IS_RIGHTCLICK  (const event_t *ev) { return ev->ev_class == EVENT_CLICK        && ev->ev_code == MOUSE_RIGHTBUTTON; }
+static inline bool IS_RIGHTRELEASE(const event_t *ev) { return ev->ev_class == EVENT_RELEASE      && ev->ev_code == MOUSE_RIGHTBUTTON; }
+static inline bool IS_RIGHTDRAG   (const event_t *ev) { return ev->ev_class == EVENT_DRAG         && ev->ev_code == MOUSE_RIGHTBUTTON; }
+static inline bool IS_RIGHTDBLCLK (const event_t *ev) { return ev->ev_class == EVENT_DOUBLE_CLICK && ev->ev_code == MOUSE_RIGHTBUTTON; }
+static inline bool IS_RIGHTTPLCLK (const event_t *ev) { return ev->ev_class == EVENT_TRIPLE_CLICK && ev->ev_code == MOUSE_RIGHTBUTTON; }
+
+static inline bool IS_WHEELUP     (const event_t *ev) { return ev->ev_class == EVENT_CLICK        && ev->ev_code == MOUSE_WHEELUP;   }
+static inline bool IS_WHEELDOWN   (const event_t *ev) { return ev->ev_class == EVENT_CLICK        && ev->ev_code == MOUSE_WHEELDOWN; }
+
+static inline bool IS_WINDOW_RESIZE       (const event_t *ev) { return ev->ev_class == WINDOW_RESIZE;        }
+static inline bool IS_WINDOW_MAKE_MIN_SIZE(const event_t *ev) { return ev->ev_class == WINDOW_MAKE_MIN_SIZE; }
+static inline bool IS_WINDOW_CHOOSE_NEXT  (const event_t *ev) { return ev->ev_class == WINDOW_CHOOSE_NEXT;   }
+
+// This function is to determine if the event should be also handled by children of containers.
+static inline bool DOES_WINDOW_CHILDREN_NEED(const event_t *ev) { return ev->ev_class == INFOWIN || ev->ev_class == WINDOW_RESIZE || ev->ev_class == WINDOW_MAKE_MIN_SIZE; }
+
+static inline bool IS_WINDOW_TOP(const event_t *ev) { return ev->ev_class == INFOWIN || ev->ev_code == WIN_TOP; }
+
+static inline bool IS_LEFT_BUTTON_PRESSED  (const event_t *ev) { return ev->mouse_button_state & MOUSE_LEFTBUTTON;  }
+static inline bool IS_RIGHT_BUTTON_PRESSED (const event_t *ev) { return ev->mouse_button_state & MOUSE_RIGHTBUTTON; }
+static inline bool IS_MIDDLE_BUTTON_PRESSED(const event_t *ev) { return ev->mouse_button_state & MOUSE_MIDBUTTON;   }
+
+static inline bool IS_SHIFT_PRESSED  (const event_t *ev) { return ev->ev_key_mod & SIM_MOD_SHIFT; }
+static inline bool IS_CONTROL_PRESSED(const event_t *ev) { return ev->ev_key_mod & SIM_MOD_CTRL;  }
 
 
 /// Return one event. Does *not* wait.

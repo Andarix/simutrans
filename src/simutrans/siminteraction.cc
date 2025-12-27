@@ -70,9 +70,9 @@ void interaction_t::move_cursor( const event_t &ev )
 
 	// move cursor
 	const koord3d prev_pos = zeiger->get_pos();
-	if(  (prev_pos != pos ||  ev.button_state != mb_alt)  ) {
+	if(  (prev_pos != pos ||  ev.mouse_button_state != mb_alt)  ) {
 
-		mb_alt = ev.button_state;
+		mb_alt = ev.mouse_button_state;
 
 		zeiger->change_pos(pos);
 
@@ -82,7 +82,7 @@ void interaction_t::move_cursor( const event_t &ev )
 		else {
 			tool->flags = (event_get_last_control_shift() ^ tool_t::control_invert) | tool_t::WFL_LOCAL;
 			if(tool->check_pos( world->get_active_player(), zeiger->get_pos() )==NULL) {
-				if(  ev.button_state == 0  ) {
+				if(  ev.mouse_button_state == 0  ) {
 					is_dragging = false;
 				}
 				else if(ev.ev_class==EVENT_DRAG) {
@@ -97,7 +97,7 @@ void interaction_t::move_cursor( const event_t &ev )
 			tool->flags = 0;
 		}
 
-		if(  (ev.button_state&7)==0  ) {
+		if(  (ev.mouse_button_state&7)==0  ) {
 			// time, since mouse got here
 			world->set_mouse_rest_time(dr_time());
 			world->set_sound_wait_time(AMBIENT_SOUND_INTERVALL); // 13s no movement: play sound
@@ -108,41 +108,41 @@ void interaction_t::move_cursor( const event_t &ev )
 
 void interaction_t::interactive_event( const event_t &ev )
 {
-	if(ev.ev_class == EVENT_KEYBOARD) {
-		DBG_MESSAGE("interaction_t::interactive_event()","Keyboard event with code %d '%c'", ev.ev_code, (ev.ev_code>=32  &&  ev.ev_code<=126) ? ev.ev_code : '?' );
+	if (IS_KEYDOWN(&ev)) {
+		DBG_MESSAGE("interaction_t::interactive_event()", "Key-down event with code %d '%c'", ev.ev_code, (ev.ev_code>=32  &&  ev.ev_code<=126) ? ev.ev_code : '?' );
 
 		switch(ev.ev_code) {
 
 			// cursor movements
-			case SIM_KEY_UPRIGHT:
+			case SIM_KEYCODE_UPRIGHT:
 				viewport->change_world_position(viewport->get_world_position() + koord::north);
 				world->set_dirty();
 				break;
-			case SIM_KEY_DOWNLEFT:
+			case SIM_KEYCODE_DOWNLEFT:
 				viewport->change_world_position(viewport->get_world_position() + koord::south);
 				world->set_dirty();
 				break;
-			case SIM_KEY_UPLEFT:
+			case SIM_KEYCODE_UPLEFT:
 				viewport->change_world_position(viewport->get_world_position() + koord::west);
 				world->set_dirty();
 				break;
-			case SIM_KEY_DOWNRIGHT:
+			case SIM_KEYCODE_DOWNRIGHT:
 				viewport->change_world_position(viewport->get_world_position() + koord::east);
 				world->set_dirty();
 				break;
-			case SIM_KEY_RIGHT:
+			case SIM_KEYCODE_RIGHT:
 				viewport->change_world_position(viewport->get_world_position() + koord(+1,-1));
 				world->set_dirty();
 				break;
-			case SIM_KEY_DOWN:
+			case SIM_KEYCODE_DOWN:
 				viewport->change_world_position(viewport->get_world_position() + koord(+1,+1));
 				world->set_dirty();
 				break;
-			case SIM_KEY_UP:
+			case SIM_KEYCODE_UP:
 				viewport->change_world_position(viewport->get_world_position() + koord(-1,-1));
 				world->set_dirty();
 				break;
-			case SIM_KEY_LEFT:
+			case SIM_KEYCODE_LEFT:
 				viewport->change_world_position(viewport->get_world_position() + koord(-1,+1));
 				world->set_dirty();
 				break;
@@ -156,7 +156,7 @@ void interaction_t::interactive_event( const event_t &ev )
 				}
 				break;
 
-			case SIM_KEY_F1:
+			case SIM_KEYCODE_F1:
 				if(  gui_frame_t *win = win_get_top()  ) {
 					if(  const char *helpfile = win->get_help_filename()  ) {
 						help_frame_t::open_help_on( helpfile );
@@ -199,7 +199,7 @@ void interaction_t::interactive_event( const event_t &ev )
 					}
 #ifdef STEAM_BUILT
 					// Block F12 from bringing up Keyboard Help (for Steam Screenshot) - but still allow F12 to be used if defined in pakset
-					if (ev.ev_code==SIM_KEY_F12) {
+					if (ev.ev_code==SIM_KEYCODE_F12) {
 						ok=true;
 					}
 #endif
@@ -351,7 +351,7 @@ bool interaction_t::process_event( event_t &ev )
 	DBG_DEBUG4("interaction_t::process_event", "check if cursor needs movement");
 
 
-	if( (ev.ev_class==EVENT_DRAG  &&  ev.ev_code==MOUSE_LEFTBUTTON)  ||  (ev.button_state==0  &&  ev.ev_class==EVENT_MOVE)  ||  ev.ev_class==EVENT_RELEASE) {
+	if( (ev.ev_class==EVENT_DRAG  &&  ev.ev_code==MOUSE_LEFTBUTTON)  ||  (ev.mouse_button_state==0  &&  ev.ev_class==EVENT_MOVE)  ||  ev.ev_class==EVENT_RELEASE) {
 		move_cursor(ev);
 	}
 
