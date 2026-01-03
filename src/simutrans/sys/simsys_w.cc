@@ -498,6 +498,7 @@ static inline unsigned int ModifierKeys()
 static inline unsigned long vkey_to_simkey(WPARAM wParam, LPARAM lParam)
 {
 	sint16 code = lParam >> 16;
+	dbg->warning("vkey", "%92x   %02x   %02x", wParam, code, (uint16)lParam);
 	if(  code >= 0x47  &&  code <= 0x52  &&  code != 0x4A  &&  code != 0x4e  ) {
 		if(  (GetKeyState( VK_NUMLOCK ) & 1) == 0  ||  (env_t::numpad_always_moves_map  &&  !win_is_textinput())  ) { // numlock off?
 			switch( code ) {
@@ -520,6 +521,14 @@ static inline unsigned long vkey_to_simkey(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
+	// we must handle all codes smaller 26 here as they are also produced by CNTRL+A-Z
+	switch (code) {
+		case 0x001C: return SIM_KEYCODE_ENTER;
+		case 0xE01C: return SIM_KEYCODE_ENTER; // enter numpad
+		case 0x000E: return SIM_KEYCODE_BACKSPACE;
+		case 0x000F: return SIM_KEYCODE_TAB;
+	}
+
 	// do low level special stuff here
 	switch (wParam) {
 		case VK_SCROLL: return SIM_KEYCODE_SCROLLLOCK; break;
@@ -533,14 +542,21 @@ static inline unsigned long vkey_to_simkey(WPARAM wParam, LPARAM lParam)
 		case VK_DELETE: return 127;                    break;
 		case VK_HOME:   return SIM_KEYCODE_HOME;       break;
 		case VK_END:    return SIM_KEYCODE_END;        break;
+		case VK_ESCAPE: return SIM_KEYCODE_ESCAPE;     break;
+/* The following cannot be discriminated from CNTRL+code, handled above
+		case VK_TAB:    return SIM_KEYCODE_TAB;        break;
+		case VK_BACK:   return SIM_KEYCODE_BACKSPACE;  break;
+		case VK_RETURN: return SIM_KEYCODE_ENTER;      break;
+*/
 	}
 
 	// check for F-Keys!
-	if (code == 0 && wParam >= VK_F1 && wParam <= VK_F15) {
-		code = wParam - VK_F1 + SIM_KEYCODE_F1;
+	if (wParam >= VK_F1 && wParam <= VK_F15) {
+		return wParam - VK_F1 + SIM_KEYCODE_F1;
 	}
 
-	return code;
+	// ignore dead keys like shift or vendor specific
+	return 0;
 }
 
 
@@ -711,19 +727,17 @@ LRESULT WINAPI WindowProc(HWND this_hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 			sys_event.type = SIM_NOEVENT;
 			sys_event.code = 0;
-			break;
+
+			return DefWindowProcW(this_hwnd, msg, wParam, lParam);
 		}
 
 		case WM_CHAR: /* originally KeyPress */
 		{
-			sint16 code = lParam >> 16;
-			if(  code >= 0x47  &&  code <= 0x52  &&  code != 0x4A  &&  code != 0x4e  ) {
-				if(  (GetKeyState( VK_NUMLOCK ) & 1) == 0  ||  (env_t::numpad_always_moves_map  &&  !win_is_textinput())  ) { // numlock off?
-					// we handled this numpad keys already above ...
-					sys_event.type = SIM_NOEVENT;
-					sys_event.code = 0;
-					break;
-				}
+			if (vkey_to_simkey(wParam, lParam)) {
+				// we handled this numpad keys already above ...
+				sys_event.type = SIM_NOEVENT;
+				sys_event.code = 0;
+				break;
 			}
 			sys_event.type    = SIM_KEYDOWN;
 			sys_event.code    = wParam;
