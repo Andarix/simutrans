@@ -530,6 +530,19 @@ DBG_MESSAGE("tool_remover_intern()","at (%s)", pos.get_str());
 	// check whether powerline related stuff should be removed, and if there is any to remove
 	if (  (type == obj_t::leitung  ||  type == obj_t::pumpe  ||  type == obj_t::senke  ||  type == obj_t::undefined)
 	       &&  lt != NULL  &&  lt->get_removal_error(player) == NULL) {
+		if (  gr->get_typ() == grund_t::monorailboden  &&  !gr->get_weg_nr(0)  ) {
+			// totally remove elevated powerline with ground
+			lt->cleanup(player);
+			delete lt;
+			gr->obj_loesche_alle(player);
+			gr->mark_image_dirty();
+			if (!gr->get_flag(grund_t::is_kartenboden)) {
+				welt->access(gr->get_pos().get_2d())->boden_entfernen(gr);
+				welt->set_dirty();
+				delete gr;
+			}
+			return true;
+		}
 		if(  gr->ist_bruecke()  ) {
 			bruecke_t* br = gr->find<bruecke_t>();
 			if(  br == NULL  ) {
@@ -3679,7 +3692,7 @@ const char *tool_wayremover_t::do_work( player_t *player, const koord3d &start, 
 							bd->calc_image();
 							bd->set_flag(grund_t::dirty);
 						}
-						// delete tunnel ground too, if empty
+						// delete tunnel/monorail ground too, if empty
 						welt->access(gr->get_pos().get_2d())->boden_entfernen(gr);
 						delete gr;
 					}
@@ -3700,8 +3713,8 @@ const char *tool_wayremover_t::do_work( player_t *player, const koord3d &start, 
 					// remove only single connections
 					lt->cleanup(player);
 					delete lt;
-					// delete tunnel ground too, if empty
-					if (gr->get_typ()==grund_t::tunnelboden) {
+					// delete tunnel/monorail ground too, if empty
+					if (  (gr->get_typ()==grund_t::tunnelboden  ||  gr->get_typ() == grund_t::monorailboden)  &&  !gr->hat_wege()  ) {
 						gr->obj_loesche_alle(player);
 						gr->mark_image_dirty();
 						if (!gr->get_flag(grund_t::is_kartenboden)) {
