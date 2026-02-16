@@ -31,6 +31,7 @@
 #include "../../obj/wayobj.h"
 #include "../../simhalt.h"
 #include "../../simware.h"
+#include "../../tool/simtool.h"
 #include "../../world/simworld.h"
 
 #define begin_enum(name)
@@ -669,6 +670,14 @@ void export_goods_desc(HSQUIRRELVM vm)
 	 * @returns the list
 	 */
 	STATIC register_method(vm, way_builder_t::get_way_list, "get_available_ways", false, true);
+
+	/**
+	* Returns the last used (default) way descriptor for a given waytype.
+	* This is the way that would be selected when pressing the shortcut key (e.g. 's' for roads).
+	* @param wt waytype (1=road_wt, 2=track_wt, 3=tram_wt, etc.)
+	* @returns way_desc_x object or null if none available
+	*/
+	STATIC register_method(vm, &tool_build_way_t::get_default_desc, "get_default_way_desc", false, true);
 
 	end_class(vm);
 
