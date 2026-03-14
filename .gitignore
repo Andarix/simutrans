@@ -21,7 +21,8 @@ build
 *.rej
 /simutrans/*pak*
 /simutrans/pak*
-/simutrans/text/*.txt
+/simutrans/text/*/*.txt
+/simutrans/text/*.tab
 *.bdf
 *.zip
 *.vcxproj.*
