@@ -1,3 +1,4 @@
+Release of 124.4 (r11919 on 4-Apr-2026):
 	FIX: stations on bridge heads drawn too low
 	ADD: new freight sorting order "via owner": groups goods by owner of their next transfer stop and sort by amount (also change order a little and fixed several inconsitencies: Now all windows show same ordering)
 	ADD: (Nazalassa+prissi) new freight sorting order "connection": groups goods by lines of their next stop and sort by amount (not available for convois, of course)
@@ -70,6 +71,7 @@
 	FIX: Transformers get removed by factory field expansion
 	CHG: sound loudness slider now follows a x^4 curve, approximates an exponential loudness control for finer adjustments
 	FIX: Crash when a scenario references a translation file which is actually a directory
+	FIX: Topspeed replacement with city roads was broken. Multitle buildings also may have the roads around them never fully renovated
 
 
 Release of 124.3.1 (r11671 on 5-Apr-2025):
