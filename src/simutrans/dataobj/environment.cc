@@ -98,7 +98,8 @@ bool env_t::pause_server_no_clients = false;
 std::string env_t::nickname = "";
 
 // this is explicitly and interactively set by user => we do not touch it on init
-const char *env_t::language_iso = "en";
+const char* env_t::language_iso = "en";
+const char* env_t::language_names_iso = NULL;
 sint16 env_t::scroll_multi = -1; // start with same scrool as mouse as nowadays standard
 bool env_t::scroll_infinite = false; // since it fails with touch devices
 uint16 env_t::scroll_threshold = 8;
@@ -356,23 +357,25 @@ void env_t::init()
 	listen.append_unique("0.0.0.0");
 	show_money_message = 0;
 
+	language_names_iso = NULL;
+
 #ifndef __ANDROID__
-	env_t::menupos = MENU_TOP;
-	env_t::single_toolbar_mode = false;
-	env_t::stack_toolbars = true;
-	env_t::dpi_scale = 100;
-	env_t::single_info = 1;
-	env_t::hide_keyboard = false;
+	menupos = MENU_TOP;
+	single_toolbar_mode = false;
+	stack_toolbars = true;
+	dpi_scale = 100;
+	single_info = 1;
+	hide_keyboard = false;
 
 #else
 	// here for Android
-	env_t::menupos = MENU_BOTTOM;
-	env_t::single_toolbar_mode = true;
-	env_t::stack_toolbars = false;
-	env_t::dpi_scale = -1;
-	env_t::single_info = 0;
+	menupos = MENU_BOTTOM;
+	single_toolbar_mode = true;
+	stack_toolbars = false;
+	dpi_scale = -1;
+	single_info = 0;
 	// autoshow keyboard on textinput
-	env_t::hide_keyboard = true;
+	hide_keyboard = true;
 #endif
 }
 
@@ -427,11 +430,11 @@ void env_t::rdwr(loadsave_t *file)
 	if (  file->is_version_less(120, 5)  ) {
 		uint8 color_idx = COL_SOFT_BLUE;
 		file->rdwr_byte( color_idx );
-		env_t::tooltip_color_rgb = get_color_rgb(color_idx);
+		env_t::tooltip_color_rgb = g_simgraph->get_color_rgb(color_idx);
 
 		color_idx = COL_BLACK;
 		file->rdwr_byte( color_idx );
-		env_t::tooltip_textcolor_rgb = get_color_rgb(color_idx);
+		env_t::tooltip_textcolor_rgb = g_simgraph->get_color_rgb(color_idx);
 	}
 
 	file->rdwr_long( autosave );
@@ -484,6 +487,22 @@ void env_t::rdwr(loadsave_t *file)
 		file->rdwr_str( language_iso );
 	}
 
+	if (file->is_version_atleast(124, 5)) {
+		if (file->is_loading()) {
+			// these three bytes will be lost ...
+			const char* c = NULL;
+			file->rdwr_str(c);
+			language_names_iso = c;
+		}
+		else {
+			file->rdwr_str(language_names_iso);
+		}
+	}
+	else if (file->is_loading()) {
+		// default: same as GUI ...
+		language_names_iso = NULL;
+	}
+
 	file->rdwr_short( global_volume );
 	file->rdwr_short( midi_volume );
 	file->rdwr_bool( global_mute_sound );
@@ -508,13 +527,13 @@ void env_t::rdwr(loadsave_t *file)
 			file->rdwr_byte( color ); // to skip old parameter front_window_bar_color
 
 			file->rdwr_byte( color );
-			env_t::front_window_text_color_rgb = get_color_rgb(color);
+			env_t::front_window_text_color_rgb = g_simgraph->get_color_rgb(color);
 
 			file->rdwr_byte( color ); // to skip old parameter bottom_window_bar_color
 
 			color = 209; // CITY_KI
 			file->rdwr_byte( color );
-			env_t::bottom_window_text_color_rgb = get_color_rgb(color);
+			env_t::bottom_window_text_color_rgb = g_simgraph->get_color_rgb(color);
 		}
 	}
 
@@ -543,7 +562,7 @@ void env_t::rdwr(loadsave_t *file)
 		if(  file->is_version_less(120, 5)  ) {
 			uint8 color = COL_GREY2;
 			file->rdwr_byte( color );
-			env_t::background_color_rgb = get_color_rgb(color);
+			env_t::background_color_rgb = g_simgraph->get_color_rgb(color);
 		}
 		file->rdwr_bool( draw_earth_border );
 		file->rdwr_bool( draw_outside_tile );

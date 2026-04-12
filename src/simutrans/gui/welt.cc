@@ -497,7 +497,7 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		load_relief_frame_t* lrf = new load_relief_frame_t(sets);
 		create_win(lrf, w_info, magic_load_t );
 
-		const scr_coord new_pos{ (display_get_width() - lrf->get_windowsize().w-10), env_t::iconsize.h };
+		const scr_coord new_pos{ (g_simgraph->get_screen_size().w - lrf->get_windowsize().w-10), env_t::iconsize.h };
 		win_set_pos(lrf, new_pos);
 		knr = sets->get_map_number(); // otherwise using cancel would not show the normal generated map again
 	}
@@ -538,7 +538,7 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		}
 		else {
 			climate_gui_t *cg = new climate_gui_t(sets);
-			const scr_coord_val xoff = min(win_get_pos(this).x + this->size.w, display_get_width() - cg->get_windowsize().w );
+			const scr_coord_val xoff = min(win_get_pos(this).x + this->size.w, g_simgraph->get_screen_size().w - cg->get_windowsize().w );
 			const scr_coord_val yoff = win_get_pos(this).y;
 			create_win({ xoff, yoff }, cg, w_info, magic_climate );
 			open_climate_gui.pressed = true;
@@ -549,6 +549,7 @@ bool welt_gui_t::action_triggered( gui_action_creator_t *comp,value_t v)
 		welt->get_message()->clear();
 		create_win({ 200, 100 }, new news_img("Erzeuge neue Karte.\n", skinverwaltung_t::neueweltsymbol->get_image_id(0)), w_info, magic_none);
 		env_t::default_settings = *sets;
+		translator::set_language(translator::get_language());	// reset also ingame names
 		delete sets;
 		sets = NULL;
 		if(loaded_heightfield) {
