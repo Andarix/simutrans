@@ -205,9 +205,6 @@
     <ClCompile Include="src\simutrans\sys\clipboard_w32.cc" />
     <ClCompile Include="src\simutrans\sys\simsys_w.cc" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\simutrans\display\simgraph.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
