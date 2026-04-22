@@ -475,7 +475,7 @@ haltestelle_t::haltestelle_t(loadsave_t* file)
 	halt_served_this_step = new vector_tpl<halthandle_t>[goods_manager_t::get_max_catg_index()];
 
 	status_color = SYSCOL_TEXT_UNUSED;
-	last_status_color = g_simgraph->palette_lookup(COL_PURPLE);
+	last_status_color = gfx->palette_lookup(COL_PURPLE);
 	last_bar_count = 0;
 
 	reconnect_counter = welt->get_schedule_counter()-1;
@@ -515,7 +515,7 @@ haltestelle_t::haltestelle_t(koord k, player_t* player)
 	halt_served_this_step = new vector_tpl<halthandle_t>[goods_manager_t::get_max_catg_index()];
 
 	status_color = SYSCOL_TEXT_UNUSED;
-	last_status_color = g_simgraph->palette_lookup(COL_PURPLE);
+	last_status_color = gfx->palette_lookup(COL_PURPLE);
 	last_bar_count = 0;
 
 	init_financial_history();
@@ -1062,7 +1062,7 @@ bool haltestelle_t::step(uint8 what, sint16 &units_remaining)
  */
 void haltestelle_t::new_month()
 {
-	if(  welt->get_active_player()==owner  &&  status_color==g_simgraph->palette_lookup(COL_RED)  ) {
+	if(  welt->get_active_player()==owner  &&  status_color==gfx->palette_lookup(COL_RED)  ) {
 		cbuffer_t buf;
 		buf.printf( translator::translate("%s\nis crowded."), get_name() );
 		welt->get_message()->add_message(buf, get_basis_pos3d(),message_t::full|message_t::EXPIRE_AFTER_ONE_MONTH_MSG, PLAYER_FLAG|owner->get_player_nr(), IMG_EMPTY );
@@ -3076,7 +3076,7 @@ void haltestelle_t::init_financial_history()
  */
 void haltestelle_t::recalc_status()
 {
-	status_color = g_simgraph->palette_lookup(financial_history[0][HALT_CONVOIS_ARRIVED] > 0 ? COL_GREEN : COL_YELLOW);
+	status_color = gfx->palette_lookup(financial_history[0][HALT_CONVOIS_ARRIVED] > 0 ? COL_GREEN : COL_YELLOW);
 
 	// since the status is ordered ...
 	uint8 status_bits = 0;
@@ -3084,32 +3084,50 @@ void haltestelle_t::recalc_status()
 	MEMZERO(overcrowded);
 
 	uint64 total_sum = 0;
-	if(get_pax_enabled()) {
-		const uint32 max_ware = get_capacity(0);
-		total_sum += get_ware_summe(goods_manager_t::passengers);
-		if(total_sum>max_ware) {
+
+	if (get_pax_enabled()) {
+		const uint32 pax_capacity = get_capacity(0);
+		const uint32 pax_count    = get_ware_summe(goods_manager_t::passengers);
+		total_sum += pax_count;
+
+		const uint32 num_happy   = get_pax_happy();
+		const uint32 num_unhappy = get_pax_unhappy();
+		const uint32 num_routed  = num_happy + num_unhappy;
+
+		const bool is_overcrowded           = pax_count > pax_capacity;
+		const bool is_seriously_overcrowded = pax_count > pax_capacity + 200;
+
+		const uint32 satisfaction_percent = num_routed > 0 ? (num_happy * 100) / num_routed : 100;
+
+		if (is_overcrowded) {
 			overcrowded[0] |= 1;
+			status_bits |= is_seriously_overcrowded ? 2 : 1;
 		}
-		if(get_pax_unhappy() > 40 ) {
-			status_bits = (total_sum>max_ware+200 || (total_sum>max_ware  &&  get_pax_unhappy()>200)) ? 2 : 1;
+
+		if (num_unhappy >= 200 && is_overcrowded && satisfaction_percent < 75) {
+			status_bits |= 2;
 		}
-		else if(total_sum>max_ware) {
-			status_bits = total_sum>max_ware+200 ? 2 : 1;
+		else if (num_unhappy >= 40 && satisfaction_percent < 90) {
+			status_bits |= 1;
 		}
 	}
 
 	if(get_mail_enabled()) {
-		const uint32 max_ware = get_capacity(1);
-		const uint32 mail = get_ware_summe(goods_manager_t::mail);
-		total_sum += mail;
-		if(mail>max_ware) {
-			status_bits |= mail>max_ware+200 ? 2 : 1;
+		const uint32 mail_capacity = get_capacity(1);
+		const uint32 mail_count    = get_ware_summe(goods_manager_t::mail);
+		total_sum += mail_count;
+
+		const bool is_overcrowded           = mail_count > mail_capacity;
+		const bool is_seriously_overcrowded = mail_count > mail_capacity + 200;
+
+		if(is_overcrowded) {
+			status_bits |= is_seriously_overcrowded ? 2 : 1;
 			overcrowded[0] |= 2;
 		}
 	}
 
 	// now for all goods
-	if(status_color!=g_simgraph->palette_lookup(COL_RED)  &&  get_ware_enabled()) {
+	if(status_color!=gfx->palette_lookup(COL_RED)  &&  get_ware_enabled()) {
 		const uint8  count = goods_manager_t::get_count();
 		const uint32 max_ware = get_capacity(2);
 		for(  uint32 i = 3;  i < count;  i++  ) {
@@ -3127,14 +3145,14 @@ void haltestelle_t::recalc_status()
 	const bool is_connected     = !registered_convoys.empty() || !registered_lines.empty();
 
 	if (!is_connected) {
-		status_color = g_simgraph->palette_lookup(COL_NO_ROUTE);
+		status_color = gfx->palette_lookup(COL_NO_ROUTE);
 	}
 	else if (status_bits != 0) {
 		// take the worst color for status
-		status_color = g_simgraph->palette_lookup(status_bits&2 ? COL_RED : COL_ORANGE);
+		status_color = gfx->palette_lookup(status_bits&2 ? COL_RED : COL_ORANGE);
 	}
 	else {
-		status_color = g_simgraph->palette_lookup(has_any_activity ? COL_GREEN : COL_YELLOW);
+		status_color = gfx->palette_lookup(has_any_activity ? COL_GREEN : COL_YELLOW);
 	}
 
 	financial_history[0][HALT_WAITING] = total_sum;
@@ -3167,8 +3185,8 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 				max_bar_height = last_bar_height[i];
 			}
 		}
-		const scr_coord_val x = xpos - (last_bar_count * D_WAITINGBAR_WIDTH - g_simgraph->get_tile_raster_width()) / 2;
-		g_simgraph->mark_rect_dirty_wc( x - 1 - D_WAITINGBAR_WIDTH, ypos, x + last_bar_count * D_WAITINGBAR_WIDTH + 12 - 2, ypos - 11 );
+		const scr_coord_val x = xpos - (last_bar_count * D_WAITINGBAR_WIDTH - gfx->get_tile_raster_width()) / 2;
+		gfx->mark_rect_dirty_wc( x - 1 - D_WAITINGBAR_WIDTH, ypos, x + last_bar_count * D_WAITINGBAR_WIDTH + 12 - 2, ypos - 11 );
 
 		// reset bar heights for new count
 		last_bar_height.clear();
@@ -3179,7 +3197,7 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 		last_bar_count = count;
 	}
 
-	xpos -= (count * D_WAITINGBAR_WIDTH - g_simgraph->get_tile_raster_width()) / 2;
+	xpos -= (count * D_WAITINGBAR_WIDTH - gfx->get_tile_raster_width()) / 2;
 	const int x = xpos;
 
 	sint16 bar_height_index = 0;
@@ -3205,25 +3223,25 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 				v = (v / 4) + 2;
 			}
 
-			g_simgraph->draw_rect_clipped( xpos, ypos - v - 1, 1, v, g_simgraph->palette_lookup( COL_GREY4 ), false CLIP_NUM_DEFAULT);
-			g_simgraph->draw_rect_clipped( xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, wtyp->get_color(), false CLIP_NUM_DEFAULT);
-			g_simgraph->draw_rect_clipped( xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, g_simgraph->palette_lookup( COL_GREY1 ), false CLIP_NUM_DEFAULT);
+			gfx->draw_rect_clipped( xpos, ypos - v - 1, 1, v, gfx->palette_lookup( COL_GREY4 ), false CLIP_NUM_DEFAULT);
+			gfx->draw_rect_clipped( xpos + 1, ypos - v - 1, D_WAITINGBAR_WIDTH - 2, v, wtyp->get_color(), false CLIP_NUM_DEFAULT);
+			gfx->draw_rect_clipped( xpos + D_WAITINGBAR_WIDTH - 1, ypos - v - 1, 1, v, gfx->palette_lookup( COL_GREY1 ), false CLIP_NUM_DEFAULT);
 
 			// show up arrow for capped values
 			if(  sum > max_capacity  ) {
-				g_simgraph->draw_rect_clipped( xpos + (D_WAITINGBAR_WIDTH / 2) - 1, ypos - v - 6, 2, 4, g_simgraph->palette_lookup( COL_WHITE ), false CLIP_NUM_DEFAULT);
-				g_simgraph->draw_rect_clipped( xpos + (D_WAITINGBAR_WIDTH / 2) - 2, ypos - v - 5, 4, 1, g_simgraph->palette_lookup( COL_WHITE ), false CLIP_NUM_DEFAULT);
+				gfx->draw_rect_clipped( xpos + (D_WAITINGBAR_WIDTH / 2) - 1, ypos - v - 6, 2, 4, gfx->palette_lookup( COL_WHITE ), false CLIP_NUM_DEFAULT);
+				gfx->draw_rect_clipped( xpos + (D_WAITINGBAR_WIDTH / 2) - 2, ypos - v - 5, 4, 1, gfx->palette_lookup( COL_WHITE ), false CLIP_NUM_DEFAULT);
 				v += 5; // for marking dirty
 			}
 
 			if(  last_bar_height[bar_height_index] != (scr_coord_val)v  ) {
 				if(  (scr_coord_val)v > last_bar_height[bar_height_index]  ) {
 					// bar will be longer, mark new height dirty
-					g_simgraph->mark_rect_dirty_wc( xpos, ypos - v - 1, xpos + D_WAITINGBAR_WIDTH, ypos - 1 );
+					gfx->mark_rect_dirty_wc( xpos, ypos - v - 1, xpos + D_WAITINGBAR_WIDTH, ypos - 1 );
 				}
 				else {
 					// bar will be shorter, mark old height dirty
-					g_simgraph->mark_rect_dirty_wc( xpos, ypos - last_bar_height[ bar_height_index ] - 1, xpos + D_WAITINGBAR_WIDTH, ypos - 1 );
+					gfx->mark_rect_dirty_wc( xpos, ypos - last_bar_height[ bar_height_index ] - 1, xpos + D_WAITINGBAR_WIDTH, ypos - 1 );
 				}
 				last_bar_height[bar_height_index] = v;
 			}
@@ -3239,7 +3257,7 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 		last_status_color = get_status_farbe();
 		dirty = true;
 	}
-	g_simgraph->draw_rect_clipped( x - 1 - 4, ypos, count * D_WAITINGBAR_WIDTH + 12 - 2, D_WAITINGBAR_WIDTH, get_status_farbe(), dirty CLIP_NUM_DEFAULT);
+	gfx->draw_rect_clipped( x - 1 - 4, ypos, count * D_WAITINGBAR_WIDTH + 12 - 2, D_WAITINGBAR_WIDTH, get_status_farbe(), dirty CLIP_NUM_DEFAULT);
 }
 
 

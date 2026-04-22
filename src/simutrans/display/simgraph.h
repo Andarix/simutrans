@@ -50,19 +50,19 @@ struct clip_dimension {
 // save the current clipping and set a new one
 #define PUSH_CLIP(x,y,w,h) \
 	{\
-		clip_dimension const p_cr = g_simgraph->get_clip_rect(CLIP_NUM_DEFAULT_VALUE); \
-		g_simgraph->set_clip_rect(x, y, w, h CLIP_NUM_DEFAULT, false);
+		clip_dimension const p_cr = gfx->get_clip_rect(CLIP_NUM_DEFAULT_VALUE); \
+		gfx->set_clip_rect(x, y, w, h CLIP_NUM_DEFAULT, false);
 
 // save the current clipping and set a new one
 // fit it to old clipping region
 #define PUSH_CLIP_FIT(x,y,w,h) \
 	{\
-		clip_dimension const p_cr = g_simgraph->get_clip_rect(CLIP_NUM_DEFAULT_VALUE); \
-		g_simgraph->set_clip_rect(x, y, w, h CLIP_NUM_DEFAULT, true);
+		clip_dimension const p_cr = gfx->get_clip_rect(CLIP_NUM_DEFAULT_VALUE); \
+		gfx->set_clip_rect(x, y, w, h CLIP_NUM_DEFAULT, true);
 
 // restore a saved clipping rect
 #define POP_CLIP() \
-		g_simgraph->set_clip_rect(p_cr.x, p_cr.y, p_cr.w, p_cr.h CLIP_NUM_DEFAULT, false); \
+		gfx->set_clip_rect(p_cr.x, p_cr.y, p_cr.w, p_cr.h CLIP_NUM_DEFAULT, false); \
 	}
 
 
@@ -134,6 +134,15 @@ struct simgraph_t
 	/// Environment colours from RGB888 to system format
 	void (*env_t_rgb_to_system_colors)();
 
+	/// set primary and secondary company color for player
+	void (*set_player_color_scheme)(int player_idx, uint8 col1_idx, uint8 col2_idx);
+
+	/// Change the value of the day/night palette entry at index @p color_idx
+	void (*set_light_color)(int color_idx, rgb888_t day_color, rgb888_t night_color);
+
+	void (*set_daynight_level)(int night_level);
+
+
 	/// changes the raster width after loading
 	scr_coord_val (*set_base_raster_width)(scr_coord_val new_raster);
 
@@ -158,8 +167,8 @@ struct simgraph_t
 	image_id (*get_image_count)();
 
 	/// Registers an image with the renderer so the image can be drawn.
-	/// The image handle is stored in img->imgid
-	void (*register_image)(image_t *img);
+	/// @returns the image id (should be stored to img->imgid)
+	image_id (*register_image)(const image_t *img);
 
 	// delete all images above a certain number ...
 	void (*free_all_images_above)(image_id above);
@@ -196,13 +205,8 @@ struct simgraph_t
 	/// force a certain size on a image (for rescaling tool images)
 	void (*fit_img_to_width)(image_id n, sint16 new_w);
 
-	void (*set_daynight_level)(int night_level);
-
 	/// scrolls horizontally @p x_offset pixels to the left, will ignore clipping etc.
 	void (*move_scroll_band)(scr_coord_val start_y, scr_coord_val x_offset, scr_coord_val h);
-
-	/// set primary and secondary company color for player
-	void (*set_player_color_scheme)(int player_idx, uint8 col1_idx, uint8 col2_idx);
 
 	/// for switching between image procedure sets, and for setting current tile raster width
 	void (*set_image_procs)(bool is_global);
@@ -385,16 +389,13 @@ struct simgraph_t
 	void (*add_poly_clip)(int x0_,int y0_, int x1, int y1, int ribi  CLIP_NUM_DEF);
 	void (*clear_all_poly_clip)(CLIP_NUM_DEF0);
 	void (*activate_ribi_clip)(int ribi  CLIP_NUM_DEF);
-
-	/// Change the value of the day/night palette entry at index @p color_idx
-	void (*set_light_color)(int color_idx, rgb888_t day_color, rgb888_t night_color);
 };
 
 
 const simgraph_t *simgraph_select(simgraph_type_t preferred_type);
 
 /// Assign to this the output of simgraph_select
-extern const simgraph_t *g_simgraph;
+extern const simgraph_t *gfx;
 
 
 //
