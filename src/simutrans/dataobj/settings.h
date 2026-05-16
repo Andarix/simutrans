@@ -171,7 +171,8 @@ public:
 private:
 	uint16 tree_distribution = tree_distribution_t::TREE_DIST_RANDOM;
 
-	sint8 lake_height = 8; // relative to sea (groundwater) height
+	/// height level until which lakes will appear. (absolute)
+	sint8 lake_height = 8;
 
 	// game mechanics
 	uint8 allow_player_change = true;

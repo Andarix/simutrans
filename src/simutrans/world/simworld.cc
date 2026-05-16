@@ -1468,7 +1468,7 @@ void karte_t::create_lakes(  int xoff, int yoff, sint8 max_lake_height  )
 	new_stage = new sint8[size_x * size_y];
 	local_stage = new sint8[size_x * size_y];
 
-	for(  h = groundwater+1; h<max_lake_height; h++  ) {
+	for(  h = groundwater+1;  h < max_lake_height;  h++   ) {
 		need_to_flood = false;
 		memset( stage, -1, sizeof(sint8) * size_x * size_y );
 
@@ -1845,7 +1845,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	}
 
 	DBG_DEBUG("karte_t::distribute_groundobjs_cities()","distributing rivers");
-	if(  sets->get_lakeheight() > get_groundwater()  ) {
+	if(  sets->get_lakeheight() > 0  ) {
 		create_lakes( old_size.x, old_size.y, sets->get_lakeheight() );
 	}
 
