@@ -89,6 +89,7 @@
 #include "../tpl/vector_tpl.h"
 
 #include "../network/memory_rw.h"
+#include "../sys/simsys.h"
 #include "../utils/simrandom.h"
 #include "../utils/simstring.h"
 
@@ -2504,6 +2505,7 @@ const char *tool_plant_groundobj_t::work( player_t *player, koord3d pos )
  * the following routines add waypoints/halts to a schedule
  * because we do not like to stop at AIs stop, but we still want to force the truck to use AI roads
  * So if there is a halt, then it must be either public or ours!
+ * (Except if permission has been explicitely granted.)
  */
 static const char *tool_schedule_insert_aux(karte_t *welt, player_t *player, koord3d pos, schedule_t *schedule, bool append)
 {
@@ -2535,7 +2537,7 @@ static const char *tool_schedule_insert_aux(karte_t *welt, player_t *player, koo
 				return "Das Feld gehoert\neinem anderen Spieler\n";
 			}
 		}
-		if(  bd->is_halt()  &&  !player_t::check_owner( player, bd->get_halt()->get_owner()) ) {
+		if(  bd->is_halt()  &&  !bd->get_halt()->can_use_halt(player)) {
 			return "Das Feld gehoert\neinem anderen Spieler\n";
 		}
 		// ok, now we have a valid ground
@@ -6649,7 +6651,7 @@ uint8 tool_stop_mover_t::is_valid_pos(  player_t *player, const koord3d &pos, co
 	}
 	// check halt ownership
 	halthandle_t h = haltestelle_t::get_halt(pos,player);
-	if(  h.is_bound()  &&  !player_t::check_owner( player, h->get_owner() )  ) {
+	if(  bd->is_halt()  &&  !h.is_bound()  ) {
 		error = "Das Feld gehoert\neinem anderen Spieler\n";
 		return 0;
 	}
@@ -8702,6 +8704,24 @@ bool tool_rename_t::init(player_t *player)
 	return false;
 }
 
+
+bool tool_change_permission_t::init(player_t *player)
+{
+	uint16 id = 0, perms = 0;
+	const char *p = default_param;
+
+	id = atoi(p);
+	while(  *p>0  &&  *p++!=','  );
+	perms = atoi(p);
+
+	halthandle_t halt;
+	halt.set_id(id);
+	if(  halt.is_bound()  &&  player_t::check_owner(halt->get_owner(), player)  ) {
+		halt->set_permissions(perms);
+	}
+	return false;
+}
+
 bool tool_recolour_t::init(player_t *)
 {
 	// skip the rest of the command
@@ -8769,6 +8789,76 @@ bool tool_load_scenario_t::init(player_t*)
 	}
 
 	// do not call work(), it's a no-op anyway
+	return false;
+}
+
+
+// create (n) load (lxfilename, x!=0 start easy server), or save (sfilename)
+bool tool_work_world_t::init(player_t*)
+{
+	if (strempty(default_param)) {
+		return false;
+	}
+	char what = default_param[0];
+	if (what == 'n') {
+		destroy_all_win(true);
+		// new map
+		translator::set_language(translator::get_language());	// reset also ingame names
+		create_win({ 200, 100 }, new news_img("Erzeuge neue Karte.\n", skinverwaltung_t::neueweltsymbol->get_image_id(0)), w_info, magic_none);
+		if (!env_t::default_settings.heightfield.empty()) {
+			welt->load_heightfield(&env_t::default_settings);
+		}
+		else {
+			env_t::default_settings.heightfield = "";
+			welt->init(&env_t::default_settings, 0);
+		}
+		welt->step_month(env_t::default_settings.get_starting_month());
+		welt->set_pause(false);
+		destroy_all_win(true);
+		welt->type_of_generation = karte_t::NEW_WORLD;
+		env_t::default_settings.reset_after_global_settings_reload();
+		return true;
+	}
+	else if (what == 'l') {
+		destroy_all_win(true);
+		int easy_server = default_param[1]!='0';
+		const char* filename = default_param + 2;
+		welt->switch_server(easy_server != 0, true);
+		dr_chdir(env_t::user_dir);
+		if (!welt->load(filename)) {
+			//  failed to load ...
+			welt->switch_server(false, true);
+			return false;
+		}
+		else {
+			if (env_t::server) {
+				welt->announce_server(karte_t::SERVER_ANNOUNCE_HELLO);
+			}
+			welt->type_of_generation = karte_t::LOADED_WORLD;
+			return true;
+		}
+	}
+	else if (what == 's') {
+		// saving a game
+		if (env_t::server  ||  socket_list_t::get_playing_clients() > 0) {
+			network_reset_server();
+#if 0
+			// TODO: saving without kicking all clients off ...
+						// we have connected clients, so we do a sync
+			const uint32 new_map_counter = welt->generate_new_map_counter();
+			nwc_sync_t* nw_sync = new nwc_sync_t(welt->get_sync_steps() + 1, welt->get_map_counter(), -1, new_map_counter);
+			network_send_all(nw_sync, false);
+			// and now we need to copy the servergame to the map ...
+#endif
+		}
+		dr_chdir(env_t::user_dir);
+		long start_save = dr_time();
+		welt->save(default_param+1, false, env_t::savegame_version_str, false);
+		DBG_MESSAGE("loadsave_frame_t::item_action", "save world %li ms", dr_time() - start_save);
+		welt->set_dirty();
+		welt->reset_timer();
+		return true;
+	}
 	return false;
 }
 

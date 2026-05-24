@@ -1021,6 +1021,17 @@ public:
 	bool is_work_keeps_game_state() const OVERRIDE { return false; }
 };
 
+class tool_work_world_t : public tool_t {
+	// internal tool to start a scenario
+	// command i.filename
+	// if i==1, start as easyserver
+public:
+	tool_work_world_t() : tool_t(TOOL_WORK_WORLD | SIMPLE_TOOL) { flags = WFL_LOCAL | WFL_NO_CHK; }
+	bool init(player_t*) OVERRIDE;
+	bool is_init_keeps_game_state() const OVERRIDE { return false; }
+	bool is_work_keeps_game_state() const OVERRIDE { return false; }
+};
+
 class tool_rotate90_t : public tool_t {
 public:
 	tool_rotate90_t() : tool_t(TOOL_ROTATE90 | SIMPLE_TOOL) {}
@@ -1302,13 +1313,22 @@ public:
 	// work is not safe, has to be send over network
 };
 
-// internal tool: rename stuff
+// internal tool: set owner
 class tool_change_owner_t : public tool_t {
 public:
 	tool_change_owner_t() : tool_t(TOOL_SET_OWNER | GENERAL_TOOL) {}
 	const char *work( player_t*, koord3d) OVERRIDE;
 	bool is_init_keeps_game_state() const OVERRIDE { return true; }
 	// work is not safe, has to be send over network
+};
+
+// internal tool: set permissions
+class tool_change_permission_t : public tool_t {
+public:
+	tool_change_permission_t() : tool_t(TOOL_HALT_PERMISSION | SIMPLE_TOOL) {}
+	bool init(player_t*) OVERRIDE;
+	bool is_init_keeps_game_state() const OVERRIDE { return false; }
+	virtual bool is_init_network_save() const { return false; }
 };
 
 #endif
