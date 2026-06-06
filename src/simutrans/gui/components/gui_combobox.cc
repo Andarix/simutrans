@@ -235,10 +235,12 @@ DBG_MESSAGE("gui_combobox_t::infowin_event()","close");
 			if (textinp.infowin_event(&ev2)) {
 				if (strcmp(search_str,old_searchstr)!=0) {
 					for (sint32 i = 0; i < (sint32)droplist.get_count(); i++) {
-						droplist.get_element(i)->set_visible(STRICMP(droplist.get_element(i)->get_text(), search_str));
-						if (droplist.get_element(i)->is_visible() && first_match <= droplist.get_selection()) {
+						bool matches = strstr(droplist.get_element(i)->get_text(), search_str);
+//						bool = matches = tstrcasestr(droplist.get_element(i)->get_text(), search_str);
+						if (first_match == -1  &&  matches) {
 							first_match = i;
 						}
+						droplist.get_element(i)->set_visible(matches);
 					}
 					droplist.show_selection(first_match);
 					droplist.set_selection(first_match);

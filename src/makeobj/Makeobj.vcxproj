@@ -97,6 +97,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\simutrans\utils\cbuffer.cc" />
     <ClCompile Include="makeobj.cc" />
     <ClCompile Include="..\simutrans\simdebug.cc" />
     <ClCompile Include="..\simutrans\simmem.cc" />
@@ -217,6 +218,7 @@
     <ClInclude Include="..\simutrans\tpl\slist_tpl.h" />
     <ClInclude Include="..\simutrans\tpl\vector_tpl.h" />
     <ClInclude Include="..\simutrans\tpl\weighted_vector_tpl.h" />
+    <ClInclude Include="..\simutrans\utils\cbuffer.h" />
     <ClInclude Include="..\simutrans\utils\for.h" />
     <ClInclude Include="..\simutrans\utils\log.h" />
     <ClInclude Include="..\simutrans\utils\searchfolder.h" />

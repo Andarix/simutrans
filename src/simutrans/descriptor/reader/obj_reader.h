@@ -122,7 +122,8 @@ public:
 #endif
 		}
 		else {
-			dbg->fatal("node_body_t()", "Node of size 0 requested for %s", type_name);
+			end = ptr = buf;
+			dbg->error("node_body_t()", "Node of size 0 requested for %s", type_name);
 		}
 	}
 
@@ -167,12 +168,20 @@ public:
 	void read_uint16_block(uint16 *dest, size_t n)
 	{
 		uint8* cpy_end = ptr + 2 * n;
+		// normal one
 		if (cpy_end <= end) {
-			while (ptr < cpy_end) {
-				uint16 v = *ptr++;
-				v |= (uint16)*ptr++ << 8;
+#ifndef SIM_BIG_ENDIAN
+			memcpy(dest, ptr, 2 * n);
+			ptr = cpy_end;
+#else
+			uint8* p = ptr;
+			while (p < cpy_end) {
+				uint16 v = *p++;
+				v |= (uint16)*p++ << 8;
 				*dest++ = v;
 			}
+			ptr = p;
+#endif
 			return;
 		}
 		complain(2*n);
