@@ -3323,6 +3323,29 @@ void tool_build_tunnel_t::calc_route( way_builder_t &bauigel, const koord3d &sta
 	const tunnel_desc_t *desc = tunnel_builder_t::get_desc(default_param);
 	way_builder_t::bautyp_t bt = (way_builder_t::bautyp_t)(desc->get_waytype());
 
+	koord3d local_end = end;
+	if (grund_t::underground_mode == grund_t::ugm_all) {
+		local_end.z = start.z;
+		if (grund_t* gr = welt->lookup(start)) {
+			if (slope_t::type sl=gr->get_weg_hang()) {
+				
+				// need to handle slope here! (must be automatically a valid way slope)
+				if (end.y > start.y) {
+					// going south
+					local_end.z += corner_se(sl);
+				}
+				else if (end.y < start.y  ||  end.x < start.x) {
+					// either north or west
+					local_end.z += corner_nw(sl);
+				}
+				else {
+					// left: east
+					local_end.z += corner_ne(sl);
+				}
+			}
+		}
+	}
+
 	const way_desc_t *wb = desc->get_way_desc();
 	if(wb==NULL) {
 		// ignore timeline to get consistent results
@@ -3332,7 +3355,7 @@ void tool_build_tunnel_t::calc_route( way_builder_t &bauigel, const koord3d &sta
 	bauigel.init_builder(bt | way_builder_t::tunnel_flag, wb, desc);
 	bauigel.set_keep_existing_faster_ways( !is_ctrl_pressed() );
 	// wegbauer (way builder) tries to find route to 3d coordinate if no ground at end exists or is not kartenboden (map ground)
-	bauigel.calc_straight_route(start,end);
+	bauigel.calc_straight_route(start, local_end);
 }
 
 const char *tool_build_tunnel_t::do_work( player_t *player, const koord3d &start, const koord3d &end )
@@ -8846,7 +8869,7 @@ bool tool_work_world_t::init(player_t*)
 		destroy_all_win(true);
 		welt->type_of_generation = karte_t::NEW_WORLD;
 		env_t::default_settings.reset_after_global_settings_reload();
-		return true;
+		return false;	// unsafe tools must return false even on success!
 	}
 	else if (what == 'l') {
 		destroy_all_win(true);
@@ -8864,7 +8887,7 @@ bool tool_work_world_t::init(player_t*)
 				welt->announce_server(karte_t::SERVER_ANNOUNCE_HELLO);
 			}
 			welt->type_of_generation = strstart(filename, "net:") ? karte_t::CLIENT_WORLD : karte_t::LOADED_WORLD;
-			return true;
+			return false;	// unsafe tools must return false even on success!
 		}
 	}
 	else if (what == 's') {
@@ -8886,7 +8909,7 @@ bool tool_work_world_t::init(player_t*)
 		DBG_MESSAGE("loadsave_frame_t::item_action", "save world %li ms", dr_time() - start_save);
 		welt->set_dirty();
 		welt->reset_timer();
-		return true;
+		return false;	// unsafe tools must return false even on success!
 	}
 	return false;
 }
