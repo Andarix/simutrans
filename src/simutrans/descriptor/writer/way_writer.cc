@@ -139,6 +139,13 @@ void way_writer_t::write_obj(FILE* outfp, obj_node_t& parent, tabfileobj_t& obj)
 				string str = obj.get(buf);
 				keys.append(str);
 			}
+			// close diagonals
+			sprintf(buf, "%sdiagonal[close1]", image_type[backtofront]);
+			str = obj.get(buf);
+			keys.append(str);
+			sprintf(buf, "%sdiagonal[close2]", image_type[backtofront]);
+			str = obj.get(buf);
+			keys.append(str);
 			imagelist_writer_t::instance()->write_obj(outfp, node, keys);
 			keys.clear();
 
@@ -205,6 +212,13 @@ void way_writer_t::write_obj(FILE* outfp, obj_node_t& parent, tabfileobj_t& obj)
 					string str = obj.get(buf);
 					keys.append(str);
 				}
+				// close diagonals
+				sprintf(buf, "%sdiagonal[close1][%d]", image_type[backtofront], season);
+				str = obj.get(buf);
+				keys.append(str);
+				sprintf(buf, "%sdiagonal[close2][%d]", image_type[backtofront], season);
+				str = obj.get(buf);
+				keys.append(str);
 				imagelist_writer_t::instance()->write_obj(outfp, node, keys);
 
 				keys.clear();
