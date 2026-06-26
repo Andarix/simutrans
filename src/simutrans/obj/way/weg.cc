@@ -414,8 +414,12 @@ void weg_t::set_images(image_type typ, uint8 ribi, bool snow, uint8 switch_nw)
 			set_foreground_image( desc->get_switch_image_id(ribi, snow, switch_nw-1, true) );
 			break;
 		case image_diagonal:
-			set_image( desc->get_diagonal_image_id(ribi, snow) );
-			set_foreground_image( desc->get_diagonal_image_id(ribi, snow, true) );
+			set_image(desc->get_diagonal_image_id(ribi, snow));
+			set_foreground_image(desc->get_diagonal_image_id(ribi, snow, true));
+			break;
+		case image_close_diagonal:
+			set_image(desc->get_close_diagonal_image_id(ribi-1, snow));
+			set_foreground_image(desc->get_close_diagonal_image_id(ribi-1, snow, true));
 			break;
 	}
 }
@@ -456,7 +460,7 @@ bool weg_t::check_season(const bool calc_only_season_change)
 
 	if(  is_close_diagonal()  ) {
 		// double diagonals
-		set_images(image_diagonal, is_close_diagonal() == 1 ? ribi_t::northsouth : ribi_t::eastwest, snow);
+		set_images(image_close_diagonal, is_close_diagonal(), snow);
 	}
 	if(  is_diagonal()  ) {
 		set_images( image_diagonal, ribi, snow );
@@ -556,7 +560,7 @@ void weg_t::calc_image()
 			}
 			else {
 				if (desc->has_close_diagonal_image()) {
-					set_images(image_diagonal, is_close_diagonal() == 1+4, snow);
+					set_images(image_close_diagonal, is_close_diagonal(), snow);
 				}
 				else {
 					set_images(image_diagonal, is_close_diagonal() == 1 ? ribi_t::northwest : ribi_t::southwest, snow);
@@ -674,7 +678,8 @@ void weg_t::check_diagonal()
 		uint8 non_bent = 0;
 		for (uint8 i = 0; i < 4; i++) {
 			if (!from->get_neighbour(to, get_waytype(), ribi_t::nesw[i])) {
-				dbg->error("weg_t::is_diagonal", "4way ribi not connected at %s", get_pos().get_fullstr());
+				// only happend during construction of ways
+				dbg->warning("weg_t::is_diagonal", "4way ribi not connected at %s", get_pos().get_fullstr());
 				return;
 			}
 			r[i] = to->get_weg_ribi_unmasked(get_waytype());

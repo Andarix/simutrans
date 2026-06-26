@@ -2146,30 +2146,9 @@ bool grund_t::remove_everything_from_way(player_t* player, waytype_t wt, ribi_t:
 		const koord here = pos.get_2d();
 
 		// stops
-		if(flags&is_halt_flag  &&  (get_halt()->get_owner()==player  || player==welt->get_public_player())) {
-			bool remove_halt = get_typ()!=boden;
-			// remove only if there is no other way
-			if(get_weg_nr(1)==NULL) {
-				remove_halt = true;
-			}
-			else {
-#ifdef delete_matching_stops
-				// delete halts with the same waytype ... may lead to confusing / unexpected but completely logical results ;)
-				gebaeude_t *gb = find<gebaeude_t>();
-				if (gb) {
-					waytype_t halt_wt = (waytype_t)gb->get_tile()->get_desc()->get_extra();
-					if (halt_wt == wt || (wt==track_wt && halt_wt==tram_wt) || (wt==tram_wt && halt_wt==track_wt)) {
-						remove_halt = true;
-					}
-				}
-#else
-				remove_halt = false;
-#endif
-			}
-			if (remove_halt) {
-				if (!haltestelle_t::remove(player, pos)) {
-					return false;
-				}
+		if (is_halt() && !has_two_ways()) {
+			if (!haltestelle_t::remove(player, pos)) {
+				return false;
 			}
 		}
 		// remove ribi from canals to sea level

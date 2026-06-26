@@ -2123,7 +2123,7 @@ void karte_t::call_change_player_tool(uint8 cmd, uint8 player_nr, uint16 param, 
 		network_send_server(nwc);
 	}
 	else {
-		clear_random_mode(INTERACTIVE_RANDOM); // beacue the AI will call random to check where it can run
+		clear_random_mode(INTERACTIVE_RANDOM); // because the AI will call random to check where it can run
 		change_player_tool(cmd, player_nr, param, !get_public_player()->is_locked()  ||  scripted_call, true);
 		// update the window
 		ki_kontroll_t* playerwin = (ki_kontroll_t*)win_get_magic(magic_ki_kontroll_t);
@@ -4157,7 +4157,7 @@ DBG_MESSAGE("karte_t::load()", "%d factories loaded", all_factories.get_count())
 
 	// resolve dummy stops into real stops first ...
 	for(halthandle_t const i : haltestelle_t::get_alle_haltestellen()) {
-		if (i->get_owner() && i->existiert_in_welt()) {
+		if (i->get_owners() && i->existiert_in_welt()) {
 			i->finish_rd();
 		}
 	}
@@ -4165,9 +4165,9 @@ DBG_MESSAGE("karte_t::load()", "%d factories loaded", all_factories.get_count())
 	// ... before removing dummy stops
 	for(  vector_tpl<halthandle_t>::const_iterator i=haltestelle_t::get_alle_haltestellen().begin(); i!=haltestelle_t::get_alle_haltestellen().end();  ) {
 		halthandle_t const h = *i;
-		if(  !h->get_owner()  ||  !h->existiert_in_welt()  ) {
+		if(  !h->get_owners()  ||  !h->existiert_in_welt()  ) {
 			// this stop was only needed for loading goods ...
-			haltestelle_t::destroy(h); // remove from list
+			haltestelle_t::destroy(h,NULL); // remove from list
 		}
 		else {
 			++i;
