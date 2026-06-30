@@ -453,7 +453,7 @@ halthandle_t haltestelle_t::create(loadsave_t *file)
 // deletion of all tiles unless shared station
 void haltestelle_t::destroy(halthandle_t const halt, player_t* pl)
 {
-	if (halt->get_owners() == (1 << pl->get_player_nr())) {
+	if (!pl  ||  halt->get_owners() == (1 << pl->get_player_nr())) {
 		delete halt.get_rep();
 		return;
 	}
@@ -506,7 +506,6 @@ haltestelle_t::haltestelle_t(loadsave_t* file)
 	last_status_color = gfx->palette_lookup(COL_PURPLE);
 	last_bar_count = 0;
 	last_permissions = 0;
-	last_player_count = 0;
 
 	reconnect_counter = welt->get_schedule_counter()-1;
 
@@ -3001,7 +3000,7 @@ void haltestelle_t::rdwr(loadsave_t *file)
 {
 	xml_tag_t h( file, "haltestelle_t" );
 
-	sint32 owner_n = owners;
+	sint32 owner_n = owners ? get_first_owner()->get_player_nr() : PLAYER_UNOWNED;
 	koord3d k;
 
 	// will restore halthandle_t after loading
@@ -3036,8 +3035,9 @@ void haltestelle_t::rdwr(loadsave_t *file)
 	}
 
 	if(file->is_loading()) {
-		owners = owner_n;
-		permissions = 0; /* will iterate later */
+		// owners will be restored when loading tiles
+		owners = 0;
+		permissions = 0;
 		k.rdwr( file );
 		while(k!=koord3d::invalid) {
 			grund_t *gr = welt->lookup(k);
@@ -3052,16 +3052,17 @@ void haltestelle_t::rdwr(loadsave_t *file)
 				dbg->warning( "haltestelle_t::rdwr()", "bound to ground twice at (%i,%i)!", k.x, k.y );
 			}
 			// now check, if there is a building -> we allow no longer ground without building!
-			const gebaeude_t* gb = gr->find<gebaeude_t>();
-			const building_desc_t *desc=gb?gb->get_tile()->get_desc():NULL;
-			if(desc) {
+			if(const gebaeude_t* gb = gr->find<gebaeude_t>()) {
 				add_grund( gr, false /*do not relink factories now*/ );
+				owners |= 1<< gb->get_owner_nr();
 				// verbinde_fabriken will be called in finish_rd
 			}
 			else {
 				dbg->warning("haltestelle_t::rdwr()", "will no longer add ground without building at %s!", k.get_str() );
 			}
 			k.rdwr( file );
+
+			set_permissions(permissions);
 		}
 	}
 	else {
@@ -3166,19 +3167,15 @@ void haltestelle_t::rdwr(loadsave_t *file)
 
 	if (file->is_version_atleast(124, 5)) {
 		file->rdwr_short(permissions);
-		set_permissions(permissions);
 	}
-	else if (file->is_loading()) {
-		permissions = owner_n == 1 ? 0xFFFFu : (1 << owner_n);
-		set_permissions(permissions);
-	}
-
 }
 
 
 
 void haltestelle_t::finish_rd()
 {
+	set_permissions(permissions);
+
 	reconnect_factories();
 
 	stale_convois.clear();
@@ -3253,8 +3250,7 @@ void haltestelle_t::finish_rd()
 		}
 	}
 
-	// no need to recalc status here, as this is done in haltestelle_t::end_load_game
-	// (after convois have been loaded)
+	// probably moving name position?
 	recalc_basis_pos();
 
 	reconnect_counter = welt->get_schedule_counter()-1;
@@ -3379,9 +3375,14 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 {
 	// Do we need to display permissions?
 	uint16 player_count = 0;
-	for(  uint16 i = 0;  i <	PLAYER_UNOWNED;  i++  ) {
-		if(  (permissions&(1<<i))  &&  welt->get_player(i)  &&  !welt->get_player(i)->is_public_service()  ) {
-			player_count += 1;
+	PIXVAL colors[MAX_PLAYER_COUNT];
+	for(  uint16 i = 0;  i < MAX_PLAYER_COUNT;  i++  ) {
+		if (permissions & (1 << i)) {
+			if (const player_t* pl = welt->get_player(i)) {
+				if (!pl->is_public_service()) {
+					colors[player_count++] = gfx->palette_lookup(pl->get_player_color1() + 4);
+				}
+			}
 		}
 	}
  
@@ -3397,28 +3398,20 @@ void haltestelle_t::display_status(sint16 xpos, sint16 ypos)
 	}
 	ypos += -D_WAITINGBAR_WIDTH - LINESPACE/6;
 
-	bool players_dirty = false;
-	if(  permissions != last_permissions  ) {
-		if(  last_player_count  ) {
-			// erase old permissions display
-			const sint16 x = xpos - (last_player_count * 17 - gfx->get_tile_raster_width()) / 2;
-			gfx->mark_rect_dirty_wc( x, ypos, x + last_player_count * 17, ypos + D_WAITINGBAR_WIDTH );
+	bool players_dirty = permissions != last_permissions;
+	if (permissions | last_permissions) {
+		const sint16 wo = (64 * LINESPACE) / 14;
+		const sint16 xo = xpos - (wo - gfx->get_tile_raster_width()) / 2;
+		if (players_dirty  &&  player_count <= 1) {
+			// one or less: will vanish
+			// => erase old permissions display
+			gfx->mark_rect_dirty_wc(xo, ypos, xo + wo, ypos + D_WAITINGBAR_WIDTH);
 		}
 		last_permissions = permissions;
-		last_player_count = player_count;
-		players_dirty = true;
-	}
-	if(  player_count > 1  ) {
-		uint8 old_count = 0;
-		sint16 x = xpos - (player_count * 17 - gfx->get_tile_raster_width()) / 2;
-		for(  uint16 i = 0;  i <PLAYER_UNOWNED;  i++  ) {
-			if(  (permissions&(1<<i))  &&  welt->get_player(i)  &&  !welt->get_player(i)->is_public_service()  ) {
-				const PIXVAL color = gfx->palette_lookup(welt->get_player(i)->get_player_color1()+4);
-				gfx->draw_rect_clipped( x, ypos, 16, D_WAITINGBAR_WIDTH, color, false CLIP_NUM_DEFAULT);
-				x += 17;
-			}
+		if (player_count > 1) {
+			gfx->draw_rect_colors_clipped(xo, ypos - 1, wo, D_WAITINGBAR_WIDTH, colors, player_count, true, players_dirty  CLIP_NUM_DEFAULT);
+			ypos += -D_WAITINGBAR_WIDTH - 3;
 		}
-		ypos += -D_WAITINGBAR_WIDTH - 1;
 	}
 
 	if(  count != last_bar_count  ||  players_dirty  ) {
