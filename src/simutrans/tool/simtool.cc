@@ -732,7 +732,7 @@ DBG_MESSAGE("tool_remover()",  "removing tunnel  from %d,%d,%d",gr->get_pos().x,
 		for (uint i = 0; i < gr->obj_count(); i++) {
 			obj_t* obj = gr->obj_bei(i);
 			if (obj->get_typ() == type) {
-				if(msg = obj->get_removal_error(player)) {
+				if ((msg = obj->get_removal_error(player)) != NULL) {
 					return false;
 				}
 				delete obj;
@@ -2954,7 +2954,7 @@ void tool_build_way_t::mark_tiles(player_t* player, const koord3d& start, const 
 				if (ribi_t::all == zeige) {
 
 					// a little more effor to find out if diagonal
-					ribi_t::ribi r[4], r0 = 0;
+					ribi_t::ribi r[4];
 					uint8 non_bent = 0;
 					for (uint8 i = 0; i < 4; i++) {
 						r[i] = 0;
@@ -7638,49 +7638,6 @@ bool tool_show_underground_t::init( player_t * )
 		welt->update_underground();
 	}
 	return needs_click;
-}
-
-
-bool tool_show_underground_t::exit( player_t* )
-{
-	if(  grund_t::underground_mode != grund_t::ugm_none  ) {
-
-		// reset no normal view on deselect
-		grund_t::set_underground_mode( grund_t::ugm_none, 0 );
-
-		// renew toolbar
-		tool_t::update_toolbars();
-
-		// recalc all images on map
-		welt->update_underground();
-	}
-	return false;
-}
-
-
-const char *tool_show_underground_t::work( player_t *player, koord3d pos)
-{
-	koord3d zpos = welt->get_zeiger()->get_pos();
-	// move zeiger (pointer) to invalid position -> unmark tiles
-	welt->get_zeiger()->change_pos( koord3d::invalid);
-
-	save_underground_level = grund_t::underground_level;
-	grund_t::set_underground_mode( grund_t::ugm_level, pos.z);
-
-	// move zeiger (pointer) back
-	welt->get_zeiger()->change_pos( zpos);
-
-	// renew toolbar
-	tool_t::update_toolbars();
-
-	// recalc all images on map
-	welt->update_underground();
-
-	if(player == welt->get_active_player()) {
-		welt->set_tool( general_tool[TOOL_QUERY], player );
-	}
-
-	return NULL;
 }
 
 

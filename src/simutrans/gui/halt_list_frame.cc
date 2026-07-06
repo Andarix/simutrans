@@ -207,7 +207,7 @@ static bool passes_filter_special(halthandle_t s, uint16 player_nr)
 
 	if (halt_list_frame_t::get_filter(halt_list_frame_t::shared_filter)) {
 		uint16 permissions = s->get_permissions();
-		if (permissions & (permissions - 1) == 0) {
+		if ((permissions & (permissions - 1)) == 0) {
 			// only one permission
 			return false;
 		}
@@ -331,7 +331,7 @@ void halt_list_frame_t::sort_list()
 	haltestelle_t::stationtyp current_type = tabs.get_active_tab_stationtype();
 
 	scrolly->clear_elements();
-	uint16 player_flag = 1 << m_player->get_player_nr();
+
 	for(halthandle_t const halt : haltestelle_t::get_alle_haltestellen()) {
 		if (!halt->can_use_halt(m_player)) {
 			continue;

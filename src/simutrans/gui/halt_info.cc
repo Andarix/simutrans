@@ -193,7 +193,7 @@ public:
 		update_connections(h);
 	}
 
-	bool action_triggered(gui_action_creator_t* b, value_t state)
+	bool action_triggered(gui_action_creator_t* b, value_t state) OVERRIDE
 	{
 		if (b == &all  &&  state.i == 1) {
 			halt_permissions = 0xFFFF;
@@ -598,12 +598,15 @@ void gui_halt_detail_t::update_connections( halthandle_t halt )
 		t->new_component_span<gui_label_t>("Stopping permissions", 2);
 		int how_many = 0;
 		halt_permissions = halt->get_permissions();
+
 		all.init(button_t::square_automatic, "All");
-		all.pressed = halt_permissions == 0xFFFFu && halt_permissions == 0xFFFDu; // since publiuc player cannot own convois, it does not need permissions
+		all.pressed = halt_permissions == 0xFFFFu || halt_permissions == 0xFFFDu; // since public player cannot own convois, it does not need permissions
 		t->add_component(&all);
+
 		none.init(button_t::square_automatic, "Owner only");
 		none.pressed = halt_permissions == halt->get_owners();
 		t->add_component(&none);
+
 		for (uint16 i = 0; i < MAX_PLAYER_COUNT; i++) {
 			if (player_t* pl = world()->get_player(i)) {
 				if (pl->is_public_service() && !pl->get_finance()->has_convoi()) {
@@ -628,6 +631,7 @@ void gui_halt_detail_t::update_connections( halthandle_t halt )
 			delete t;
 		}
 	}
+
 	const slist_tpl<fabrik_t *> & fab_list = halt->get_fab_list();
 	slist_tpl<const goods_desc_t *> nimmt_an;
 

@@ -687,10 +687,9 @@ player_t* haltestelle_t::get_first_owner() const
 // returns the first player in the list
 uint8 haltestelle_t::get_player_color() const
 {
-	if (!owners) {
-		return NULL;
-	}
-	return get_first_owner()->get_player_color1();
+	return owners ?
+		get_first_owner()->get_player_color1() :
+		welt->get_public_player()->get_player_color1();
 }
 
 
@@ -3704,14 +3703,30 @@ grund_t *haltestelle_t::find_free_position(const waytype_t w,convoihandle_t cnv,
 			grund_t* const gr = i.grund;
 			// found a stop for this waytype but without object d ...
 			if (gr->hat_weg(w)) {
-				obj_t* o = gr->suche_obj(d);
-				if( o == NULL) {
-					// not occupied
-					return gr;
+				if (w == air_wt) {
+					bool free = true;
+					// we ignore flying airplanes but do not allow airplanes on the ground
+					for (uint8 i = 1; i < gr->obj_count(); i++) {
+						if (gr->obj_bei(i)->get_typ() == obj_t::air_vehicle) {
+							air_vehicle_t* v = (air_vehicle_t*)gr->obj_bei(i);
+							if (!v->is_flying()) {
+								// assume any airplane here is loading or trying to leave
+								free = false;
+								break;
+							}
+						}
+					}
+					if (free) {
+						return gr;
+					}
+
 				}
-				else if(w==air_wt&& ((air_vehicle_t *)o)->is_flying()) {
-					// ignore airplanes flying
-					return gr;
+				else {
+					obj_t* o = gr->suche_obj(d);
+					if (o == NULL) {
+						// not occupied
+						return gr;
+					}
 				}
 			}
 		}
@@ -3720,9 +3735,7 @@ grund_t *haltestelle_t::find_free_position(const waytype_t w,convoihandle_t cnv,
 }
 
 
-/* reserves a position (caution: railblocks work differently!
- */
-bool haltestelle_t::reserve_position(grund_t *gr,convoihandle_t cnv)
+bool haltestelle_t::reserve_position(grund_t *gr, convoihandle_t cnv)
 {
 	slist_tpl<tile_t>::iterator i = std::find(tiles.begin(), tiles.end(), gr);
 	if (i != tiles.end()) {
@@ -3737,22 +3750,18 @@ bool haltestelle_t::reserve_position(grund_t *gr,convoihandle_t cnv)
 				// found a stop for this waytype but without object d ...
 				vehicle_t const& v = *cnv->front();
 				if (gr->hat_weg(v.get_waytype())) {
-					if (!gr->suche_obj(v.get_typ())) {
-						// not occupied
-//DBG_MESSAGE("haltestelle_t::reserve_position()","success for gr=%i,%i cnv=%d",gr->get_pos().x,gr->get_pos().y,cnv.get_id());
-						i->reservation = cnv;
-						return true;
-					}
-					else if (v.get_waytype() == air_wt) {
-						if (air_vehicle_t* v = gr->find<air_vehicle_t>()) {
-							if (v->is_flying()) {
-								//DBG_MESSAGE("haltestelle_t::reserve_position()","success for gr=%i,%i cnv=%d",gr->get_pos().x,gr->get_pos().y,cnv.get_id());
-								i->reservation = cnv;
-								return true;
+					for (uint8 i = 1; i < gr->obj_count(); i++) {
+						if(gr->obj_bei(i)->get_typ() == obj_t::air_vehicle) {
+							air_vehicle_t* v = (air_vehicle_t *)gr->obj_bei(i);
+							if (!v->is_flying()) {
+								// assume any airplane here is loading or trying to leave
+								return false;
 							}
 						}
 					}
 				}
+				i->reservation = cnv;
+				return true;
 			}
 		}
 	}
