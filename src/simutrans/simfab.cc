@@ -37,6 +37,7 @@
 #include "dataobj/translator.h"
 #include "dataobj/loadsave.h"
 #include "dataobj/pakset_manager.h"
+#include "dataobj/powernet.h"
 
 #include "descriptor/factory_desc.h"
 #include "builder/hausbauer.h"
@@ -44,6 +45,7 @@
 #include "builder/fabrikbauer.h"
 
 #include "gui/fabrik_info.h"
+#include "gui/minimap.h"
 
 #include "utils/simrandom.h"
 #include "utils/cbuffer.h"
@@ -1107,6 +1109,7 @@ void fabrik_t::remove_field_at(koord pos)
 	field = fields[ fields.index_of(field) ];
 	const field_class_desc_t *const field_class = desc->get_field_group()->get_field_class( field.field_class_index );
 	fields.remove(field);
+	minimap_t::get_instance()->set_dirty();
 	// revert the field's effect on production base and storage capacities
 	set_base_production( prodbase - field_class->get_field_production() );
 }
@@ -3059,6 +3062,33 @@ void fabrik_t::info_prod(cbuffer_t& buf) const
 				);
 			}
 		}
+	}
+}
+
+
+void fabrik_t::info_power(cbuffer_t& buf) const
+{
+	buf.clear();
+
+	// The supply is fed into the net by this factory's own transformer (a pumpe_t);
+	// same lookup as get_power_supply(). Without one the plant feeds no net at all,
+	// and get_power_supply() is 0, so only the net lines have to be left out.
+	pumpe_t *const trans = transformers.empty() ? NULL : dynamic_cast<pumpe_t *>(transformers.front());
+	powernet_t *const net = trans ? trans->get_net() : NULL;
+
+	if(  net  ) {
+		buf.printf(translator::translate("Net ID: %p"), net);
+		buf.append("\n");
+	}
+	// capacity offered to the net now, already scaled by production level and boost
+	buf.printf(translator::translate("Generation: %.0f MW"), (double)(get_power_supply() >> POWER_TO_MW));
+	buf.append("\n");
+	// what the net actually draws from this plant: supply * normalised demand,
+	// the same figure the "Power (MW)" curve records every month
+	buf.printf("%s: %.0f", translator::translate("Power (MW)"), (double)convert_power(get_power()));
+	if(  net  ) {
+		buf.append("\n");
+		buf.printf(translator::translate("Usage: %.0f %%"), (double)((100 * net->get_normal_demand()) >> powernet_t::FRACTION_PRECISION));
 	}
 }
 
