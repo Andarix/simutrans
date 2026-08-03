@@ -23,12 +23,14 @@ include("tests/test_label")
 include("tests/test_powerline")
 include("tests/test_reservation")
 include("tests/test_scenario")
+include("tests/test_schedule_route")
 include("tests/test_sign")
 include("tests/test_slope")
 include("tests/test_terraform")
 include("tests/test_transport")
 include("tests/test_trees")
 include("tests/test_way_bridge")
+include("tests/test_way_elevated")
 include("tests/test_way_road")
 include("tests/test_way_runway")
 include("tests/test_way_tram")
@@ -207,6 +209,10 @@ all_tests <- [
 	test_way_bridge_planner_flat_ends,
 	test_way_bridge_planner_ownership,
 	test_way_bridge_planner_forbidden_by_scenario,
+	test_way_bridge_over_building,
+	test_way_bridge_over_fitting_stacked_building,
+	test_way_elevated_over_building,
+	test_way_elevated_over_building_footprint,
 	test_way_road_build_single_tile,
 	test_way_road_build_straight,
 	test_way_road_build_bend,
@@ -242,5 +248,22 @@ all_tests <- [
 	test_wayobj_build_disconnected,
 	test_wayobj_upgrade_downgrade,
 	test_wayobj_upgrade_change_owner,
-	test_wayobj_electrify_depot
+	test_wayobj_electrify_depot,
+	test_schedule_route_open_and_close,
+	test_schedule_route_update_on_change,
+	test_schedule_route_second_editor,
+	test_schedule_route_outdated_request,
+	test_schedule_route_broken_leg,
+	test_schedule_route_rail,
+	test_schedule_route_monorail,
+	test_schedule_route_water,
+	test_schedule_route_line_without_convoys,
+	test_schedule_route_convoy_and_line,
+	test_schedule_route_private_way,
+	test_schedule_route_rotate,
+	test_schedule_route_electric_follows_catenary,
+	test_schedule_route_diesel_ignores_catenary,
+	test_schedule_route_electric_without_catenary,
+	test_schedule_route_electric_survives_schedule_change,
+	test_schedule_route_diagonal_staircase
 ]
