@@ -11,6 +11,7 @@
 #include "../dataobj/scenario.h"
 
 #include "../descriptor/bridge_desc.h"
+#include "../descriptor/building_desc.h"
 
 #include "../ground/boden.h"
 #include "../ground/brueckenboden.h"
@@ -20,6 +21,7 @@
 
 #include "../obj/bruecke.h"
 #include "../obj/depot.h"
+#include "../obj/gebaeude.h"
 #include "../obj/leitung2.h"
 #include "../obj/pillar.h"
 #include "../obj/signal.h"
@@ -513,6 +515,21 @@ const char *bridge_builder_t::can_span_bridge(const player_t* player, koord3d st
 			return "bridge is too high for its type!";
 		}
 
+		// every building below must fit under the deck ("" lets a higher deck be tried)
+		for (unsigned b = 0; b < pl->get_boden_count(); b++) {
+			grund_t* below = pl->get_boden_bei(b);
+			if (below->get_hoehe() >= height) {
+				continue;
+			}
+			const gebaeude_t* gb = below->find<gebaeude_t>();
+			if (gb == NULL) {
+				gb = below->get_depot();
+			}
+			if (gb  &&  height - below->get_hoehe() < gb->get_tile()->get_desc()->get_height_clearance()) {
+				return "";
+			}
+		}
+
 		if (gr->hat_weg(air_wt)  &&  gr->get_styp(air_wt) == type_runway) {
 			return "No bridges over runways!";
 		}
@@ -908,6 +925,13 @@ void bridge_builder_t::build_ramp(player_t* player, koord3d end, ribi_t::ribi ri
 			weg = weg_t::alloc(desc->get_waytype());
 			bruecke->neuen_weg_bauen(weg, ribi_neu, 0);
 			weg->set_owner(player);
+		}
+		else {
+			// A way that was already here is paying maintenance to its owner, while the one
+			// built just above is booked to nobody. From here on both are part of the bridge,
+			// and remove() drops the owner of a way on a bridge tile rather than refunding it
+			// - so a charge left standing here is never given back.
+			player_t::add_maintenance( weg->get_owner(), -weg->get_desc()->get_maintenance(), weg->get_desc()->get_finance_waytype() );
 		}
 		weg->set_max_speed(desc->get_topspeed());
 	}
