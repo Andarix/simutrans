@@ -8458,10 +8458,17 @@ bool tool_change_depot_t::init( player_t *player )
 					int nr = start_nr;
 
 					// find end
-					while(nr<cnv->get_vehicle_count()) {
-						const vehicle_desc_t *info = cnv->get_vehicle(nr)->get_desc();
-						nr ++;
-						if(info->get_trailer_count()!=1) {
+					while (nr < cnv->get_vehicle_count()) {
+						const vehicle_desc_t* info = cnv->get_vehicle(nr)->get_desc();
+						nr++;
+						if (info->get_trailer_count() == 1) {
+							vehicle_desc_t const* const veh = info->get_trailer(0);
+							// the leading is any, we should keep it.
+							if (veh != vehicle_desc_t::any_vehicle) {
+								break;
+							}
+						}
+						else {
 							break;
 						}
 					}
@@ -8965,7 +8972,6 @@ bool tool_work_world_t::init(player_t*)
 			env_t::default_settings.heightfield = "";
 			welt->init(&env_t::default_settings, 0);
 		}
-		welt->step_month(env_t::default_settings.get_starting_month());
 		welt->set_pause(false);
 		destroy_all_win(true);
 		welt->type_of_generation = karte_t::NEW_WORLD;
