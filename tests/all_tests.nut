@@ -33,6 +33,7 @@ include("tests/test_way_bridge")
 include("tests/test_way_bridge_maintenance")
 include("tests/test_way_bridge_maintenance_auto")
 include("tests/test_way_elevated")
+include("tests/test_way_planner")
 include("tests/test_way_road")
 include("tests/test_way_runway")
 include("tests/test_way_tram")
@@ -225,6 +226,15 @@ all_tests <- [
 	test_way_bridge_maintenance_auto,
 	test_way_bridge_maintenance_auto_equals_manual,
 	test_way_bridge_maintenance_auto_off,
+	test_way_planner_step_cost_ground,
+	test_way_planner_step_cost_slope,
+	test_way_planner_step_cost_refused,
+	test_way_planner_step_cost_invalid,
+	test_way_planner_step_cost_matches_is_allowed_step,
+	test_way_planner_unconfigured,
+	test_way_planner_tram_shares_road,
+	test_way_planner_elevated_passes_over_road,
+	test_way_planner_runway_is_not_elevated,
 	test_way_road_build_single_tile,
 	test_way_road_build_straight,
 	test_way_road_build_bend,
@@ -257,6 +267,11 @@ all_tests <- [
 	test_way_tunnel_build_across_tunnel_slope,
 	test_way_tunnel_make_public,
 	test_way_tunnel_build_invalid_param_type,
+	test_way_tunnel_planner_find_end,
+	test_way_tunnel_planner_invalid_direction,
+	test_way_tunnel_planner_rotated_map,
+	test_way_tunnel_planner_no_exit,
+	test_way_tunnel_planner_off_map,
 	test_wayobj_build_straight,
 	test_wayobj_build_disconnected,
 	test_wayobj_upgrade_downgrade,
