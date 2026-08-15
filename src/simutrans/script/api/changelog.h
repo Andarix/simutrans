@@ -15,6 +15,9 @@
  *
  * @section api-trunk Current trunk
  *
+ * - Changed @ref way_planner_x::set_build_types which accepts an optional parameter now, to plan steps that change slopes
+ * - Changed @ref command_x::build_way and @ref command_x::build_road which accept an optional parameter now, to change slopes while building
+ * - Changed @ref command_x::build_bridge_at which accepts an optional parameter now, to search for longer bridges
  * - Added @ref tunnel_planner_x::find_end to plan the far portal of a tunnel
  * - Added @ref way_planner_x::get_step_cost
  * - Changed @ref bridge_planner_x::find_end which accepts two optional parameters now, to search for longer bridges and for ends on flat ground
