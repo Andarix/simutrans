@@ -84,6 +84,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\simutrans\utils\cbuffer.cc" />
     <ClCompile Include="nettool.cc" />
     <ClCompile Include="..\simutrans\simdebug.cc" />
     <ClCompile Include="..\simutrans\simmem.cc" />
@@ -102,22 +103,19 @@
     <ClCompile Include="..\simutrans\utils\simstring.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\simutrans\convoihandle_t.h" />
-    <ClInclude Include="..\simutrans\halthandle_t.h" />
+    <ClInclude Include="..\simutrans\convoihandle.h" />
+    <ClInclude Include="..\simutrans\halthandle.h" />
     <ClInclude Include="..\simutrans\macros.h" />
     <ClInclude Include="..\simutrans\simcolor.h" />
     <ClInclude Include="..\simutrans\simconst.h" />
     <ClInclude Include="..\simutrans\simdebug.h" />
     <ClInclude Include="..\simutrans\simloadingscreen.h" />
     <ClInclude Include="..\simutrans\simmem.h" />
-    <ClInclude Include="..\simutrans\simobj.h" />
-    <ClInclude Include="..\simutrans\simplan.h" />
     <ClInclude Include="..\simutrans\simtypes.h" />
     <ClInclude Include="..\simutrans\simunits.h" />
     <ClInclude Include="..\simutrans\simversion.h" />
-    <ClInclude Include="..\simutrans\simworld.h" />
     <ClInclude Include="..\simutrans\unicode.h" />
-    <ClInclude Include="..\simutrans\boden\grund.h" />
+    <ClInclude Include="..\simutrans\ground\grund.h" />
     <ClInclude Include="..\simutrans\boden\wege\weg.h" />
     <ClInclude Include="..\simutrans\dataobj\environment.h" />
     <ClInclude Include="..\simutrans\dataobj\freelist.h" />
@@ -147,7 +145,6 @@
     <ClInclude Include="..\simutrans\network\network_address.h" />
     <ClInclude Include="..\simutrans\network\network_cmd.h" />
     <ClInclude Include="..\simutrans\network\network_cmd_ingame.h" />
-    <ClInclude Include="..\simutrans\network\network_cmd_pakset.h" />
     <ClInclude Include="..\simutrans\network\network_file_transfer.h" />
     <ClInclude Include="..\simutrans\network\network_packet.h" />
     <ClInclude Include="..\simutrans\network\network_socket_list.h" />
@@ -159,9 +156,8 @@
     <ClInclude Include="..\simutrans\tpl\stringhashtable_tpl.h" />
     <ClInclude Include="..\simutrans\tpl\vector_tpl.h" />
     <ClInclude Include="..\simutrans\tpl\weighted_vector_tpl.h" />
-    <ClInclude Include="..\simutrans\utils\cbuffer_t.h" />
+    <ClInclude Include="..\simutrans\utils\cbuffer.h" />
     <ClInclude Include="..\simutrans\utils\fetchopt.h" />
-    <ClInclude Include="..\simutrans\utils\for.h" />
     <ClInclude Include="..\simutrans\utils\log.h" />
     <ClInclude Include="..\simutrans\utils\plainstring.h" />
     <ClInclude Include="..\simutrans\utils\sha1.h" />
