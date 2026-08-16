@@ -57,7 +57,7 @@ jobs:
 
   sim-mac-arm:
     name: macOS (ARM)
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [set-revision]
 
     steps:
