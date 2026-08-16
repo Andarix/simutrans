@@ -329,7 +329,7 @@ static scr_rect simgraph0_get_base_image_offset(image_id)
 
 static clip_dimension simgraph0_get_clip_rect(CLIP_NUM_DEF_NOUSE0)
 {
-	clip_dimension clip_rect;
+	clip_dimension clip_rect{};
 	clip_rect.x  = 0;
 	clip_rect.xx = 0;
 	clip_rect.w  = 0;
