@@ -221,6 +221,7 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get -ym install autoconf
+          sudo apt-get -ym install libpng-dev
           sudo apt-get -ym install libbz2-dev
 
       - name: setup
