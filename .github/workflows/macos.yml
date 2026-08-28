@@ -55,8 +55,8 @@ jobs:
           tag: Nightly
           overwrite: true
 
-  sim-mac-arm:
-    name: macOS (ARM)
+  sim-mac-SDL2-arm:
+    name: macOS (ARM SDL2)
     runs-on: macos-15
     needs: [set-revision]
 
@@ -83,6 +83,37 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: build/simumac-arm-nightly.zip
         asset_name: simumac-arm-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
+        tag: Nightly
+        overwrite: true
+
+  sim-mac-SDL3-arm:
+    name: macOS (ARM SDL3)
+    runs-on: macos-15
+    needs: [set-revision]
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: install_dependencies
+      run: |
+        brew reinstall cmake pkg-config libpng freetype zstd sdl3 fluidsynth
+    - name: build
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Release ..
+        cp ../revision.h ./revision.h
+        cmake --build . --target install
+    - name: distribute
+      run: |
+        cd build
+        zip -r simumac-arm-SDL3-nightly.zip simutrans
+    - name: Update binaries of Nightly Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: build/simumac-arm-SDL3-nightly.zip
+        asset_name: simumac-arm-SDL3-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
         tag: Nightly
         overwrite: true
 
