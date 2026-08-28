@@ -8,11 +8,13 @@ rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Curre
 rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" src\makeobj\Makeobj.vcxproj /p:Configuration=Release;Platform=x86;OutDir=..\..\build\
 rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\;TargetName=Simutrans_GDI_x86
 rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-GDI.vcxproj /p:Configuration=Release;Platform=x64;OutDir=build\;TargetName=Simutrans_GDI_x64
-rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-SDL2.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\
+rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-SDL2.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\;TargetName=Simutrans_SDL2_x64
+rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-SDL3.vcxproj /p:Configuration=Release;Platform=x86;OutDir=build\;TargetName=Simutrans_SDL3_x64
 rem "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe" Simutrans-Server.vcxproj /p:Configuration=Release;Platform=x64;OutDir=build\
 
 rem copy Simutrans_GDI.exe simutrans\Simutrans_GDI.exe
 rem copy Simutrans_SDL2.exe simutrans\Simutrans_SDL2.exe
+rem copy Simutrans_SDL3.exe simutrans\Simutrans_SDL3.exe
 rem copy Simutrans_Server.exe simutrans\Simutrans_SDL2.exe
 rem copy libs/SDL2.dll simutrans\SDL2.dll
 

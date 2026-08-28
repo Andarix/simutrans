@@ -32,11 +32,12 @@
     <ProjectName>Simutrans SDL3</ProjectName>
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -63,18 +64,21 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <IncludePath>$(SimIncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SimLibraryPath);$(LibraryPath)</LibraryPath>
+    <LibraryPath>libs64;$(SimLibraryPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <TargetName>$(ProjectName) Debug</TargetName>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <TargetName>$(ProjectName) Nightly</TargetName>
+    <TargetName>Simutrans_SDL3</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Stable'">
     <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
@@ -106,13 +110,12 @@
       <WarningLevel>Level3</WarningLevel>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <DisableSpecificWarnings>4250;4373;4800;4996;26812;26451</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4250;4373;4800;4996;26812;26451;4244;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <OptimizeReferences>true</OptimizeReferences>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>
       </TargetMachine>
@@ -143,7 +146,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>USE_ZSTD;USE_UPNP;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_ZSTD;USE_UPN=1P;USE_FREETYPE;COLOUR_DEPTH=16;MULTI_THREAD=1;MSG_LEVEL=3;NDEBUG;REVISION_FROM_FILE;NOMINMAX;WIN32_LEAN_AND_MEAN;WINVER=_WIN32_WINNT_WINXP</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Stable'">
@@ -161,6 +164,11 @@
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</MultiProcessorCompilation>
       <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExceptionHandling>
       <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</MinimalRebuild>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libs\bzip2-1.0.6;libs\miniupnpc-2.2.2;libs\zlib-1.2.11;libs\lpng1637;libs\zstd-1.5.2\lib;libs\SDL2-2.28.2;libs\freetype-2.10.1\include;libs\pthreads4w;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release_x64|Win32'">libs\bzip2-1.0.6;libs\miniupnpc-2.2.2;libs\zlib-1.2.11;libs\lpng1637;libs\zstd-1.5.2\lib;libs\SDL2-2.0.14;libs\freetype-2.10.1\include;libs\pthreads4w;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libs\miniupnpc-2.2.2;libs\zstd-1.5.2\lib;libs\pthreads4w;libs\lpng1637;libs\freetype-2.10.1\include;libs\zlib-1.2.11;libs\SDL3-3.4.14;libs\bzip2-1.0.6;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)src\simutrans\</AdditionalIncludeDirectories>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LargeAddressAware>
@@ -181,15 +189,17 @@
       <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">false</ExceptionHandling>
       <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</MinimalRebuild>
       <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</MinimalRebuild>
+      <ExternalWarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">InheritWarningLevel</ExternalWarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib;SDL3.lib;libpthreadVC3.lib;libbz2.lib;freetype.lib;libpng16.lib;libzstd_static.lib;miniupnpc.lib;libz-static.lib;Shlwapi.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LargeAddressAware>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Stable|Win32'">true</LargeAddressAware>
       <Profile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</Profile>
       <Profile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</Profile>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libs64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
