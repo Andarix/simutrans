@@ -897,6 +897,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\simskin.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\simsocial.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\simsound.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1992,6 +1995,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\simskin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\simsocial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\simsound.h">

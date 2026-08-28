@@ -176,6 +176,7 @@ all_tests <- [
 	test_sign_build_signal_multiple,
 	test_sign_replace_signal,
 	test_sign_signal_when_player_removed,
+	test_sign_signals_removed_with_bankrupt_company,
 	test_slope_to_dir,
 	test_slope_can_set,
 	test_slope_set_and_restore,
@@ -336,5 +337,13 @@ all_tests <- [
 	test_schedule_route_diesel_ignores_catenary,
 	test_schedule_route_electric_without_catenary,
 	test_schedule_route_electric_survives_schedule_change,
-	test_schedule_route_diagonal_staircase
+	test_schedule_route_diagonal_staircase,
+	test_schedule_route_height_flat,
+	test_schedule_route_height_slope,
+	test_schedule_route_height_bridge_head_flat,
+	test_schedule_route_height_bridge_head_sloped,
+	test_schedule_route_corner_flat,
+	test_schedule_route_corner_slope,
+	test_schedule_route_corner_bridge_head,
+	test_schedule_route_corner_terminus
 ]

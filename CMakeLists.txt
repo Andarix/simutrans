@@ -183,6 +183,8 @@ if (WIN32)
 else ()
 	if (SIMUTRANS_BACKEND STREQUAL "sdl2")
 		target_sources(simutrans PRIVATE src/simutrans/sys/clipboard_s2.cc)
+	elseif (SIMUTRANS_BACKEND STREQUAL "sdl3")
+		target_sources(simutrans PRIVATE src/simutrans/sys/clipboard_s3.cc)
 	else ()
 		target_sources(simutrans PRIVATE src/simutrans/sys/clipboard_internal.cc)
 	endif ()
@@ -224,18 +226,80 @@ if (SIMUTRANS_BACKEND STREQUAL "sdl2")
 	endif ()
 	target_compile_definitions(simutrans PRIVATE COLOUR_DEPTH=16)
 
+elseif (SIMUTRANS_BACKEND STREQUAL "sdl3")
+	# Asking for a backend whose library is missing has to say so. Without this
+	# the first thing that fails is "target PkgConfig::SDL3 not found", which
+	# does not tell anyone what to install.
+	#
+	# Android is exempt for the same reason sdl2 is: the whole find_package /
+	# pkg-config block is skipped there, so SDL3_FOUND is never set. SDL comes
+	# from the Android project's own SDL subdirectory instead.
+	if (NOT SDL3_FOUND AND NOT ANDROID)
+		message(FATAL_ERROR "SIMUTRANS_BACKEND=sdl3 was requested, but SDL3 was not found. "
+			"Install the SDL3 development package (libsdl3-dev, brew install sdl3, "
+			"or the sdl3 vcpkg port) and configure again.")
+	endif ()
+
+	# SDL3 as the platform layer, with the EXISTING software renderer on top:
+	# simgraph16 still draws into a CPU framebuffer, exactly as for sdl2.
+	# Sound is sdl3_sound.cc, the SDL3 counterpart of the sdl2_sound.cc the
+	# sdl2 backend uses. Music is not an SDL concern for either backend: it
+	# comes from the same per-platform routines, selected further down.
+	target_sources(simutrans PRIVATE src/simutrans/display/simgraph16.cc src/simutrans/sys/simsys_s3.cc
+		src/simutrans/sound/sdl3_sound.cc)
+	target_include_directories(simutrans PRIVATE ${SDL3_INCLUDE_DIRS})
+	if (MINGW)
+		# The static libSDL3.a pulls in a long tail of Windows libraries
+		# (winmm, setupapi, imm32, version, ...) that only pkg-config knows
+		# about, so the static library line is the one that links.
+		target_link_libraries(simutrans PRIVATE ${SDL3_STATIC_LIBRARIES})
+	elseif (APPLE)
+		target_link_libraries(simutrans PRIVATE ${SDL3_LIBRARIES})
+	elseif (MSVC OR ANDROID)
+		# SDL3::SDL3 is the alias SDL3's own CMakeLists defines. On Android SDL
+		# comes from the Android project's SDL3 subdirectory, where a bare SDL3
+		# target does not exist - only SDL3-shared and this alias. There is no
+		# SDL3main to go with it either: SDL3 carries its own entry point.
+		target_link_libraries(simutrans PRIVATE SDL3::SDL3)
+	else ()
+		target_link_libraries(simutrans PRIVATE PkgConfig::SDL3)
+	endif ()
+	target_compile_definitions(simutrans PRIVATE COLOUR_DEPTH=16)
+
+	# Freetype is mandatory for graphical builds, exactly as for sdl2 and gdi -
+	# including the ANDROID arm, where freetype is an imported target rather than
+	# something pkg-config knows about. The block below the backend selection
+	# has it for sdl2 and gdi; this copy needs the same.
+	target_include_directories(simutrans PRIVATE ${Freetype_INCLUDE_DIRS})
+	if (MINGW)
+		target_link_libraries(simutrans PRIVATE ${Freetype_STATIC_LIBRARIES})
+	elseif (APPLE)
+		target_link_libraries(simutrans PRIVATE ${Freetype_LIBRARIES})
+	elseif (MSVC OR ANDROID)
+		target_link_libraries(simutrans PRIVATE Freetype::Freetype)
+	else ()
+		target_link_libraries(simutrans PRIVATE PkgConfig::Freetype)
+	endif ()
+	if (SIMUTRANS_USE_FONTCONFIG)
+		target_compile_definitions(simutrans PRIVATE USE_FONTCONFIG=1)
+		target_link_libraries(simutrans PRIVATE Fontconfig::Fontconfig)
+	endif ()
+
 elseif (SIMUTRANS_BACKEND STREQUAL "gdi")
 	target_sources(simutrans PRIVATE src/simutrans/display/simgraph16.cc src/simutrans/sys/simsys_w.cc ${BACKUP_SOUND} )
 	target_link_libraries(simutrans PRIVATE imm32 xaudio2_8)
 	target_compile_definitions(simutrans PRIVATE COLOUR_DEPTH=16)
 
-else ()
-	if (NOT SIMUTRANS_BACKEND STREQUAL "none")
-		message(WARNING "Unknown backend '${SIMUTRANS_BACKEND}', falling back to headless compilation")
-	endif ()
-
+elseif (SIMUTRANS_BACKEND STREQUAL "none")
 	target_sources(simutrans PRIVATE src/simutrans/display/simgraph0.cc src/simutrans/sys/simsys_posix.cc src/simutrans/sound/no_sound.cc src/simutrans/music/no_midi.cc)
 	target_compile_definitions(simutrans PRIVATE COLOUR_DEPTH=0)
+
+else ()
+	# An unknown name used to fall through to the headless build with a warning, so
+	# a typo or the wrong case configured, compiled and ran as a backend nobody had
+	# asked for. Stop here instead.
+	message(FATAL_ERROR "Unknown backend '${SIMUTRANS_BACKEND}': valid backends are "
+		"sdl2, sdl3, gdi and none, all lowercase. Stopping rather than compiling headless.")
 endif ()
 
 
@@ -243,6 +307,7 @@ endif ()
 # Link dependencies
 #
 target_link_libraries(simutrans PRIVATE ZLIB::ZLIB)
+target_link_libraries(simusquirrel PRIVATE ZLIB::ZLIB)
 target_link_libraries(simutrans PRIVATE BZip2::BZip2)
 
 # Freetype is mandatory for graphical builds
@@ -284,8 +349,8 @@ if (SIMUTRANS_USE_ZSTD)
 	endif ()
 endif (SIMUTRANS_USE_ZSTD)
 
-# only consider FluidSynth for SDL2 and GDI backends
-if ((SIMUTRANS_BACKEND STREQUAL "sdl2") OR (SIMUTRANS_BACKEND STREQUAL "gdi"))
+# only consider FluidSynth for the backends that play music at all
+if ((SIMUTRANS_BACKEND STREQUAL "sdl2") OR (SIMUTRANS_BACKEND STREQUAL "sdl3") OR (SIMUTRANS_BACKEND STREQUAL "gdi"))
 	if (SIMUTRANS_USE_FLUIDSYNTH_MIDI)
 		target_sources(simutrans PRIVATE src/simutrans/music/fluidsynth.cc src/simutrans/gui/loadsoundfont_frame.cc)
 		target_compile_definitions(simutrans PRIVATE USE_FLUIDSYNTH_MIDI=1)
@@ -302,7 +367,7 @@ if ((SIMUTRANS_BACKEND STREQUAL "sdl2") OR (SIMUTRANS_BACKEND STREQUAL "gdi"))
 	else ()
 		target_sources( simutrans PRIVATE ${BACKUP_MUSIC} )
 	endif (SIMUTRANS_USE_FLUIDSYNTH_MIDI)
-endif ((SIMUTRANS_BACKEND STREQUAL "sdl2") OR (SIMUTRANS_BACKEND STREQUAL "gdi"))
+endif ((SIMUTRANS_BACKEND STREQUAL "sdl2") OR (SIMUTRANS_BACKEND STREQUAL "sdl3") OR (SIMUTRANS_BACKEND STREQUAL "gdi"))
 
 if (SIMUTRANS_STEAM_BUILT AND NOT ANDROID)
 	target_compile_definitions(simutrans PRIVATE STEAM_BUILT=1)
