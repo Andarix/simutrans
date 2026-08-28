@@ -8,12 +8,12 @@ on:
 jobs:
   set-revision:
     name: set revision
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       output1: ${{ steps.out1.outputs.revision }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: detect revision
       run: |
         read text < ./src/simutrans/revision.h
@@ -29,7 +29,7 @@ jobs:
     permissions: write-all
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
         path: 'gh-clone/simutrans'

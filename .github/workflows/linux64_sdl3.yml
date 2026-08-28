@@ -13,7 +13,7 @@ jobs:
       output1: ${{ steps.out1.outputs.revision }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: detect revision
       run: |
         read text < ./src/simutrans/revision.h
@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: install_dependencies
         run: |
