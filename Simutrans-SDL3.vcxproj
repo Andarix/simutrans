@@ -203,6 +203,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\simutrans\display\simgraph.cc" />
     <ClCompile Include="src\simutrans\display\simgraph16.cc" />
     <ClCompile Include="src\simutrans\music\w32_midi.cc" />
     <ClCompile Include="src\simutrans\sound\sdl3_sound.cc" />
