@@ -8,7 +8,7 @@ on:
 jobs:
   set-revision:
     name: set revision
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       output1: ${{ steps.out1.outputs.revision }}
     steps:
@@ -24,7 +24,7 @@ jobs:
 
   simulinux-x64-nightly:
     name: simutrans SDL3
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     needs: [set-revision]
 
     steps:
@@ -72,4 +72,3 @@ jobs:
           asset_name: simulinux-x64-sdl3-nightly_r${{ needs.set-revision.outputs.output1 }}.zip
           tag: Nightly
           overwrite: true
-
