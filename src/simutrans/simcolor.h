@@ -28,6 +28,75 @@ typedef unsigned short PIXVAL;
 // PIXVAL with above flags (eg. transparent) (uint32)
 typedef unsigned int FLAGGED_PIXVAL;
 
+/**
+ * Bits of a FLAGGED_PIXVAL that carry the screen colour rather than a draw flag.
+ *
+ * A flagged value is built by its callers as "colour | FLAG", which says nothing
+ * about where either half lives. The accessors below are the only place that
+ * knows the layout, so it can be changed here without touching those callers.
+ */
+#define FLAGGED_PIXVAL_COLOUR_MASK (0xFFFFu)
+
+/// The screen colour carried by a flagged value.
+inline PIXVAL get_flagged_colour(FLAGGED_PIXVAL c)
+{
+	return (PIXVAL)(c & FLAGGED_PIXVAL_COLOUR_MASK);
+}
+
+/// Whether the value asks for outline drawing rather than blending.
+inline bool has_outline_flag(FLAGGED_PIXVAL c)
+{
+	return (c & OUTLINE_FLAG) != 0;
+}
+
+/// Transparency step of the value: 0 for none, else 1, 2 or 3 for 25/50/75 %.
+inline uint8 get_transparency_level(FLAGGED_PIXVAL c)
+{
+	return (uint8)((c & TRANSPARENT_FLAGS) / TRANSPARENT25_FLAG);
+}
+
+/**
+ * Colour word as stored in an image (image_t::data and the renderer's copies
+ * of it).
+ *
+ * This is NOT a screen colour: it is the historical stored encoding, where
+ * 0x0000-0x7FFF is RGB555, 0x8000-0x800F are player colours, 0x8010-0x801F are
+ * day/night lights and everything above is a class+alpha code. Code reading
+ * this space may legitimately classify a pixel by its numeric value.
+ *
+ * It is a distinct contract from a screen pixel, and always 16 bit.
+ */
+typedef uint16 STORED_PIXVAL;
+
+static_assert(sizeof(STORED_PIXVAL) == 2, "stored image data must stay 16 bit");
+
+/**
+ * Colour word as written to a savegame.
+ *
+ * Its width is fixed by the savegame contract, not by the width of a screen
+ * pixel: files written since version 120.5 carry a 32 bit word holding either
+ * PLAYER_FLAG plus a player number, or a plain screen colour. Older files
+ * carry 16 bit and are converted on load.
+ *
+ * A wider screen colour must not widen this.
+ */
+typedef uint32 SAVED_PIXVAL;
+
+static_assert(sizeof(SAVED_PIXVAL) == 4, "saved message colour must stay 32 bit");
+
+/**
+ * Colour word as put on the network wire.
+ *
+ * Its width is fixed by the protocol: the gameinfo minimap has always been
+ * sent as one 16 bit word per pixel, and every client in the wild reads it
+ * that way.
+ *
+ * A wider screen colour must not widen this either.
+ */
+typedef uint16 NETWORK_PIXVAL;
+
+static_assert(sizeof(NETWORK_PIXVAL) == 2, "gameinfo map colour must stay 16 bit");
+
 // Menu colours (they don't change between day and night)
 #define MN_GREY0            229
 #define MN_GREY1            230
