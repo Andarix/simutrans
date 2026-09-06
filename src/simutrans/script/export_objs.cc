@@ -39,6 +39,7 @@ void register_export_function(HSQUIRRELVM vm, bool scenario)
 	export_tiles(vm);
 	export_world(vm, scenario);
 	export_pathfinding(vm);
+	export_ai_test(vm, scenario);       // TEST SUPPORT ONLY
 	if (scenario) {
 		export_schedule_route_test(vm); // TEST SUPPORT ONLY
 	}
