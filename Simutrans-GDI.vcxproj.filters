@@ -1074,25 +1074,27 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\chat_frame.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\player_ranking_frame.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\simachievements.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\script_generator_frame.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\tool\simtool-script-generator.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\simutrans\display\simgraph.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_owner.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\script\api\api_ai_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\script\api\api_schedule_route_test.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\simsocial.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -2271,6 +2273,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\gui\components\gui_owner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\simsocial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

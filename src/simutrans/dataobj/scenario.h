@@ -230,6 +230,27 @@ private:
 		// internal function, returns the idx of the first matching rule of 0xFFFFFF
 	sint32 matching_rule(const uint8 player, const forbidden_t& test, koord3d pos) const;
 
+	/// @{
+	/// @name Error handling of the permission callbacks
+	/**
+	 * Names of the permission callbacks that already failed to execute,
+	 * so that each of them is reported only once per scenario.
+	 */
+	vector_tpl<plainstring> failed_callbacks;
+
+	/**
+	 * Called when a call to a permission callback returned an error.
+	 * A callback the script does not define at all keeps the permissive result
+	 * it always had; a callback that exists but failed to execute denies the
+	 * requested action, and is reported once.
+	 *
+	 * @param function name of the called script function
+	 * @param err error message returned by script_vm_t::call_function
+	 * @returns true if the requested action has to be denied
+	 */
+	bool callback_failed(const char* function, const char* err);
+	/// @}
+
 	/// bit set if player has won / lost
 	uint16 won;
 	uint16 lost;
@@ -258,6 +279,18 @@ public:
 	 * @return content of loaded file
 	 */
 	plainstring load_language_file(const char* filename);
+
+	/**
+	 * Where this scenario was actually loaded from, with a trailing separator.
+	 *
+	 * A scenario can come from the addon directory or from the pakset, and only
+	 * init() knows which one won. Anything that has to reach a file shipped
+	 * beside the scenario has to ask, rather than rebuild the path from
+	 * env_t::pak_dir and be wrong for addon scenarios.
+	 *
+	 * Relative to env_t::user_dir, like the paths used to load the scenario.
+	 */
+	const char* get_scenario_path() const { return scenario_path; }
 
 	/// Load/save support
 	void rdwr(loadsave_t *file);
