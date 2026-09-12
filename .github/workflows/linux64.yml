@@ -144,7 +144,6 @@ jobs:
         run: |
           chmod -v 755 ./tools/lang_files_standard.sh
           ./tools/lang_files_standard.sh
-          cp simutrans/text/* build/simutrans/text
           cd build
           zip -r simulinux-x64-SDL2-nightly.zip simutrans
 
@@ -195,7 +194,6 @@ jobs:
         run: |
           chmod -v 755 ./tools/lang_files_standard.sh
           ./tools/lang_files_standard.sh
-          cp simutrans/text/* build/simutrans/text
           cd build
           zip -r simulinux-x64-SDL3-nightly.zip simutrans
 
