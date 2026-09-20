@@ -57,7 +57,7 @@ public:
 	}
 };
 
-// all waytype (rail, road, tram, monorail, maglev, narrogauge, 
+// all waytype (rail, road, tram, monorail, maglev, narrogauge,
 static way_selection_t selected_way[MAX_PLAYER_COUNT][MAX_WAYTYPE_TABS];
 
 /// selected tab per player
@@ -155,11 +155,11 @@ void way_builder_frame_t::init_tab()
 	sel.wt = tabs.get_active_tab_waytype();
 	ways_c.set_selection(-1);
 
-	bridges_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("Don't build bridges", SYSCOL_TEXT);
+	bridges_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Don't build bridges"), SYSCOL_TEXT);
 	bridges_c.set_selection(0);
 	bridge_i.set_image(IMG_EMPTY,true);
 
-	tunnels_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("Don't build tunnels", SYSCOL_TEXT);
+	tunnels_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Don't build tunnels"), SYSCOL_TEXT);
 	tunnels_c.set_selection(0);
 	tunnel_i.set_image(IMG_EMPTY,true);
 
@@ -167,7 +167,7 @@ void way_builder_frame_t::init_tab()
 	ways_c.set_force_selection(true);
 	if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_WAY | GENERAL_TOOL, sel.wt, 0)) {
 		// not allow this ways at all
-		ways_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("Don't build bridges", SYSCOL_TEXT);
+		ways_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Don't build bridges"), SYSCOL_TEXT);
 		ways_c.set_selection(0);
 
 		way_i.set_image(skinverwaltung_t::bauigelsymbol->get_image_id(0),true);
@@ -342,7 +342,7 @@ bool way_builder_frame_t::infowin_event(const event_t* ev)
 
 bool way_builder_frame_t::action_triggered( gui_action_creator_t *comp, value_t v )
 {
-	if(  comp == &tabs  ) {
+	if(	comp == &tabs ) {
 		read_selection();
 		init_tab();
 	}
@@ -408,5 +408,3 @@ void way_builder_frame_t::rdwr(loadsave_t* file)
 		set_windowsize(size);
 	}
 }
-
-
