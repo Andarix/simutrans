@@ -1964,7 +1964,7 @@ void way_builder_t::intern_calc_straight_route(const koord3d start, const koord3
 						// slope here, before the step is ever offered for
 						// checking, so without this the commonest refusal of the
 						// commonest gesture stays nameless.
-						warn_fail = "Slope is too steep";
+						warn_fail = translator::translate("Slope is too steep");
 						break;
 					}
 					// check terraforming (but not in curves)
