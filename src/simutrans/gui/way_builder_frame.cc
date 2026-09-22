@@ -212,11 +212,11 @@ void way_builder_frame_t::init_tab()
 	sel.wt = tabs.get_active_tab_waytype();
 	ways_c.set_selection(-1);
 
-	bridges_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("Don't build bridges", SYSCOL_TEXT);
+	bridges_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Don't build bridges"), SYSCOL_TEXT);
 	bridges_c.set_selection(0);
 	bridges_c.set_image(empty_selection);
 
-	tunnels_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("Don't build tunnels", SYSCOL_TEXT);
+	tunnels_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Don't build tunnels"), SYSCOL_TEXT);
 	tunnels_c.set_selection(0);
 	tunnels_c.set_image(empty_selection);
 
@@ -224,7 +224,7 @@ void way_builder_frame_t::init_tab()
 	ways_c.set_force_selection(true);
 	if (!welt->get_scenario()->is_tool_allowed(welt->get_active_player(), TOOL_BUILD_WAY | GENERAL_TOOL, sel.wt, 0)) {
 		// not allow this ways at all
-		ways_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>("Don't build bridges", SYSCOL_TEXT);
+		ways_c.new_component<gui_scrolled_list_t::const_text_scrollitem_t>(translator::translate("Don't build bridges"), SYSCOL_TEXT);
 		ways_c.set_selection(0);
 
 		ways_c.set_image(empty_selection);
