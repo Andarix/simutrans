@@ -1147,18 +1147,37 @@ void scenario_t::rdwr(loadsave_t *file)
 		clear_rules();
 	}
 
-	for (uint pnr = 0; pnr < MAX_PLAYER_COUNT; pnr++) {
-		uint32 count = forbidden_tools[pnr].get_count();
+	if (file->is_version_atleast(124, 3)) {
+		for (uint pnr = 0; pnr < MAX_PLAYER_COUNT; pnr++) {
+			uint32 count = forbidden_tools[pnr].get_count();
+			file->rdwr_long(count);
+
+			for (uint32 i = 0; i < count; i++) {
+				if (file->is_loading()) {
+					forbidden_tools[pnr].append(new forbidden_t());
+				}
+				forbidden_tools[pnr][i]->rdwr(file);
+			}
+		}
+	}
+	else {
+		// only restore rules for player 0 in old games and copy
+		uint32 count = forbidden_tools[0].get_count();
 		file->rdwr_long(count);
 
 		for (uint32 i = 0; i < count; i++) {
 			if (file->is_loading()) {
-				forbidden_tools[pnr].append(new forbidden_t());
+				forbidden_tools[0].append(new forbidden_t());
 			}
-			forbidden_tools[pnr][i]->rdwr(file);
+			forbidden_tools[1][i]->rdwr(file);
+		}
+		// copy them to every player
+		for (uint pnr = 0; pnr < MAX_PLAYER_COUNT; pnr++) {
+			for (uint32 i = 2; i < count; i++) {
+				forbidden_tools[pnr].append(forbidden_tools[0][i]);
+			}
 		}
 	}
-
 	// cached strings
 	if (file->is_version_atleast(120, 3)) {
 		dynamic_string::rdwr_cache(file);
