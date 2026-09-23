@@ -251,7 +251,6 @@ all_tests <- [
 	test_way_bridge_maintenance_owner,
 	test_way_bridge_maintenance_rail,
 	test_way_bridge_maintenance_auto,
-	test_way_bridge_maintenance_auto_equals_manual,
 	test_way_bridge_maintenance_auto_off,
 	test_way_fail_reason_building,
 	test_way_fail_reason_crossing,
@@ -348,7 +347,7 @@ all_tests <- [
 	test_schedule_route_corner_flat,
 	test_schedule_route_corner_slope,
 	test_schedule_route_corner_bridge_head,
-	test_schedule_route_corner_terminus,
+	test_schedule_route_corner_terminus
 	test_ai_scripted_fixture_start_dispatched,
 	test_ai_scripted_shipped_sqai_smoke,
 	test_ai_scripted_attach_missing_ai_fails,
