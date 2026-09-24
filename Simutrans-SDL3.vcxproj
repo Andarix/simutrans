@@ -216,6 +216,12 @@
       <AdditionalDependencies>%(AdditionalDependencies);dsound.lib;ksuser.lib;shlwapi.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(SimutransSdl3Mixer)'=='true'">
+    <Link>
+      <!-- system libraries the static decoders need: FluidSynth's DirectSound and waveOut drivers, mpg123's Path* calls -->
+      <AdditionalDependencies>%(AdditionalDependencies);dsound.lib;ksuser.lib;shlwapi.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\simutrans\display\simgraph.cc" />
     <ClCompile Include="src\simutrans\display\simgraph16.cc" />
