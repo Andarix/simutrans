@@ -60,6 +60,7 @@
 #include "../gui/components/gui_component.h"
 #include "../gui/components/gui_textinput.h"
 #include "../music/music.h"
+#include "../sound/sdl3_audio.h"
 #include "../utils/unicode.h"
 #include "../world/simworld.h"
 
@@ -474,6 +475,14 @@ bool dr_os_init(const int *parameter)
 	 * subsystem can latch the default first. */
 	SDL_SetHint( SDL_HINT_TOUCH_MOUSE_EVENTS, "0" );
 
+	/* Nor the other way round: a mouse or a pen that SDL also turns into a
+	 * finger arrives twice, as its own button events and again as a tap.
+	 * SDL does that by default for a mouse on Android and iOS, and for a pen
+	 * everywhere. Both keep their mouse events, which the handling below
+	 * already understands - hover included. */
+	SDL_SetHint( SDL_HINT_MOUSE_TOUCH_EVENTS, "0" );
+	SDL_SetHint( SDL_HINT_PEN_TOUCH_EVENTS, "0" );
+
 	// SDL2->SDL3: SDL_Init returns true on success, where SDL2 returned 0.
 	if(  !SDL_Init( SDL_INIT_VIDEO )  ) {
 		dbg->error( "dr_os_init(SDL3)", "Could not initialize SDL: %s", SDL_GetError() );
@@ -742,7 +751,8 @@ void dr_os_close()
 	 *   4 free framebuffer - ours; nothing inside SDL points at it
 	 *   5 destroy cursors  - independent of the window, but before SDL_Quit
 	 *   6 destroy window   - now nothing refers to it
-	 *   7 SDL_Quit         - last, or the calls above have no subsystem left
+	 *   7 close music      - SDL3_mixer, if used, owns audio streams of its own
+	 *   8 SDL_Quit         - last, or the calls above have no subsystem left
 	 */
 	if(  window  ) {
 		SDL_StopTextInput( window );
@@ -771,6 +781,8 @@ void dr_os_close()
 		SDL_DestroyWindow( window );
 		window = NULL;
 	}
+
+	sdl3_audio_close();
 
 	SDL_Quit();
 }
@@ -1123,6 +1135,18 @@ static bool emit_longpress_if_due(uint32 down_time, bool &already_sent, uint32 &
 }
 
 
+// the left button release a finger owes the game
+static void finger_release(sint32 mx, sint32 my)
+{
+	sys_event.type    = SIM_MOUSE_BUTTONS;
+	sys_event.code    = SIM_MOUSE_LEFTUP;
+	sys_event.mb      = 0;
+	sys_event.mx      = mx;
+	sys_event.my      = my;
+	sys_event.key_mod = ModifierKeys();
+}
+
+
 static uint16 conv_mouse_buttons(SDL_MouseButtonFlags state)
 {
 	return
@@ -1184,6 +1208,15 @@ static void internal_GetEvents()
 	 * in a poll, so the release waits here for the next one. */
 	static bool   has_queued_finger_release = false;
 	static sint32 last_mx = 0, last_my = 0;
+
+	/* Whether the finger that owns the gesture has given the game a press no
+	 * release has answered yet, and where that finger last was. A drag ends
+	 * with its release; when a second finger or the system takes the
+	 * gesture over, the release is still owed. Without it the game keeps
+	 * the button down, and the next release - the next tap on the map -
+	 * is swallowed as the end of a drag that never ended. */
+	static bool   finger_press_sent = false;
+	static sint32 finger_mx = 0, finger_my = 0;
 
 	/* Where and when the finger that owns the gesture landed, so that a hold
 	 * can be told from a drag and timed. SDL delivers no event for a finger
@@ -1408,6 +1441,11 @@ static void internal_GetEvents()
 			else if(  FirstFingerId != event.tfinger.fingerID  ) {
 				// a second finger: this is a gesture, not a drag
 				previous_multifinger_touch = 2;
+				if(  finger_press_sent  ) {
+					// so the drag the first finger started ends here
+					finger_press_sent = false;
+					finger_release( finger_mx, finger_my );
+				}
 			}
 			break;
 
@@ -1506,6 +1544,9 @@ static void internal_GetEvents()
 				}
 				sys_event.mb      = MOUSE_LEFTBUTTON;
 				sys_event.key_mod = ModifierKeys();
+				finger_press_sent = true;
+				finger_mx = sys_event.mx;
+				finger_my = sys_event.my;
 			}
 			break;
 		}
@@ -1548,6 +1589,7 @@ static void internal_GetEvents()
 						}
 						else {
 							// end of a drag
+							finger_press_sent = false;
 							sys_event.type    = SIM_MOUSE_BUTTONS;
 							sys_event.code    = SIM_MOUSE_LEFTUP;
 							sys_event.mb      = 0;
@@ -1555,6 +1597,13 @@ static void internal_GetEvents()
 							sys_event.my      = (sint32)((event.tfinger.y + event.tfinger.dy) * screen_size.h);
 							sys_event.key_mod = ModifierKeys();
 						}
+					}
+					else if(  finger_press_sent  ) {
+						/* The system took a drag away. Its press was made, so its
+						 * release is given back; a gesture that never pressed - a
+						 * cancelled tap - still releases nothing. */
+						finger_press_sent = false;
+						finger_release( finger_mx, finger_my );
 					}
 					previous_multifinger_touch = 0;
 					in_finger_handling = false;
