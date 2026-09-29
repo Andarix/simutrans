@@ -185,6 +185,7 @@ void way_builder_frame_t::read_selection()
 		else {
 			costs.set_text("Please select a way to build!");
 			costs.set_color(SYSCOL_TEXT_STRONG);
+			set_resizemode(horizontal_resize);
 		}
 	}
 	resize(scr_coord(0, 0));
@@ -382,8 +383,10 @@ way_builder_frame_t::way_builder_frame_t(waytype_t initial_wt) :
 	reset_min_windowsize();
 
 	if (first_call) {
-		resize(get_min_windowsize() - get_windowsize());
-		set_resizemode(no_resize);
+		costs.set_text("Please select a way to build!");
+		costs.set_color(SYSCOL_TEXT_STRONG);
+		set_resizemode(horizontal_resize);
+		//set_resizemode(no_resize);
 	}
 }
 
@@ -409,8 +412,8 @@ bool way_builder_frame_t::infowin_event(const event_t* ev)
 bool way_builder_frame_t::action_triggered(gui_action_creator_t* comp, value_t v)
 {
 	if (comp == &tabs) {
-		read_selection();
 		init_tab();
+		read_selection();
 	}
 	else {
 		read_selection();
