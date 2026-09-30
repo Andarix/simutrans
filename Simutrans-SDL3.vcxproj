@@ -200,7 +200,7 @@
       <ExternalWarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">InheritWarningLevel</ExternalWarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib;SDL3.lib;libpthreadVC3.lib;libbz2.lib;freetype.lib;libpng16.lib;libzstd_static.lib;miniupnpc.lib;libz-static.lib;Shlwapi.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;shell32.lib;winmm.lib;advapi32.lib;ws2_32.lib;imm32.lib;iphlpapi.lib;OleAut32.lib;GDI32.lib;version.lib;Ole32.lib;SetupAPI.lib;urlmon.lib;SDL3.lib;libpthreadVC3.lib;libbz2.lib;freetype.lib;libpng16.lib;libzstd_static.lib;miniupnpc.lib;libz-static.lib;Shlwapi.lib;SDL3_mixer.lib</AdditionalDependencies>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LargeAddressAware Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LargeAddressAware>
