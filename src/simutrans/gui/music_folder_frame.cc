@@ -16,7 +16,7 @@
 music_folder_frame_t::music_folder_frame_t() : savegame_frame_t(NULL, true, NULL, false)
 {
 	set_name( translator::translate("Select music") );
-	fnlabel.set_text("Each soundtrack is a folder in the music directory.");
+	fnlabel.set_text(translator::translate("Each soundtrack is a folder in the music directory."));
 	top_frame.remove_component( &input );
 	label_enabled = false;
 
