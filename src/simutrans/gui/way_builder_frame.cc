@@ -383,10 +383,8 @@ way_builder_frame_t::way_builder_frame_t(waytype_t initial_wt) :
 	reset_min_windowsize();
 
 	if (first_call) {
-		costs.set_text("Please select a way to build!");
-		costs.set_color(SYSCOL_TEXT_STRONG);
+		read_selection();
 		set_resizemode(horizontal_resize);
-		//set_resizemode(no_resize);
 	}
 }
 
@@ -479,6 +477,7 @@ void way_builder_frame_t::rdwr(loadsave_t* file)
 		active_player_nr = -1;
 		active_tab = -1;
 		init_tab();
+		read_selection();
 		set_windowsize(size);
 	}
 }
