@@ -184,7 +184,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Stable'">
     <ClCompile>
-      <DebugInformationFormat />
+      <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -208,6 +208,7 @@
       <Profile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</Profile>
       <Profile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</Profile>
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libs64</AdditionalLibraryDirectories>
+      <AssemblyDebug Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(SimutransSdl3Mixer)'=='true'">
