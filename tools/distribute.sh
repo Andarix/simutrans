@@ -111,7 +111,7 @@ elif [ "$OST" = "mingw" ]; then
 # Missing: Copy matching SDL dll!
   fi
   cd simutrans
-  if [ "$PGC" -ne 0 ]; then
+  if [ -n "$PGC" ]; then
     getDLL
   fi
   cd ..
