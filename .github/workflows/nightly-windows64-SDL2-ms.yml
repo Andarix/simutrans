@@ -11,13 +11,24 @@ on:
 jobs:
   winSDL2-64:
    runs-on: windows-latest
-   steps:
-    - name: Setup MSBuild and add to PATH
-      uses: microsoft/setup-msbuild@v2
 
+   env:
+      VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+
+   steps:
     - name: Checkout code
       uses: actions/checkout@v6
       id: checkout_code
+
+    - name: Setup MSBuild and add to PATH
+      uses: microsoft/setup-msbuild@v3
+
+    - name: Export GitHub Actions Cache Environment Variables
+      uses: actions/github-script@v7
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
     - name: Make NSIS
       shell: pwsh
@@ -27,6 +38,7 @@ jobs:
     - name: Run MSBuild
       shell: pwsh
       working-directory: ${{env.GITHUB_WORKSPACE}}
+      # not needed any more: vcpkg x-update-baseline
       run: |
         vcpkg integrate install
         msbuild /m .\Simutrans-SDL2.vcxproj -p:Configuration=Release /p:platform=x64

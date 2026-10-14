@@ -103,9 +103,10 @@ elif [ "$OST" = "haiku" ]; then
  simarchivbase=simuhaiku
 elif [ "$OST" = "mingw" ]; then
   simexe=.exe
-  SDLTEST=`grep "^BACKEND" config.default | sed "s/BACKEND[ ]*[:]*=[ ]*//" | sed "s/[ ]*\#.*//"`
-  if [ "$SDLTEST" = "sdl" ]  ||  [ "$SDLTEST" = "sdl2" ]; then
-    simarchivbase=simuwin-sdl
+  if [[ "$MINGW_PACKAGE_PREFIX" == *"x86_64"* ]]; then
+    simarchivbase=simuwin-x64
+  elif [[ "$MINGW_PACKAGE_PREFIX" == *"aarch64"* ]]; then
+    simarchivbase=simuwin-arm
   else
     simarchivbase=simuwin
 # Missing: Copy matching SDL dll!
