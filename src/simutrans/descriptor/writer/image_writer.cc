@@ -91,7 +91,7 @@ static uint16 pixrgb_to_pixval(uint32 rgb)
 	assert(  rgb < ALPHA_THRESHOLD  );
 
 	if(  rgb > 0x00FFFFFF  ) {
-		sint16 alpha = ((255 - (rgb >> 24) * 32) / 255; // alpha = 32 would be transparent
+		sint16 alpha = (255 - (rgb >> 24) * 32) / 255; // alpha = 32 would be transparent
 
 		// first see if this is a transparent special color (like player color)
 		for (int i = 0; i < SPECIAL; i++) {
