@@ -6,7 +6,7 @@ name: Nightly Built Windows ARM64 SDL3
 on:
   push:
     tags:
-      - 'Nightly_'
+      - 'Nightly_a'
 
 jobs:
   winSDL3-ARM64:

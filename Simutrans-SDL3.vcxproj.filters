@@ -1107,6 +1107,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\gui\music_folder_frame.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\simutrans\dataobj\local_preferences.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\builder\brueckenbauer.h">
@@ -2294,10 +2297,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\gui\music_folder_frame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\simutrans\dataobj\local_preferences.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="$(MSBuildThisFileDirectory)src\Windows\simres.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
