@@ -119,7 +119,7 @@ jobs:
 
   makeobj-mac_arm:
     name: makeobj macOS arm
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [set-revision]
 
     steps:
