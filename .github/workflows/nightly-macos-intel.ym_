@@ -8,14 +8,14 @@ on:
 jobs:
   build:
 
-    runs-on: macos-14
+    runs-on: macos-15-intel
 
     steps:
     - uses: actions/checkout@v6
 
     - name: install_dependencies
       run: |
-        brew install pkg-config libpng freetype zstd sdl2 fluidsynth
+        brew install pkg-config libpng freetype zstd sdl3 fluidsynth
 
     - name: build
       run: |
