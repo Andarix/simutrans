@@ -14,9 +14,11 @@ jobs:
       - name: Setup Mingw
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW32
+          release: false
+          msystem: UCRT64
           update: false
-          install: base-devel mingw-w64-i686-toolchain mingw-w64-i686-gcc mingw-w64-i686-libpng
+          path-type: minimal
+          install: mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-make mingw-w64-ucrt-x86_64-pkg-config mingw-w64-ucrt-x86_64-libpng
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -25,9 +27,9 @@ jobs:
         shell: msys2 {0}
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: |
-          printf 'BACKEND := posix\nOSTYPE := mingw\nOPTIMISE := 1\nSTATIC := 1\n' | cat >config.default
+          printf 'BACKEND := posix\nOSTYPE := mingw\nOPTIMISE := 1\nSTATIC := 1\nVERBOSE := 1\n' | cat >config.default
           cd src/makeobj
-          make
+          mingw32-make
           cd ../../build/default/makeobj
           strip makeobj.exe
 
